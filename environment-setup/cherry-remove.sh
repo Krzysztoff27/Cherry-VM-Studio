@@ -143,7 +143,7 @@ configure_daemon_docker(){
 
 remove_docker_networks(){
     printf '\n[i] Removing cvmm-network internal Docker network: '
-    runuser -u CherryWorker -- docker network rm cvmm-network > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker network rm cvmm-internal > "$LOGS_FILE"
     ok_handler
 }
 
@@ -153,6 +153,14 @@ configure_container_guacamole(){
     ok_handler
     #Add removal of db directory and other associated files
 }
+
+configure_container_traefik(){
+    printf '\n[i] Stopping traefik docker container: '
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/traefik/docker-compose.yml" down > "$LOGS_FILE"
+    ok_handler
+    #Add removal of db directory and other associated files
+}
+
 
 remove_vm_networks(){
     printf '\n[i] Enabling libvirt default network stack: '
@@ -202,12 +210,13 @@ print_finish_notice(){
 
 removal(){
     print_begin_notice
-    remove_vm_networks
-    remove_vm_firewall
+    #remove_vm_networks
+    #remove_vm_firewall
     configure_container_guacamole
+    configure_container_traefik
     remove_docker_networks
     configure_daemon_docker
-    configure_daemon_libvirt
+    #configure_daemon_libvirt
     remove_user
     #remove_zypper_patterns
     #remove_zypper_packages

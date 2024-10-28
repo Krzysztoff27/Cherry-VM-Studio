@@ -220,7 +220,13 @@ configure_daemon_docker(){
 
 create_docker_networks(){
     printf '\n[i] Creating cvmm-network internal Docker network: '
-    runuser -u CherryWorker -- docker network create --driver=bridge --subnet=172.16.100.0/24 --gateway=172.16.100.1 --internal cvmm-network > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker network create -o "com.docker.network.bridge.enable_icc"="true" --driver=bridge --subnet=172.16.100.0/24 --gateway=172.16.100.1 --internal cvmm-internal > "$LOGS_FILE"
+    ok_handler
+}
+
+configure_container_traefik(){
+    printf '[i] Starting traefik docker container: '
+    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}traefik/docker-compose.yml" up -d > "$LOGS_FILE"
     ok_handler
 }
 
@@ -296,14 +302,15 @@ installation(){
     #install_zypper_packages
     #install_zypper_patterns
     create_user
-    configure_daemon_kvm
-    configure_daemon_libvirt
+    #configure_daemon_kvm
+    #configure_daemon_libvirt
     configure_file_ownership
     configure_daemon_docker
     create_docker_networks
+    configure_container_traefik
     configure_container_guacamole
-    create_vm_firewall
-    create_vm_networks
+    #create_vm_firewall
+    #create_vm_networks
     print_finish_notice
 }
 installation
