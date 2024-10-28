@@ -5,20 +5,29 @@ services:
     container_name: cvmm-traefik-proxy
     restart: always
     image: traefik
+    environment:
+      - DOMAIN_NAME=wisniowa.oedu.pl
     command:
      #DELETE BEFORE RELEASING
      - "--api.insecure=true"
-     - "--providers.file.directory=./configuration"
+     - "--providers.file.directory=/dynamic-configuration"
      - "--providers.file.watch=true"
-     - "--entrypoint.web.address=:80"
+     - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
       - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./dynamic-configuration:/dynamic-configuration"
     networks:
-      cvmm-network:
+      cvmm-external:
+      cvmm-internal:
         ipv4_address: 172.16.100.2
 
 networks:
-  cvmm-network:
-    name: cvmm-network
+  cvmm-external:
+    name: cvmm-external
+    external: false
+  cvmm-internal:
+    name: cvmm-internal
     external: true

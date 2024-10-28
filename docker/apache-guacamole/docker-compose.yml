@@ -6,7 +6,7 @@ services:
     restart: always
     image: guacamole/guacd
     networks:
-      cvmm-network:
+      cvmm-internal:
         ipv4_address: 172.16.100.5
 
   guacamole:
@@ -14,7 +14,7 @@ services:
     restart: always
     image: guacamole/guacamole
     ports:
-      - "8080:8080"
+      - "8000:8080"
     environment:
       - GUACD_HOSTNAME=guacd
       - POSTGRESQL_HOSTNAME=database
@@ -25,7 +25,7 @@ services:
       - guacd
       - database
     networks:
-      cvmm-network:
+      cvmm-internal:
         ipv4_address: 172.16.100.6
 
   database:
@@ -40,10 +40,10 @@ services:
       - ./db:/var/lib/postgresql/data:rw
       - ./initdb:/docker-entrypoint-initdb.d/:ro
     networks:
-      cvmm-network:
+      cvmm-internal:
         ipv4_address: 172.16.100.7
 
 networks:
-  cvmm-network:
-    name: cvmm-network
+  cvmm-internal:
+    name: cvmm-internal
     external: true
