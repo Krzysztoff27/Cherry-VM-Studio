@@ -1,0 +1,18 @@
+http:
+  routers:
+    cvmm-traefik-router:
+      rule: "Host(`${DOMAIN_NAME}`) && PathPrefix(`/traefik`)"
+      service: cvmm-traefik-service
+    cvmm-guacamole-guacamole-router:
+      rule: "Host(`${DOMAIN_NAME}`) && PathPrefix(`/guacamole`)"
+      service: cvmm-guacamole-guacamole-service
+
+  services:
+    cvmm-traefik-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.16.100.2:8080"
+    cvmm-guacamole-guacamole-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.16.100.6:8080"
