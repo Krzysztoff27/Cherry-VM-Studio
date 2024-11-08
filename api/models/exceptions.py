@@ -1,0 +1,2 @@
+class RaisedException(Exception):
+    pass
