@@ -275,7 +275,6 @@ function Flow() {
                 acc[intnetUuid].machines.push(machineUuid);
             }
 
-            console.log(acc)
             return acc;
         }, {});
 

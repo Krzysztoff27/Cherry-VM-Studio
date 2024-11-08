@@ -1,25 +1,28 @@
 import { Grid } from "@mantine/core";
-import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-
+import { useEffect, useState } from "react";
 import MachineStateChart from "./components/MachineStateChart/MachineStateChart";
 import StretchingColumn from "./components/StretchingColumn/StretchingColumn";
 import NetworkDataDisplay from "./components/NetworkDataDisplay/NetworkDataDisplay";
-import { clockSynchronizedTimeout } from "../../utils/misc";
-import useAuth from "../../hooks/useAuth";
 import ConsoleDisplay from "./components/ConsoleDisplay/ConsoleDisplay";
-import useFetch from "../../hooks/useFetch";
+import useApiWebSocket from "../../hooks/useApiWebSocket";
+import useAuth from "../../hooks/useAuth";
 
 export default function VirtualMachinePage() {
     const { uuid } = useParams();
     const { authOptions } = useAuth();
-    const { data, refresh } = useFetch(`vm/${uuid}/state`, authOptions);
-    const currentState = data || {loading: true};
+    
+    const { lastJsonMessage, sendCommand } = useApiWebSocket('/ws/vm');
+    const [ currentState, setCurrentState] = useState({loading: true});
+    
+    useEffect(() => {
+        sendCommand("SUBSCRIBE", { target: uuid })
+    }, [])
 
     useEffect(() => {
-        const clear = clockSynchronizedTimeout(refresh, 1)
-        return () => clear();
-    }, []);
+        console.log(lastJsonMessage)
+        if(lastJsonMessage?.method === 'DATA') setCurrentState(lastJsonMessage.data);
+    }, [lastJsonMessage])
 
     return (
         <Grid display='flex' p='4' pt='0'>
