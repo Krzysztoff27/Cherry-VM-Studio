@@ -219,8 +219,12 @@ configure_daemon_docker(){
 }
 
 create_docker_networks(){
-    printf '\n[i] Creating cvmm-network internal Docker network: '
-    runuser -u CherryWorker -- docker network create -o "com.docker.network.bridge.enable_icc"="true" --driver=bridge --subnet=172.16.100.0/24 --gateway=172.16.100.1 --internal cvmm-internal > "$LOGS_FILE"
+    printf '\n[i] Creating cvmm-internal Docker network: '
+    runuser -u CherryWorker -- docker network create -o "com.docker.network.bridge.enable_icc"="true" -o "com.docker.network.bridge.name"="cvmm-internal" --driver=bridge --subnet=172.16.100.0/24 --gateway=172.16.100.1 --internal cvmm-internal > "$LOGS_FILE"
+    ok_handler
+    printf '\n[i] Adding cvmm-internal Docker network to docker firewall zone: '
+    runuser -u CherryWorker -- sudo firewall-cmd --add-interface=cvmm-internal --zone=docker --permanent > "$LOGS_FILE"
+    runuser -u CherryWorker -- sudo firewall-cmd --reload > "$LOGS_FILE"
     ok_handler
 }
 
@@ -298,10 +302,10 @@ print_finish_notice(){
 #it will be able to continue from where it stopped previously - TO BE IMPLEMENTED
 installation(){
     print_begin_notice
-    disable_network_manager
+    #disable_network_manager
     #install_zypper_packages
     #install_zypper_patterns
-    create_user
+    #create_user
     #configure_daemon_kvm
     #configure_daemon_libvirt
     configure_file_ownership

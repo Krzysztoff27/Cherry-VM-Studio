@@ -142,7 +142,10 @@ configure_daemon_docker(){
 }
 
 remove_docker_networks(){
-    printf '\n[i] Removing cvmm-network internal Docker network: '
+    printf '\n[i] Removing cvmm-internal network from docker firewall zone: '
+    runuser -u CherryWorker -- sudo firewall-cmd --remove-interface=cvmm-internal --zone=docker > "$LOGS_FILE"
+    ok_handler
+    printf '\n[i] Removing cvmm-internal Docker network: '
     runuser -u CherryWorker -- docker network rm cvmm-internal > "$LOGS_FILE"
     ok_handler
 }
@@ -215,9 +218,9 @@ removal(){
     configure_container_guacamole
     configure_container_traefik
     remove_docker_networks
-    configure_daemon_docker
+    #configure_daemon_docker
     #configure_daemon_libvirt
-    remove_user
+    #remove_user
     #remove_zypper_patterns
     #remove_zypper_packages
     #final_cleanup
