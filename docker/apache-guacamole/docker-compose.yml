@@ -7,7 +7,6 @@ services:
     image: guacamole/guacd
     networks:
       cvmm-internal:
-        ipv4_address: 172.16.100.5
 
   guacamole:
     container_name: cvmm-guacamole-guacamole
@@ -26,7 +25,6 @@ services:
       - database
     networks:
       cvmm-internal:
-        ipv4_address: 172.16.100.6
 
   database:
     container_name: cvmm-guacamole-db
@@ -41,7 +39,6 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d/:ro
     networks:
       cvmm-internal:
-        ipv4_address: 172.16.100.7
 
 networks:
   cvmm-internal:

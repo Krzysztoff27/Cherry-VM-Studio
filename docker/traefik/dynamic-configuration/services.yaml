@@ -1,18 +1,23 @@
 http:
   routers:
     cvmm-traefik-router:
-      rule: "Host(`${DOMAIN_NAME}`) && PathPrefix(`/traefik`)"
-      service: cvmm-traefik-service
+      rule: Host(`lenovo.lab`) && (PathPrefix(`/traefik`) || PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      service: api@internal
+      entryPoints: web
+      middlewares: auth
     cvmm-guacamole-guacamole-router:
-      rule: "Host(`${DOMAIN_NAME}`) && PathPrefix(`/guacamole`)"
+      rule: "Host(`lenovo.lab`) && PathPrefix(`/guacamole`)"
       service: cvmm-guacamole-guacamole-service
+      entryPoints: web
+
+  middlewares:
+      auth:
+        basicAuth:
+          users:
+            - "test:$apr1$ssuQ3rCw$ls3xyHMqzgDXdhBXucGEp/"
 
   services:
-    cvmm-traefik-service:
-      loadBalancer:
-        servers:
-          - url: "http://172.16.100.2:8080"
     cvmm-guacamole-guacamole-service:
       loadBalancer:
         servers:
-          - url: "http://172.16.100.6:8080"
+          - url: "http://cvmm-guacamole-guacamole:8080/guacamole"

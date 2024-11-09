@@ -6,13 +6,17 @@ services:
     restart: always
     image: traefik
     environment:
-      - DOMAIN_NAME=wisniowa.oedu.pl
+      - DOMAIN_NAME=lenovo.lab
     command:
      #DELETE BEFORE RELEASING
-     - "--api.insecure=true"
+     - "--providers.docker=true"
+     - "--log.level=DEBUG"
+     #- "--api.insecure=true"
+     - "--api.dashboard=true"
      - "--providers.file.directory=/dynamic-configuration"
      - "--providers.file.watch=true"
      - "--entrypoints.web.address=:80"
+     - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
       - "8080:8080"
@@ -22,7 +26,6 @@ services:
     networks:
       cvmm-external:
       cvmm-internal:
-        ipv4_address: 172.16.100.2
 
 networks:
   cvmm-external:
