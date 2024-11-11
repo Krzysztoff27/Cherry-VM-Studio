@@ -229,6 +229,18 @@ create_docker_networks(){
 }
 
 configure_container_traefik(){
+    while true; do
+        printf '\n[?] Enter the domain name for the Cherry VM Manager stack: '
+        read -r -p '' domain_name
+        if [[ ! $domain_name =~ ^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$ ]]; then
+            printf '[!] Invalid domain name!\n'
+        else
+            break
+        fi
+    done
+    printf '\n[i] Creating .env file for traefik docker container: '
+    runuser -u CherryWorker -- printf "DOMAIN_NAME=%s\n" "$domain_name" > "${DIR_DOCKER}traefik/.env" 
+    ok_handler
     printf '[i] Starting traefik docker container: '
     runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}traefik/docker-compose.yml" up -d > "$LOGS_FILE"
     ok_handler

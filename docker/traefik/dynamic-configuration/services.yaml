@@ -1,12 +1,12 @@
 http:
   routers:
     cvmm-traefik-router:
-      rule: Host(`lenovo.lab`) && (PathPrefix(`/traefik`) || PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      rule: Host(`{{ printf "traefik.%s" (env "DOMAIN_NAME") }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       service: api@internal
       entryPoints: web
       middlewares: auth
     cvmm-guacamole-guacamole-router:
-      rule: "Host(`lenovo.lab`) && PathPrefix(`/guacamole`)"
+      rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/guacamole`)
       service: cvmm-guacamole-guacamole-service
       entryPoints: web
 
@@ -14,7 +14,7 @@ http:
       auth:
         basicAuth:
           users:
-            - "test:$apr1$ssuQ3rCw$ls3xyHMqzgDXdhBXucGEp/"
+            - "CherryAdmin:$apr1$XAa8WkbY$XNs1zQjPVs.8lGKFuSYQV."
 
   services:
     cvmm-guacamole-guacamole-service:

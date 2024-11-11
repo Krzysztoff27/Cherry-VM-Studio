@@ -6,12 +6,11 @@ services:
     restart: always
     image: traefik
     environment:
-      - DOMAIN_NAME=lenovo.lab
+      - DOMAIN_NAME=${DOMAIN_NAME}
     command:
      #DELETE BEFORE RELEASING
-     - "--providers.docker=true"
      - "--log.level=DEBUG"
-     #- "--api.insecure=true"
+     #DELETE BEFORE RELEASING
      - "--api.dashboard=true"
      - "--providers.file.directory=/dynamic-configuration"
      - "--providers.file.watch=true"
