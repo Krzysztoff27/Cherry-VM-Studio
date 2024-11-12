@@ -37,6 +37,7 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                     </Button>
                     <Divider size='lg' orientation='vertical' />
                     <Button
+                        onClick={refreshNetworkData}
                         className={classes.button}
                         size='md'
                         leftSection={<IconRefresh size='24' />}
