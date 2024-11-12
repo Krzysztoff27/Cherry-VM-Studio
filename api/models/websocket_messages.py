@@ -32,5 +32,5 @@ class LoadingFinResponse(Response):
 
 class DataResponse(Response):
     method: str = "DATA"
-    data: dict | None = None
+    body: dict | None = None
 
