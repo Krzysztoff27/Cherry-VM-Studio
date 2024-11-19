@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Paper, ScrollArea, Stack } from "@mantine/core";
-import { mergeObjectPropertiesToArray, toggleInArray } from "../../utils/misc.js";
+import { mergeObjectPropertiesToArray, safeObjectKeys, safeObjectValues, toggleInArray } from "../../utils/misc.js";
 import groupMachines from "./groupMachines.js";
 import CardGroup from "./components/CardGroup/CardGroup.jsx";
 import MachineCard from "./components/MachineCard/MachineCard.jsx";
@@ -10,16 +10,9 @@ import useFetch from "../../hooks/useFetch.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
 import useErrorHandler from "../../hooks/useErrorHandler.jsx";
 import classes from './MachineList.module.css';
+import useApiWebSocket from "../../hooks/useApiWebSocket.jsx";
 
-export default function MachineList() {
-    const { authOptions } = useAuth();
-    const { showErrorNotification } = useErrorHandler();
-
-    // fetch network and state data
-    const { loading: networkDataLoading, error: networkDataError, data: networkData, refresh: refreshNetworkData } = useFetch('/vm/all/networkdata', authOptions);
-    const { error: stateError, data: stateData, refresh: loadState } =  useFetch('/vm/all/state', authOptions);
-    
-    // manage cookies
+const useGroupCookieManager = () => {
     const [cookies, setCookies] = useCookies(['groupBy', 'openedGroups']);
     const groupBy = cookies.groupBy || 'group';
     const openedGroups = cookies.openedGroups || [];
@@ -31,35 +24,42 @@ export default function MachineList() {
         setCookies('groupBy', val, {path: '/virtual-machines'})
         clearOpenedGroups();
     }
+
+    return {groupBy, openedGroups, toggleGroup, setGroupBy};
+}
+
+const handleCurrentState = (machineNetworkData) => {
+    const { lastJsonMessage, sendCommand } = useApiWebSocket('/ws/vm');
+    const [ currentState, setCurrentState] = useState({});
+    let dataMsg = lastJsonMessage;
     
-    // refresh machine state
     useEffect(() => {
-        const timeout = setInterval(loadState, 1000);
-        return () => clearInterval(timeout);
-    }, []);
+        // subscribe to every machine
+        safeObjectKeys(machineNetworkData).forEach(uuid => sendCommand("SUBSCRIBE", { target: uuid }));
+        // set timeout as the state cooldown, if 2s pass without receiving data (otherwise the entire component would reload), change dataMsg to message with empty body
+        setTimeout(() => dataMsg = {method: 'DATA', body: {}}, 2000);
+    }, [machineNetworkData])
+    
+    useEffect(() => {
+        if(dataMsg?.method === 'DATA') setCurrentState(dataMsg.body);
+    }, [dataMsg])
 
-    // array of machines storing values from both networkData and stateData
-    const machines = mergeObjectPropertiesToArray(networkData, stateData);
+    return {currentState};
+}
 
+export default function MachineList() {
+    const { authOptions } = useAuth();
+    const { loading, error, data: machineNetworkData, refresh } = useFetch('/vm/all/networkdata', authOptions);
+    const { groupBy, openedGroups, toggleGroup, setGroupBy } = useGroupCookieManager();
+    const { currentState } = handleCurrentState(machineNetworkData);
+    
+    // merged machine data from network data and state data
+    const machines = mergeObjectPropertiesToArray(currentState, machineNetworkData);
     // uses memo to not recalculate groups every time the machine state changes (except for when the groups are based on the state values)
-    const groups = useMemo(() => groupMachines(machines, groupBy), [networkData, groupBy, groupBy === 'state' ? stateData : undefined]);
-
-    // error handling
-    if (networkDataLoading) return;
-    if (networkDataError) throw networkDataError;
-    if (stateError) {
-        showErrorNotification({title: 'Could not load the machines\' state', description: 'An error occured during fetching the machines\'s state data.'});
-        return;
-    }
-
-    const getMachineCard = (machine) => (
-        <MachineCard
-            machine={machine}
-            to={`./${machine.uuid}`}
-            key={machine.uuid}
-            currentState={stateData?.[machine.uuid]}
-        />
-    )
+    const groups = useMemo(() => groupMachines(machines, groupBy), [machineNetworkData, groupBy, groupBy === 'state' ? currentState : undefined]);
+    
+    if (loading) return;
+    if (error) throw error;
 
     const cardGroups = Object.entries(groups).map(([group, machines], i) => (
         <CardGroup 
@@ -68,7 +68,14 @@ export default function MachineList() {
             toggleOpened={() => toggleGroup(group)}
             opened={openedGroups?.includes?.(group)}
         >
-            {machines.map(machine => getMachineCard(machine))}
+            {machines.map(machine => (
+                <MachineCard
+                    machine={machine}
+                    to={`./${machine.uuid}`}
+                    key={machine.uuid}
+                    currentState={currentState?.[machine.uuid]}
+                />
+            ))}
         </CardGroup>
     ))
 
@@ -78,7 +85,7 @@ export default function MachineList() {
                 <MachineListPanel 
                     groupBy={groupBy} 
                     setGroupBy={setGroupBy}
-                    refreshNetworkData
+                    refreshNetworkData={refresh}
                 />
                 <ScrollArea.Autosize className={classes.scrollArea} >
                     <Stack pb='lg'>

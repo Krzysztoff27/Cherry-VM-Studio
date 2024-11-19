@@ -20,8 +20,7 @@ export default function VirtualMachinePage() {
     }, [])
 
     useEffect(() => {
-        console.log(lastJsonMessage)
-        if(lastJsonMessage?.method === 'DATA') setCurrentState(lastJsonMessage.data);
+        if(lastJsonMessage?.method === 'DATA') setCurrentState(lastJsonMessage?.body?.[uuid]);
     }, [lastJsonMessage])
 
     return (

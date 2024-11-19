@@ -23,10 +23,17 @@ export const zipToObject = (keyArray = [], valueArray = []) => noneOrEmpty(keyAr
 
 /**
  * Provides errorless Object.values experience
- * @param {Object} object
+ * @param {Object} obj
  * @returns {Array} array of values
  */
 export const safeObjectValues = (obj = {}) => Object.values({ ...obj });
+
+/**
+ * Provides errorless Object.keys experience
+ * @param {Object} obj 
+ * @returns {Array} array of keys
+ */
+export const safeObjectKeys = (obj = {}) => Object.keys({...obj});
 
 /**
  * Splits array into chunks
