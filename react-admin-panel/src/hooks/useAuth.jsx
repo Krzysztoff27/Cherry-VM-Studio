@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Custom react hook providing application with authentication support.
+ * Custom react hook providing the application with authentication support.
  * 
  * @typedef {Object} useAuthReturn
  * @property {string|null} token - memoized value of token extracted from cookies.

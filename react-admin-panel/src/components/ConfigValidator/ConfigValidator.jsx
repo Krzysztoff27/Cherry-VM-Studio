@@ -1,6 +1,6 @@
 import { List } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
-import envData from '../../assets/data/envValidation';
+import envData from '../../config/envValidation';
 
 /**
  * A root route component responsible for validating environmental variables.
@@ -13,7 +13,11 @@ import envData from '../../assets/data/envValidation';
 export default function ConfigValidator() {
     const getEnv = (path) => import.meta.env[path];
 
-    const invalid = envData.filter(env => !(env.regex).test(`${getEnv(env.path)}`))
+    const invalid = envData.filter(env => {
+        const value = getEnv(env.path);
+        if(!value && env.optional) return false;
+        return(env.regex).test(value);
+    })
 
     if (!invalid.length) return <Outlet/>;
 
