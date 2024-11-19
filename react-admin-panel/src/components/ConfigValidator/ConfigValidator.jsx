@@ -16,7 +16,7 @@ export default function ConfigValidator() {
     const invalid = envData.filter(env => {
         const value = getEnv(env.path);
         if(!value && env.optional) return false;
-        return(env.regex).test(value);
+        return !(env.regex).test(value);
     })
 
     if (!invalid.length) return <Outlet/>;
