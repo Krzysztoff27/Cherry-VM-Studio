@@ -1,0 +1,8 @@
+# syntax=docker/dockerfile:1.7-labs
+FROM python:alpine
+WORKDIR /api  
+COPY ./requirements.txt /api/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
+COPY --exclude=./requirements.txt --exclude=./docker ./ /api
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

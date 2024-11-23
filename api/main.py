@@ -9,7 +9,7 @@ import logging
 #      FastAPI instance
 ###############################
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # allow local origins
