@@ -9,15 +9,28 @@ http:
       rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/guacamole`)
       service: cvmm-guacamole-guacamole-service
       entryPoints: web
+    cherry-api-router:
+      rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/api`)
+      service: cherry-api-service
+      entryPoints: web
+      middlewares: strip-api-prefix
 
   middlewares:
       auth:
         basicAuth:
           users:
             - "CherryAdmin:$apr1$XAa8WkbY$XNs1zQjPVs.8lGKFuSYQV."
+      strip-api-prefix:
+        stripPrefix: 
+          prefixes:
+            - "/api"
 
   services:
     cvmm-guacamole-guacamole-service:
       loadBalancer:
         servers:
           - url: "http://cvmm-guacamole-guacamole:8080/guacamole"
+    cherry-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-api:8000"
