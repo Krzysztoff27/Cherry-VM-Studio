@@ -152,14 +152,14 @@ remove_docker_networks(){
 
 configure_container_guacamole(){
     printf '\n[i] Stopping apache-guacamole docker stack: '
-    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/apache-guacamole/docker-compose.yml" down > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/apache-guacamole/docker-compose.yaml" down > "$LOGS_FILE"
     ok_handler
     #Add removal of db directory and other associated files
 }
 
 configure_container_traefik(){
     printf '\n[i] Stopping traefik docker container: '
-    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/traefik/docker-compose.yml" down > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/traefik/docker-compose.yaml" down > "$LOGS_FILE"
     ok_handler
     #Add removal of db directory and other associated files
 }

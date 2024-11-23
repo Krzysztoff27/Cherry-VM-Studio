@@ -242,7 +242,7 @@ configure_container_traefik(){
     runuser -u CherryWorker -- printf "DOMAIN_NAME=%s\n" "$domain_name" > "${DIR_DOCKER}traefik/.env" 
     ok_handler
     printf '[i] Starting traefik docker container: '
-    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}traefik/docker-compose.yml" up -d > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}traefik/docker-compose.yaml" up -d > "$LOGS_FILE"
     ok_handler
 }
 
@@ -251,7 +251,7 @@ configure_container_guacamole(){
     runuser -u CherryWorker -- docker run -q --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > "${DIR_DOCKER}apache-guacamole/initdb/01-initdb.sql"
     ok_handler
     printf '[i] Starting apache-guacamole docker stack: '
-    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}apache-guacamole/docker-compose.yml" up -d > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}apache-guacamole/docker-compose.yaml" up -d > "$LOGS_FILE"
     ok_handler
 }
 
