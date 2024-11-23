@@ -15,7 +15,7 @@ import {validPath} from "../utils/misc.js";
  */
 export const useApi = () => {
     const API_URL = import.meta.env.VITE_API_BASE_URL;
-    const {requestResponseError} = useErrorHandler();
+    const {parseAndHandleError} = useErrorHandler();
 
     /**
      * Combines given relative path with the base API URL
@@ -39,10 +39,10 @@ export const useApi = () => {
             body: body,
         }, errorCallback);
     
-    const getRequest    = (path, options = {}, errorCallback = requestResponseError) =>            sendRequest(path, 'GET', options, undefined, errorCallback);
-    const deleteRequest = (path, options = {}, errorCallback = requestResponseError) =>            sendRequest(path, 'DELETE', options, undefined, errorCallback);
-    const postRequest   = (path, body = {}, options = {}, errorCallback = requestResponseError) => sendRequest(path, 'POST', options, body, errorCallback);
-    const putRequest    = (path, body = {}, options = {}, errorCallback = requestResponseError) => sendRequest(path, 'PUT', options, body, errorCallback);
+    const getRequest    = (path, options = {}, errorCallback = parseAndHandleError) =>            sendRequest(path, 'GET', options, undefined, errorCallback);
+    const deleteRequest = (path, options = {}, errorCallback = parseAndHandleError) =>            sendRequest(path, 'DELETE', options, undefined, errorCallback);
+    const postRequest   = (path, body = {}, options = {}, errorCallback = parseAndHandleError) => sendRequest(path, 'POST', options, body, errorCallback);
+    const putRequest    = (path, body = {}, options = {}, errorCallback = parseAndHandleError) => sendRequest(path, 'PUT', options, body, errorCallback);
 
     return { getPath, getRequest, postRequest, putRequest, deleteRequest };
 };

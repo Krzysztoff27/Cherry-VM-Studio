@@ -1,4 +1,4 @@
-import { safePush } from "../../utils/misc";
+import { safePush } from "./misc";
 
 const stateMatches = [
     { value: 'fetching', match: (m) => m.loading === undefined && m.active === undefined },
@@ -9,11 +9,11 @@ const stateMatches = [
 const getGroupFromMatches = (matchesList, obj) => matchesList.find(({ match }) => match(obj)).value;
 
 const groupByKey = (machines, key) =>
-    machines.reduce((acc, machine) => ({ ...acc, [machine[key]]: safePush(acc[machine[key]], machine) }), {});
+    machines?.reduce?.((acc, machine) => ({ ...acc, [machine[key]]: safePush(acc[machine[key]], machine) }), {});
 
 const groupByGroup = (machines) => groupByKey(machines, 'group');
 
-const groupByMembership = (machines) => groupByGroup(machines, 'group_member_id');
+const groupByMembership = (machines) => groupByKey(machines, 'group_member_id');
 
 const groupByState = (machines) =>
     machines.reduce((acc, machine) => {

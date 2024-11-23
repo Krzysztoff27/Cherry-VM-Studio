@@ -21,35 +21,35 @@ const contributors = {
 
 const credits = [
     {
-        label: 'Installation scripts',
+        key: 'instalation-scripts',
         contributors: [contributors.Krzysztoff27]
     },
     {
-        label: 'Apache Guacamole configuration',
+        key: 'guacamole',
         contributors: [contributors.Krzysztoff27]
     },
     {
-        label: 'Machines virtualization',
+        key: 'virtualization',
         contributors: [contributors.Krzysztoff27]
     },
     {
-        label: '❝ Cherry Proxy ❞',
+        key: 'cherry-proxy',
         contributors: [contributors.Krzysztoff27]
     },
     {
-        label: '❝ Cherry API ❞',
-        contributors: [contributors.Krzysztoff27, contributors.Th3TK, contributors.Tux10]
+        key: 'cherry-api',
+        contributors: [contributors.Th3TK, contributors.Tux10]
     },
     {
-        label: '❝ Cherry Admin Panel ❞',
+        key: 'cherry-admin-panel',
         contributors: [contributors.Th3TK]
     },
     {
-        label: 'Data requests',
+        key: 'connectivity',
         contributors: [contributors.Th3TK]
     },
     {
-        label: 'Project Logo',
+        key: 'project-logo',
         contributors: [contributors.Th3TK, contributors.Majs0n]
     },
 ]

@@ -1,15 +1,17 @@
-import { ActionIcon, Stack, Tooltip } from '@mantine/core';
-import { IconDeviceDesktop, IconHome, IconLogout, IconTerminal2, IconTopologyStar } from '@tabler/icons-react';
+import { ActionIcon, Popover, Radio, Stack, Tooltip } from '@mantine/core';
+import { IconDeviceDesktop, IconHome, IconLanguage, IconLogout, IconTerminal2, IconTopologyStar } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import classes from './NavBar.module.css';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitch from '../LanguageSwitch/LanguageSwitch';
 
 const categories = [
-    {icon: IconHome, label: 'Home page', link: '/home'},
-    {icon: IconTerminal2, label: 'Virtual Machines', link: '/virtual-machines'},
-    {icon: IconDeviceDesktop, label: 'Desktops', link: '/desktops'},
-    {icon: IconTopologyStar, label: 'Network Panel', link: '/network-panel'},
+    { icon: IconHome, name: "home", link: '/home' },
+    { icon: IconTerminal2, name: "virtual-machines", link: '/virtual-machines' },
+    { icon: IconDeviceDesktop, name: "desktops", link: '/desktops', disabled: true },
+    { icon: IconTopologyStar, name: "network-panel", link: '/network-panel' },
 ]
 
 /**
@@ -20,14 +22,14 @@ const categories = [
  * @param {boolean}             props.active true if button is currently selected
  * @returns {React.JSX.Element}
  */
-function IconButton({label = null, icon, active, ...props}) {
+function IconButton({ label = null, icon, active, ...props }) {
     return (
-        <Tooltip 
-            label={label} 
-            hidden={!label} 
+        <Tooltip
+            label={label}
+            hidden={!label}
             position='right'
             color='#3b3b3b'
-            offset={{mainAxis: 8}}
+            offset={{ mainAxis: 8 }}
             transitionProps={{ transition: 'scale-x', duration: 200 }}
 
         >
@@ -50,11 +52,12 @@ function IconButton({label = null, icon, active, ...props}) {
  * @returns {React.JSX.Element}
  */
 export default function NavBar() {
-    const {logout} = useAuth();
+    const { t, i18n } = useTranslation();
+    const { logout } = useAuth();
     const location = useLocation();
     const [active, setActive] = useState();
-    
-    useEffect(() => setActive(categories.findIndex(cat => location.pathname.startsWith(cat.link))), 
+
+    useEffect(() => setActive(categories.findIndex(cat => location.pathname.startsWith(cat.link))),
         [location.pathname]);
 
     const mainLinks = categories.map((category, i) => (
@@ -63,7 +66,7 @@ export default function NavBar() {
             component={Link}
             to={category.link}
             active={active === i}
-            label={category.label}
+            label={t(`navbar.${category.name}`, { ns: 'layouts' })}
             icon={<category.icon stroke={1.5} />}
         />
     ))
@@ -80,7 +83,8 @@ export default function NavBar() {
                 {mainLinks}
             </Stack>
             <Stack>
-                <IconButton onClick={logout} label='Log out' icon={<IconLogout stroke={1.5}/>}/>
+                <LanguageSwitch/>
+                <IconButton onClick={logout} label={t('log-out')} icon={<IconLogout stroke={1.5} />} />
             </Stack>
         </Stack>
     )

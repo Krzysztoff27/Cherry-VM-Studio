@@ -1,53 +1,58 @@
 import { Avatar, Button, Card, Group, Image, List, rem, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import classes from './Home.module.css';
 
 const panels = [
     {
-        title: 'Apache Guacamole Panel',
-        description: 'Apache Guacamole is a free and open-source, cross-platform, clientless remote desktop gateway maintained by the Apache Software Foundation.',
+        name: 'guacamole',
         color: '#578c34',
-        icon: {
-            src: '/icons/Apache Guacamole.webp',
-            alt: 'Apache Guacamole Logo',
-        },
+        icon: '/icons/Apache Guacamole.webp',
     },
     {
-        title: 'Traefik Proxy Panel',
-        description: 'Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications.',
+        name: 'traefik',
         color: '#24A0C1',
-        icon: {
-            src: '/icons/Traefik Proxy.webp',
-            alt: 'Traefik Proxy Logo',
-        },
+        icon: '/icons/Traefik Proxy.webp',
     },
 
 ]
 
 export default function Home() {
-
+    const { t } = useTranslation();
+    
     const cards = panels.map((panel, i) => (
-        <Card key={i} shadow='sm' padding='lg' radius='md' ta='left' withBorder>
-            <Stack justify='space-between' gap='md' h='100%'>
-                <Stack gap='xs'>
-                    <Group justify='start' gap='sm'>
-                        <Avatar src={panel.icon.src} title={panel.icon.alt} alt={panel.icon.alt} />
-                        <Text size='xl' fw={500}>{panel.title}</Text>
+        <Card key={i} shadow='sm' className={classes.card} withBorder>
+            <Stack className={classes.cardStack1}>
+                <Stack className={classes.cardStack2}>
+                    <Group className={classes.cardGroup}>
+                        <Avatar 
+                            src={panel.icon} 
+                            title={t(`home.cards.${panel.name}.title`, {ns: 'pages'})} 
+                            alt={t(`home.cards.${panel.name}.logo-alt`, {ns: 'pages'})} 
+                        />
+                        <Text className={classes.panelTitle}>
+                            {t(`home.cards.${panel.name}.title`, {ns: 'pages'})} 
+                        </Text>
                     </Group>
-                    <Text size='sm' c='dimmed'>{panel.description}</Text>
+                    <Text size='sm' c='dimmed'>
+                        {t(`home.cards.${panel.name}.description`, {ns: 'pages'})} 
+                    </Text>
                 </Stack>
-                <Button color={panel.color} radius='md' fullWidth>Log in</Button>
+                <Button color={panel.color} radius='md' fullWidth>
+                    {t('log-in',)}
+                </Button>
             </Stack>
         </Card>
     ))
 
     return (
-        <Stack pt={rem(64)} p={rem(96)} gap={rem(48)} align='center' ta='center'>
+        <Stack className={classes.container}>
             <Stack align='center'>
-                <Title>Welcome to the Cherry Admin Panel!</Title>
-                <Text size='lg' ta='center'>This web application is the management center for your Cherry VM Manager.<br /> Its purpose is to provide user-friendly experience in controling deployed machines.</Text>
+                <Title>{t('home.title', {ns: 'pages'})}</Title>
+                <Text className={classes.description}>{t('home.description1', {ns: 'pages'})}</Text>
 
             </Stack>
-            <Card w={800} shadow='sm' padding='lg' radius='md' ta='left' withBorder>
+            <Card className={`${classes.card} ${classes.main}`} shadow='sm' withBorder>
                 <Group>
                     <Image
                         src='/icons/Cherry Admin Panel.webp'
@@ -56,20 +61,20 @@ export default function Home() {
                         flex={1}
                     />
                     <Stack gap='0'>
-                        <Text>Here you can:</Text>
+                        <Text>{t('home.cherry-admin-panel.start', {ns: 'pages'})}</Text>
                         <List mt={rem(4)}>
-                            <List.Item>Monitor your Virtual Machines and their activity.</List.Item>
-                            <List.Item>Manage their state remotely.</List.Item>
-                            <List.Item>Configure network connections between your machines.</List.Item>
-                            <List.Item><Text c='dimmed'>... and more</Text></List.Item>
+                            <List.Item>{t('home.cherry-admin-panel.feature1', {ns: 'pages'})}</List.Item>
+                            <List.Item>{t('home.cherry-admin-panel.feature2', {ns: 'pages'})}</List.Item>
+                            <List.Item>{t('home.cherry-admin-panel.feature3', {ns: 'pages'})}</List.Item>
+                            <List.Item><Text c='dimmed'>{t('home.cherry-admin-panel.feature-more', {ns: 'pages'})}</Text></List.Item>
                         </List>
                         <Button component={Link} to='/login' color='cherry.10' radius='md' mt='md' fullWidth>
-                            Enter the panel
+                            {t('enter')}
                         </Button>
                     </Stack>
                 </Group>
             </Card>
-            <Text size='lg'>For advanced configurations, you might want to enter the dependancy panels:</Text>
+            <Text className={classes.description}>{t('home.description2', {ns: 'pages'})}</Text>
             <SimpleGrid cols={2} w={800}>
                 {...cards}
             </SimpleGrid>

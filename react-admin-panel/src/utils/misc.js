@@ -119,8 +119,7 @@ export const toggleInArray = (array, value) => {
     return index === -1 ? [...array, value] : array.filter((_, i) => i !== index);
 };
 
-export const mergeObjectPropertiesToArray = (a, b) =>
-    Object.keys({ ...a, ...b })?.map(key => ({ ...a[key], ...b?.[key] }));
+export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...a || {}, ...b || {}})?.map(key => ({ ...a[key], ...b?.[key] }));
 
 export const validPath = (path = '') => path.startsWith('/') ? path : `/${path}`;
 

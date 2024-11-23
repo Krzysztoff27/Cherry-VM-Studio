@@ -1,3 +1,5 @@
+import { ERRORS } from "../assets/errors";
+
 /**
  * Handles fetch, if fetch failed it creates a fake response with status code 503 - Service Unavailable
  * @param {string} URL URL of the object to be fetched
@@ -6,7 +8,7 @@
  * @returns {object|undefined}
  */
 const handleFetch = async (URL, options = {}, errorCallback) => {
-    if(!URL) throw {status: 601, message: `Environmental variable "VITE_API_BASE_URL" is either not set or its value is invalid.`};
+    if(!URL) throw {status: ERRORS.CVMM_601_INVALID_ENV_CONFIGURATION, message: 'Environmental variable "VITE_API_BASE_URL" is either not set or its value is invalid.'};
 
     const fetchOptions = {
         headers: {'accept': 'application/json'},

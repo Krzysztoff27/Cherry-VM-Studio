@@ -1,0 +1,14 @@
+{
+    "footer": {
+        "home": "Home", 
+        "documentation": "Documentation", 
+        "credits": "Credits", 
+        "copyright": "Copyright"
+    },
+    "navbar": {
+        "home": "Home page",
+        "virtual-machines": "Virtual Machines",
+        "desktops": "Desktops",
+        "network-panel": "Network Panel"
+    }
+}

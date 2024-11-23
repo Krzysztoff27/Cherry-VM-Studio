@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Paper, ScrollArea, Stack } from "@mantine/core";
 import { mergeObjectPropertiesToArray, safeObjectKeys, safeObjectValues, toggleInArray } from "../../utils/misc.js";
-import groupMachines from "./groupMachines.js";
+import groupMachines from "../../utils/groupMachines.js";
 import CardGroup from "./components/CardGroup/CardGroup.jsx";
 import MachineCard from "./components/MachineCard/MachineCard.jsx";
 import MachineListPanel from "./components/MachineListPanel/MachineListPanel.jsx";
@@ -13,19 +13,19 @@ import classes from './MachineList.module.css';
 import useApiWebSocket from "../../hooks/useApiWebSocket.jsx";
 
 const useGroupCookieManager = () => {
-    const [cookies, setCookies] = useCookies(['groupBy', 'openedGroups']);
+    const [cookies, setCookies] = useCookies(['groupBy', 'closedGroups']);
     const groupBy = cookies.groupBy || 'group';
-    const openedGroups = cookies.openedGroups || [];
+    const closedGroups = cookies.closedGroups || [];
 
     // setters for cookies
-    const clearOpenedGroups = () => setCookies('openedGroups', [], {path: '/virtual-machines'})
-    const toggleGroup = (group) => setCookies('openedGroups', toggleInArray(openedGroups, group) , {path: '/virtual-machines'});
+    const clearClosedGroups = () => setCookies('closedGroups', [], {path: '/virtual-machines'})
+    const toggleGroup = (group) => setCookies('closedGroups', toggleInArray(closedGroups, group) , {path: '/virtual-machines'});
     const setGroupBy = (val) => {
         setCookies('groupBy', val, {path: '/virtual-machines'})
-        clearOpenedGroups();
+        clearClosedGroups();
     }
 
-    return {groupBy, openedGroups, toggleGroup, setGroupBy};
+    return {groupBy, closedGroups, toggleGroup, setGroupBy};
 }
 
 const handleCurrentState = (machineNetworkData) => {
@@ -49,8 +49,9 @@ const handleCurrentState = (machineNetworkData) => {
 
 export default function MachineList() {
     const { authOptions } = useAuth();
+    const { parseAndHandleError } = useErrorHandler(); 
     const { loading, error, data: machineNetworkData, refresh } = useFetch('/vm/all/networkdata', authOptions);
-    const { groupBy, openedGroups, toggleGroup, setGroupBy } = useGroupCookieManager();
+    const { groupBy, closedGroups, toggleGroup, setGroupBy } = useGroupCookieManager();
     const { currentState } = handleCurrentState(machineNetworkData);
     
     // merged machine data from network data and state data
@@ -59,14 +60,17 @@ export default function MachineList() {
     const groups = useMemo(() => groupMachines(machines, groupBy), [machineNetworkData, groupBy, groupBy === 'state' ? currentState : undefined]);
     
     if (loading) return;
-    if (error) throw error;
+    if (error) {
+        parseAndHandleError(error);
+        return;
+    }
 
-    const cardGroups = Object.entries(groups).map(([group, machines], i) => (
+    const cardGroups = Object.entries(groups || {}).map(([group, machines], i) => (
         <CardGroup 
             key={i} 
             group={group} 
             toggleOpened={() => toggleGroup(group)}
-            opened={openedGroups?.includes?.(group)}
+            opened={!closedGroups?.includes?.(group)}
         >
             {machines.map(machine => (
                 <MachineCard

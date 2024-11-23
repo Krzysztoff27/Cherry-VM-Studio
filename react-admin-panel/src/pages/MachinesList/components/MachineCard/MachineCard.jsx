@@ -3,6 +3,7 @@ import { IconHomeLink, IconHomeX, IconScreenShare, IconScreenShareOff } from "@t
 import ActivitySparkline from "../ActivitySparkline/ActivitySparkline";
 import { useNavigate } from "react-router-dom";
 import classes from './MachineCard.module.css';
+import { useTranslation } from "react-i18next";
 
 /**
  * Renders a card component representing a virtual machine with its relevant information and controls.
@@ -23,11 +24,13 @@ import classes from './MachineCard.module.css';
  * @returns {JSX.Element} - The rendered card component for the machine.
  */
 export default function MachineCard({ machine, to, currentState }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleCardClick = () => navigate(to)
 
     const handleButtonClick = (event) => {
+        console.log(machine)
         event.stopPropagation(); // Prevents the card click event
         if (machine.active) window.open(`http://${machine.domain}`, '_blank');
     };
@@ -65,7 +68,7 @@ export default function MachineCard({ machine, to, currentState }) {
                 variant="light"
                 className={classes.connectButton}
             >
-                Connect to this machine
+                {t('machine-list.cards.connect', {ns: 'pages'})}
             </Button>
         </Card>
     );

@@ -1,0 +1,74 @@
+{
+    "home": {
+        "title": "Witaj w Wiśniowym Panelu Kontrolnym!",
+        "description1": "Ta aplikacja internetowa jest centrum zarządzania dla Twojego Cherry VM Managera.\nJej głównym celem jest zapewnienie przyjaznego interfejsu do kontrolowania wdrożonych maszyn.",
+        "description2": "W celu tworzenia bardziej zaawansowanych konfiguracji poniżej zalecamy przejść do paneli podserwisów:",
+        "cherry-admin-panel": {
+            "start": "Panel umożliwia:",
+            "feature1": "Monitorowanie maszyn wirtualnych i ich aktywności.",
+            "feature2": "Zarządzanie ich stanem zdalnie.",
+            "feature3": "Konfigurowanie połączeń sieciowych między maszynami.",
+            "feature-more": "... i wiele więcej!"
+        },
+        "cards": {
+            "guacamole": {
+                "title": "Panel Apache Guacamole",
+                "description": "Apache Guacamole is a free and open-source, cross-platform, clientless remote desktop gateway maintained by the Apache Software Foundation.",
+                "logo-alt": "Apache Guacamole Logo"
+            },
+            "traefik": {
+                "title": "Panel Traefik Proxy",
+                "description": "Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
+                "logo-alt": "Traefik Proxy Logo"
+            }
+        }
+    },
+    "machine-list": {
+        "panel": {
+            "create": "Utwórz maszynę",
+            "create-multiple": "Utwórz kilka maszyn",
+            "refresh": "Odśwież listę maszyn",
+            "group-by": "Grupuj"
+        },
+        "groups": {
+            "expand": "Rozwiń grupę maszyn.",
+            "collapse": "Zwiń grupę maszyn."
+        },
+        "cards": {
+            "connect": "Połącz się z tą maszyną"
+        }
+    },
+    "machine": {
+        "info": {
+            "type": "Typ",
+            "domain": "Domena",
+            "address": "Adres",
+            "active-connections": "Aktywne połączenia"
+        },
+        "graph": {
+            "resource-used": "Zużycie {{resource}}"
+        }
+    },
+    "login": {
+        "title": "Cherry Admin Panel",
+        "description": "Zaloguj się upoważnionym kontem CVMM",
+        "username-placeholder": "Wpisz swój login",
+        "password-placeholder": "Wpisz swoje hasło"
+    },
+    "network-panel": {
+        "controls": {
+            "load-config": "Załaduj konfigurację",
+            "no-changes": "Brak wykrytych zmian",
+            "default-presets": "Profile konfiguracji",
+            "saved-snapshots": "Zapisane migawki",
+            "changes-saved": "Zapisano zmiany!",
+            "save": "Zapisz",
+            "presets" : {
+                "DesktopX - ServerX": "DesktopX - SerwerX",
+                "Unified Intnet": "Jedna sieć",
+                "Group-Based Intnet": "Sieć na grupę",
+                "Isolated Intnet per VM": "Brak połączeń"
+            }
+        }
+    }
+}

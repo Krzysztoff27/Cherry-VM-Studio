@@ -1,6 +1,7 @@
 import { NativeSelect } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 import useApi from "../../../../hooks/useApi";
 import useAuth from "../../../../hooks/useAuth";
@@ -8,6 +9,7 @@ import useAuth from "../../../../hooks/useAuth";
 const VALUE_SEPERATOR = ':::';
 
 export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpdate }) {
+    const { t } = useTranslation();
     const { getRequest } = useApi();
     const { authOptions } = useAuth();
     const [snapshotComponents, setSnapshotComponents] = useState([]);
@@ -60,7 +62,7 @@ export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpda
                 opened={confirmationOpened}
                 onCancel={onModalCancel}
                 onConfirm={onModalConfirm}
-                title='Confirm loading configuration'
+                title={t('confirm.np-loading-config.title', {ns: 'modals'})}
                 confirmButtonProps={{ color: 'red.7' }}
             />
             <NativeSelect
@@ -69,11 +71,11 @@ export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpda
                 radius={0}
                 w={268}
             >
-                <option value='null'>Load configuration</option>
-                <optgroup label='Default Presets'>
+                <option value='null'>{t('network-panel.controls.load-config', {ns: 'pages'})}</option>
+                <optgroup label={t('network-panel.controls.default-presets', {ns: 'pages'})}>
                     {...presetComponents}
                 </optgroup>
-                <optgroup label='Saved Snapshots'>
+                <optgroup label={t('network-panel.controls.saved-snapshots', {ns: 'pages'})}>
                     {...snapshotComponents}
                 </optgroup>
             </NativeSelect>

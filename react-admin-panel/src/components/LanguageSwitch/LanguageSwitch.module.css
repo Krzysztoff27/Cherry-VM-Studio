@@ -1,3 +1,12 @@
+.radioMenu {
+    border-width: 2px;
+    border-radius: var(--mantine-radius-md);
+}
+
+.radioLabel {
+    font-size: var(--mantine-font-size-md);
+}
+
 .actionIcon {
     background-color: var(--mantine-color-dark-6);
     border-color: var(--mantine-color-dark-5);
@@ -17,6 +26,3 @@
         background-color: var(--mantine-color-dark-4);
     }
 }
-
-
-    

@@ -1,50 +1,43 @@
 import { Button, Center } from "@mantine/core";
 import { useNavigate, useRouteError } from "react-router-dom"
 import classes from './ErrorBoundary.module.css';
-import errors from '../../assets/data/errorResponses.json';
 import useAuth from "../../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
-/**
- * ErrorBoundary for the react-router-dom routes. When error is thrown in the application, this component catches it and displays error message to the user.
- * 
- * Thrown error should be {Object} with
- *      @prop {number} error.status error status code
- *      @prop {string} error?.message used only in errors with status code of 600+ range
- * 
- * @returns React Component
- */
+
 export default function ErrorBoundary() {
+    const { t } = useTranslation();
     const { logout } = useAuth();
     const navigate = useNavigate();
-    const e = useRouteError(); // {status: Number, message?: String}
+    const {status, i18nKey, message: detail} = useRouteError(); 
 
-    const error = errors[e?.status ?? 600] ?? errors[600]; // get error from errors based on the status
-
+    const code = status || 600;
     let onClick, buttonMessage;
-    let message = error.code >= 600 && e.message ? e.message : error.message;
+    const message = code >= 600 && detail ? detail : t([`${i18nKey}.message`, `${code}.message`], {ns: 'errors'});
+    const title = t([`${i18nKey}.title`, `${code}.title`], {ns: 'errors'});
 
-    switch (error.code) {
+    switch (code) {
         case 401:
         case 403:
             onClick = logout;
-            buttonMessage = 'Log in again'
+            buttonMessage = t('log-in-again');
             break;
         case 404:
             onClick = () => navigate(-1);
-            buttonMessage = 'Take me back';
+            buttonMessage = t('take-me-back');
             break;
         default:
             onClick = () => navigate(0);
-            buttonMessage = 'Refresh page';
+            buttonMessage = t('refresh-page');
     }
 
     return (
         <>
             <Center className={classes.background}>
-                {e?.status || error.code}
+                {code}
             </Center>
             <div className={classes.center}>
-                <h1 className={classes.title}>{error.title}</h1>
+                <h1 className={classes.title}>{title}</h1>
                 <span className={classes.message}>{message}</span>
                 <Button
                     onClick={onClick}
@@ -59,7 +52,7 @@ export default function ErrorBoundary() {
                     variant='subtle'
                     w={220}
                 >
-                    Return to home page
+                    {t('return-to-home-page')}
                 </Button>
             </div>
         </>

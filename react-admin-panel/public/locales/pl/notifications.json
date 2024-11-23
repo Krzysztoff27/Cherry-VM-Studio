@@ -1,0 +1,150 @@
+{
+    "error": {
+        "default": {
+            "title": "Wystąpił nieznany błąd",
+            "message": "Skontaktuj się z zespołem deweloperów, aby rozwiązać problem."
+        },
+        "400": {
+            "title": "Nieprawidłowe zapytanie",
+            "message": "Twoje żądanie nie mogło zostać przetworzone z powodu błędu. Sprawdź poprawność przesłanych danych."
+        },
+        "401": {
+            "title": "Nieautoryzowany dostęp",
+            "message": "Aby uzyskać dostęp do żądanego zasobu, musisz się zalogować."
+        },
+        "401-login": {
+            "title": "Logowanie nie powiodło się",
+            "message": "Nieprawidłowa nazwa użytkownika lub hasło."
+        },
+        "401-session": {
+            "title": "Sesja wygasła",
+            "message": "Zaloguj się ponownie, aby kontynuować."
+        },
+        "403": {
+            "title": "Dostęp zabroniony",
+            "message": "Twoje konto nie posiada wymaganych uprawnień do tego zasobu."
+        },
+        "404": {
+            "title": "Nie znaleziono {{resource, capitalize}}",
+            "message": "Szukany {{resource, lowercase}} nie został odnaleziony."
+        },
+        "404-page": {
+            "title": "Nie znaleziono strony",
+            "message": "Strona, której szukasz, nie istnieje. Upewnij się, że wprowadziłeś poprawny adres URL."
+        },
+        "404-snapshot": {
+            "title": "Nie znaleziono migawki",
+            "message": "Szukana migawka nie istnieje."
+        },
+        "404-preset": {
+            "title": "Nie znaleziono profilu",
+            "message": "Szukany profil konfiguracji nie istnieje."
+        },
+        "408": {
+            "title": "Przekroczono czas oczekiwania",
+            "message": "Serwer nie otrzymał zapytania w określonym czasie."
+        },
+        "409": {
+            "title": "Konflikt",
+            "message": "Zasób o podanej nazwie już istnieje."
+        },
+        "418": {
+            "title": "Jestem czajnikiem",
+            "message": "Ten serwer jest czajnikiem i nie może przetworzyć Twojego żądania."
+        },
+        "429": {
+            "title": "Zbyt wiele żądań",
+            "message": "Przekroczono limit zapytań. Spróbuj ponownie później."
+        },
+        "500": {
+            "title": "Wystąpił błąd wewnętrzny",
+            "message": "Usługa API nie mogła przetworzyć żądania z powodu błędu wewnętrznego."
+        },
+        "503": {
+            "title": "Serwis niedostępny",
+            "message": "Usługa API jest obecnie nieosiągalna."
+        },
+        "600": {
+            "title": "Wystąpił błąd wewnętrzny",
+            "message": "W Cherry Admin Panel wystąpił wewnętrzny błąd. Skontaktuj się z zespołem deweloperów, aby rozwiązać problem."
+        },
+        "601": {
+            "title": "Nieprawidłowa konfiguracja panelu",
+            "message": ""
+        },
+        "650": {
+            "title": "Nie udało się załadować konfiguracji sieci",
+            "message": "Wystąpił błąd podczas ładowania z powodu nieprawidłowej konfiguracji."
+        },
+        "651": {
+            "title": "Nie udało się załadować profilu",
+            "message": "{{message}}"
+        },
+        "651-undefined": {
+            "title": "Nie udało się załadować profilu",
+            "message": "Klucz {{key}} jest nieokreślony lub pusty."
+        },
+        "651-core-function": {
+            "title": "Nie udało się załadować profilu",
+            "message": "Wystąpił błąd składniowy w podstawowej funkcji profilu \"{{key}}\"."
+        },
+        "651-variable": {
+            "title": "Nie udało się załadować profilu",
+            "message": "Wystąpił błąd podczas obliczania zmiennej \"{{key}}\"."
+        },
+        "651-custom-function": {
+            "title": "Nie udało się załadować profilu",
+            "message": "Wystąpił błąd podczas obliczania funkcji \"{{key}}\"."
+        }
+    },
+    "network-panel": {
+        "flow-init": {
+            "title": "Konfiguracja sieci załadowana",
+            "message": "Pomyślnie utworzono reprezentację aktualnej konfiguracji sieci wewnętrznych."
+        },
+        "flow-resetting": {
+            "title": "Odświeżanie konfiguracji sieci",
+            "message": "Trwa odświeżanie danych podłączonych maszyn."
+        },
+        "flow-restore": {
+            "title": "Konfiguracja sieci przywrócona",
+            "message": "Konfiguracja sieci została pomyślnie przywrócona."
+        },
+        "state-saved": {
+            "title": "Stan panelu zapisany",
+            "message": "Obecne pozycje maszyn na planszy zostały pomyślnie zapisane."
+        },
+        "config-saved": {
+            "title": "Konfiguracja sieci zapisana",
+            "message": "Konfiguracja sieci została pomyślnie zaktualizowana i zapisana."
+        },
+        "snapshot-create": {
+            "title": "Utworzono nową migawkę - \"{{name}}\"",
+            "message": "Konfiguracja sieciowa została pomyślnie zapisana w migawce \"{{name}}\"."
+        },
+        "snapshot-modify": {
+            "title": "Zmieniono nazwę migawki",
+            "title_few": "Zmieniono nazwy migawek",
+            "title_many": "Zmieniono nazwy migawek",
+            "message_one": "Pomyślnie zmieniono nazwę {{count}} migawki.",
+            "message_few": "Pomyślnie zmieniono nazwy {{count}} migawek.",
+            "message_many": "Pomyślnie zmieniono nazwy {{count}} migawek."
+        },
+        "snapshot-remove": {
+            "title": "Usunięto migawkę",
+            "title_few": "Usunięto migawki",
+            "title_many": "Usunięto migawki",
+            "message_one": "Pomyślnie usunięto {{count}} migawkę.",
+            "message_few": "Pomyślnie usunięto {{count}} migawki.",
+            "message_many": "Pomyślnie usunięto {{count}} migawek."
+        },
+        "snapshot-loaded": {
+            "title": "Migawka załadowana",
+            "message": "Pomyślnie załadowano konfigurację sieci z danych migawki."
+        },
+        "preset-loaded": {
+            "title": "Profil załadowany",
+            "message": "Pomyślnie wygenerowano odpowiednią konfigurację sieci."
+        }
+    }
+}

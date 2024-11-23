@@ -5,11 +5,13 @@ import React from 'react';
 import useAuth from '../../hooks/useAuth';
 import useApi from '../../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
-    const {postRequest} = useApi();
-    const {setToken} = useAuth();
+    const { postRequest } = useApi();
+    const { setToken } = useAuth();
     const form = useForm({
         mode: 'uncontrolled',
         validate: {
@@ -32,7 +34,7 @@ export default function LoginPage() {
             password: values.password,
         }));
 
-        if(!jsonResponse?.access_token) return;
+        if (!jsonResponse?.access_token) return;
 
         setToken(jsonResponse.access_token)
         notifications.clean();
@@ -43,41 +45,41 @@ export default function LoginPage() {
             <Fieldset w='400'>
                 <form onSubmit={form.onSubmit(authenticate)}>
                     <Group align='flex-end' pt='xs'>
-                        <Avatar src='/icons/Cherry Admin Panel.webp' radius={0}/>
+                        <Avatar src='/icons/Cherry Admin Panel.webp' radius={0} />
                         <Text size="xl" fw={500}>
-                            Cherry Admin Panel
+                            {t('login.title', {ns: 'pages'})}
                         </Text>
                     </Group>
                     <Space h="sm" />
-                    <Divider label="Log in with an authorized server account" />
+                    <Divider label={t('login.description', {ns: 'pages'})} />
                     <Space h="sm" />
                     <TextInput
-                        label="Username"
-                        description=" "
-                        placeholder="Enter your username"
+                        label={t('username')}
+                        description=" " // for a small gap
+                        placeholder={t('login.username-placeholder', {ns: 'pages'})}
                         withAsterisk
                         key={form.key('username')}
                         {...form.getInputProps('username')}
                     />
                     <Space h="sm" />
                     <PasswordInput
-                        label="Password"
-                        description=" "
-                        placeholder="Enter your password"
+                        label={t('password')}
+                        description=" " // for a small gap
+                        placeholder={t('login.password-placeholder', {ns: 'pages'})}
                         withAsterisk
                         key={form.key('password')}
                         {...form.getInputProps('password')}
                     />
                     <Group justify="space-between" mt="md">
-                        <Button 
-                            onClick={() => navigate('/')} 
-                            style={{fontWeight: 500}}
+                        <Button
+                            onClick={() => navigate('/')}
+                            style={{ fontWeight: 500 }}
                             color='dark.1'
                             variant='light'
                         >
-                            Go back
+                            {t('go-back')}
                         </Button>
-                        <Button type="submit">Sign in</Button>
+                        <Button type="submit">{t('log-in')}</Button>
                     </Group>
                 </form>
             </Fieldset>

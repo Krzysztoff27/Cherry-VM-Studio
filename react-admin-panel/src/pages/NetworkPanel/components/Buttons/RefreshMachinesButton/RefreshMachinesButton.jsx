@@ -1,11 +1,15 @@
-import { Button, Loader } from '@mantine/core'
+import { Button } from '@mantine/core'
 import React from 'react'
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal'
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconRefresh, IconRefreshAlert } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+import useMantineNotifications from '../../../../../hooks/useMantineNotifications';
 
 export default function RefreshMachinesButton({isDirty, refreshMachines}) {
+    const { t } = useTranslation();
+    const { sendNotification } = useMantineNotifications();
     const [opened, {open, close}] = useDisclosure();
     
     const Icon = isDirty ? IconRefreshAlert : IconRefresh;
@@ -15,12 +19,7 @@ export default function RefreshMachinesButton({isDirty, refreshMachines}) {
     const onConfirm = () => {
         close();
         refreshMachines();
-        notifications.show({
-            id: `flow-reset`,
-            color: 'yellow.7',
-            title: 'Refreshing Network Configuration',
-            message: `The machine data is currently being refreshed.`,
-        });
+        sendNotification('network-panel.flow-resetting', {color: 'yellow.7'})
     }
     
     return (
@@ -29,8 +28,8 @@ export default function RefreshMachinesButton({isDirty, refreshMachines}) {
                 opened={opened} 
                 onCancel={onCancel}
                 onConfirm={onConfirm}
-                title='Confirm machines data refresh'
-                message='By refreshing the machines you will discard all unsaved changes. Are you sure you want to continue?'
+                title={t('confirm.np-refresh.title', {ns: 'modals'})}
+                message={t('confirm.np-refresh.description', {ns: 'modals'})}
                 confirmButtonProps={{color: 'red.7'}}
             />
             <Button

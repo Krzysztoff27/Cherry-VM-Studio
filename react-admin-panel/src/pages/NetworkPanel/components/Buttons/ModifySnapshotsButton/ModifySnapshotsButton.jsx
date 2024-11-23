@@ -4,10 +4,11 @@ import { useForm } from '@mantine/form';
 import { useDisclosure, useDebouncedValue } from '@mantine/hooks';
 import { IconAlertCircleFilled, IconArrowBackUp, IconCameraPlus, IconDeviceDesktop, IconEdit, IconTopologyStarRing3, IconTrash } from '@tabler/icons-react';
 import classes from './ModifySnapshotButton.module.css';
-import { hasMultipleOccurrences, isInRange, pluralize, safeObjectValues } from '../../../../../utils/misc.js';
+import { hasMultipleOccurrences, isInRange, safeObjectValues } from '../../../../../utils/misc.js';
 import useApi from '../../../../../hooks/useApi.jsx';
 import useAuth from '../../../../../hooks/useAuth.jsx';
-import { notifications } from '@mantine/notifications';
+import { useTranslation } from 'react-i18next';
+import useMantineNotifications from '../../../../../hooks/useMantineNotifications.jsx';
 
 /**
  * Button linked to the snapshot modification modal
@@ -53,6 +54,7 @@ export default function ModifySnapshotsButton({ forceSnapshotDataUpdate, initiat
  * @returns {React.JSX.Element}
  */
 function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDataUpdate, forceSnapshotDataUpdate }) {
+    const { t } = useTranslation();
     const { authOptions } = useAuth();
     const { getRequest } = useApi();
     const [snapshots, setSnapshots] = useState([]);
@@ -74,7 +76,7 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
                     onClose={onClose}
                     styles={{ title: { fontSize: rem(24), padding: rem(4), paddingLeft: 0 } }}
                     size='lg'
-                    title='Modify and delete snapshots'
+                    title={t('custom.modify-snapshots.title', {ns: 'modals'})}
                 >
                     <ModificationForm snapshots={snapshots} close={close} initiateSnapshotDataUpdate={initiateSnapshotDataUpdate} />
                 </Modal>
@@ -87,9 +89,12 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
                 >
                     <Stack gap='lg'>
                         <Stack gap='8' pt='xs'>
-                            <Text size='lg' fw={600}>No snapshots available to edit</Text>
+                            <Text size='lg' fw={600}>
+                                {t('custom.modify-snapshots.title-empty', {ns: 'modals'})}
+                            </Text>
                             <Text size='sm' style={{textWrap: ''}}>
-                                To get started, create a new snapshot by clicking the <IconCameraPlus size='20' style={{transform: 'translate(0, 5px)'}}/> button in the panel!
+                                {t('custom.modify-snapshots.description-empty1', {ns: 'modals'})} <IconCameraPlus size='20' style={{transform: 'translate(0, 5px)'}}/> 
+                                {" " + t('custom.modify-snapshots.description-empty2', {ns: 'modals'})}
                             </Text>
                         </Stack>
                         <Button onClick={onClose} size='sm' variant='light' fullWidth>Close</Button>
@@ -109,6 +114,8 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
  * @returns {React.JSX.Element}
  */
 function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
+    const { t } = useTranslation();
+    const { sendNotification } = useMantineNotifications();
     const { authOptions } = useAuth();
     const { postRequest, deleteRequest } = useApi();
     /**
@@ -192,12 +199,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         if(!toBeRenamed.length) return;
 
         toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/${uuid}/rename/${name}`, undefined, authOptions));
-        notifications.show({
-            id: `snapshot-rename-${Date.now()}`,
-            color: 'suse-green',
-            title: `Snapshot renaming complete`,
-            message: `Successfully renamed ${toBeRenamed.length} ${pluralize('snapshot', toBeRenamed.length)}.`
-        })
+        sendNotification('network-panel.snapshot-modify', {}, {count: toBeRenamed.length});
 
         renamingForm.reset();
     }
@@ -210,12 +212,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         if(!uuids.length) return;
 
         uuids.forEach(uuid => deleteRequest(`network/snapshot/${uuid}`, authOptions));
-        notifications.show({
-            id: `snapshot-removal-${Date.now()}`,
-            color: 'suse-green',
-            title: `Snapshot removal complete`,
-            message: `Successfully removed ${uuids.length} ${pluralize('snapshot', uuids.length)}.`
-        })
+        sendNotification('network-panel.snapshot-remove', {}, {count: uuids.length});
 
         setToBeDeleted({});
     }
@@ -265,7 +262,9 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
                     deletedLength ?
                         <Group gap='6' wrap='nowrap'>
                             <IconAlertCircleFilled color='var(--mantine-color-red-6)' size={20} />
-                            <Text c='red.6' fw={500}>{deletedLength} snapshot{deletedLength > 1 ? 's' : ''} will be pernamently deleted!</Text>
+                            <Text c='red.6' fw={500}>
+                                {t('custom.modify-snapshots.warning', {ns: 'modals', count: deletedLength})}
+                            </Text>
                         </Group> : null
                 }
                 <Button type="submit" color='red.9'>Submit</Button>
@@ -284,13 +283,15 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
  * @returns {React.JSX.Element}
  */
 function ModificationFormLine({ snapshot, inputProps, isDeleted, onDeleteButtonClick }) {
+    const {t} = useTranslation();
+
     return (
         <Group gap='xs' align='top'>
             <ActionIcon
                 size='lg'
                 color='red.7'
                 variant={isDeleted ? 'transparent' : 'light'}
-                aria-label='Delete snapshot'
+                aria-label={t('custom.modify-snapshots.delete-snapshots-label', {ns: 'modals'})}
                 onClick={() => onDeleteButtonClick(snapshot.uuid)}
             >
                 {isDeleted ? <IconArrowBackUp size={20} /> : <IconTrash size={20} />}
@@ -299,7 +300,7 @@ function ModificationFormLine({ snapshot, inputProps, isDeleted, onDeleteButtonC
                 classNames={{ input: classes.lineTextInput }}
                 flex='1'
                 variant='filled'
-                placeholder='Enter new snapshot name'
+                placeholder={t('custom.modify-snapshots.name-input-placeholder', {ns: 'modals'})}
                 disabled={isDeleted}
                 {...inputProps}
             />

@@ -1,0 +1,85 @@
+{
+    "home": {
+        "title": "Welcome to the Cherry Admin Panel!",
+        "description1": "This web application is the management center for your Cherry VM Manager.\nIts purpose is to provide user-friendly experience in controling deployed machines.",
+        "description2": "For advanced configurations, you might want to enter the dependancy panels:",
+        "cherry-admin-panel": {
+            "start": "Here you can:",
+            "feature1": "Monitor your Virtual Machines and their activity.",
+            "feature2": "Manage their state remotely.",
+            "feature3": "Configure network connections between your machines.",
+            "feature-more": "... and more"
+        },
+        "cards": {
+            "guacamole": {
+                "title": "Apache Guacamole Panel",
+                "description": "Apache Guacamole is a free and open-source, cross-platform, clientless remote desktop gateway maintained by the Apache Software Foundation.",
+                "logo-alt": "Apache Guacamole Logo"
+            },
+            "traefik": {
+                "title": "Traefik Proxy Panel",
+                "description": "Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
+                "logo-alt": "Traefik Proxy Logo"
+            }
+        }
+    },
+    "machine-list": {
+        "panel": {
+            "create": "Create machine",
+            "create-multiple": "Create multiple machines",
+            "refresh": "Refresh machines",
+            "group-by": "Group by"
+        },
+        "groups": {
+            "expand": "Expand the virtual machine group.",
+            "collapse": "Collapse the virtual machine group."
+        },
+        "cards": {
+            "connect": "Connect to this machine"
+        }
+    },
+    "machine": {
+        "info": {
+            "type": "Type",
+            "domain": "Domain",
+            "address": "Address",
+            "active-connections": "Active connections"
+        },
+        "graph": {
+            "resource-used": "{{resource}} used"
+        }
+    },
+    "login": {
+        "title": "Cherry Admin Panel",
+        "description": "Log in with an authorized CVMM account",
+        "username-placeholder": "Enter your username",
+        "password-placeholder": "Enter your password"
+    },
+    "network-panel": {
+        "controls": {
+            "load-config": "Load configuration",
+            "no-changes": "No changes detected",
+            "default-presets": "Default presets",
+            "saved-snapshots": "Saved snapshots",
+            "changes-saved": "Changes saved!",
+            "save": "Save",
+            "presets" : {
+                "DesktopX - ServerX": "DesktopX - ServerX",
+                "Unified Intnet": "Unified Intnet",
+                "Group-Based Intnet": "Group-Based Intnet",
+                "Isolated Intnet per VM": "Isolated Intnet per VM"
+            }
+        }
+    },
+    "credits": {
+        "site-description": "This website is developed using <1>React</1>, incorporating components from the <3>Mantine</3> library. The network panel is built on the <5>React Flow component</5>. Icons used are sourced from <7>Tabler Icons</7>.",
+        "instalation-scripts": "Instalation scripts",
+        "guacamole": "Apache Guacamole configuration",
+        "virtualization": "Machines virtualization",
+        "cherry-proxy": "❝ Cherry Proxy ❞",
+        "cherry-api": "❝ Cherry API ❞",
+        "cherry-admin-panel": "❝ Cherry Admin Panel ❞",
+        "project-logo": "Project logo",
+        "connectivity": "API & Panel connectivity"
+    }
+}

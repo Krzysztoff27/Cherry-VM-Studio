@@ -1,7 +1,9 @@
 import { Button, Modal, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function ConfirmationModal({modalProps, opened, message, title, cancelButtonProps, confirmButtonProps, onCancel, onConfirm}) {
+    const { t } = useTranslation();
     return (
         <Modal
             opened={opened}
@@ -12,7 +14,7 @@ export default function ConfirmationModal({modalProps, opened, message, title, c
             <Stack>
                 <Title order={4}>{title}</Title>
                 <Text size='sm'>
-                    {message ?? 'Performing this action will discard all current changes. Are you sure you want to continue?'}
+                    {message ?? t('confirm.unsaved.description', {ns: 'modals'})}
                 </Text>
                 <SimpleGrid cols={2} grow='true'>
                     <Button onClick={onCancel} variant='light' color='gray' radius='sm' data-autofocus {...cancelButtonProps}>Cancel</Button>

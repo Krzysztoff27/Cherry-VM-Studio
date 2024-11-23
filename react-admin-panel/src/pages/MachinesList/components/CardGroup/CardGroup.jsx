@@ -3,6 +3,7 @@ import { Button, Card, Collapse, Divider, SimpleGrid, Stack, Text } from "@manti
 import { IconChevronDown, IconChevronRight, IconGripHorizontal } from "@tabler/icons-react";
 import classes from './CardGroup.module.css'
 import cardClasses from '../MachineCard/MachineCard.module.css'
+import { useTranslation } from "react-i18next";
 
 /**
  * Groups machine cards or similar elements into a collapsible section with a toggle button.
@@ -18,6 +19,7 @@ import cardClasses from '../MachineCard/MachineCard.module.css'
  * @returns {JSX.Element}
  */
 export default function CardGroup({ children, group, opened, toggleOpened }) {
+    const { t } = useTranslation();
     const [containerRef, rect] = useResizeObserver();
     const numOfCols = Math.max(Math.floor(rect.width / 300), 1);
 
@@ -32,7 +34,7 @@ export default function CardGroup({ children, group, opened, toggleOpened }) {
                 onClick={toggleOpened}
 
                 classNames={{ root: classes.button, label: classes.buttonLabel }}
-                aria-label={`${opened ? 'Collapse' : 'Expand'} the virtual machine group.`}
+                aria-label={t(`machine-list.groups.${opened ? 'collapse' : 'expand'}`, {ns: 'pages'})}
                 variant='transparent'
 
                 leftSection={opened ? <IconChevronDown className={classes.buttonIcon} /> : <IconChevronRight className={classes.buttonIcon} />}

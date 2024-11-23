@@ -1,8 +1,9 @@
-import { Container, Group, SegmentedControl, Stack } from '@mantine/core';
+import { Group, SegmentedControl, Stack } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
 import React, { useEffect, useState } from 'react';
-import getChartProps from './getChartProps';
+import getChartProps from './getChartProps.jsx';
 import { getCurrentTime } from '../../../../utils/misc';
+import { useTranslation } from 'react-i18next';
 
 const timePeriods = [
     {label: '10s', value: '10'},
@@ -14,6 +15,7 @@ const timePeriods = [
 const maxKeepTime = parseInt(timePeriods.at(-1).value)
 
 export default function MachineStateChart({ currentState }) {
+    const { t } = useTranslation();
     const [chosenChart, setChosenChart] = useState('CPU');
     const [timePeriod, setTimePeriod] = useState(30)
     const [chartData, setChartData] = useState(new Array(maxKeepTime).fill({}));
@@ -30,7 +32,7 @@ export default function MachineStateChart({ currentState }) {
             <Group justify='space-between' w='100%'>
                 <SegmentedControl
                     size="md"
-                    data={Object.keys(getChartProps())}
+                    data={Object.keys(getChartProps(currentState, t))}
                     onChange={setChosenChart}
                 />
                 <SegmentedControl
@@ -47,7 +49,7 @@ export default function MachineStateChart({ currentState }) {
                 dataKey='time'
                 tickLine="x"
                 curveType="linear"
-                {...getChartProps(currentState)[chosenChart]}
+                {...getChartProps(currentState, t)[chosenChart]}
                 xAxisProps={{ minTickGap: 50 }}
             />
         </Stack>

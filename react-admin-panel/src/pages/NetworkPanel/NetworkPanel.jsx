@@ -23,6 +23,8 @@ import { calcMiddlePosition, sliceNodeIdToId, getNodeId, extractPositionsFromNod
 import { v4 as uuidv4 } from 'uuid';
 
 import '@xyflow/react/dist/style.css';
+import useMantineNotifications from '../../hooks/useMantineNotifications';
+import { ERRORS } from '../../assets/errors';
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -127,10 +129,11 @@ const generateNewPos = () => ({ x: newPositionsAllocator.getNext() * 100, y: 0 }
  * @returns {JSX.Element} Flow component
  */
 function Flow() {
+    const { parseAndHandleError } = useErrorHandler(); 
+    const { sendNotification, sendErrorNotification } = useMantineNotifications();
     const { authOptions } = useAuth();
     const { getRequest, postRequest, putRequest } = useApi();
     const { generateConfigFromPreset } = useFlowPresets();
-    const { showErrorNotification } = useErrorHandler();
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -225,6 +228,7 @@ function Flow() {
         if (!config) return;
 
         loadFlowWithIntnets(config.flow, config.intnets, true).then(() => setIsDirty(true));
+        sendNotification('network-panel.preset-loaded', {color: ''});
     }
 
     // SNAPSHOTS
@@ -261,7 +265,8 @@ function Flow() {
         if (!data) return;
 
         const { name, intnets, ...flow } = data;
-        return loadFlowWithIntnets(flow, intnets).then(() => setIsDirty(true));
+        loadFlowWithIntnets(flow, intnets).then(() => setIsDirty(true));
+        sendNotification('network-panel.snapshot-loaded', {color: ''});
     }
 
     // INTNET CONFIG
@@ -321,21 +326,14 @@ function Flow() {
      * Initializes the flow by resetting it and loading the network configuration.
      */
     const initFlow = useCallback(() => {
+        if(!machines) return;
         resetFlow()
             .then(() => {
-                notifications.hide(`flow-init`);
-                notifications.show({
-                    id: `flow-init`,
-                    color: 'suse-green',
-                    title: 'Network Configuration Loaded',
-                    message: `Successfully created a representation of the present configuration of internal networks.`
-                });
+                notifications.hide(`network-panel.flow-init`);
+                sendNotification('network-panel.flow-init', {color: 'suse-green', uniqueId: false});
                 setIsDirty(null);
             })
-            .catch(() => showErrorNotification({
-                title: 'Couldn\'t Load the Network Configuration', 
-                message: 'Error occurred during load due to invalid configuration.'
-            }));
+            .catch(() => sendErrorNotification(ERRORS.CVMM_650_INVALID_NETWORK_CONFIGURATION));
     }, [resetFlow])
 
     /**
@@ -382,22 +380,10 @@ function Flow() {
      */
     const applyNetworkConfig = (_) => {
         const stateResponse = putFlowState();
-
-        if (stateResponse) notifications.show({
-            id: 'flow-init',
-            color: 'suse-green',
-            title: 'Saved current panel state',
-            message: `Current positions of the nodes in the flow have been successfully saved.`
-        })
-
         const networkConfigResponse = putIntnetConfiguration();
-
-        if (networkConfigResponse) notifications.show({
-            id: 'flow-init',
-            color: 'suse-green',
-            title: 'Saved intnet configuration',
-            message: `Network configuration has been successfully updated and saved.`
-        })
+        
+        if (stateResponse) sendNotification('network-panel.state-saved');
+        if (networkConfigResponse) sendNotification('network-panel.config-saved');
 
         setIsDirty(false);
     }
@@ -419,7 +405,10 @@ function Flow() {
     useEffect(initFlow, [machines])
 
     if (machinesLoading) return;
-    if (machinesError) throw machinesError;
+    if (machinesError) {
+        parseAndHandleError(machinesError);
+        return;
+    }
 
     return (
         <>

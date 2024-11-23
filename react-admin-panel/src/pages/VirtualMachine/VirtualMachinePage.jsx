@@ -24,7 +24,7 @@ export default function VirtualMachinePage() {
     }, [lastJsonMessage])
 
     return (
-        <Grid display='flex' p='4' pt='0'>
+        <Grid display='flex' p='4' pt='0' >
             <StretchingColumn span={6} h='45%'>
                 <NetworkDataDisplay uuid={uuid} currentState={currentState} authOptions={authOptions} />
             </StretchingColumn>
@@ -32,7 +32,7 @@ export default function VirtualMachinePage() {
                 <ConsoleDisplay uuid={uuid}/>
             </StretchingColumn>
             <StretchingColumn span={12} h='55%'>
-                <MachineStateChart currentState={currentState} />
+                <MachineStateChart currentState={currentState}/>
             </StretchingColumn>
         </Grid >
     )

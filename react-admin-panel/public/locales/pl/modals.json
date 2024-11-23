@@ -1,0 +1,48 @@
+{
+    "custom": {
+        "new-snapshot": {
+            "title": "Nowa migawka",
+            "description": "Tworzona migawka będzie zawierać obecną konfigurację, w tym:",
+            "bullet-point1": "Połączenia do sieci wewnętrznych",
+            "bullet-point2": "Pozycje maszyn na planszy",
+            "bullet-point3": "Pozycje sieci wewnętrznych na planszy",
+            "note": "Uwaga: Nazwa migawki musi być unikatowa",
+            "placeholder": "Wpisz nazwę migawki",
+            "error-too-short": "Nazwa migawki musi składać się z przynajmniej 3 znaków",
+            "error-too-long": "Nazwa migawki nie może być dłuższa niż 24 znaków",
+            "error-bad-characters": "Nazwa migawki może składać się jedynie z liter alfabetu angielskiego, cyfr i poniższych znaków:"
+        },
+        "modify-snapshots": {
+            "title": "Edytuj i usuwaj migawki",
+            "title-empty": "Brak migawek",
+            "description-empty1": "Aby stworzyć migawkę, kliknij przycisk",
+            "description-empty2": "w górnym !",
+            "warning_one": "{{count}} migawka zostanie usunięta!",
+            "warning_few": "{{count}} migawki zostaną usunięte!",
+            "warning_many": "{{count}} migawek zostanie usunięte!",
+            "name-input-placeholder": "Wpisz nazwę migawki",
+            "delete-snapshot-label": "Usuń migawkę"
+        }
+    },
+    "confirm": {
+        "leaving": {
+            "title": "Opuszczasz stronę",
+            "description": "Masz niezapisane zmiany, które stracisz po opuszczeniu tej strony."
+        },
+        "unsaved": {
+            "title": "Uwaga",
+            "description": "Wykonanie tej akcji odrzuci wszystkie niezapisane zmiany. Czy jesteś pewien, że chcesz kontynuować?"
+        },
+        "np-loading-config": {
+            "title": "Potwierdź ładowanie konfiguracji"
+        },
+        "np-restore": {
+            "title": "Potwierdź powrót do ostatniego zapisu",
+            "description": "Wykonanie tej akcji odrzuci wszystkie niezapisane zmiany, przywracając poprzednią konfigurację. Czy jesteś pewien, że chcesz kontynuować?"
+        },
+        "np-refresh": {
+            "title": "Potwierdź akcję",
+            "description": "Poprzez odświeżenie danych maszyn odrzucisz wszystkie niezapisane zmiany. Czy jesteś pewien, że chcesz kontynuować?"
+        }
+    }
+}

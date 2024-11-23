@@ -2,6 +2,7 @@ import { Button, Divider, Group, Paper, Popover, Radio, Stack } from "@mantine/c
 import { IconDeviceDesktopPlus, IconDevicesPlus, IconRefresh, IconStack2Filled } from "@tabler/icons-react";
 import { useState } from "react";
 import classes from './MachineListPanel.module.css';
+import { useTranslation } from "react-i18next";
 
 /**
  * Header panel for the Machine List page, providing controls for creating and managing virtual machines,
@@ -15,6 +16,7 @@ import classes from './MachineListPanel.module.css';
  */
 export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkData}) {
     const [groupButtonOpened, setGroupButtonOpened] = useState(false);
+    const { t } = useTranslation();
 
     return (
         <Paper bg='dark.6' radius={0}>
@@ -25,7 +27,7 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                         size='md'
                         leftSection={<IconDeviceDesktopPlus size='24' />}
                     >
-                        Create machine
+                        {t('machine-list.panel.create', {ns: 'pages'})}
                     </Button>
                     <Divider size='lg' orientation='vertical' />
                     <Button
@@ -33,7 +35,7 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                         size='md'
                         leftSection={<IconDevicesPlus size='24' />}
                     >
-                        Create multiple machines
+                        {t('machine-list.panel.create-multiple', {ns: 'pages'})}
                     </Button>
                     <Divider size='lg' orientation='vertical' />
                     <Button
@@ -42,7 +44,7 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                         size='md'
                         leftSection={<IconRefresh size='24' />}
                     >
-                        Refresh machines
+                        {t('machine-list.panel.refresh', {ns: 'pages'})}
                     </Button>
                 </Button.Group>
                 <Popover width="target" trapFocus offset={0} onChange={setGroupButtonOpened}>
@@ -52,7 +54,7 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                             size='md'
                             leftSection={<IconStack2Filled size='24' />}
                         >
-                            Group by
+                            {t('machine-list.panel.group-by', {ns: 'pages'})}
                         </Button>
                     </Popover.Target>
                     <Popover.Dropdown className={classes.groupByDropdown}>
@@ -61,9 +63,9 @@ export default function MachineListPanel({groupBy, setGroupBy, refreshNetworkDat
                             onChange={setGroupBy}
                         >
                             <Stack>
-                                <Radio classNames={{label: classes.radioLabel}} value="group" label="Type"/>
-                                <Radio classNames={{label: classes.radioLabel}} value="state" label="State" />
-                                <Radio classNames={{label: classes.radioLabel}} value="membership" label="Membership" />
+                                <Radio classNames={{label: classes.radioLabel}} value="group" label={t('type')}/>
+                                <Radio classNames={{label: classes.radioLabel}} value="state" label={t('state')} />
+                                <Radio classNames={{label: classes.radioLabel}} value="membership" label={t('membership')} />
                             </Stack>
                         </Radio.Group>
                     </Popover.Dropdown>

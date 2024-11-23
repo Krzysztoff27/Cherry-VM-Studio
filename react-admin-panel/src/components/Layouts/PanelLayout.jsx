@@ -22,9 +22,9 @@ export default function PanelLayout() {
                     <Outlet/>
                 </Container>
             </AppShell.Main>
-            <AppShell.Footer p='xs'>
+            {/* <AppShell.Footer p='xs'>
                 <Footer/>
-            </AppShell.Footer>
+            </AppShell.Footer> */}
         </AppShell>
     )
 }

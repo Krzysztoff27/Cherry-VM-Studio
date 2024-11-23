@@ -1,11 +1,12 @@
-import { ActionIcon, Group, rem, ScrollArea, Spoiler, Stack, Table, Text, Title } from "@mantine/core";
-import Loading from "../../../../components/Loading/Loading";
+import { ActionIcon, Group, ScrollArea, Stack, Table, Text, Title } from "@mantine/core";
 import { IconDeviceDesktop, IconDeviceDesktopOff, IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
+import { arrayIntoChunks } from "../../../../utils/misc";
+import Loading from "../../../../components/Loading/Loading";
 import StateBadge from "../../../../components/StateBadge/StateBadge";
 import useFetch from "../../../../hooks/useFetch";
-import { arrayIntoChunks } from "../../../../utils/misc";
 
-function MachineTitle({ machine, currentState }) {
+function MachineTitle({ machine, currentState, t }) {
     const icon = currentState.active ?
         <IconDeviceDesktop size={'40'} /> :
         <IconDeviceDesktopOff size={'40'} />;
@@ -17,7 +18,7 @@ function MachineTitle({ machine, currentState }) {
             <Group align="center">
                 {icon}
                 <Title order={1} align="center">
-                    Machine {machine.id}
+                    {t('machine')} {machine.id}
                 </Title>
                 <Group gap='sm'>
                     <ActionIcon
@@ -43,7 +44,7 @@ function MachineTitle({ machine, currentState }) {
     )
 }
 
-function NetworkDataTable({ machine, currentState }) {
+function NetworkDataTable({ machine, currentState, t }) {
     const keyTdStyle = { textAlign: 'right', fontWeight: 500, width: '25%' };
 
     const activeConnectionsArray = currentState?.active_connections?.map((address, i) => <Text fz='lg' key={i}>{address}</Text>) || [];
@@ -57,19 +58,33 @@ function NetworkDataTable({ machine, currentState }) {
             <Table fz='lg' withRowBorders={false} striped>
                 <Table.Tbody>
                     <Table.Tr>
-                        <Table.Td style={keyTdStyle}>Type: </Table.Td>
-                        <Table.Td tt="capitalize">{`${machine.group} (${machine.group_member_id})`}</Table.Td>
+                        <Table.Td style={keyTdStyle}>
+                            {t('machine.info.type', {ns: 'pages'})}:
+                        </Table.Td>
+                        <Table.Td tt="capitalize">
+                            {`${machine.group} (${machine.group_member_id})`}
+                        </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td style={keyTdStyle}>Domain: </Table.Td>
+                        <Table.Td style={keyTdStyle}>
+                            {t('machine.info.domain', {ns: 'pages'})}:
+                        </Table.Td>
                         <Table.Td><a href={`http://${machine.domain}`}>{machine.domain}</a></Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td style={keyTdStyle}>Adress: </Table.Td>
-                        <Table.Td><a href={`http://172.16.100.1:${machine.port}`}>172.16.100.1:{machine.port}</a></Table.Td>
+                        <Table.Td style={keyTdStyle}>
+                            {t('machine.info.address', {ns: 'pages'})}:
+                        </Table.Td>
+                        <Table.Td>
+                            <a href={`http://172.16.100.1:${machine.port}`}>
+                                172.16.100.1:{machine.port}
+                            </a>
+                        </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td style={{ verticalAlign: 'top', ...keyTdStyle }}>Active connections: </Table.Td>
+                        <Table.Td style={{ verticalAlign: 'top', ...keyTdStyle }}>
+                            {t('machine.info.active-connections', {ns: 'pages'})}:
+                        </Table.Td>
                         <Table.Td><Group align='top'>{activeConnectionsStacks}</Group></Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
@@ -79,6 +94,7 @@ function NetworkDataTable({ machine, currentState }) {
 }
 
 export default function NetworkDataDisplay({ currentState, uuid, authOptions }) {
+    const { t } = useTranslation();
     const { loading, error, data: machine } = useFetch(`/vm/${uuid}/networkdata`, authOptions);
 
     if (loading) return <Loading />;
@@ -86,8 +102,8 @@ export default function NetworkDataDisplay({ currentState, uuid, authOptions }) 
 
     return (
         <Stack>
-            <MachineTitle machine={machine} currentState={currentState} />
-            <NetworkDataTable machine={machine} currentState={currentState} />
+            <MachineTitle machine={machine} currentState={currentState} t={t} />
+            <NetworkDataTable machine={machine} currentState={currentState} t={t} />
         </Stack>
     )
 }

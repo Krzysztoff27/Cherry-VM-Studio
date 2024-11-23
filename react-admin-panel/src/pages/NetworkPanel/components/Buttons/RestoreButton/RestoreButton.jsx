@@ -2,9 +2,12 @@ import { Button } from '@mantine/core'
 import React from 'react'
 import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal'
 import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
+import { useTranslation } from 'react-i18next';
+import useMantineNotifications from '../../../../../hooks/useMantineNotifications';
 
 export default function RestoreButton({resetFlow = () => {}, isDirty}) {
+    const { t } = useTranslation();
+    const {sendNotification} = useMantineNotifications();
     const [opened, {open, close}] = useDisclosure();
     
     const onClick = () => open();
@@ -12,12 +15,7 @@ export default function RestoreButton({resetFlow = () => {}, isDirty}) {
     const onConfirm = () => {
         close();
         resetFlow(false)
-        .then(() => notifications.show({
-            id: 'flow-reset',
-            color: 'suse-green',
-            title: 'Network configuration restored',
-            message: `The network configuration was successfuly restored.`
-        }))
+        .then(() => sendNotification('network-panel.flow-restore'));
     }
     
     return (
@@ -26,8 +24,8 @@ export default function RestoreButton({resetFlow = () => {}, isDirty}) {
                 opened={opened} 
                 onCancel={onCancel}
                 onConfirm={onConfirm}
-                title='Confirm restoration'
-                message='Performing this action will discard all current changes and revert to the currently active configuration. Are you sure you want to continue?'
+                title={t('confirm.np-restore.title', {ns: 'modals'})}
+                message={t('confirm.np-restore.description', {ns: 'modals'})}
                 confirmButtonProps={{color: 'red.7'}}
             />
             <Button
@@ -37,7 +35,7 @@ export default function RestoreButton({resetFlow = () => {}, isDirty}) {
                 variant='default'
                 w={100}
             >
-                Discard
+                {t('discard')}
             </Button>
         </>
     )

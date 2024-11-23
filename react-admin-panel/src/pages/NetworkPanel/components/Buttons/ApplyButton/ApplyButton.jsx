@@ -1,7 +1,10 @@
 import { Button } from "@mantine/core";
 import classes from './ApplyButton.module.css';
+import { useTranslation } from "react-i18next";
 
 export default function ApplyButton({applyNetworkConfig = () => {}, isDirty}) {
+    const { t } = useTranslation();
+
     return (
         <Button
             onClick={applyNetworkConfig}
@@ -14,7 +17,8 @@ export default function ApplyButton({applyNetworkConfig = () => {}, isDirty}) {
             w={isDirty ? 100 : 200}
             p={0}
         >
-            {isDirty === null ? 'No changes detected' : isDirty ? 'Save' : 'Changes saved!'}
+            {t(`network-panel.controls.${isDirty === null ? 'no-changes' : 
+                isDirty ? 'save' : 'changes-saved'}`, {ns: 'pages'})}
         </Button>
     )
 }
