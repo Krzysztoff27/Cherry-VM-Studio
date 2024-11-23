@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build . -t cherry-admin-panel -f docker/dockerfile
+docker build . -t cherry-api -f docker/dockerfile
