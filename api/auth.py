@@ -3,13 +3,22 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from pathlib import Path
 
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-import jwt, pwd, grp, pam, logging
+import jwt, logging
 
-from main import SECRET_KEY, ALGORITHM, ACCESS_GROUP_GID
+from main import SECRET_KEY, ALGORITHM
+from handlers.json_handler import JSONHandler
+
+###############################
+#     database reference
+###############################
+
+DB_PATH = Path('data/auth/users.local.json')
+usersDatabase = JSONHandler(DB_PATH)
 
 ###############################
 #           schemes
@@ -28,39 +37,32 @@ class Token(BaseModel):
     token_type: str
 
 class User(BaseModel):
-    uid: int
     username: str
-    full_name: str | None = None
+
+class UserInDB(User):
+    password: str # hashed
 
 ###############################
 #       auth functions
 ###############################
 
-def get_user_from_pam(username) -> User | None:
-    try:
-        user = pwd.getpwnam(username)
-        return User(uid=user.pw_uid, username=user.pw_name, full_name=user.pw_gecos)
-    except KeyError:
-        return None
-    
+def get_user(db, username: str) -> User | None:
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
 
-def is_user_in_access_group(username: str) -> bool:
-    if not ACCESS_GROUP_GID: 
-        return True
-    group_members = grp.getgrgid(ACCESS_GROUP_GID).gr_mem
-    try:
-        if username in group_members:
-            return True
-        return False
-    except:
-        raise Exception('Group with GID set in configuration does not exist.')
-    
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
 
 def authenticate_user(username: str, password: str):
-    authenticated = pam.authenticate(username, password)
-    if not authenticated:
+    user = get_user(usersDatabase.read(), username)
+    if not user:
         return False
-    return get_user_from_pam(username)
+    if not verify_password(password, user.password):
+        return False
+    return user
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -86,16 +88,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except InvalidTokenError:
         raise credentials_exception
     
-    user = get_user_from_pam(username)
+    user = get_user(usersDatabase.read(), username)
     if user is None:
         raise credentials_exception
-    return user
-
-async def get_authorized_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    user = await get_current_user(token)
-    if not is_user_in_access_group(user.username):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User does not belong to the access group."
-        )
     return user

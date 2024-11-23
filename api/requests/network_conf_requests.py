@@ -8,7 +8,7 @@ import re
 import uuid
 
 from main import app
-from auth import get_authorized_user, User
+from auth import get_current_user, User
 
 from handlers.json_handler import JSONHandler
 
@@ -119,7 +119,7 @@ def getIndexByUUID(_list, uuid, element_name: str = 'element'):
 
 @app.get("/network/configuration", tags=['network configuration'])
 def get_current_network_configuration(
-    current_user: Annotated[User, Depends(get_authorized_user)]
+    current_user: Annotated[User, Depends(get_current_user)]
 ) -> NetworkConfiguration:
     return NetworkConfiguration(
         intnets = get_current_intnet_state(),
@@ -130,7 +130,7 @@ def get_current_network_configuration(
 @app.put("/network/configuration/intnets", tags=['network configuration'])
 def apply_intnet_configuration_to_virtual_machines(
     intnet_configuration: IntnetConfiguration,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     # ...
     # TODO: function that applies intnet configuration to virtual machines
@@ -141,7 +141,7 @@ def apply_intnet_configuration_to_virtual_machines(
 @app.put("/network/configuration/panelstate", tags=['network configuration'])
 def save_flow_state(
     flow_state: FlowState,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     current_state.write(jsonable_encoder(flow_state))
 
@@ -152,7 +152,7 @@ def save_flow_state(
 @app.post("/network/snapshot", status_code=201, tags=['network configuration snapshots'])
 def create_network_snapshot(
     snapshot: SnapshotCreate,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> Snapshot:
     with lock:
         snapshots_list = snapshots.read()
@@ -171,7 +171,7 @@ def create_network_snapshot(
 
 @app.get("/network/snapshot/all", tags=['network configuration snapshots'])
 def get_all_snapshots(
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> list:
     snapshots_list = snapshots.read()
     if not isinstance(snapshots_list, list): return []
@@ -180,7 +180,7 @@ def get_all_snapshots(
 @app.get("/network/snapshot/{uuid}", tags=['network configuration snapshots'])
 def get_snapshot(
     uuid: str,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> Snapshot:
     snapshots_list = snapshots.read()
     validateJSONList(snapshots_list, 'snapshot')
@@ -190,7 +190,7 @@ def get_snapshot(
 def rename_snapshot(
     uuid: str,
     name: str,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> Snapshot:
     with lock:
         snapshots_list = snapshots.read()
@@ -208,7 +208,7 @@ def rename_snapshot(
 @app.delete("/network/snapshot/{uuid}", tags=['network configuration snapshots'])
 def delete_network_configuration_snapshot(
     uuid: str,
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     with lock:
         snapshots_list = snapshots.read()
@@ -225,7 +225,7 @@ def delete_network_configuration_snapshot(
 
 @app.get("/network/preset/all", tags=['network configuration presets'])
 def get_all_snapshots(
-    current_user: Annotated[User, Depends(get_authorized_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> list:
     presets_list = presets.read()
     if not isinstance(presets_list, list): return []
@@ -234,7 +234,7 @@ def get_all_snapshots(
 @app.get("/network/preset/{uuid}", tags=['network configuration presets'])
 def get_network_configuration_preset(
     uuid: str,
-    current_user: Annotated[User, Depends(get_authorized_user)]
+    current_user: Annotated[User, Depends(get_current_user)]
 ) -> Preset:
     presets_list = presets.read()
     validateJSONList(presets_list, 'preset')
