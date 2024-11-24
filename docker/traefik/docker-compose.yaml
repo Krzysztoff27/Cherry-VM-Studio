@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   traefik:
     container_name: cvmm-traefik-proxy
@@ -25,6 +23,8 @@ services:
     networks:
       cvmm-external:
       cvmm-internal:
+        aliases:
+          - ${DOMAIN_NAME}
 
 networks:
   cvmm-external:

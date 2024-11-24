@@ -14,6 +14,10 @@ http:
       service: cherry-api-service
       entryPoints: web
       middlewares: strip-api-prefix
+    cherry-admin-panel-router:
+      rule: Host(`{{ env "DOMAIN_NAME" }}`)
+      service: cherry-admin-panel-service
+      entryPoints: web
 
   middlewares:
       auth:
@@ -34,3 +38,7 @@ http:
       loadBalancer:
         servers:
           - url: "http://cherry-api:8000"
+    cherry-admin-panel-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-admin-panel:3000"
