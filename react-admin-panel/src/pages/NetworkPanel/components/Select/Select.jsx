@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 import useApi from "../../../../hooks/useApi";
-import useAuth from "../../../../hooks/useAuth";
+import useAuth from "../../../../hooks/useAuth.ts";
 
 const VALUE_SEPERATOR = ':::';
 

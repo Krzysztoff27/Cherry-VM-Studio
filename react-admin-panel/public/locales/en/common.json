@@ -30,5 +30,7 @@
     "take-me-back": "Take me back",
     "team": "Team",
     "type": "Type",
-    "username": "Username"
+    "username": "Username",
+    "desktop": "Desktop",
+    "server": "Server"
 }

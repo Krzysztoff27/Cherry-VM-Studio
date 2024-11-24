@@ -6,7 +6,7 @@ import { IconAlertCircleFilled, IconArrowBackUp, IconCameraPlus, IconDeviceDeskt
 import classes from './ModifySnapshotButton.module.css';
 import { hasMultipleOccurrences, isInRange, safeObjectValues } from '../../../../../utils/misc.js';
 import useApi from '../../../../../hooks/useApi.jsx';
-import useAuth from '../../../../../hooks/useAuth.jsx';
+import useAuth from '../../../../../hooks/useAuth.ts';
 import { useTranslation } from 'react-i18next';
 import useMantineNotifications from '../../../../../hooks/useMantineNotifications.jsx';
 

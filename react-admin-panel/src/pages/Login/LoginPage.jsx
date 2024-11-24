@@ -2,7 +2,7 @@ import { Avatar, Button, Center, Divider, Fieldset, Group, PasswordInput, Space,
 import { isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import React from 'react';
-import useAuth from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth.ts';
 import useApi from '../../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

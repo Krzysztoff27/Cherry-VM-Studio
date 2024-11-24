@@ -6,11 +6,13 @@ import classes from './Home.module.css';
 const panels = [
     {
         name: 'guacamole',
+        link: import.meta.env.VITE_GUACAMOLE_PANEL_URL,
         color: '#578c34',
         icon: '/icons/Apache Guacamole.webp',
     },
     {
         name: 'traefik',
+        link: import.meta.env.VITE_TRAEFIK_PANEL_URL,
         color: '#24A0C1',
         icon: '/icons/Traefik Proxy.webp',
     },
@@ -38,7 +40,14 @@ export default function Home() {
                         {t(`home.cards.${panel.name}.description`, {ns: 'pages'})} 
                     </Text>
                 </Stack>
-                <Button color={panel.color} radius='md' fullWidth>
+                <Button 
+                    component="a"
+                    target='_blank' 
+                    href={panel.link} 
+                    color={panel.color} 
+                    radius='md' 
+                    fullWidth
+                >
                     {t('log-in',)}
                 </Button>
             </Stack>

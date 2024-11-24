@@ -10,10 +10,10 @@ import FloatingEdge from './components/Floating/FloatingEdge/FloatingEdge';
 import FlowPanel from './components/FlowPanel/FlowPanel';
 import IntnetNode from './components/IntnetNode/IntnetNode';
 import MachineNode from './components/MachineNode/MachineNode';
-import Prompt from '../../components/Prompt/Prompt';
+import Prompt from '../../components/molecules/modals/Prompt/Prompt.jsx';
 
-import useAuth from '../../hooks/useAuth';
-import useFetch from '../../hooks/useFetch';
+import useAuth from '../../hooks/useAuth.ts';
+import useFetch from '../../hooks/useFetch.ts';
 import useApi from '../../hooks/useApi';
 import useFlowPresets from '../../hooks/useFlowPresets';
 import useErrorHandler from '../../hooks/useErrorHandler';

@@ -9,7 +9,7 @@ const stateMatches = [
 const getGroupFromMatches = (matchesList, obj) => matchesList.find(({ match }) => match(obj)).value;
 
 const groupByKey = (machines, key) =>
-    machines?.reduce?.((acc, machine) => ({ ...acc, [machine[key]]: safePush(acc[machine[key]], machine) }), {});
+    machines?.reduce?.((acc, machine) => ({ ...acc, [machine[key]]: safePush(acc[machine[key]], machine.uuid) }), {});
 
 const groupByGroup = (machines) => groupByKey(machines, 'group');
 
@@ -18,7 +18,7 @@ const groupByMembership = (machines) => groupByKey(machines, 'group_member_id');
 const groupByState = (machines) =>
     machines.reduce((acc, machine) => {
         const group = getGroupFromMatches(stateMatches, machine);
-        return ({ ...acc, [group]: safePush(acc[group], machine) });
+        return ({ ...acc, [group]: safePush(acc[group], machine.uuid) });
     }, {});
 
 

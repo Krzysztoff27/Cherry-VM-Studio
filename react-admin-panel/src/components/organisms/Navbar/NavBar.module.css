@@ -1,0 +1,9 @@
+.navBar {
+    flex-direction: column;
+    padding: var(--mantine-spacing-lg);
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+    
