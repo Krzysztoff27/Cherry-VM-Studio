@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   guacd:
     container_name: cvmm-guacamole-guacd
