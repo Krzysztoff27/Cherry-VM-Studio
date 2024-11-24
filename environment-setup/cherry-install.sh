@@ -19,6 +19,8 @@ readonly LOGS_DIRECTORY='./logs/cherry-install/'
 LOGS_FILE="${LOGS_DIRECTORY}$(date +%d-%m-%y_%H-%M-%S).log"; readonly LOGS_FILE
 readonly ZYPPER_PACKAGES='./dependencies/zypper_packages.txt'
 readonly ZYPPER_PATTERNS='./dependencies/zypper_patterns.txt'
+readonly DIR_CVMM_OPT='/opt/cherry-vm-manager/'
+readonly DIR_IMAGE_FILES='/opt/cherry-vm-manager/image-files/'
 readonly DIR_LIBVIRT='/opt/cherry-vm-manager/libvirt/'
 readonly DIR_DOCKER='/opt/cherry-vm-manager/docker/'
 readonly VM_INSTANCES='/var/opt/cherry-vm-manager/virtual-machines/'
@@ -216,6 +218,19 @@ configure_daemon_docker(){
     mkdir -p "$DIR_DOCKER"
     cp -r ../docker/. "$DIR_DOCKER"
     ok_handler
+    #Add copying of the files from api/docker and react-admin-panel/docker after building their images
+    printf '[i] Copying docker files for Cherry API: '
+    mkdir -p "${DIR_DOCKER}cherry-api"
+    cp -r '../../api/api/docker/.' "${DIR_DOCKER}cherry-api"
+    ok_handler
+    printf '[i] Copying Cherry Admin Panel files for image build: '
+    mkdir -p "${DIR_IMAGE_FILES}cherry-admin-panel"
+    cp -r '../../react-admin-panel/react-admin-panel/.' "${DIR_IMAGE_FILES}cherry-admin-panel"
+    ok_handler
+    printf '[i] Copying docker files for Cherry Admin Panel: '
+    mkdir -p "${DIR_DOCKER}cherry-admin-panel"
+    cp -r '../../react-admin-panel/react-admin-panel/docker/.' "${DIR_DOCKER}cherry-admin-panel"
+    ok_handler
 }
 
 create_docker_networks(){
@@ -228,7 +243,7 @@ create_docker_networks(){
     ok_handler
 }
 
-configure_container_traefik(){
+get_domain_name(){
     while true; do
         printf '\n[?] Enter the domain name for the Cherry VM Manager stack: '
         read -r -p '' domain_name
@@ -238,6 +253,9 @@ configure_container_traefik(){
             break
         fi
     done
+}
+
+configure_container_traefik(){
     printf '\n[i] Creating .env file for traefik docker container: '
     runuser -u CherryWorker -- printf "DOMAIN_NAME=%s\n" "$domain_name" > "${DIR_DOCKER}traefik/.env" 
     ok_handler
@@ -252,6 +270,36 @@ configure_container_guacamole(){
     ok_handler
     printf '[i] Starting apache-guacamole docker stack: '
     runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}apache-guacamole/docker-compose.yaml" up -d > "$LOGS_FILE"
+    ok_handler
+}
+
+configure_container_cherry-api(){
+    #Add image build if the image is not supplied externally
+    printf '\n[i] Starting Cherry API container: '
+    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}cherry-api/docker-compose.yaml" up -d > "$LOGS_FILE"
+    ok_handler
+}
+
+configure_container_cherry-admin-panel(){
+    if ! docker images -q cherry-admin-panel > "$LOGS_FILE"; then
+        printf '\n[i] Creating Cherry Admin Panel .env variables: '
+        VITE_API_BASE_URL=$(printf "VITE_API_BASE_URL=http://%s/api\n" "$domain_name")
+        VITE_API_WEBSOCKET_URL=$(printf "VITE_API_WEBSOCKET_URL=ws://%s/api\n" "$domain_name")
+        VITE_TRAEFIK_PANEL_URL=$(printf "VITE_TRAEFIK_PANEL_URL=http://traefik.%s/dashboard/\n" "$domain_name")
+        VITE_GUACAMOLE_PANEL_URL=$(printf "VITE_GUACAMOLE_PANEL_URL=http://%s/guacamole\n" "$domain_name")
+        ok_handler
+        printf '[i] Building Cherry Admin Panel docker image: '
+        cd "${DIR_IMAGE_FILES}cherry-admin-panel"
+        runuser -u CherryWorker -- "./build.sh" \
+        "$VITE_API_BASE_URL" \
+        "$VITE_API_WEBSOCKET_URL" \
+        "$VITE_TRAEFIK_PANEL_URL" \
+        "$VITE_GUACAMOLE_PANEL_URL"
+        cd -
+        ok_handler
+    fi
+    printf '[i] Starting Cherry Admin Panel container: '
+    runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}cherry-admin-panel/docker-compose.yaml" up -d > "$LOGS_FILE"
     ok_handler
 }
 
@@ -320,11 +368,14 @@ installation(){
     #create_user
     #configure_daemon_kvm
     #configure_daemon_libvirt
-    configure_file_ownership
     configure_daemon_docker
     create_docker_networks
+    get_domain_name
     configure_container_traefik
     configure_container_guacamole
+    configure_container_cherry-api
+    configure_container_cherry-admin-panel
+    configure_file_ownership
     #create_vm_firewall
     #create_vm_networks
     print_finish_notice

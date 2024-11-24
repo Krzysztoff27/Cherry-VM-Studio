@@ -107,7 +107,7 @@ remove_user(){
     usermod -G '' CherryWorker
     ok_handler
     printf '[i] Removing CherryWorker system user: '
-    userdel -f -r 'CherryWorker' > "$LOGS_FILE"
+    userdel -f -r 'CherryWorker' >> "$LOGS_FILE"
     ok_handler
     printf '[i] Removing CVMM system group: '
     groupdel -f 'CVMM'
@@ -143,40 +143,51 @@ configure_daemon_docker(){
 
 remove_docker_networks(){
     printf '\n[i] Removing cvmm-internal network from docker firewall zone: '
-    runuser -u CherryWorker -- sudo firewall-cmd --remove-interface=cvmm-internal --zone=docker > "$LOGS_FILE"
+    runuser -u CherryWorker -- sudo firewall-cmd --remove-interface=cvmm-internal --zone=docker >> "$LOGS_FILE"
     ok_handler
     printf '\n[i] Removing cvmm-internal Docker network: '
-    runuser -u CherryWorker -- docker network rm cvmm-internal > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker network rm cvmm-internal >> "$LOGS_FILE"
     ok_handler
 }
 
 configure_container_guacamole(){
     printf '\n[i] Stopping apache-guacamole docker stack: '
-    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/apache-guacamole/docker-compose.yaml" down > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/apache-guacamole/docker-compose.yaml" down >> "$LOGS_FILE"
     ok_handler
     #Add removal of db directory and other associated files
 }
 
 configure_container_traefik(){
     printf '\n[i] Stopping traefik docker container: '
-    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/traefik/docker-compose.yaml" down > "$LOGS_FILE"
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/traefik/docker-compose.yaml" down >> "$LOGS_FILE"
     ok_handler
     #Add removal of db directory and other associated files
 }
 
+configure_container_cherry-api(){
+    printf '\n[i] Stopping Cherry API container: '
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/cherry-api/docker-compose.yaml" down >> "$LOGS_FILE"
+    ok_handler
+}
+
+configure_container_cherry-admin-panel(){
+    printf '\n[i] Stopping Cherry Admin Panel container: '
+    runuser -u CherryWorker -- docker-compose -f "$DIR_DOCKER/cherry-admin-panel/docker-compose.yaml" down >> "$LOGS_FILE"
+    ok_handler
+}
 
 remove_vm_networks(){
     printf '\n[i] Enabling libvirt default network stack: '
-    (virsh net-define --file /usr/share/libvirt/networks/default.xml > "$LOGS_FILE" && virsh net-start --network default > "$LOGS_FILE" && virsh net-autostart --network default > "$LOGS_FILE")
+    (virsh net-define --file /usr/share/libvirt/networks/default.xml >> "$LOGS_FILE" && virsh net-start --network default >> "$LOGS_FILE" && virsh net-autostart --network default >> "$LOGS_FILE")
     ok_handler
     printf '[i] Removing a default NAT network for VMs: '
-    (virsh net-undefine --network isolated-nat > "$LOGS_FILE" && virsh net-destroy --network isolated-nat  > "$LOGS_FILE")
+    (virsh net-undefine --network isolated-nat >> "$LOGS_FILE" && virsh net-destroy --network isolated-nat  >> "$LOGS_FILE")
     ok_handler
 }
 
 remove_vm_firewall(){
     printf '\n[i] Removing network filter to restrict inter VM communication: '
-    virsh nwfilter-undefine isolated-nat-filter > "$LOGS_FILE"
+    virsh nwfilter-undefine isolated-nat-filter >> "$LOGS_FILE"
     ok_handler
 }
 
@@ -217,6 +228,8 @@ removal(){
     #remove_vm_firewall
     configure_container_guacamole
     configure_container_traefik
+    configure_container_cherry-api
+    configure_container_cherry-admin-panel
     remove_docker_networks
     #configure_daemon_docker
     #configure_daemon_libvirt
