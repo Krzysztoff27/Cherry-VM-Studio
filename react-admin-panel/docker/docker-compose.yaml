@@ -3,8 +3,10 @@ services:
     container_name: cherry-admin-panel
     restart: always
     image: cherry-admin-panel
+    ports:
+      - "3000:3000"
     networks:
-      - cvmm-internal
+      cvmm-internal:
 
 networks:
   cvmm-internal:
