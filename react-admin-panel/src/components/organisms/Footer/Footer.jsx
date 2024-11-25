@@ -7,12 +7,9 @@ export default function Footer() {
 
     return (
         <Group w='100%' justify='center'>
-            <SimpleGrid w={rem(900)} cols={4} ta='center' c='dimmed'>
+            <SimpleGrid w={rem(900)} cols={3} ta='center' c='dimmed'>
                 <Text component={Link} to='/'>
                     {t('footer.home', { ns: 'layouts' })}
-                </Text>
-                <Text component={Link} to='/documents'>
-                    {t('footer.documentation', { ns: 'layouts' })}
                 </Text>
                 <Text component={Link} to='/credits'>
                     {t('footer.credits', { ns: 'layouts' })}

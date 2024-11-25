@@ -3,8 +3,8 @@ import { AreaChart } from '@mantine/charts';
 import React, { useEffect, useState } from 'react';
 import { getCurrentTime } from '../../../../utils/misc';
 import { useTranslation } from 'react-i18next';
-import { MachineState } from '../../../../types/machines.types';
-import { MachineStateChartData } from '../../../../types/molecules.types';
+import { MachineState } from '../../../../types/api.types';
+import { MachineStateChartData } from '../../../../types/components.types';
 
 const getLabel = (resource: string, t: Function) => t ? t('machine.graph.resource-used', { resource: resource, ns: 'pages' }) : null;
 

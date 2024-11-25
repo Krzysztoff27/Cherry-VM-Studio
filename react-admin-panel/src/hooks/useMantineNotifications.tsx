@@ -1,6 +1,7 @@
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
+import { sendNotificationProps } from "../types/hooks.types";
 
 export const useMantineNotifications = () => {
     const { t } = useTranslation();
@@ -11,13 +12,13 @@ export const useMantineNotifications = () => {
     // only one of them will be sent as they will have the same id
     const getUniqueId = (id: string) => `${id}${new Date().getSeconds()}` 
     
-    const sendNotification = (id: string, {color = 'suse-green', loading = false, uniqueId = true} = {}, interpolatedValues: object | null) : Function => {
-        const notificationId = uniqueId ? getUniqueId(id) : id;
+    const sendNotification = (id: string, options : sendNotificationProps | undefined = {}, interpolatedValues: object | undefined = {}) : Function => {
+        const notificationId = options.uniqueId ? getUniqueId(id) : id;
         
         notifications.show({
             id: notificationId,
-            color: color || 'suse-green',
-            loading: loading || false,
+            color: options.color || 'suse-green',
+            loading: options.loading || false,
             title: format(`${id}.title`, interpolatedValues),
             message: format(`${id}.message`, interpolatedValues),
         });

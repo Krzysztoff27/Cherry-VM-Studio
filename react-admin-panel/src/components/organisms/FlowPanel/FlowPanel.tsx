@@ -1,12 +1,11 @@
 import { Button } from "@mantine/core";
 import { Panel } from "@xyflow/react";
-import Select from "../Select/Select";
-import RestoreButton from "../Buttons/RestoreButton/RestoreButton";
-import ApplyButton from "../Buttons/ApplyButton/ApplyButton";
-import AddSnapshotButton from "../Buttons/AddSnapshotButton/AddSnapshotButton";
-import ModifySnapshotsButton from "../Buttons/ModifySnapshotsButton/ModifySnapshotsButton";
+import Select from "../../molecules/interactive/SnapshotSelect/SnapshotSelect";
+import AddSnapshotButton from "../../molecules/interactive/AddSnapshotButton/AddSnapshotButton";
+import ModifySnapshotsButton from "../../molecules/interactive/ModifySnapshotsButton/ModifySnapshotsButton";
 import { useToggle } from "@mantine/hooks";
-import RefreshMachinesButton from "../Buttons/RefreshMachinesButton/RefreshMachinesButton";
+import RefreshFlowMachinesButton from "../../molecules/interactive/RefreshFlowMachinesButton/RefreshFlowMachinesButton";
+import ApplyRestoreButtonPair from "../ApplyRestoreButtonPair/ApplyRestoreButtonPair";
 
 export default function FlowPanel({ resetFlow, applyNetworkConfig, isDirty, loadSnapshot, loadPreset, refreshMachines, postSnapshot }) {
     const [forceSnapshotDataUpdate, initiateSnapshotDataUpdate] = useToggle([false, true]);
@@ -28,15 +27,12 @@ export default function FlowPanel({ resetFlow, applyNetworkConfig, isDirty, load
                         loadPreset={loadPreset}
                         forceSnapshotDataUpdate={forceSnapshotDataUpdate}
                     />
-                    <RestoreButton
-                        resetFlow={resetFlow}
+                    <ApplyRestoreButtonPair
                         isDirty={isDirty}
-                    />
-                    <ApplyButton
                         applyNetworkConfig={applyNetworkConfig}
-                        isDirty={isDirty}
+                        resetFlow={resetFlow}
                     />
-                    <RefreshMachinesButton
+                    <RefreshFlowMachinesButton
                         refreshMachines={refreshMachines}
                         isDirty={isDirty}
                     />

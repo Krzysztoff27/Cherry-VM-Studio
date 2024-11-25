@@ -1,5 +1,5 @@
-import MachineNode from "../pages/NetworkPanel/components/MachineNode/MachineNode";
-import IntnetNode from "../pages/NetworkPanel/components/IntnetNode/IntnetNode";
+import MachineNode from "../components/atoms/flow-nodes/MachineNode/MachineNode";
+import IntnetNode from "../components/atoms/flow-nodes/IntnetNode/IntnetNode";
 
 export const NODE_TYPES = {
     machine: MachineNode,

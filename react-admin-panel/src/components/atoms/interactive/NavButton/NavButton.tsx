@@ -1,7 +1,7 @@
 import { ActionIcon } from '@mantine/core';
 import React from 'react'
 import classes from "./NavButton.module.css";
-import { NavButtonProps } from '../../../../types/atoms.types';
+import { NavButtonProps } from '../../../../types/components.types';
 
 export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(
     ({ icon, label, active = false, ...props } : NavButtonProps, ref) => {

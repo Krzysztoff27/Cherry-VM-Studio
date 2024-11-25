@@ -58,11 +58,8 @@
     "network-panel": {
         "controls": {
             "load-config": "Load configuration",
-            "no-changes": "No changes detected",
             "default-presets": "Default presets",
             "saved-snapshots": "Saved snapshots",
-            "changes-saved": "Changes saved!",
-            "save": "Save",
             "presets" : {
                 "DesktopX - ServerX": "DesktopX - ServerX",
                 "Unified Intnet": "Unified Intnet",

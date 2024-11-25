@@ -58,11 +58,8 @@
     "network-panel": {
         "controls": {
             "load-config": "Załaduj konfigurację",
-            "no-changes": "Brak wykrytych zmian",
             "default-presets": "Profile konfiguracji",
             "saved-snapshots": "Zapisane migawki",
-            "changes-saved": "Zapisano zmiany!",
-            "save": "Zapisz",
             "presets" : {
                 "DesktopX - ServerX": "DesktopX - SerwerX",
                 "Unified Intnet": "Jedna sieć",

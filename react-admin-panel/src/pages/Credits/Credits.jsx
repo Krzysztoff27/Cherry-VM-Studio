@@ -1,6 +1,6 @@
 import { Container, rem, Stack, Text, Title } from "@mantine/core";
 import FadingScroll from "../../components/atoms/display/FadingScroll/FadingScroll.tsx";
-import credits from "../../config/credits.js";
+import { credits } from "../../config/project.config.ts";
 import classes from './Credits.module.css';
 import CreditsLine from "../../components/molecules/display/CreditsLine/CreditsLine.jsx";
 import Snowfall from 'react-snowfall';

@@ -2,7 +2,7 @@ import classes from './StateDivider.module.css';
 import React from 'react'
 import { Container, Divider } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { StateDividerProps } from '../../../../types/atoms.types';
+import { StateDividerProps } from '../../../../types/components.types';
 
 const StateDivider = ({ label } : StateDividerProps) => {
     const { t } = useTranslation();

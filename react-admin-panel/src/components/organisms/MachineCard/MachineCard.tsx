@@ -1,7 +1,7 @@
 import { Card, Group, Title } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { MachineCardProps } from '../../../types/organisms.types';
+import { MachineCardProps } from '../../../types/components.types';
 import ConnectButton from '../../atoms/interactive/ConnectButton/ConnectButton';
 import MachineConnectionDetails from '../../molecules/display/MachineConnectionDetails/MachineConnectionDetails';
 import ActivitySparkline from '../ActivitySparkline/ActivitySparkline';

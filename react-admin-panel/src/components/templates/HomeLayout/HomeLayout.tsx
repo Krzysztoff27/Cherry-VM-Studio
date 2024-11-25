@@ -1,8 +1,9 @@
-import LanguageSwitch from '../../molecules/interactive/LanguageSwitch/LanguageSwitch'
 import Footer from '../../organisms/Footer/Footer'
-import { AppShell, Group } from '@mantine/core'
+import { AppShell } from '@mantine/core'
 import { Outlet } from 'react-router-dom'
 import React from 'react'
+import HomeHeader from '../../organisms/HomeHeader/HomeHeader'
+import classes from './HomeLayout.module.css';
 
 /**
  * Layout used in the readonly subpages, such as Home, Credits, Copyright etc.
@@ -10,13 +11,11 @@ import React from 'react'
 
 export default function HomeLayout(): React.ReactElement {
     return (
-        <AppShell>
+        <AppShell className={classes.appShell}>
             <AppShell.Header p='sm' bd='none' bg='transparent'>
-                <Group w='100%' justify='flex-end'>
-                    <LanguageSwitch position='bottom' />
-                </Group>
+                <HomeHeader/>
             </AppShell.Header>
-            <AppShell.Main w={'100%'}>
+            <AppShell.Main w={'100%'} className={classes.appshellMain}>
                 <Outlet />
             </AppShell.Main>
             <AppShell.Footer p='sm'>

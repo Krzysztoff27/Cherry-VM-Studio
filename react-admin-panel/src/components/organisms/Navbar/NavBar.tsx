@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
 import { IconDeviceDesktop, IconHome, IconLogout, IconTerminal2, IconTopologyStar } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth.ts';
 import useNamespaceTranslation from '../../../hooks/useNamespaceTranslation';
 import LanguageSwitch from '../../molecules/interactive/LanguageSwitch/LanguageSwitch.jsx';
@@ -18,11 +18,17 @@ const categories = [
 export default function NavBar(): React.ReactElement {
     const { t, tns } = useNamespaceTranslation('layouts');
     const { logout } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
     const [active, setActive] = useState<number>();
 
     useEffect(() => setActive(categories.findIndex(cat => location.pathname.startsWith(cat.link))),
         [location.pathname]);
+
+    const onClickLogout = () => {
+        logout();
+        navigate('/');
+    }
 
     return (
         <Stack className={classes.navBar}>
@@ -41,7 +47,7 @@ export default function NavBar(): React.ReactElement {
             <Stack>
                 <LanguageSwitch />
                 <TooltipIconButton 
-                    onClick={logout} 
+                    onClick={onClickLogout} 
                     label={t('log-out')} 
                     icon={<IconLogout stroke={1.5}/>} 
                 />

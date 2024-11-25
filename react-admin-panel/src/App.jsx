@@ -5,19 +5,21 @@ import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
 import Home from "./pages/Home/Home";
 import Desktops from "./pages/Desktops/Desktops";
-import {Protected, ReverseProtected} from "./wrappers/Protected";
+import { Protected, ReverseProtected } from "./wrappers/Protected";
 import Credits from "./pages/Credits/Credits";
 import Copyright from "./pages/Copyright/Copyright";
 import VirtualMachinePage from "./pages/VirtualMachine/VirtualMachinePage";
 import NetworkPanel from "./pages/NetworkPanel/NetworkPanel";
 import LoginPage from "./pages/Login/LoginPage";
 import MachineListPage from "./pages/MachinesListPage/MachineListPage";
+import Dobre from "./pages/Dobre/Dobre";
 
 
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route element={<ConfigValidator/>} errorElement={<ErrorBoundary/>}>
+            <Route path='/dobre'            element={<Dobre/>}/>
             <Route element={<HomeLayout/>}>
                 <Route exact path='/'           element={<Home/>}/>
                 <Route path='/credits'          element={<Credits/>}/>

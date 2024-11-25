@@ -1,5 +1,5 @@
 import { Popover, Radio, Stack } from '@mantine/core';
-import { PopoverRadioGroupProps } from '../../../../types/molecules.types';
+import { PopoverRadioGroupProps } from '../../../../types/components.types';
 
 const PopoverRadioGroup = ({ value, opened, onValueChange, options, children, classNames, ...popoverProps }: PopoverRadioGroupProps): React.JSX.Element => (
     <Popover

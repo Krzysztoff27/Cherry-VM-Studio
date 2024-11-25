@@ -20,7 +20,7 @@ export default function LanguageSwitch({ position = "right" }) {
             </Popover.Target>
             <Popover.Dropdown className={classes.radioMenu}>
                 <Radio.Group
-                    value={i18n.language}
+                    value={i18n.language.substring(0, 2).toLowerCase()}
                     onChange={(val) => i18n.changeLanguage(val)}
                 >
                     <Stack>

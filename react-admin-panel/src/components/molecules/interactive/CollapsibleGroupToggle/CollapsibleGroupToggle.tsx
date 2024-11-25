@@ -2,7 +2,7 @@ import { Button, Divider, Text } from "@mantine/core";
 import { IconChevronDown, IconChevronRight, IconGripHorizontal } from "@tabler/icons-react";
 import React from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { CollapsibleGroupToggleProps } from "../../../../types/molecules.types";
+import { CollapsibleGroupToggleProps } from "../../../../types/components.types";
 import classes from './CollapsibleGroupToggle.module.css';
 
 const CollapsibleGroupToggle = ({toggleOpened, opened, label} : CollapsibleGroupToggleProps): React.JSX.Element => {

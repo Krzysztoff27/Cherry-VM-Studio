@@ -1,7 +1,7 @@
 import { Group } from "@mantine/core";
 import React from "react";
 import MachineTitle from "../../atoms/typography/MachineTitle/MachineTitle";
-import { MachineHeadingProps } from "../../../types/organisms.types";
+import { MachineHeadingProps } from "../../../types/components.types";
 import { IconDeviceDesktop, IconDeviceDesktopOff } from "@tabler/icons-react";
 import MachineControls from "../../atoms/interactive/MachineControls/MachineControls";
 import StateBadge from "../../molecules/feedback/StateBadge/StateBadge";

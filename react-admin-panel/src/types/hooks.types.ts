@@ -29,3 +29,9 @@ export interface useApiReturn {
     putRequest: Function
     deleteRequest: Function;
 }
+
+export interface sendNotificationProps {
+    color?: string | null,
+    loading?: boolean,
+    uniqueId?: boolean,
+}

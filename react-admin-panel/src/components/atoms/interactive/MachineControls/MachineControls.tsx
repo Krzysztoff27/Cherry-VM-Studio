@@ -1,7 +1,7 @@
 import { ActionIcon, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import React from "react";
-import { MachineControlsProps } from "../../../../types/atoms.types";
+import { MachineControlsProps } from "../../../../types/components.types";
 
 const MachineControls = ({currentState, size = "lg"} : MachineControlsProps): React.JSX.Element => {
     return (

@@ -1,11 +1,11 @@
 import { Group, Text } from '@mantine/core';
 import React from 'react'
-import { TextWithIconProps } from '../../../../types/atoms.types';
+import { TextWithIconProps } from '../../../../types/components.types';
 
-const TextWithIcon = ({ Icon, text } : TextWithIconProps): React.JSX.Element => (
+const TextWithIcon = ({ Icon, text, ...props } : TextWithIconProps): React.JSX.Element => (
     <Group justify='start' align='center' gap='4'>
         <Icon size={18} />
-        <Text>{text}</Text>
+        <Text {...props}>{text}</Text>
     </Group>
 )
 

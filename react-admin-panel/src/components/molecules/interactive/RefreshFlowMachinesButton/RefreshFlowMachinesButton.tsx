@@ -1,13 +1,12 @@
-import { Button } from '@mantine/core'
-import React from 'react'
-import ConfirmationModal from '../../ConfirmationModal/ConfirmationModal'
+import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
 import { IconRefresh, IconRefreshAlert } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
-import useMantineNotifications from '../../../../../hooks/useMantineNotifications';
+import useMantineNotifications from '../../../../hooks/useMantineNotifications';
+import ConfirmationModal from '../../../atoms/modals/ConfirmationModal/ConfirmationModal';
+import { RefreshFlowMachinesButtonProps } from '../../../../types/components.types';
 
-export default function RefreshMachinesButton({isDirty, refreshMachines}) {
+export default function RefreshFlowMachinesButton({isDirty, refreshMachines} : RefreshFlowMachinesButtonProps) {
     const { t } = useTranslation();
     const { sendNotification } = useMantineNotifications();
     const [opened, {open, close}] = useDisclosure();

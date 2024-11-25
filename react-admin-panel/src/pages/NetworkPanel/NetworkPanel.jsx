@@ -5,11 +5,10 @@ import { Background, Controls, MiniMap, ReactFlow, ReactFlowProvider, addEdge, a
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import NumberAllocator from '../../handlers/numberAllocator';
-import FloatingConnectionLine from './components/Floating/FloatingConnectionLine/FloatingConnectionLine';
-import FloatingEdge from './components/Floating/FloatingEdge/FloatingEdge';
-import FlowPanel from './components/FlowPanel/FlowPanel';
-import IntnetNode from './components/IntnetNode/IntnetNode';
-import MachineNode from './components/MachineNode/MachineNode';
+import FloatingConnectionLine from '../../components/atoms/flow-connections/Floating/FloatingConnectionLine/FloatingConnectionLine.jsx';
+import FlowPanel from '../../components/organisms/FlowPanel/FlowPanel.tsx';
+import IntnetNode from '../../components/atoms/flow-nodes/IntnetNode/IntnetNode.jsx';
+import MachineNode from '../../components/atoms/flow-nodes/MachineNode/MachineNode.jsx';
 import Prompt from '../../components/molecules/modals/Prompt/Prompt.jsx';
 
 import useAuth from '../../hooks/useAuth.ts';
@@ -23,8 +22,9 @@ import { calcMiddlePosition, sliceNodeIdToId, getNodeId, extractPositionsFromNod
 import { v4 as uuidv4 } from 'uuid';
 
 import '@xyflow/react/dist/style.css';
-import useMantineNotifications from '../../hooks/useMantineNotifications';
+import useMantineNotifications from '../../hooks/useMantineNotifications.tsx';
 import { ERRORS } from '../../assets/errors';
+import FloatingEdge from '../../components/atoms/flow-connections/Floating/FloatingEdge/FloatingEdge.jsx';
 
 const NODE_TYPES = {
     machine: MachineNode,

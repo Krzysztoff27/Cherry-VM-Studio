@@ -4,11 +4,11 @@ import { useForm } from '@mantine/form';
 import { useDisclosure, useDebouncedValue } from '@mantine/hooks';
 import { IconAlertCircleFilled, IconArrowBackUp, IconCameraPlus, IconDeviceDesktop, IconEdit, IconTopologyStarRing3, IconTrash } from '@tabler/icons-react';
 import classes from './ModifySnapshotButton.module.css';
-import { hasMultipleOccurrences, isInRange, safeObjectValues } from '../../../../../utils/misc.js';
-import useApi from '../../../../../hooks/useApi.jsx';
-import useAuth from '../../../../../hooks/useAuth.ts';
+import { hasMultipleOccurrences, isInRange, safeObjectValues } from '../../../../utils/misc.js';
+import useApi from '../../../../hooks/useApi.ts';
+import useAuth from '../../../../hooks/useAuth.ts';
 import { useTranslation } from 'react-i18next';
-import useMantineNotifications from '../../../../../hooks/useMantineNotifications.jsx';
+import useMantineNotifications from '../../../../hooks/useMantineNotifications.tsx';
 
 /**
  * Button linked to the snapshot modification modal

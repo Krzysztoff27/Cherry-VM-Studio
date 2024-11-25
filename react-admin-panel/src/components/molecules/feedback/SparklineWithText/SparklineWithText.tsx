@@ -1,5 +1,5 @@
 import { Sparkline } from "@mantine/charts";
-import { SparklineWithTextProps } from "../../../../types/molecules.types";
+import { SparklineWithTextProps } from "../../../../types/components.types";
 import { Container, Paper, Stack, Text } from "@mantine/core";
 import React from "react";
 import classes from "./SparklineWithText.module.css";

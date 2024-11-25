@@ -2,13 +2,15 @@ import { NativeSelect } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
-import useApi from "../../../../hooks/useApi";
+
+import useApi from "../../../../hooks/useApi.ts";
 import useAuth from "../../../../hooks/useAuth.ts";
+import ConfirmationModal from "../../../atoms/modals/ConfirmationModal/ConfirmationModal.tsx";
+import { SnapshotSelectProps } from "../../../../types/components.types.ts";
 
 const VALUE_SEPERATOR = ':::';
 
-export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpdate }) {
+export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshotDataUpdate } : SnapshotSelectProps) {
     const { t } = useTranslation();
     const { getRequest } = useApi();
     const { authOptions } = useAuth();
@@ -17,9 +19,9 @@ export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpda
     const [confirmationOpened, { open, close }] = useDisclosure(false);
     const selectedValue = useRef(null);
 
-    const combineValues = (...values) => values.join(VALUE_SEPERATOR);
+    const combineValues = (...values: string[]) => values.join(VALUE_SEPERATOR);
 
-    const splitValues = (value) => value.split?.(VALUE_SEPERATOR);
+    const splitValues = (value: string) => value.split?.(VALUE_SEPERATOR);
 
     useEffect(() => {
         const setData = async () => {
@@ -35,7 +37,7 @@ export default function Select({ loadSnapshot, loadPreset, forceSnapshotDataUpda
         setData();
     }, [authOptions, forceSnapshotDataUpdate]);
 
-    const onChange = (event) => {
+    const onChange = (event: any) => {
         if (event.currentTarget.value === 'null') return;
         selectedValue.current = event.currentTarget.value;
         open();

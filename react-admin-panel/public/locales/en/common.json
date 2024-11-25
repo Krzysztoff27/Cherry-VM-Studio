@@ -32,5 +32,7 @@
     "type": "Type",
     "username": "Username",
     "desktop": "Desktop",
-    "server": "Server"
+    "server": "Server",
+    "changes-saved": "Changes saved",
+    "no-changes": "No changes"
 }

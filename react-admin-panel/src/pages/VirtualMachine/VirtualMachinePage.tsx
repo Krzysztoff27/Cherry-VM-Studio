@@ -5,7 +5,7 @@ import StretchingColumn from "../../components/atoms/layout/StretchingColumn/Str
 import LogsDisplay from "../../components/molecules/display/LogsDisplay/LogsDisplay.jsx";
 import useAuth from "../../hooks/useAuth.ts";
 import useMachineState from "../../hooks/useMachineState.ts";
-import { MachineState } from "../../types/machines.types.ts";
+import { MachineState } from "../../types/api.types.ts";
 import MachineDataDisplay from "../../components/templates/MachineDataDisplay/MachineDataDisplay.jsx";
 
 export default function VirtualMachinePage() {

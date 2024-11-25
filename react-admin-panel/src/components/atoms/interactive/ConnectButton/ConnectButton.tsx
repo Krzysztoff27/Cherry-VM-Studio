@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
 import React from "react";
-import { ConnectButtonProps } from "../../../../types/atoms.types";
+import { ConnectButtonProps } from "../../../../types/components.types";
 
 const ConnectButton = ({onClick, active, label} : ConnectButtonProps): React.JSX.Element => {
     return (

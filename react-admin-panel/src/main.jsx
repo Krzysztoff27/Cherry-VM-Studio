@@ -11,8 +11,8 @@ import '@mantine/notifications/styles.layer.css';
 import '@mantine/charts/styles.layer.css';
 import './main.css';
 
-import theme from './config/mantineTheme.js';
-import './config/i18next.js';
+import theme from './config/theme.config.ts';
+import './config/translation.config.ts';
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

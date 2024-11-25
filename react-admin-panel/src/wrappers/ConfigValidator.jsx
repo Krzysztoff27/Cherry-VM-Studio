@@ -1,6 +1,6 @@
 import { List } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
-import envData from '../config/envValidation';
+import envData from '../config/envValidation.config';
 
 /**
  * A root route component responsible for validating environmental variables.

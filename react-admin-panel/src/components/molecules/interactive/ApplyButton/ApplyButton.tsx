@@ -1,24 +1,26 @@
 import { Button } from "@mantine/core";
 import classes from './ApplyButton.module.css';
 import { useTranslation } from "react-i18next";
+import { ApplyButtonProps } from "../../../../types/components.types";
 
-export default function ApplyButton({applyNetworkConfig = () => {}, isDirty}) {
+const ApplyButton = ({onClick, isDirty = null, ...props} : ApplyButtonProps) => {
     const { t } = useTranslation();
 
     return (
         <Button
-            onClick={applyNetworkConfig}
+            onClick={onClick}
             disabled={!isDirty}
             classNames={{
                 root: isDirty === null ? null : classes.saveButton,
-                label: classes.saveButtonLabel
             }}
             variant='default'
-            w={isDirty ? 100 : 200}
+            // w={isDirty ? 100 : 200}
             p={0}
+            {...props}
         >
-            {t(`network-panel.controls.${isDirty === null ? 'no-changes' : 
-                isDirty ? 'save' : 'changes-saved'}`, {ns: 'pages'})}
+            {t(isDirty === null ? 'no-changes' : isDirty ? 'save' : 'changes-saved')}
         </Button>
     )
 }
+
+export default ApplyButton;

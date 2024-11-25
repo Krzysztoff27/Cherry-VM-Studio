@@ -1,3 +1,8 @@
+export const projectLinks = {
+    github: 'https://github.com/Krzysztoff27/Cherry-VM-Manager',
+    documentation: 'https://krzysztof27.notion.site/2d330eb559bb47c589e01315a893b273?v=59ebf2e040284f42ae6c09e649be2e6c'
+}
+
 const contributors = {
     Krzysztoff27: {
         name: 'Krzysztof Kolasiński',
@@ -12,6 +17,7 @@ const contributors = {
     Tux10: {
         name: 'Tux 10',
         avatar: '/icons/Tux.webp',
+        url: 'dobre'
     },
     Majs0n: {
         name: 'Maja Cegłowska',
@@ -19,7 +25,7 @@ const contributors = {
     }
 }
 
-const credits = [
+export const credits = [
     {
         key: 'instalation-scripts',
         contributors: [contributors.Krzysztoff27]
@@ -53,5 +59,3 @@ const credits = [
         contributors: [contributors.Th3TK, contributors.Majs0n]
     },
 ]
-
-export default credits;

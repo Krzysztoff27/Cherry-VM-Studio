@@ -1,5 +1,5 @@
 import { Title } from '@mantine/core'
-import { MachineTitleProps } from '../../../../types/atoms.types'
+import { MachineTitleProps } from '../../../../types/components.types'
 import { useTranslation } from 'react-i18next'
 
 

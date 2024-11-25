@@ -25,7 +25,6 @@ export default function Copyright() {
                         <span> is licensed under </span>
                         <a
                             href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
-                            target="_blank"
                             rel="license noopener noreferrer"
                             className={classes.ccLink}
                         >
