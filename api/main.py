@@ -38,7 +38,6 @@ load_dotenv()
 SECRET_KEY = getenv('SECRET_KEY') # openssl rand -hex 32
 ALGORITHM = getenv('ALGORITHM')   # HS256
 ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv('ACCESS_TOKEN_EXPIRE_MINUTES', default=5))
-ACCESS_GROUP_GID = int(getenv('ACCESS_GROUP_GID') or 0) or None
 
 if not SECRET_KEY or not ALGORITHM:
     raise Exception('Both SECRET_KEY and ALGORITHM must be set in the .env configuration')

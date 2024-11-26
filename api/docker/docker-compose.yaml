@@ -7,7 +7,6 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-      - ACCESS_GROUP_GID=${ACCESS_GROUP_GID}
     ports:
       - "8000:8000"
     volumes:
