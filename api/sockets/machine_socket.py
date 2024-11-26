@@ -12,15 +12,16 @@ from auth import get_current_user
 from json import JSONDecodeError
 from utils.dict import pushToDict
 
+from dummies.machines import STATE_DATA_DUMMIES
+import random
+
 def get_machine_data(uuid: str):    
-    return MachineState(
-        active=True, 
-        loading=False, 
-        uuid=uuid, 
-        active_connections=[],
-        group='desktop', group_member_id=1,
-        cpu=75, ram_max=4096, ram_used=1024
-    ).model_dump()
+    if uuid in STATE_DATA_DUMMIES.keys():
+        STATE_DATA_DUMMIES[uuid].cpu = max(0, min(STATE_DATA_DUMMIES[uuid].cpu + random.randint(-50, 50), 100));
+        STATE_DATA_DUMMIES[uuid].ram_used = max(0, min(STATE_DATA_DUMMIES[uuid].ram_used + random.randint(-512, 512), STATE_DATA_DUMMIES[uuid].ram_max))
+        
+        return STATE_DATA_DUMMIES[uuid].model_dump()
+    return {}
 
 """ Function for periodical broadcast of states of the machines """
 """ subscriptions - dictionary mapping websockets subscribed to machine by its uuid (key - uuid, value - list of websockets)"""

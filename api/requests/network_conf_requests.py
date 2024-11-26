@@ -81,15 +81,10 @@ class Preset(PresetCreate):
 # functions
 ###############################
 
+intnetsDB = JSONHandler('dummies/intnets.json')
+
 def get_current_intnet_state() -> IntnetConfiguration: # !
-    # ...
-    # TODO: Implement the logic to retrieve the current internal network state
-    # ...
-    # ? example return:
-    return {
-        '5952f2aa-b2c0-4214-a4f7-6ee2c9bf918e': Intnet(number=1, uuid='5952f2aa-b2c0-4214-a4f7-6ee2c9bf918e', machines=['b38350cf-105f-4ecd-8eb4-3d9370d39f0e', 'a923601a-fc61-44cb-b007-5df89b1966e2']),  
-        '07e2836c-2854-4347-96e3-6cd9d233af54': Intnet(number=2, uuid='07e2836c-2854-4347-96e3-6cd9d233af54', machines=['280af110-b78c-4c7a-a554-d38bc0c428df', '67ac8bfd-2b97-4196-9572-5b519960bf3f']),
-    }
+    return IntnetConfiguration(intnetsDB.read())
 
 def isIndexInList(_list, index):
     return index >= 0 and index < len(_list)
@@ -132,10 +127,12 @@ def apply_intnet_configuration_to_virtual_machines(
     intnet_configuration: IntnetConfiguration,
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    # ...
-    # TODO: function that applies intnet configuration to virtual machines
-    # ...
-    # ? returns null
+    data = {}
+    for [uuid, intnet] in intnet_configuration.items():
+        data[uuid] = intnet.model_dump()
+    
+    intnetsDB.write(data)
+    
     return
     
 @app.put("/network/configuration/panelstate", tags=['network configuration'])
