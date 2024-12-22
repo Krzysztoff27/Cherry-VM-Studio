@@ -1,0 +1,37 @@
+name: api_image
+
+on:
+    release:
+        types:
+            - published
+
+    #Allow for manual execution through GitHub Actions tab
+    workflow_dispatch:
+
+jobs:
+    #Check for a corresponding tag in a release. Only then trigger the image build.
+    build-and-push:
+        if: startsWith(github.ref, 'refs/tags/api.')
+
+        runs-on: ubuntu-latest
+        
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+            
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+            
+            - name: Build Cherry-API Docker image
+              run: |
+                docker build \
+                --file ../api/docker/dockerfile \
+                --tag ghcr.io/${{ github.repository_owner }}/cherry-api:${{ github.ref_name }}
+            
+            - name: Push Cherry-API Docker image to GitHub Container Registry
+              run: |
+                docker push ghcr.io/${{ github.repository_owner }}/cherry-api:${{ github.ref_name }}
