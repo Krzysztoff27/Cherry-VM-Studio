@@ -32,13 +32,12 @@ jobs:
             - name: Downcase repository owner name
               run: |
                 echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
-        
             
             - name: Build Cherry-API Docker image
               run: |
                 docker build \
-                --file ../api/docker/dockerfile \
-                --tag ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }} .
+                --file api/docker/dockerfile \
+                --tag ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }} api
             
             - name: Push Cherry-API Docker image to GitHub Container Registry
               run: |
