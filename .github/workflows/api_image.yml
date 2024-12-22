@@ -28,9 +28,9 @@ jobs:
             
             - name: Build Cherry-API Docker image
               run: |
-                docker build . \
+                docker build \
                 --file ../api/docker/dockerfile \
-                --tag ghcr.io/${{ github.repository_owner }}/cherry-api:${{ github.ref_name }}
+                --tag ghcr.io/${{ github.repository_owner }}/cherry-api:${{ github.ref_name }} .
             
             - name: Push Cherry-API Docker image to GitHub Container Registry
               run: |
