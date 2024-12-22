@@ -5,11 +5,8 @@ on:
         types:
             - published
 
-    #Allow for manual execution through GitHub Actions tab
-    workflow_dispatch:
-
 jobs:
-    #Check for a corresponding tag in a release. Only then trigger the image build.
+    #Check for a release wtith "target" property set to the API branch
     build-and-push:
         if: github.event.release.target_commitish == 'API'
 
