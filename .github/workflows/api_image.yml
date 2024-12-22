@@ -14,7 +14,10 @@ jobs:
         if: github.event.release.target_commitish == 'API'
 
         runs-on: ubuntu-latest
-        
+
+        env:
+          OWNER: ${{ github.repository_owner }}
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -25,6 +28,11 @@ jobs:
                 registry: ghcr.io
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
+              
+            - name: Downcase repository owner name
+              run: |
+                echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
+        
             
             - name: Build Cherry-API Docker image
               run: |
