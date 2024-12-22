@@ -11,7 +11,7 @@ on:
 jobs:
     #Check for a corresponding tag in a release. Only then trigger the image build.
     build-and-push:
-        if: startsWith(github.ref, 'refs/tags/api.')
+        if: github.event.release.target_commitish == 'API'
 
         runs-on: ubuntu-latest
         
