@@ -1,4 +1,4 @@
-name: panel_image
+name: panel-image
 
 on:
     release:
