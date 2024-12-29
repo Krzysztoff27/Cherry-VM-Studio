@@ -1,4 +1,4 @@
-name: api_image
+name: api-image
 
 on:
     release:
