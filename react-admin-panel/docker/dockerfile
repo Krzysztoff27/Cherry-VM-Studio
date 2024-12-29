@@ -1,6 +1,10 @@
 # syntax=docker/dockerfile:1.7-labs
 FROM node:18-alpine
 
+LABEL org.opencontainers.image.source=https://github.com/Krzysztoff27/Cherry-VM-Manager
+LABEL org.opencontainers.image.description="Cherry Admin Panel"
+LABEL org.opencontainers.image.licenses=CC-BY-NC-ND-4.0
+
 WORKDIR /app
 
 COPY ./package.json /app/package.json
