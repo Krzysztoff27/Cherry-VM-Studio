@@ -2,17 +2,18 @@ import { Avatar, Button, Card, Group, Image, List, rem, ScrollArea, SimpleGrid, 
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import classes from './Home.module.css';
+import urlConfig from '../../config/url.config';
 
 const panels = [
     {
         name: 'guacamole',
-        link: import.meta.env.VITE_GUACAMOLE_PANEL_URL,
+        link: urlConfig.guacamole,
         color: '#578c34',
         icon: '/icons/Apache Guacamole.webp',
     },
     {
         name: 'traefik',
-        link: import.meta.env.VITE_TRAEFIK_PANEL_URL,
+        link: urlConfig.traefik,
         color: '#24A0C1',
         icon: '/icons/Traefik Proxy.webp',
     },

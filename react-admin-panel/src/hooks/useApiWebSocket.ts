@@ -5,9 +5,10 @@ import { validPath } from '../utils/misc.js';
 import useAuth from "./useAuth.ts";
 import { WebSocketCommandMethods } from "../types/api.types.ts";
 import { useApiWebSocketReturn } from "../types/hooks.types.ts";
+import urlConfig from "../config/url.config.ts";
 
 const useApiWebSocket = (path: string) : useApiWebSocketReturn => {
-    const API_WEBSOCKET_URL: string = import.meta.env.VITE_API_WEBSOCKET_URL;
+    const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
     const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}`;
 
     const [socketUrl, setSocketUrl] = useState(getUrl(path));

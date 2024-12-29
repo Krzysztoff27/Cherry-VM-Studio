@@ -1,5 +1,4 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
-import ConfigValidator from "./wrappers/ConfigValidator";
 import ErrorBoundary from "./components/organisms/ErrorBoundary/ErrorBoundary";
 import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
@@ -14,11 +13,9 @@ import LoginPage from "./pages/Login/LoginPage";
 import MachineListPage from "./pages/MachinesListPage/MachineListPage";
 import Dobre from "./pages/Dobre/Dobre";
 
-
-
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route element={<ConfigValidator/>} errorElement={<ErrorBoundary/>}>
+        <Route errorElement={<ErrorBoundary/>}>
             <Route path='/dobre'            element={<Dobre/>}/>
             <Route element={<HomeLayout/>}>
                 <Route exact path='/'           element={<Home/>}/>

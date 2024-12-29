@@ -2,12 +2,13 @@ import handleFetch from "../handlers/handleFetch.js";
 import useErrorHandler from "./useErrorHandler.ts";
 import {validPath} from "../utils/misc.js";
 import { useApiReturn } from "../types/hooks.types.ts";
+import urlConfig from "../config/url.config.ts";
 
 /**
  * Custom react hook for sending requests to the Cherry API
  */
 export const useApi = () : useApiReturn => {
-    const API_URL: string = import.meta.env.VITE_API_BASE_URL;
+    const API_URL: string = urlConfig.api_requests;
     const { parseAndHandleError } = useErrorHandler();
 
     /**

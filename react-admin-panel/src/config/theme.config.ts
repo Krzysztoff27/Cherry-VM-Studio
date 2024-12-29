@@ -5,19 +5,18 @@ const theme = createTheme({
     defaultRadius: 'md',
     primaryColor: 'cherry',
     colors: {
-        'suse-green':
-            [
-                "#f2fde7",
-                "#e7f7d5",
-                "#cfeeac",
-                "#b5e57f",
-                "#9ede5a",
-                "#90d941",
-                "#89d634",
-                "#75bd26",
-                "#67a81d",
-                "#55920f"
-            ],
+        'suse-green': [
+            "#f2fde7",
+            "#e7f7d5",
+            "#cfeeac",
+            "#b5e57f",
+            "#9ede5a",
+            "#90d941",
+            "#89d634",
+            "#75bd26",
+            "#67a81d",
+            "#55920f"
+        ],
         'cherry': [
             "#fff",     // 0
             "#fff",     // 1
