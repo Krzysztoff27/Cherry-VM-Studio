@@ -1,0 +1,45 @@
+name: panel_image
+
+on:
+    release:
+        types:
+            - published
+
+jobs:
+    #Check for a release wtith the "target" property set to the "react admin panel" branch
+    build-and-push:
+        if: github.event.release.target_commitish == 'react-admin-panel'
+
+        runs-on: ubuntu-latest
+
+        permissions:
+          contents: read
+          packages: write
+
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+            
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+              
+            - name: Downcase repository owner name
+              run: |
+                echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
+            
+            - name: Build Cherry-Admin-Panel Docker image
+              run: |
+                docker build \
+                --file cherry-admin-panel/docker/dockerfile \
+                --tag ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }} cherry-admin-panel
+
+            - name: Push Cherry-Admin-Panel Docker image to GitHub Container Registry
+              run: |
+                docker push ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }}
