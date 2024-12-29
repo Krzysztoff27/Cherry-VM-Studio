@@ -6,7 +6,7 @@ on:
             - published
 
 jobs:
-    #Check for a release wtith "target" property set to the API branch
+    #Check for a release wtith the "target" property set to the API branch
     build-and-push:
         if: github.event.release.target_commitish == 'API'
 
