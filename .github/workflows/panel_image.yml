@@ -38,7 +38,7 @@ jobs:
               run: |
                 docker build \
                 --file react-admin-panel/docker/dockerfile \
-                --tag ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }} cherry-admin-panel
+                --tag ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }} react-admin-panel
 
             - name: Push Cherry-Admin-Panel Docker image to GitHub Container Registry
               run: |
