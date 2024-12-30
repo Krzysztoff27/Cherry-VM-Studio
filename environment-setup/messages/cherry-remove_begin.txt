@@ -1,4 +1,4 @@
-This script will perform a seamless removal of all Cherry VM Manager stack components.
+This script will perform a seamless removal of the Cherry VM Manager stack.
 If any of the CVMM stack components were modified or deleted prior to the execution of this script
 it may not delete them succesfully, however unlike the cherry-install.sh script,
 it will not stop, but continue to delete other components.

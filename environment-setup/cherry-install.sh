@@ -319,7 +319,6 @@ configure_file_ownership(){
 
 create_vm_networks(){
     printf '\n[i] Disabling libvirt default network stack on host OS: '
-    runuser -u Cherry
     runuser -u CherryWorker -- virsh net-undefine --network default > "$LOGS_FILE"
     runuser -u CherryWorker -- virsh net-destroy --network default > "$LOGS_FILE"
     ok_handler
@@ -348,7 +347,8 @@ print_begin_notice(){
 }
 
 print_finish_notice(){
-    printf "$(cat ./messages/cherry-install_finish.txt)\n"
+    printf '\nThe installation script has finished its job without any errors.\n'
+    printf "\nThe Cherry VM Manager stack can be controlled using\n the Cherry Admin Panel available at ${GREEN}${domain_name}${NC}.\n"
 }
 
 ###############################
