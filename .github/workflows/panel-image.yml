@@ -29,6 +29,12 @@ jobs:
                 registry: ghcr.io
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
+            
+            - name: Extract Docker image metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                images: ghcr.io/${{ env.OWNER }}/cherry-admin-panel
               
             - name: Downcase repository owner name
               run: |
@@ -43,3 +49,4 @@ jobs:
                 tags: |
                   ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }}
                   ghcr.io/${{ env.OWNER }}/cherry-admin-panel:latest
+                labels: ${{ steps.meta.outputs.labels }}
