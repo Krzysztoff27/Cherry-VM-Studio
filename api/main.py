@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from datetime import timedelta
 from os import getenv
 import logging
 
@@ -37,7 +38,8 @@ load_dotenv()
 
 SECRET_KEY = getenv('SECRET_KEY') # openssl rand -hex 32
 ALGORITHM = getenv('ALGORITHM')   # HS256
-ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv('ACCESS_TOKEN_EXPIRE_MINUTES', default=5))
+ACCESS_TOKEN_EXPIRE_DELTA = timedelta(minutes = int(getenv('ACCESS_TOKEN_EXPIRE_MINUTES', default=60)))
+REFRESH_TOKEN_EXPIRE_DELTA = timedelta(minutes = int(getenv('REFRESH_TOKEN_EXPIRE_MINUTES', default=1440)))
 
 if not SECRET_KEY or not ALGORITHM:
     raise Exception('Both SECRET_KEY and ALGORITHM must be set in the .env configuration')
@@ -47,7 +49,7 @@ if not SECRET_KEY or not ALGORITHM:
 ###############################
 
 import auth # run authentication
-import requests.auth_requests
-import requests.machine_data_requests
-import requests.network_conf_requests
+import api_requests.auth_requests
+import api_requests.machine_data_requests
+import api_requests.network_conf_requests
 import sockets.machine_socket

@@ -1,46 +1,33 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from passlib.context import CryptContext
-from pydantic import BaseModel
 from pathlib import Path
 
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
+from typing import Annotated, Literal
 
 import jwt, logging
 
-from main import SECRET_KEY, ALGORITHM
+from main import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DELTA, REFRESH_TOKEN_EXPIRE_DELTA
 from handlers.json_handler import JSONHandler
+from models.auth import User, UserInDB, Tokens
+from models.exceptions import CredentialsException
 
 ###############################
 #     database reference
 ###############################
 
-DB_PATH = Path('data/auth/users.local.json')
+DB_PATH = Path("data/auth/users.local.json")
 usersDatabase = JSONHandler(DB_PATH)
 
 ###############################
 #           schemes
 ###############################
 
-logging.getLogger('passlib').setLevel(logging.ERROR) # silence the error caused by a bug in the bcrypt package
+logging.getLogger("passlib").setLevel(logging.ERROR)  # silence the error caused by a bug in the bcrypt package
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-###############################
-#           classes
-###############################
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class User(BaseModel):
-    username: str
-
-class UserInDB(User):
-    password: str # hashed
 
 ###############################
 #       auth functions
@@ -65,30 +52,54 @@ def authenticate_user(username: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_token(type: str, data: dict, expires_delta: timedelta):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    to_encode.update({"token_type": type, "exp": datetime.now(timezone.utc) + expires_delta})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials.",
-        headers={"WWW-Authenticate": "Bearer"},
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=5)):
+    return create_token("access", data, expires_delta)
+
+
+def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(minutes=5)):
+    return create_token("refresh", data, expires_delta)
+
+def get_user_tokens(user: User):
+    return Tokens(
+        accessToken = create_access_token({"sub": user.username}, ACCESS_TOKEN_EXPIRE_DELTA),
+        refresh_token = create_refresh_token({"sub": user.username}, REFRESH_TOKEN_EXPIRE_DELTA)
     )
+
+def is_token_of_type(payload, token_type: Literal['access', 'refresh']):
+    return payload.get("token_type") == token_type
+
+def is_access_token(payload):
+    return is_token_of_type(payload, 'access')
+
+def is_refresh_token(payload):
+    return is_token_of_type(payload, 'refresh')
+
+def validate_user_token(token: Annotated[str, Depends(oauth2_scheme)], token_type: Literal['access', 'refresh']) -> User | None:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        
+        if not is_token_of_type(payload, token_type): raise InvalidTokenError
+        
+    except ExpiredSignatureError:
+        raise CredentialsException()  # Token is expired
     except InvalidTokenError:
-        raise credentials_exception
-    
+        raise CredentialsException()  # Token is invalid
+
+    username: str = payload.get("sub")
     user = get_user(usersDatabase.read(), username)
     if user is None:
-        raise credentials_exception
+        raise CredentialsException()
     return user
+
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User | None: 
+    return validate_user_token(token, 'access')
+
+def get_user_from_refresh_token(token: Annotated[str, Depends(oauth2_scheme)]) -> User | None:
+    return validate_user_token(token, 'refresh')
