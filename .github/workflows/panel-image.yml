@@ -34,12 +34,12 @@ jobs:
               run: |
                 echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
             
-            - name: Build Cherry-Admin-Panel Docker image
-              run: |
-                docker build \
-                --file react-admin-panel/docker/dockerfile \
-                --tag ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }} react-admin-panel
-
-            - name: Push Cherry-Admin-Panel Docker image to GitHub Container Registry
-              run: |
-                docker push ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }}
+            - name: Build and push Cherry-Admin-Panel Docker image
+              uses: docker/build-push-action@v4
+              with:
+                context: react-admin-panel
+                file: react-admin-panel/docker/dockerfile
+                push: true
+                tags: |
+                  ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }}
+                  ghcr.io/${{ env.OWNER }}/cherry-admin-panel:latest
