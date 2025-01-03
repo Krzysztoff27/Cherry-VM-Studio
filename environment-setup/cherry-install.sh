@@ -274,30 +274,12 @@ configure_container_guacamole(){
 }
 
 configure_container_cherry-api(){
-    #Add image build if the image is not supplied externally
     printf '\n[i] Starting Cherry API container: '
     runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}cherry-api/docker-compose.yaml" up -d > "$LOGS_FILE"
     ok_handler
 }
 
 configure_container_cherry-admin-panel(){
-    if ! docker images -q cherry-admin-panel > "$LOGS_FILE"; then
-        printf '\n[i] Creating Cherry Admin Panel .env variables: '
-        VITE_API_BASE_URL=$(printf "VITE_API_BASE_URL=http://%s/api\n" "$domain_name")
-        VITE_API_WEBSOCKET_URL=$(printf "VITE_API_WEBSOCKET_URL=ws://%s/api\n" "$domain_name")
-        VITE_TRAEFIK_PANEL_URL=$(printf "VITE_TRAEFIK_PANEL_URL=http://traefik.%s/dashboard/\n" "$domain_name")
-        VITE_GUACAMOLE_PANEL_URL=$(printf "VITE_GUACAMOLE_PANEL_URL=http://%s/guacamole\n" "$domain_name")
-        ok_handler
-        printf '[i] Building Cherry Admin Panel docker image: '
-        cd "${DIR_IMAGE_FILES}cherry-admin-panel"
-        runuser -u CherryWorker -- "./build.sh" \
-        "$VITE_API_BASE_URL" \
-        "$VITE_API_WEBSOCKET_URL" \
-        "$VITE_TRAEFIK_PANEL_URL" \
-        "$VITE_GUACAMOLE_PANEL_URL"
-        cd -
-        ok_handler
-    fi
     printf '[i] Starting Cherry Admin Panel container: '
     runuser -u CherryWorker -- docker-compose -f "${DIR_DOCKER}cherry-admin-panel/docker-compose.yaml" up -d > "$LOGS_FILE"
     ok_handler
