@@ -2,7 +2,7 @@ services:
   api:
     container_name: cherry-api
     restart: always
-    image: cherry-api
+    image: "ghcr.io/krzysztoff27/cherry-api:latest"
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
