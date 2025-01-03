@@ -1,8 +1,18 @@
 # syntax=docker/dockerfile:1.7-labs
 FROM python:alpine
+
+LABEL org.opencontainers.image.source=https://github.com/Krzysztoff27/Cherry-VM-Manager
+LABEL org.opencontainers.image.description="Cherry API"
+LABEL org.opencontainers.image.licenses=CC-BY-NC-ND-4.0
+
 WORKDIR /api  
+
 COPY ./requirements.txt /api/requirements.txt
+
 RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
+
 COPY --exclude=./requirements.txt --exclude=./docker ./ /api
+
 EXPOSE 8000
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
