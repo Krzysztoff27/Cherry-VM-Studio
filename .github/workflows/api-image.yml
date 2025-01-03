@@ -29,17 +29,24 @@ jobs:
                 registry: ghcr.io
                 username: ${{ github.actor }}
                 password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract Docker image metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                images: ghcr.io/${{ env.OWNER }}/cherry-api
               
             - name: Downcase repository owner name
               run: |
                 echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
-            
-            - name: Build Cherry-API Docker image
-              run: |
-                docker build \
-                --file api/docker/dockerfile \
-                --tag ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }} api
-            
-            - name: Push Cherry-API Docker image to GitHub Container Registry
-              run: |
-                docker push ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }}
+
+            - name: Build and push Cherry-API Docker image
+              uses: docker/build-push-action@v4
+              with:
+                context: api
+                file: api/docker/dockerfile
+                push: true
+                tags: |
+                  ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }}
+                  ghcr.io/${{ env.OWNER }}/cherry-api:latest
+                labels: ${{ steps.meta.outputs.labels }}
