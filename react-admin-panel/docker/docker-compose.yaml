@@ -2,7 +2,7 @@ services:
   cherry-admin-panel:
     container_name: cherry-admin-panel
     restart: always
-    image: cherry-admin-panel
+    image: "ghcr.io/krzysztoff27/cherry-admin-panel:latest"
     ports:
       - "3000:3000"
     networks:
