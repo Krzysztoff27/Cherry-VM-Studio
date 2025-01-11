@@ -25,8 +25,14 @@ export default function MachineListPage() {
     // uses memo to not recalculate groups every time the machine state changes (except for when the groups are based on the state values)
     const groups: Record<string, string[]> = useMemo(() => groupMachines(machines, groupBy), [machineNetworkData, groupBy, groupBy === 'state' ? machinesState : undefined]);
 
-    const cardGroups = useMemo(() => {
-        return Object.entries(groups || {}).map(([group, uuids], i) => (
+    if (loading) return;
+    if (error) {
+        sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
+        console.error(error);
+        return;
+    }
+
+    const cardGroups = Object.entries(groups || {}).map(([group, uuids], i) => (
             <CardGroup
                 key={i}
                 group={group}
@@ -43,14 +49,7 @@ export default function MachineListPage() {
                 ))}
             </CardGroup>
         ));
-    }, [groups, closedGroups, toggleGroup, machineNetworkData, machinesState]);
 
-    if (loading) return;
-    if (error) {
-        sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
-        console.error(error);
-        return;
-    }
 
     return (
         <Paper className={classes.pagePaper}>

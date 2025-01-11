@@ -11,7 +11,6 @@ const CollapsibleGroupToggle = ({toggleOpened, opened, label} : CollapsibleGroup
     return (
         <Button
             onClick={toggleOpened}
-
             classNames={{ root: classes.button, label: classes.buttonLabel }}
             aria-label={tns(`machine-list.groups.${opened ? 'collapse' : 'expand'}`)}
             variant='transparent'

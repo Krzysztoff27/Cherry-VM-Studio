@@ -55,7 +55,7 @@ export interface MachineConnectionDetailsProps {
 export interface CollapsibleGroupToggleProps {
     toggleOpened: React.MouseEventHandler;
     opened: boolean;
-    label: string
+    label: string;
 }
 
 export interface PopoverRadioGroupProps extends Omit<PopoverProps, 'value' | 'onChange' | 'classNames'> {

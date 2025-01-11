@@ -1,7 +1,4 @@
-import { Sparkline } from "@mantine/charts";
-import { Container, Paper, Stack, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
-import classes from './ActivitySparkline.module.css';
 import { MachineState } from "../../../types/api.types";
 import StateDivider from "../../atoms/feedback/StateDivider/StateDivider";
 import SparklineWithText from "../../molecules/feedback/SparklineWithText/SparklineWithText";

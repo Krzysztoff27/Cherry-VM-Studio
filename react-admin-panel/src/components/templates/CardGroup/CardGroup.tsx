@@ -3,7 +3,8 @@ import { Collapse, SimpleGrid, Stack } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import DummyCard from "../../organisms/MachineCard/DummyCard";
 import CollapsibleGroupToggle from "../../molecules/interactive/CollapsibleGroupToggle/CollapsibleGroupToggle";
-import { CardGroupProps } from "../../../types/templates.types";
+import { CardGroupProps } from "../../../types/components.types";
+import { useEffect, useState } from "react";
 
 /**
  * Groups machine cards or similar elements into a collapsible section with a toggle button.
@@ -19,8 +20,8 @@ const CardGroup = ({ children, group, opened, toggleOpened }: CardGroupProps): R
     const dummyChildren = Array.from({ length: children.length }, (_, i) => <DummyCard key={i} />);
 
     return (
-        <Stack ref={containerRef} mr='xl'>
-            <CollapsibleGroupToggle
+        <Stack mr='xl' ref={containerRef}>
+            <CollapsibleGroupToggle 
                 toggleOpened={toggleOpened}
                 opened={opened}
                 label={t(group)}

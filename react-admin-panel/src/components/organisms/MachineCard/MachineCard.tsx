@@ -18,7 +18,7 @@ export default function MachineCard({ machine, to, currentState } : MachineCardP
 
     const handleCardClick = () => navigate(to)
 
-    const handleButtonClick = (event) => {
+    const handleButtonClick = (event: any) => {
         event.stopPropagation(); // Prevents the card click event
         if (currentState.active) window.open(`http://${machine.domain}`, '_blank');
     };

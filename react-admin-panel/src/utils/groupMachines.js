@@ -28,7 +28,7 @@ export default function groupMachines(machines, groupBy) {
         state: groupByState,
         membership: groupByMembership
     }
-    
+
     try {
         return groupByMatches[groupBy](machines);
     } catch (err) {
