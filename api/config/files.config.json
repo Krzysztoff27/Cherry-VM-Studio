@@ -1,5 +1,5 @@
 {
-    "users": "data/auth/users.local.json",
+    "users": "data/authentication/users.local.json",
     "network_config_state_save": "data/network_configuration/current_state.local.json",
     "network_config_snapshots": "data/network_configuration/snapshots.local.json",
     "network_config_presets": "data/network_configuration/presets.json"

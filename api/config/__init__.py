@@ -8,14 +8,13 @@ class FilesConfig(BaseModel):
     network_config_snapshots: Path
     network_config_presets: Path
     
-    
 class Authentication(BaseModel):
     algorithm: str
     access_token_expire_minutes: int
     refresh_token_expire_minutes: int
     
-def get_config(name: str):
-    return JSONHandler(f'./{name}.config.json').read()
+def __get_config__(name: str):
+    return JSONHandler(Path(f'config/{name}.config.json')).read()
 
-FILES_CONFIG = FilesConfig(**get_config('files'))
-AUTHENTICATION_CONFIG = Authentication(**get_config('Authentication'))
+FILES_CONFIG = FilesConfig(**__get_config__('files'))
+AUTHENTICATION_CONFIG = Authentication(**__get_config__('authentication'))
