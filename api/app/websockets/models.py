@@ -1,8 +1,13 @@
 from typing import Literal
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
+from .handlers.websocket_handler import WebSocket, WebSocketHandler
 import uuid
     
-class Command(BaseModel, extra=Extra.allow):
+###############################
+# Websocket messages
+###############################
+
+class Command(BaseModel, extra='allow'):
     method: Literal["START","STOP","UPDATE","SUBSCRIBE","UNSUBSCRIBE"]
     auth_token: str = ""
     uuid: str = str(uuid.uuid4())
@@ -34,3 +39,8 @@ class DataResponse(Response):
     method: str = "DATA"
     body: dict | None = None
 
+###############################
+# Websocket messages
+###############################
+
+type Subscriptions = dict[str, list[WebSocket | WebSocketHandler]]

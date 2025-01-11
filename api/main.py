@@ -1,55 +1,9 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from datetime import timedelta
-from os import getenv
 import logging
 
-###############################
-#      FastAPI instance
-###############################
-
-app = FastAPI(root_path="/api")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], # allow local origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    logging.error(f"Unhandled exception: {exc}")  # Log the error for debugging purposes
-
-    # Return a JSON response with a 500 status code and **correct headers**.
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal Server Error"},
-        headers={"Access-Control-Allow-Origin": "*"},
-    )
 
 ###############################
-#   Enviromental Variables
+#      they dont love you like i love you
 ###############################
 
-load_dotenv()
+logging.getLogger("passlib").setLevel(logging.ERROR)  # silence the error caused by a bug in the bcrypt package
 
-SECRET_KEY = getenv('SECRET_KEY') # openssl rand -hex 32
-ALGORITHM = getenv('ALGORITHM')   # HS256
-ACCESS_TOKEN_EXPIRE_DELTA = timedelta(minutes = int(getenv('ACCESS_TOKEN_EXPIRE_MINUTES', default=60)))
-REFRESH_TOKEN_EXPIRE_DELTA = timedelta(minutes = int(getenv('REFRESH_TOKEN_EXPIRE_MINUTES', default=1440)))
-
-if not SECRET_KEY or not ALGORITHM:
-    raise Exception('Both SECRET_KEY and ALGORITHM must be set in the .env configuration')
-
-###############################
-#   Submodules
-###############################
-
-import auth # run authentication
-import api_requests.auth_requests
-import api_requests.machine_data_requests
-import api_requests.network_conf_requests
-import sockets.machine_socket

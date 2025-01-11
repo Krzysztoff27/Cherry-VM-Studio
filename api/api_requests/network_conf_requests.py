@@ -8,9 +8,9 @@ import re
 import uuid
 
 from main import app
-from auth import get_current_user, User
+from app.authentication import get_current_user, User
 
-from handlers.json_handler import JSONHandler
+from api.utils.file import JSONHandler
 
 ###############################
 # json data constants and handlers
