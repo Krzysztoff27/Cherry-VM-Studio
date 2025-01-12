@@ -177,9 +177,6 @@ configure_container_cherry-admin-panel(){
 }
 
 remove_vm_networks(){
-    printf '\n[i] Enabling libvirt default network stack: '
-    (virsh net-define --file /usr/share/libvirt/networks/default.xml >> "$LOGS_FILE" && virsh net-start --network default >> "$LOGS_FILE" && virsh net-autostart --network default >> "$LOGS_FILE")
-    ok_handler
     printf '[i] Removing a default NAT network for VMs: '
     (virsh net-undefine --network isolated-nat >> "$LOGS_FILE" && virsh net-destroy --network isolated-nat  >> "$LOGS_FILE")
     ok_handler
@@ -224,13 +221,13 @@ print_finish_notice(){
 
 removal(){
     print_begin_notice
-    #remove_vm_networks
+    remove_vm_networks
     #remove_vm_firewall
-    configure_container_guacamole
-    configure_container_traefik
-    configure_container_cherry-api
-    configure_container_cherry-admin-panel
-    remove_docker_networks
+    #configure_container_guacamole
+    #configure_container_traefik
+    #configure_container_cherry-api
+    #configure_container_cherry-admin-panel
+    #remove_docker_networks
     #configure_daemon_docker
     #configure_daemon_libvirt
     #remove_user

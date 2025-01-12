@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<network>
+    <name>cherry-ras-vm</name>
+    <bridge name='cherry-ras-vm'/>
+    <port isolated='yes'/>
+</network>
