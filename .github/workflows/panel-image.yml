@@ -43,8 +43,8 @@ jobs:
             - name: Build and push Cherry-Admin-Panel Docker image
               uses: docker/build-push-action@v4
               with:
-                context: react-admin-panel
-                file: react-admin-panel/docker/dockerfile
+                context: admin-panel
+                file: admin-panel/docker/dockerfile
                 push: true
                 tags: |
                   ghcr.io/${{ env.OWNER }}/cherry-admin-panel:${{ github.ref_name }}
