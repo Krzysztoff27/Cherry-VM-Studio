@@ -31,7 +31,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
     async def validate_command(self, json: dict) -> Command:
         try:
             command = Command.model_validate(json) # validate the structure
-            get_current_user(command.auth_token) # validate the authorization token
+            get_current_user(command.access_token) # validate the authorization token
             return command 
         except ValidationError:
             # Validation error occurs when command structure is invalid

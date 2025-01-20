@@ -8,7 +8,7 @@ import uuid
 
 class Command(BaseModel, extra='allow'):
     method: Literal["START","STOP","UPDATE","SUBSCRIBE","UNSUBSCRIBE"]
-    auth_token: str = ""
+    access_token: str = ""
     uuid: str = str(uuid.uuid4())
     
 class CommandData(BaseModel):

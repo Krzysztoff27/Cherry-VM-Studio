@@ -48,8 +48,8 @@ ALGORITHM = AUTHENTICATION_CONFIG.algorithm
 ACCESS_TOKEN_EXPIRE_DELTA = timedelta(minutes = AUTHENTICATION_CONFIG.access_token_expire_minutes)
 REFRESH_TOKEN_EXPIRE_DELTA = timedelta(minutes = AUTHENTICATION_CONFIG.refresh_token_expire_minutes)
 
-if not SECRET_KEY or not ALGORITHM:
-    raise Exception('Both SECRET_KEY and ALGORITHM must be set in the .env configuration')
+if not SECRET_KEY:
+    raise Exception('SECRET_KEY not set in the env configuration.')
 
 ###############################
 #   Submodules
