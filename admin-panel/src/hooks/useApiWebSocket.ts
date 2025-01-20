@@ -14,7 +14,7 @@ const useApiWebSocket = (path: string) : useApiWebSocketReturn => {
     const [socketUrl, setSocketUrl] = useState(getUrl(path));
     const setUrl = (path: string) => setSocketUrl(getUrl(path));
 
-    const { token } = useAuth();
+    const { tokens } = useAuth();
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl);
 
     const connectionStatus: string = {
@@ -29,7 +29,7 @@ const useApiWebSocket = (path: string) : useApiWebSocketReturn => {
     const sendCommand = (method: WebSocketCommandMethods, data: object) : void => sendJsonMessage({
         method: method,
         uuid: uuidv4(),
-        auth_token: token,
+        access_token: tokens.access_token,
         ...data,
     })
 

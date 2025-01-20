@@ -6,7 +6,6 @@ import { IconAlertCircleFilled, IconArrowBackUp, IconCameraPlus, IconDeviceDeskt
 import classes from './ModifySnapshotButton.module.css';
 import { hasMultipleOccurrences, isInRange, safeObjectValues } from '../../../../utils/misc.js';
 import useApi from '../../../../hooks/useApi.ts';
-import useAuth from '../../../../hooks/useAuth.ts';
 import { useTranslation } from 'react-i18next';
 import useMantineNotifications from '../../../../hooks/useMantineNotifications.tsx';
 
@@ -55,7 +54,6 @@ export default function ModifySnapshotsButton({ forceSnapshotDataUpdate, initiat
  */
 function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDataUpdate, forceSnapshotDataUpdate }) {
     const { t } = useTranslation();
-    const { authOptions } = useAuth();
     const { getRequest } = useApi();
     const [snapshots, setSnapshots] = useState([]);
     // prevents the modal changing to the "no snapshots to edit" state during fade out transitions (in cases where all snapshots get deleted):
@@ -63,7 +61,7 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
 
     useEffect(() => {
         const getSnapshots = async () => {
-            await setSnapshots(await getRequest('network/snapshot/all', authOptions));
+            await setSnapshots(await getRequest('network/snapshot/all'));
         } 
         getSnapshots();
     }, [opened, forceSnapshotDataUpdate]) // refresh every time the modal is opened
@@ -116,7 +114,6 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
 function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
     const { t } = useTranslation();
     const { sendNotification } = useMantineNotifications();
-    const { authOptions } = useAuth();
     const { postRequest, deleteRequest } = useApi();
     /**
      * Set holding uuids of snapshots as keys with truthy values if they're to be deleted.
@@ -198,7 +195,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         const toBeRenamed = Object.entries(values).filter(([uuid, name]) => initialValues[uuid] !== name && !toBeDeletedRef.current[uuid]);
         if(!toBeRenamed.length) return;
 
-        toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/${uuid}/rename/${name}`, undefined, authOptions));
+        toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/${uuid}/rename/${name}`, undefined));
         sendNotification('network-panel.snapshot-modify', {}, {count: toBeRenamed.length});
 
         renamingForm.reset();
@@ -211,7 +208,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         const uuids = Object.entries(toBeDeletedRef.current).filter(([_, val]) => val).map(([uuid, _]) => uuid);
         if(!uuids.length) return;
 
-        uuids.forEach(uuid => deleteRequest(`network/snapshot/${uuid}`, authOptions));
+        uuids.forEach(uuid => deleteRequest(`network/snapshot/${uuid}`));
         sendNotification('network-panel.snapshot-remove', {}, {count: uuids.length});
 
         setToBeDeleted({});

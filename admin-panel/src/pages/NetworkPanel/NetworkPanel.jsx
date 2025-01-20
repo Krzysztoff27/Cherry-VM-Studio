@@ -11,7 +11,6 @@ import IntnetNode from '../../components/atoms/flow-nodes/IntnetNode/IntnetNode.
 import MachineNode from '../../components/atoms/flow-nodes/MachineNode/MachineNode.jsx';
 import Prompt from '../../components/molecules/modals/Prompt/Prompt.jsx';
 
-import useAuth from '../../hooks/useAuth.ts';
 import useFetch from '../../hooks/useFetch.ts';
 import useApi from '../../hooks/useApi';
 import useFlowPresets from '../../hooks/useFlowPresets';
@@ -131,7 +130,6 @@ const generateNewPos = () => ({ x: newPositionsAllocator.getNext() * 100, y: 0 }
 function Flow() {
     const { parseAndHandleError } = useErrorHandler(); 
     const { sendNotification, sendErrorNotification } = useMantineNotifications();
-    const { authOptions } = useAuth();
     const { getRequest, postRequest, putRequest } = useApi();
     const { generateConfigFromPreset } = useFlowPresets();
 
@@ -149,7 +147,7 @@ function Flow() {
      */
     const [isDirty, setIsDirty] = useState(null);
 
-    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch('/vm/all/networkdata', authOptions);
+    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch('/vm/all/networkdata');
 
     /**
      * Adds new nodes to the flow.
@@ -223,7 +221,7 @@ function Flow() {
      * @param {string} uuid - The unique identifier of the preset to load
      */
     const loadPreset = async (uuid) => {
-        const preset = await getRequest(`/network/preset/${uuid}`, authOptions);
+        const preset = await getRequest(`/network/preset/${uuid}`);
         const config = generateConfigFromPreset(preset, machines);
         if (!config) return;
 
@@ -254,14 +252,14 @@ function Flow() {
     * @param {string} name - The name of the snapshot
     * @param {Flow} snapshotData - The snapshot data
     */
-    const postSnapshot = (name, errorCallback = undefined) => postRequest('/network/snapshot', JSON.stringify(takeSnapshot(name)), authOptions, errorCallback);
+    const postSnapshot = (name, errorCallback = undefined) => postRequest('/network/snapshot', JSON.stringify(takeSnapshot(name)), errorCallback);
 
     /**
      * Loads a flow snapshot by its uuid.
      * @param {string} uuid - The uuid of the snapshot to load
      */
     const loadSnapshot = async (uuid) => {
-        const data = await getRequest(`/network/snapshot/${uuid}`, authOptions);
+        const data = await getRequest(`/network/snapshot/${uuid}`);
         if (!data) return;
 
         const { name, intnets, ...flow } = data;
@@ -318,7 +316,7 @@ function Flow() {
      * @returns {Promise} - Resolves once the flow is reset
      */
     const resetFlow = async () => {
-        const { intnets, ...flow } = await getRequest('/network/configuration', authOptions);
+        const { intnets, ...flow } = await getRequest('/network/configuration');
         return loadFlowWithIntnets(flow, intnets);
     };
 
@@ -394,13 +392,13 @@ function Flow() {
      * Sends a PUT request to save the current flow panel state.
      * @returns {Object} - JSON data of the response
      */
-    const putFlowState = () => putRequest('/network/configuration/panelstate', JSON.stringify(getSnapshotData()), authOptions);
+    const putFlowState = () => putRequest('/network/configuration/panelstate', JSON.stringify(getSnapshotData()));
 
     /**
      * Sends a PUT request to save the internal network (Intnet) configuration.
      * @returns {Object} - JSON data of the response
      */
-    const putIntnetConfiguration = () => putRequest('/network/configuration/intnets', JSON.stringify(getIntnetConfig()), authOptions);
+    const putIntnetConfiguration = () => putRequest('/network/configuration/intnets', JSON.stringify(getIntnetConfig()));
 
     useEffect(initFlow, [machines])
 

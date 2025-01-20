@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import useApi from "../../../../hooks/useApi.ts";
-import useAuth from "../../../../hooks/useAuth.ts";
 import ConfirmationModal from "../../../atoms/modals/ConfirmationModal/ConfirmationModal.tsx";
 import { SnapshotSelectProps } from "../../../../types/components.types.ts";
 
@@ -13,7 +12,6 @@ const VALUE_SEPERATOR = ':::';
 export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshotDataUpdate } : SnapshotSelectProps) {
     const { t } = useTranslation();
     const { getRequest } = useApi();
-    const { authOptions } = useAuth();
     const [snapshotComponents, setSnapshotComponents] = useState([]);
     const [presetComponents, setPresetComponents] = useState([]);
     const [confirmationOpened, { open, close }] = useDisclosure(false);
@@ -25,8 +23,8 @@ export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshot
 
     useEffect(() => {
         const setData = async () => {
-            const snapshots = await getRequest('/network/snapshot/all', authOptions);
-            const presets = await getRequest('/network/preset/all', authOptions);
+            const snapshots = await getRequest('/network/snapshot/all');
+            const presets = await getRequest('/network/preset/all');
             setSnapshotComponents(snapshots?.map((s, i) =>
                 <option key={i} value={combineValues('snapshot', s.uuid)}> {s.name}</option>
             ) ?? []);
@@ -35,7 +33,7 @@ export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshot
             ) ?? []);
         }
         setData();
-    }, [authOptions, forceSnapshotDataUpdate]);
+    }, [forceSnapshotDataUpdate]);
 
     const onChange = (event: any) => {
         if (event.currentTarget.value === 'null') return;

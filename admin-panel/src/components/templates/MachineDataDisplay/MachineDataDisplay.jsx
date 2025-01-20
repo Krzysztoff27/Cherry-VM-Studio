@@ -5,9 +5,9 @@ import useFetch from "../../../hooks/useFetch.ts";
 import MachineHeading from "../../organisms/MachineHeading/MachineHeading.tsx";
 import MachineDataTable from "../../organisms/MachineDataTable/MachineDataTable.tsx";
 
-export default function MachineDataDisplay({ currentState, uuid, authOptions }) {
+export default function MachineDataDisplay({ currentState, uuid }) {
     const { t } = useTranslation();
-    const { loading, error, data: machine } = useFetch(`/vm/${uuid}/networkdata`, authOptions);
+    const { loading, error, data: machine } = useFetch(`/vm/${uuid}/networkdata`);
 
     if (loading) return <Loading />;
     if (error) throw error;

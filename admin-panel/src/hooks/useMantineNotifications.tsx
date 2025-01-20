@@ -10,7 +10,7 @@ export const useMantineNotifications = () => {
     // by using getSeconds we ensure that if multiple notifications of the same id 
     // are to be sent in a short amount of time (same second)
     // only one of them will be sent as they will have the same id
-    const getUniqueId = (id: string) => `${id}${new Date().getSeconds()}` 
+    const getUniqueId = (id: string | number) => `${id}${new Date().getSeconds()}` 
     
     const sendNotification = (id: string, options : sendNotificationProps | undefined = {}, interpolatedValues: object | undefined = {}) : Function => {
         const notificationId = options.uniqueId ? getUniqueId(id) : id;
@@ -26,16 +26,10 @@ export const useMantineNotifications = () => {
         return () => notifications.hide(notificationId);
     }
 
-    /**
-     * 
-     * @param {Array|String} i18nextKey - key of the error in the translation files
-     * @param {Object} interpolatedValues - values to be interpolated into i18next translation formatting
-     * @returns function to hide the notification
-     */
-    const sendErrorNotification = (i18nextKeys: string[] | string = [], interpolatedValues = {}) => {
+    const sendErrorNotification = (i18nextKeys: number[] | number = [], interpolatedValues = {}) => {
         i18nextKeys = [i18nextKeys].flat();
         const notificationId = getUniqueId(i18nextKeys[0]); 
-        const keys: string[] = [...i18nextKeys, '600'];
+        const keys: number[] = [...i18nextKeys, 600];
         
         notifications.show({
             id: notificationId,

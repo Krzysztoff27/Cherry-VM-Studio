@@ -11,38 +11,25 @@ const useFetch = (path: string, options: object | undefined = undefined): useFet
 
     const refresh = () => setRefreshValue(prev => !prev);
 
-    const { getPath } = useApi();
-    const fetchURL = getPath(path);
+    const { getRequest } = useApi();
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await fetch(fetchURL, options)
-                    .catch(err => new Response(null, {
-                        status: 503,
-                        statusText: 'No response from the server',
-                        headers: {
-                            'Content-Type': 'text/plain'
-                        }
-                    }));
-
-                if (!response.ok) {
-                    setData(null);
-                    setError(response);
-                    setLoading(false);
-                }
-                else {
-                    const json = await response.json();
-                    setData(json);
-                    setError(null);
-                    setLoading(false);
-                }
-            } catch (err) {
+            setError(null);
+            
+            const onError = (response: Response, body: object) => {
                 setData(null);
-                setError(err);
+                setError(response);
                 setLoading(false);
             }
-        };
+            
+            const json = await getRequest(path, options, onError);
+            
+            if (!json) return;
+            setData(json);
+            setError(null);
+            setLoading(false);
+        }
         fetchData();
     }, [path, options, refreshValue]);
 

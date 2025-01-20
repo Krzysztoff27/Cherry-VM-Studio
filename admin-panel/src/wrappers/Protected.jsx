@@ -1,6 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import useFetch from '../hooks/useFetch.ts';
-import useAuth from '../hooks/useAuth.ts';
 import Loading from '../components/atoms/feedback/Loading/Loading.tsx';
 /**
  * A wrapper component that protects authentication-restricted routes. It fetches user data
@@ -21,8 +20,7 @@ import Loading from '../components/atoms/feedback/Loading/Loading.tsx';
  */
 export const Protected = () => {
     const location = useLocation();
-    const { authOptions } = useAuth();
-    const { error, loading, data: user } = useFetch('user', authOptions);
+    const { error, loading, data: user } = useFetch('user');
 
     if (loading) return <Loading/>;
     if (!error && user) return <Outlet />;
@@ -48,8 +46,7 @@ export const Protected = () => {
  */
 
 export const ReverseProtected = () => {
-    const { authOptions } = useAuth();
-    const { loading, error, data: user } = useFetch('user', authOptions);
+    const { loading, error, data: user } = useFetch('user');
 
     if (loading) return <Loading/>;
     if (error?.status >= 500) throw error; 

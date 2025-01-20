@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import MachineCard from "../../components/organisms/MachineCard/MachineCard.tsx";
 import PanelForMachineList from "../../components/organisms/PanelForMachineList/PanelForMachineList.tsx";
 import CardGroup from "../../components/templates/CardGroup/CardGroup.tsx";
-import useAuth from "../../hooks/useAuth.ts";
 import useFetch from "../../hooks/useFetch.ts";
 import useGroupCookieManager from "../../hooks/useGroupCookieManager.ts";
 import useMachineState from "../../hooks/useMachineState.ts";
@@ -14,10 +13,9 @@ import useMantineNotifications from "../../hooks/useMantineNotifications.jsx";
 import { ERRORS } from "../../assets/errors.js";
 
 export default function MachineListPage() {
-    const { authOptions } = useAuth();
     const { sendErrorNotification } = useMantineNotifications();
     const { groupBy, closedGroups, toggleGroup, setGroupBy } = useGroupCookieManager('/virtual-machines');
-    const { loading, error, data: machineNetworkData, refresh } = useFetch('/vm/all/networkdata', authOptions);
+    const { loading, error, data: machineNetworkData, refresh } = useFetch('/vm/all/networkdata');
     const { machinesState } = useMachineState(safeObjectKeys(machineNetworkData));
 
     // merged machine data from network data and state data

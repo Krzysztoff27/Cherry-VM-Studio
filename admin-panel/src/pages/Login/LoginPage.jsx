@@ -1,5 +1,5 @@
 import { Avatar, Button, Center, Divider, Fieldset, Group, PasswordInput, Space, Text, TextInput } from '@mantine/core';
-import { isNotEmpty, useForm } from '@mantine/form';
+import { Form, isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import React from 'react';
 import useAuth from '../../hooks/useAuth.ts';
@@ -11,7 +11,7 @@ export default function LoginPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { postRequest } = useApi();
-    const { setToken } = useAuth();
+    const { setAccessToken, setRefreshToken } = useAuth();
     const form = useForm({
         mode: 'uncontrolled',
         validate: {
@@ -29,14 +29,22 @@ export default function LoginPage() {
      * @param {TokenRequestForm} values 
      */
     async function authenticate(values) {
+
         const jsonResponse = await postRequest('/token', new URLSearchParams({
             username: values.username,
             password: values.password,
-        }));
+        }), {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
 
         if (!jsonResponse?.access_token) return;
 
-        setToken(jsonResponse.access_token)
+        setAccessToken(jsonResponse.access_token);
+        setRefreshToken(jsonResponse.refresh_token);
+        navigate('/virtual-machines');
         notifications.clean();
     }
 
@@ -44,7 +52,7 @@ export default function LoginPage() {
         <Center h={'100vh'}>
             <Fieldset w='400'>
                 <form onSubmit={form.onSubmit(authenticate)}>
-                    <Group align='flex-end' pt='xs'>
+                    <Group align='flex -end' pt='xs'>
                         <Avatar src='/icons/Cherry Admin Panel.webp' radius={0} />
                         <Text size="xl" fw={500}>
                             {t('login.title', {ns: 'pages'})}

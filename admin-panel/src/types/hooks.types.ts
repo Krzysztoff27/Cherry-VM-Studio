@@ -1,4 +1,4 @@
-import { ConnectionStatuses, WebSocketCommandMethods, WebSocketResponse } from "./api.types";
+import { WebSocketCommandMethods } from "./api.types";
 
 export interface useFetchReturn {
     loading: boolean;
@@ -7,27 +7,52 @@ export interface useFetchReturn {
     refresh: () => void;
 }
 
+interface Tokens {
+    access_token: string | null,
+    refresh_token: string | null
+}
+
 export interface useAuthReturn {
-    token: string | null;
-    authOptions: object | null;
-    setToken: Function;
-    logout: Function;
+    tokens: Tokens
+    authOptions: RequestInit | null;
+    refreshOptions: RequestInit | null;
+    logout: () => void;
+    clearTokens: () => void;
+    setAccessToken: (token: string | null) => void;
+    setRefreshToken: (token: string | null) => void;
 }
 
 
 export interface useApiWebSocketReturn {
     setUrl: (path: string) => void;
     sendCommand: (method: WebSocketCommandMethods, data: object) => void;
-    lastJsonMessage: any | null,
+    lastJsonMessage: any | null;
     connectionStatus: string;
 }
 
+export type ErrorCallbackFunction = (
+    response: Response, json: object
+) => void | Promise<void>
+
+type HTMLRequestFunction = (
+    relativePath: string,
+    options?: RequestInit,
+    errorCallback?: ErrorCallbackFunction,
+) => Promise<any>;
+
+type HTMLBodyRequestFunction = (
+    relativePath: string,
+    body?: BodyInit,
+    options?: RequestInit,
+    errorCallback?: ErrorCallbackFunction,
+) => Promise<any>;
+
 export interface useApiReturn {
     getPath: Function;
-    getRequest: Function;
-    postRequest: Function;
-    putRequest: Function
-    deleteRequest: Function;
+    getRequest: HTMLRequestFunction;
+    postRequest: HTMLBodyRequestFunction;
+    putRequest: HTMLBodyRequestFunction
+    deleteRequest: HTMLRequestFunction;
 }
 
 export interface sendNotificationProps {

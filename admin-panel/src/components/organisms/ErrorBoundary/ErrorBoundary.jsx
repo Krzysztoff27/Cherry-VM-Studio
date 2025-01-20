@@ -1,5 +1,5 @@
 import { Button, Center } from "@mantine/core";
-import { useNavigate, useRouteError } from "react-router-dom"
+import { useNavigate, useRouteError } from "react-router-dom";
 import classes from './ErrorBoundary.module.css';
 import useAuth from "../../../hooks/useAuth.ts";
 import { useTranslation } from "react-i18next";

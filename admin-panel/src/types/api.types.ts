@@ -27,7 +27,7 @@ export type WebSocketResponseMethods = 'ACKNOWLEDGE' | 'REJECT' | 'LOADING_START
 
 export interface WebSocketCommand {
     method: WebSocketCommandMethods,
-    auth_token?: string,
+    access_token?: string,
     uuid: string | null,
     target?: string,
 }
