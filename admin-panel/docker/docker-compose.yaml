@@ -1,0 +1,14 @@
+services:
+  cherry-admin-panel:
+    container_name: cherry-admin-panel
+    restart: always
+    image: "ghcr.io/krzysztoff27/cherry-admin-panel:latest"
+    ports:
+      - "3000:3000"
+    networks:
+      cvmm-internal:
+
+networks:
+  cvmm-internal:
+    name: cvmm-internal
+    external: true
