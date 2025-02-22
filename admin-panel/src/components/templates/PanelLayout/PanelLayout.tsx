@@ -1,19 +1,19 @@
 import { AppShell, Container } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import classes from './PanelLayout.module.css';
-import NavBar from "../../organisms/Navbar/NavBar.tsx";
-import React from "react";
+import Navbar from "../../molecules/layout/Navbar/Navbar";
+import DoubleNavbar from "../../organisms/layout/DoubleNavbar/DoubleNavbar";
 
-export default function PanelLayout(): React.JSX.Element {
+export default function NavbarLayout({doubleNavbar = false} : {doubleNavbar?: boolean}): React.JSX.Element {
     return (
         <AppShell
             padding="sm"
             className={classes.appShell}
         >
             <AppShell.Navbar className={classes.appshellNavbar}>
-                <NavBar />
+                {doubleNavbar ? <DoubleNavbar/> : <Navbar/>}
             </AppShell.Navbar>
-            <AppShell.Main className={classes.appshellMain}>
+            <AppShell.Main className={classes.appshellMain} pl={doubleNavbar ? 285 : 85}>
                 <Container fluid className={classes.container}>
                     <Outlet/>
                 </Container>

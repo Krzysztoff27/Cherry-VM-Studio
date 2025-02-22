@@ -25,6 +25,5 @@
 }
 
 .appshellNavbar {
-    border-right: solid var(--mantine-color-dark-6) 2px;
-    width: 75px;
+    border-right: none;
 }

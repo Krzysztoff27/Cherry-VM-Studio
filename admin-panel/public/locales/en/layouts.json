@@ -6,9 +6,13 @@
         "copyright": "Copyright"
     },
     "navbar": {
-        "home": "Home page",
+        "home": "Homepage",
         "virtual-machines": "Virtual Machines",
         "desktops": "Desktops",
-        "network-panel": "Network Panel"
+        "network-panel": "Network Panel",
+        "users": "Users",
+        "administrators": "Administrators",
+        "session-users": "Session users",
+        "groups": "User groups"
     }
 }

@@ -151,3 +151,16 @@ export interface SnapshotSelectProps {
     loadPreset: (uuid: string) => void;
     forceSnapshotDataUpdate: boolean;
 }
+
+export interface ContentTableProps {
+    headers: any[];
+    rows: any[][];
+}
+
+export interface BusinessCardProps {
+    imageSrc: string,
+    alt?: string,
+    name: string;
+    comment: string;
+    link?: string;
+}

@@ -1,4 +1,4 @@
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom";
 import ErrorBoundary from "./components/organisms/ErrorBoundary/ErrorBoundary";
 import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
@@ -10,25 +10,32 @@ import Copyright from "./pages/Copyright/Copyright";
 import VirtualMachinePage from "./pages/VirtualMachine/VirtualMachinePage";
 import NetworkPanel from "./pages/NetworkPanel/NetworkPanel";
 import LoginPage from "./pages/Login/LoginPage";
-import MachineListPage from "./pages/MachinesListPage/MachineListPage";
+import MachinesPage from "./pages/Machines/Machines";
 import Dobre from "./pages/Dobre/Dobre";
+import Admins from "./pages/Users/Admins";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route errorElement={<ErrorBoundary/>}>
             <Route path='/dobre'            element={<Dobre/>}/>
             <Route element={<HomeLayout/>}>
-                <Route exact path='/'           element={<Home/>}/>
-                <Route path='/credits'          element={<Credits/>}/>
-                <Route path='/copyright'        element={<Copyright/>}/>
+                <Route path='/'           element={<Home/>}/>
+                <Route path='/credits'    element={<Credits/>}/>
+                <Route path='/copyright'  element={<Copyright/>}/>
             </Route>
             <Route element={<Protected/>}>
                 <Route element={<PanelLayout/>}>
-                    <Route path='/home'                 element={<Home/>}/>
-                    <Route path='/virtual-machines'     element={<MachineListPage/>}/>
-                    <Route path='/virtual-machines/:uuid' element={<VirtualMachinePage/>}/>
-                    <Route path='/desktops'             element={<Desktops/>}/>
-                    <Route path='/network-panel'        element={<NetworkPanel/>}/>    
+                    <Route path='/home'                     element={<Home/>}/>
+                    <Route path='/virtual-machines'         element={<MachinesPage/>}/>
+                    <Route path='/virtual-machines/:uuid'   element={<VirtualMachinePage/>}/>
+                    <Route path='/desktops'                 element={<Desktops/>}/>
+                    <Route path='/network-panel'            element={<NetworkPanel/>}/>    
+                </Route>
+                <Route element={<PanelLayout doubleNavbar/>}>
+                    <Route path='/users'                    element={<Navigate to='/users/basic'/>}/>
+                    <Route path='/users/admin'              element={<Admins/>}/>
+                    <Route path='/users/basic'              element={<Admins/>}/>
+                    <Route path='/users/groups'             element={<Admins/>}/>
                 </Route>
             </Route>
             <Route element={<ReverseProtected/>}>

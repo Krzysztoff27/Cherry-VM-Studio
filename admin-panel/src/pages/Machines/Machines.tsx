@@ -8,11 +8,11 @@ import useGroupCookieManager from "../../hooks/useGroupCookieManager.ts";
 import useMachineState from "../../hooks/useMachineState.ts";
 import groupMachines from "../../utils/groupMachines.js";
 import { mergeObjectPropertiesToArray, safeObjectKeys } from "../../utils/misc.js";
-import classes from './MachineListPage.module.css';
+import classes from './Machines.module.css';
 import useMantineNotifications from "../../hooks/useMantineNotifications.jsx";
 import { ERRORS } from "../../assets/errors.js";
 
-export default function MachineListPage() {
+export default function MachinesPage() {
     const { sendErrorNotification } = useMantineNotifications();
     const { groupBy, closedGroups, toggleGroup, setGroupBy } = useGroupCookieManager('/virtual-machines');
     const { loading, error, data: machineNetworkData, refresh } = useFetch('/vm/all/networkdata');

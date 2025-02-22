@@ -1,0 +1,24 @@
+.navbar {
+    flex-direction: column;
+
+    padding-top: 0.9rem;
+    height: 100%;
+    width: 200px;
+    border-right: solid var(--mantine-color-dark-6) 2px;
+
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.navLink {
+    height: 4rem;
+    padding-left: 1.25rem;
+}
+
+.heading {
+    font-size: var(--mantine-font-size-xl);
+    color: var(--mantine-color-gray-5);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}

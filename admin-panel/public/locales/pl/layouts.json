@@ -9,6 +9,7 @@
         "home": "Strona główna",
         "virtual-machines": "Maszyny wirtualne",
         "desktops": "Desktopy",
-        "network-panel": "Panel Konfiguracji Sieci"
+        "network-panel": "Panel Konfiguracji Sieci",
+        "users": "Użytkownicy"
     }
 }
