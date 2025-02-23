@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isObject, safeObjectValues, zipToObject } from '../utils/misc';
 import { calcMiddlePosition, getNodeId, NODE_TYPES } from '../utils/reactFlow';
 import { createMachineNode } from '../pages/NetworkPanel/NetworkPanel';
-import { ERRORS } from '../assets/errors';
+import { ERRORS } from '../config/errors.config';
 import useMantineNotifications from './useMantineNotifications';
 
 

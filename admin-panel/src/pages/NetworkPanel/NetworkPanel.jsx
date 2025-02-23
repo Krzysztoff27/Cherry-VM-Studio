@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import '@xyflow/react/dist/style.css';
 import useMantineNotifications from '../../hooks/useMantineNotifications.tsx';
-import { ERRORS } from '../../assets/errors';
+import { ERRORS } from '../../config/errors.config.ts';
 import FloatingEdge from '../../components/atoms/flow-connections/Floating/FloatingEdge/FloatingEdge.jsx';
 
 const NODE_TYPES = {

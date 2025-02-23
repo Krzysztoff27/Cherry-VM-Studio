@@ -1,5 +1,5 @@
 import useMantineNotifications from "./useMantineNotifications";
-import { ERROR_DETAIL_MAPPING } from '../assets/errors';
+import { ERROR_DETAIL_MAPPING } from '../config/errors.config';
 import { safeObjectKeys } from '../utils/misc'
 import { ErrorResponseBody } from "../types/api.types";
 

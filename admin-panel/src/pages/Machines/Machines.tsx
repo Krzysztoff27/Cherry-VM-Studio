@@ -10,7 +10,7 @@ import groupMachines from "../../utils/groupMachines.js";
 import { mergeObjectPropertiesToArray, safeObjectKeys } from "../../utils/misc.js";
 import classes from './Machines.module.css';
 import useMantineNotifications from "../../hooks/useMantineNotifications.jsx";
-import { ERRORS } from "../../assets/errors.js";
+import { ERRORS } from "../../config/errors.config.js";
 
 export default function MachinesPage() {
     const { sendErrorNotification } = useMantineNotifications();

@@ -1,6 +1,4 @@
-import { IconDeviceDesktop, IconHome, IconTopologyStar, IconUserHexagon, IconUsers, IconUsersGroup } from "@tabler/icons-react"
-import { t } from "i18next";
-import PERMISSIONS from "./permissions.config";
+import { IconDeviceDesktop, IconHome, IconTopologyStar, IconUserHexagon, IconUsers, IconUsersGroup } from "@tabler/icons-react";
 import { Page } from "../types/config.types";
 
 const PAGES : Page[] = [

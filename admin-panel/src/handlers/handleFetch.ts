@@ -1,4 +1,4 @@
-import { ERRORS } from "../assets/errors";
+import { ERRORS } from "../config/errors.config";
 import { ErrorCallbackFunction } from "../types/hooks.types";
 
 

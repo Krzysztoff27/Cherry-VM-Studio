@@ -12,11 +12,11 @@
             "title": "Nieautoryzowany dostęp",
             "message": "Aby uzyskać dostęp do żądanego zasobu, musisz się zalogować."
         },
-        "401-login": {
+        "401-LOGIN": {
             "title": "Logowanie nie powiodło się",
             "message": "Nieprawidłowa nazwa użytkownika lub hasło."
         },
-        "401-session": {
+        "401-SESSION": {
             "title": "Sesja wygasła",
             "message": "Zaloguj się ponownie, aby kontynuować."
         },
@@ -28,15 +28,15 @@
             "title": "Nie znaleziono {{resource, capitalize}}",
             "message": "Szukany {{resource, lowercase}} nie został odnaleziony."
         },
-        "404-page": {
+        "404-PAGE": {
             "title": "Nie znaleziono strony",
             "message": "Strona, której szukasz, nie istnieje. Upewnij się, że wprowadziłeś poprawny adres URL."
         },
-        "404-snapshot": {
+        "404-SNAPSHOT": {
             "title": "Nie znaleziono migawki",
             "message": "Szukana migawka nie istnieje."
         },
-        "404-preset": {
+        "404-PRESET": {
             "title": "Nie znaleziono profilu",
             "message": "Szukany profil konfiguracji nie istnieje."
         },
@@ -84,15 +84,15 @@
             "title": "Nie udało się załadować profilu",
             "message": "Klucz {{key}} jest nieokreślony lub pusty."
         },
-        "651-core-function": {
+        "651-CORE-FUNCTION": {
             "title": "Nie udało się załadować profilu",
             "message": "Wystąpił błąd składniowy w podstawowej funkcji profilu \"{{key}}\"."
         },
-        "651-variable": {
+        "651-VARIABLE": {
             "title": "Nie udało się załadować profilu",
             "message": "Wystąpił błąd podczas obliczania zmiennej \"{{key}}\"."
         },
-        "651-custom-function": {
+        "651-CUSTOM-FUNCTION": {
             "title": "Nie udało się załadować profilu",
             "message": "Wystąpił błąd podczas obliczania funkcji \"{{key}}\"."
         }

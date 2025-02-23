@@ -12,11 +12,11 @@
             "title": "Unauthorized",
             "message": "You are not authorized to access this resource. Please log in to continue."
         },
-        "401-login": {
+        "401-LOGIN": {
             "title": "Login failed",
             "message": "Incorrect username or password."
         },
-        "401-session": {
+        "401-SESSION": {
             "title": "Session expired",
             "message": "Please log in to the panel again."
         },
@@ -28,19 +28,19 @@
             "title": "{{resource, capitalize}} Not Found",
             "message": "The {{resource, lowercase}} you are looking for could not be found"
         },
-        "404-page": {
+        "404-PAGE": {
             "title": "Page Not Found",
             "message": "The page you are looking for could not be found. Please check the URL or contact the development team."
         },
-        "404-no-longer": {
+        "404-NO-LONGER": {
             "title": "{{resource, capitalize}} Not Found",
             "message": "Searched {{resource, lowercase}} no longer exists."
         },
-        "404-snapshot": {
+        "404-SNAPSHOT": {
             "title": "Snapshot Not Found",
             "message": "Selected snapshot no longer exists."
         },
-        "404-preset": {
+        "404-PRESET": {
             "title": "Preset Not Found",
             "message": "Selected preset no longer exists."
         },
@@ -92,15 +92,15 @@
             "title": "Could Not Load The Preset",
             "message": "{{key}} is either not defined or empty."
         },
-        "651-core-function": {
+        "651-CORE-FUNCTION": {
             "title": "Could Not Load The Preset",
             "message": "Syntax error occurred in the preset's {{key}} core function."
         },
-        "651-variable": {
+        "651-VARIABLE": {
             "title": "Could Not Load The Preset",
             "message": "An error occured during calculation of the \"{{key}}\" variable."
         },
-        "651-custom-function": {
+        "651-CUSTOM-FUNCTION": {
             "title": "Could Not Load The Preset",
             "message": "An error occured during calculation of the \"{{key}}\" custom function."
         }
