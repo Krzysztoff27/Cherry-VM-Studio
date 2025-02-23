@@ -32,10 +32,10 @@ const router = createBrowserRouter(
                     <Route path='/network-panel'            element={<NetworkPanel/>}/>    
                 </Route>
                 <Route element={<PanelLayout doubleNavbar/>}>
-                    <Route path='/users'                    element={<Navigate to='/users/basic'/>}/>
-                    <Route path='/users/admin'              element={<Admins/>}/>
-                    <Route path='/users/basic'              element={<Admins/>}/>
-                    <Route path='/users/groups'             element={<Admins/>}/>
+                    <Route path='/accounts'                 element={<Navigate to='/accounts/admins'/>}/>
+                    <Route path='/accounts/admins'          element={<Admins/>}/>
+                    <Route path='/accounts/users'           element={<Admins/>}/>
+                    <Route path='/accounts/groups'          element={<Admins/>}/>
                 </Route>
             </Route>
             <Route element={<ReverseProtected/>}>

@@ -1,19 +1,20 @@
 .navbar {
-    flex-direction: column;
-
-    padding-top: 0.9rem;
     height: 100%;
     width: 200px;
-    border-right: solid var(--mantine-color-dark-6) 2px;
-
-    display: flex;
+    padding-top: 0.9rem;
     align-items: center;
     gap: 0;
+
+    border-right: solid var(--mantine-color-dark-6) 2px;
 }
 
 .navLink {
     height: 4rem;
     padding-left: 1.25rem;
+}
+
+.navLink[data-active] {
+    color: var(--nl-color);
 }
 
 .heading {

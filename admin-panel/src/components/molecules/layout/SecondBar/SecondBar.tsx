@@ -34,8 +34,11 @@ export default function SecondBar(): React.ReactElement {
                     to={subpage.path}
                     leftSection={<subpage.icon/>}
                     label={tns(`navbar.${subpage.key}`)}
-                    key={subpage.key}
+                    key={i}
                     className={classes.navLink}
+                    active={active === i}
+                    variant='subtle'
+
                 />
             )}
         </Stack>

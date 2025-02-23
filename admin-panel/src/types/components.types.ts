@@ -164,3 +164,14 @@ export interface BusinessCardProps {
     comment: string;
     link?: string;
 }
+
+export interface CellProps {
+    getValue: () => any,
+    renderValue: () => any,
+}
+
+export interface TableSearchProps {
+    id: string;
+    setFilters: (prev: any) => any;
+    toggleAllRowsSelected: (val: boolean) => void;
+}

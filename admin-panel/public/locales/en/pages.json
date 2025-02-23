@@ -78,5 +78,16 @@
         "cherry-admin-panel": "❝ Cherry Admin Panel ❞",
         "project-logo": "Project logo",
         "connectivity": "API & Panel connectivity"
+    },
+    "accounts": {
+        "last-active-seconds_zero": "Now",
+        "last-active-seconds_one": "{{count}} second ago",
+        "last-active-seconds_other": "{{count}} seconds ago",
+        "last-active-minutes_one": "{{count}} minute ago",
+        "last-active-minutes_other": "{{count}} minutes ago",
+        "last-active-hours_one": "{{count}} hour ago",
+        "last-active-hours_other": "{{count}} hours ago",
+        "last-active-days_one": "{{count}} day ago",
+        "last-active-days_other": "{{count}} days ago"
     }
 }

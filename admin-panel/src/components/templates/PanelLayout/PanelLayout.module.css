@@ -6,8 +6,9 @@
     height: 100%; /* Fill the remaining height */
     display: flex;
     flex-direction: column;
-    padding-left: 85px;
-    padding-right: 4px;
+    /* padding-left: 75px; */
+    /* padding-right: 4px; */
+    padding: 0;
 
     /* background-size: 120px 120px;
     background-image: linear-gradient(to right, var(--mantine-color-dark-6) 2px, transparent 2px), 

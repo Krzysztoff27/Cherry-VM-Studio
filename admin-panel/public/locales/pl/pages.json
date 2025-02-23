@@ -67,5 +67,20 @@
                 "Isolated Intnet per VM": "Brak połączeń"
             }
         }
+    },
+    "accounts": {
+        "last-active-seconds_zero": "Teraz",
+        "last-active-seconds_one": "{{count}} sekundę temu",
+        "last-active-seconds_few": "{{count}} sekundy temu",
+        "last-active-seconds_many": "{{count}} sekund temu",
+        "last-active-minutes_one": "{{count}} minutę temu",
+        "last-active-minutes_few": "{{count}} minuty temu",
+        "last-active-minutes_many": "{{count}} minut temu",
+        "last-active-hours_one": "{{count}} godzinę temu",
+        "last-active-hours_few": "{{count}} godziny temu",
+        "last-active-hours_many": "{{count}} godzin temu",
+        "last-active-days_one": "{{count}} dzień temu",
+        "last-active-days_few": "{{count}} dni temu",
+        "last-active-days_many": "{{count}} dni temu"
     }
 }

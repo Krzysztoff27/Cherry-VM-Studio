@@ -1,15 +1,16 @@
 import React from "react";
-import UsersTable from "../../components/organisms/UsersTable/UsersTable";
-import { Paper } from "@mantine/core";
+import AccountTable from "../../components/organisms/AccountTable/AccountTable";
+import { Paper, Stack } from "@mantine/core";
+import classes from './Admins.module.css';
 
 const Admins = () : React.JSX.Element => {
     return (
-        <>
-            <Paper w='100%' bg="dark.8" radius='20px' p='xl'>
-                <UsersTable/>
+        <Stack w='100%'>
+            <Paper className={classes.tablePaper}>
+                <AccountTable/>
             </Paper>
 
-        </>
+        </Stack>
     );
 }
 

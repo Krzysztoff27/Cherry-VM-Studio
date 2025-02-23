@@ -15,23 +15,23 @@ const PAGES : Page[] = [
         icon: IconDeviceDesktop,
     },
     {
-        key: 'users',
-        path: '/users',
+        key: 'accounts',
+        path: '/accounts',
         icon: IconUsersGroup,
         subpages: [
             {
                 key: 'administrators',
-                path: '/users/admin',
+                path: '/accounts/admins',
                 icon: IconUserHexagon,
             },
             {
-                key: 'session-users',
-                path: '/users/basic',
+                key: 'users',
+                path: '/accounts/users',
                 icon: IconUsers,
             },
             {
                 key: 'groups',
-                path: '/users/groups',
+                path: '/accounts/groups',
                 icon: IconUsersGroup,
             }
         ]
