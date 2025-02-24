@@ -2,3 +2,4 @@ docker
 docker-compose
 python311
 libxslt-tools
+bridge-utils

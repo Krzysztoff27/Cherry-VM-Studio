@@ -1,0 +1,5 @@
+organization = cherry-vm-manager
+cn = s1
+tls_www_server
+encryption_key
+signing_key
