@@ -5,7 +5,7 @@ import { useFetchReturn } from "../types/hooks.types";
 
 const useFetch = (path: string, options: object | undefined = undefined): useFetchReturn => {
     const [data, setData] = useState<object | null>(null);
-    const [error, setError] = useState<Error | Response | null>(null);
+    const [error, setError] = useState<Response | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshValue, setRefreshValue] = useState<boolean>(false);
 

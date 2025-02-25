@@ -4,10 +4,12 @@ import Loading from "../../atoms/feedback/Loading/Loading.tsx";
 import useFetch from "../../../hooks/useFetch.ts";
 import MachineHeading from "../../organisms/MachineHeading/MachineHeading.tsx";
 import MachineDataTable from "../../organisms/MachineDataTable/MachineDataTable.tsx";
+import { MachineData } from "../../../types/api.types.ts";
 
 export default function MachineDataDisplay({ currentState, uuid }) {
     const { t } = useTranslation();
-    const { loading, error, data: machine } = useFetch(`/vm/${uuid}/networkdata`);
+    const { loading, error, data } = useFetch(`/vm/${uuid}/networkdata`);
+    const machine = data as MachineData;
 
     if (loading) return <Loading />;
     if (error) throw error;

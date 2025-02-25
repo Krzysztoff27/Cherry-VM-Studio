@@ -1,3 +1,8 @@
+export interface TokenRequestForm {
+    username: string;
+    password: string;
+}
+
 export type MachineStates = 'online' | 'offline' | 'loading' | 'fetching';
 
 export interface MachineData {

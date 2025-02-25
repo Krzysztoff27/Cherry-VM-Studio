@@ -1,11 +1,12 @@
 import { Avatar, Button, Center, Divider, Fieldset, Group, PasswordInput, Space, Text, TextInput } from '@mantine/core';
-import { Form, isNotEmpty, useForm } from '@mantine/form';
+import { isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import React from 'react';
 import useAuth from '../../hooks/useAuth.ts';
-import useApi from '../../hooks/useApi';
+import useApi from '../../hooks/useApi.ts';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { TokenRequestForm } from '../../types/api.types.ts';
 
 export default function LoginPage() {
     const { t } = useTranslation();
@@ -20,15 +21,7 @@ export default function LoginPage() {
         }
     })
 
-    /**
-     * @typedef {object} TokenRequestForm
-     * @property {string} username
-     * @property {string} password
-     * 
-     * Sends a postRequest request for the token with filled form data
-     * @param {TokenRequestForm} values 
-     */
-    async function authenticate(values) {
+    async function authenticate(values: TokenRequestForm) {
 
         const jsonResponse = await postRequest('/token', new URLSearchParams({
             username: values.username,

@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import useFetch from '../hooks/useFetch.ts';
 import Loading from '../components/atoms/feedback/Loading/Loading.tsx';
+
 /**
  * A wrapper component that protects authentication-restricted routes. It fetches user data
  * and determines if the user is allowed access or should be blocked.
@@ -16,9 +17,8 @@ import Loading from '../components/atoms/feedback/Loading/Loading.tsx';
  * If authentication is successful and the user data is successfully retrieved, the component renders 
  * the react-router-dom's <Outlet/> component, allowing access to the protected routes.
  * 
- * @returns {React.JSX.Element} <Outlet/>
  */
-export const Protected = () => {
+export const Protected = (): React.JSX.Element => {
     const location = useLocation();
     const { error, loading, data: user } = useFetch('user');
 
@@ -42,10 +42,9 @@ export const Protected = () => {
  * specifically: /virtual-machines path
  * 
  * If authentication failed, returns react-router-dom's <Outlet/> component, allowing user to access the login page.
- * @returns {React.JSX.Element} <Outlet/>
  */
 
-export const ReverseProtected = () => {
+export const ReverseProtected = (): React.JSX.Element => {
     const { loading, error, data: user } = useFetch('user');
 
     if (loading) return <Loading/>;

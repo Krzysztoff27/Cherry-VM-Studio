@@ -1,14 +1,12 @@
 export default class NumberAllocator {
-    constructor() {
-        this.freeNumbers = [];
-        this.currentMax = 0;
-    }
+    freeNumbers: number[] = [];
+    currentMax: number = 0;
 
-    setCurrent(current){
+    setCurrent(current: number){
         this.currentMax = current;
     }
 
-    remove(number) {
+    remove(number: number) {
         if(number > this.currentMax) return;
         this.freeNumbers.push(number);
         this.freeNumbers.sort((a, b) => a - b);
