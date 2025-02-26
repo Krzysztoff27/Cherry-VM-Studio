@@ -9,7 +9,7 @@ import { Notifications } from '@mantine/notifications';
 import '@mantine/core/styles.layer.css';
 import '@mantine/notifications/styles.layer.css';
 import '@mantine/charts/styles.layer.css';
-import './main.css';
+import './styles/main.css';
 
 import theme from './config/theme.config.ts';
 import './config/translation.config.ts';

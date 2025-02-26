@@ -10,9 +10,10 @@
         "virtual-machines": "Virtual Machines",
         "desktops": "Desktops",
         "network-panel": "Network Panel",
-        "accounts": "Accounts",
+        "accounts": "Account management",
         "administrators": "Administrators",
         "users": "Users",
+        "clients": "Clients",
         "groups": "User groups"
     }
 }

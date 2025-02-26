@@ -1,6 +1,6 @@
 import { ButtonProps, ModalProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
 import { TablerIcon } from "@tabler/icons-react";
-import { MouseEventHandler } from "react";
+import { ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
 import { PopoverProps } from "@mantine/core";
 import { MachineData, MachineState, MachineStates } from "./api.types";
@@ -174,4 +174,9 @@ export interface TableSearchProps {
     id: string;
     setFilters: (prev: any) => any;
     toggleAllRowsSelected: (val: boolean) => void;
+}
+
+export interface ModalButtonProps extends ButtonProps {
+    Modal: ComponentType<{opened: boolean; close: () => void}>;
+    modalProps?: any,
 }

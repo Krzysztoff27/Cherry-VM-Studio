@@ -10,6 +10,11 @@
         "virtual-machines": "Maszyny wirtualne",
         "desktops": "Desktopy",
         "network-panel": "Panel Konfiguracji Sieci",
-        "users": "Użytkownicy"
+        "accounts": "Zarządzanie kontami",
+        "users": "Użytkownicy",
+        "administrators": "Administratorzy",
+        "clients": "Konta klienckie",
+        "groups": "Grupy klientów"
+
     }
 }

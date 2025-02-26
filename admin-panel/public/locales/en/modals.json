@@ -21,6 +21,9 @@
             "warning_many": "{{count}} snapshots will be pernamently deleted!",
             "name-input-placeholder": "Enter new snapshot name",
             "delete-snapshot-label": "Delete snapshot"
+        },
+        "create-account": {
+            "title": "Create new account"
         }
     },
     "confirm": {

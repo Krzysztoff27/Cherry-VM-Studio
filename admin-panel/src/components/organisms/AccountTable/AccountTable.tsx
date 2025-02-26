@@ -1,66 +1,15 @@
-import { ActionIcon, Box, Button, Checkbox, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
-import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconDotsVertical, IconFileImport, IconFilter, IconUserPlus } from "@tabler/icons-react";
+import { ActionIcon, Box, Button, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
+import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconFileImport, IconFilter, IconUserPlus } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useState } from "react";
-import BuisnessCardCell from "../../atoms/table/BuisnessCardCell";
-import DateDifferenceCell from "../../atoms/table/DateDifferenceCell";
-import RolesCell from "../../atoms/table/RolesCell";
 import classes from './AccountTable.module.css';
 import TableSearch from "../../molecules/interactive/TableSearch/TableSearch";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import DATA from './usersData.local.js';
+import CreateAccountModal from "../../molecules/modals/CreateAccountModal/CreateAccountModal.jsx";
+import ModalButton from "../../atoms/interactive/ModalButton/ModalButton.jsx";
 
-const columns = [
-    {
-        accessorKey: 'selection',
-        size: 20,
-        enableSorting: false,
-        header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllRowsSelected()}
-                indeterminate={table.getIsSomeRowsSelected()}
-                onChange={() => table.toggleAllRowsSelected()} 
-                color='cherry'
-            />
-          ),
-          cell: ({ row }) => (
-            <Checkbox
-              checked={row.getIsSelected()}
-              disabled={!row.getCanSelect()}
-              onChange={row.getToggleSelectedHandler()}
-              color='cherry'
-            />
-        ),
-    },
-    {
-        accessorKey: 'details',
-        header: 'Name',
-        cell: BuisnessCardCell,
-        sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
-        filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
-    },
-    {
-        accessorKey: 'roles',
-        header: 'Roles',
-        enableSorting: false,
-        cell: RolesCell
-    },
-    {
-        accessorKey: 'lastActive',
-        header: 'Last Active',
-        cell: DateDifferenceCell,
-    },
-    {
-        accessorKey: 'options',
-        header: '',
-        enableSorting: false,
-        size: 20,
-        cell: () => <ActionIcon variant="transparent" color='dimmed'><IconDotsVertical /></ActionIcon>
-    }
-]
-
-const UsersTable = (): React.JSX.Element => {
-    const [data, setData] = useState(DATA);
+const AccountTable = ({columns, accountData}): React.JSX.Element => {
+    const [data, setData] = useState(accountData);
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({pageIndex: 0, pageSize: 10});
 
@@ -95,7 +44,16 @@ const UsersTable = (): React.JSX.Element => {
                         />
                         <Button fw={400} w={100} variant="default" leftSection={<IconFilter size={16} />}>Filters</Button>
                         <Button fw={400} w={180} variant="default" leftSection={<IconFileImport size={16} />}>Import accounts</Button>
-                        <Button w={180} variant="white" color="black" leftSection={<IconUserPlus size={16} stroke={3} />}>Create account</Button>
+                        <ModalButton 
+                            Modal={CreateAccountModal}
+                            modalProps={{accountType: 'Administrative'}}
+                            w={180}
+                            color="black" 
+                            variant="white" 
+                            leftSection={<IconUserPlus size={16} stroke={3} />}
+                        >
+                            Create account
+                        </ModalButton>
                     </Group>
                 </Group>
                 <Box className={classes.table} >
@@ -149,4 +107,4 @@ const UsersTable = (): React.JSX.Element => {
     );
 }
 
-export default UsersTable;
+export default AccountTable;

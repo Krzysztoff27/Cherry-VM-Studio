@@ -23,8 +23,8 @@ const PAGES : Page[] = [
                 icon: IconUserHexagon,
             },
             {
-                key: 'users',
-                path: '/accounts/users',
+                key: 'clients',
+                path: '/accounts/clients',
                 icon: IconUsers,
             },
             {

@@ -1,4 +1,5 @@
-import { Button, createTheme } from "@mantine/core";
+import { Button, createTheme, Input } from "@mantine/core";
+import classes from '../styles/variants.module.css';
 
 const theme = createTheme({
     fontFamily: 'FontAwesome, Poppins',
@@ -32,6 +33,6 @@ const theme = createTheme({
             "#d3172e",  // 11
             "#a61629",  // 12 - dark cherry color from logo
         ]
-    },
+    }
 });
 export default theme;
