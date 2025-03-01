@@ -78,6 +78,10 @@ runuser -u CherryWorker -- sudo certtool --generate-certificate \
                                     --outfile cherry-api_client_certificate.pem
 runuser -u CherryWorker -- sudo chmod 644 cherry-api_client_certificate.pem
 
+runuser -u CherryWorker -- docker exec -it cherry-api mkdir -p /etc/pki/CA
+runuser -u CherryWorker -- sudo docker cp certificate_authority_certificate.pem cherry-api:/etc/pki/CA/cacert.pem
 runuser -u CherryWorker -- docker exec -it cherry-api mkdir -p /etc/pki/libvirt/private
-runuser -u CherryWorker -- sudo docker cp cherry-api_client_key.pem cherry-api:/etc/pki/libvirt/private
-runuser -u CherryWorker -- sudo docker cp cherry-api_client_certificate.pem cherry-api:/etc/pki/libvirt
+runuser -u CherryWorker -- sudo docker cp cherry-api_client_key.pem cherry-api:/etc/pki/libvirt/private/clientkey.pem
+runuser -u CherryWorker -- sudo docker cp cherry-api_client_certificate.pem cherry-api:/etc/pki/libvirt/clientcert.pem
+
+

@@ -1,5 +1,5 @@
 organization = cherry-vm-manager
-cn = cherry-api
+cn = 10.10.10.3
 tls_www_client
 encryption_key
 signing_key

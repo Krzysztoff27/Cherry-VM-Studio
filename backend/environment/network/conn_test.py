@@ -1,5 +1,6 @@
+#!/usr/bin/env python
+
 import libvirt
-import libvirt.filters
 
 uri = 'qemu+tls://10.10.10.254/system'
 
@@ -8,11 +9,9 @@ api_cert = '/etc/pki/libvirt/cherry-api_client_certificate.pem'
 ca_cert = '/usr/local/share/ca-certificates/certificate_authority_certificate.pem'
 
 try:
-    conn = libvirt.openAuth(
-        uri,
-        [libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_NOECHOPROMPT],
-        [[libvirt.VIR_CRED_TYPE_TLS, api_key, api_cert, ca_cert]]
-    )
+    conn = libvirt.open(uri)
+    print(f"Successfully connected to {uri}")
+    conn.close()
 
 except libvirt.libvirtError as e:
     print(f"Failed to connect to libvirt: {e}")
