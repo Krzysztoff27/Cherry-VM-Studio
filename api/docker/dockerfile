@@ -1,14 +1,22 @@
 # syntax=docker/dockerfile:1.7-labs
-FROM python:alpine
+
+FROM python:3.13-alpine
 
 LABEL org.opencontainers.image.source=https://github.com/Krzysztoff27/Cherry-VM-Manager
 LABEL org.opencontainers.image.description="Cherry API"
 LABEL org.opencontainers.image.licenses=CC-BY-NC-ND-4.0
 
-WORKDIR /api  
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    pkgconfig \
+    && apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    libvirt-dev \
+    libvirt-libs
+
+WORKDIR /api
 
 COPY ./requirements.txt /api/requirements.txt
-
 RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
 
 COPY --exclude=./requirements.txt --exclude=./docker ./ /api

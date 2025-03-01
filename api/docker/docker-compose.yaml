@@ -5,10 +5,6 @@ services:
     image: "ghcr.io/krzysztoff27/cherry-api:latest"
     environment:
       - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=${ALGORITHM}
-      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-    ports:
-      - "8000:8000"
     volumes:
       - "/opt/cherry-vm-manager/auth/:/api/data/auth/:ro"
     networks:
