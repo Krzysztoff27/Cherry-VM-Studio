@@ -1,13 +1,11 @@
 import React from "react";
 import AccountTable from "../../../components/organisms/AccountTable/AccountTable";
-import { ActionIcon, Checkbox, Paper, Stack } from "@mantine/core";
+import { Checkbox, Paper, Stack } from "@mantine/core";
 import classes from './Admins.module.css';
 import DateDifferenceCell from "../../../components/atoms/table/DateDifferenceCell";
 import RolesCell from "../../../components/atoms/table/RolesCell";
 import BuisnessCardCell from "../../../components/atoms/table/BuisnessCardCell";
-import { IconDotsVertical } from "@tabler/icons-react";
-import ModalButton from "../../../components/atoms/interactive/ModalButton/ModalButton";
-import AccountDisplayModal from "../../../components/molecules/modals/AccountDisplayModal/AccountDisplayModal";
+import AccountOptionsCell from "../../../components/atoms/table/AccountOptionsCell";
 
 const columns = [
     {
@@ -52,15 +50,7 @@ const columns = [
         accessorKey: 'options',
         header: '',
         enableSorting: false,
-        cell: () => <ModalButton 
-            ModalComponent={AccountDisplayModal}
-            ButtonComponent={ActionIcon}
-            variant='transparent'
-            color='dimmed'
-            size='sm'
-        >
-            <IconDotsVertical/>
-        </ModalButton>
+        cell: AccountOptionsCell,
     }
 ]
 

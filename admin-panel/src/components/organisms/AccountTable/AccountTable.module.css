@@ -35,7 +35,7 @@
     border-bottom: none;
 }
 
-.tr:hover:not(:first-child):not(.selected) {
+.tr:hover:not(:has(.th)):not(.selected) {
     background-color: var(--mantine-color-dark-6);
 }
 
