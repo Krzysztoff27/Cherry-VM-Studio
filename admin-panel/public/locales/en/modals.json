@@ -18,7 +18,7 @@
             "description-empty1": "To get started, create a new snapshot by clicking the",
             "description-empty2": "button in the panel!",
             "warning_one": "{{count}} snapshot will be pernamently deleted!",
-            "warning_many": "{{count}} snapshots will be pernamently deleted!",
+            "warning_other": "{{count}} snapshots will be pernamently deleted!",
             "name-input-placeholder": "Enter new snapshot name",
             "delete-snapshot-label": "Delete snapshot"
         },

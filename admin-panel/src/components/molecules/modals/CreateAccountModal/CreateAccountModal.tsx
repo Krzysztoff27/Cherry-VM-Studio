@@ -8,7 +8,7 @@ const borderless = {
     input: classes.borderless,
 }
 
-export default function CreateAccountModal({ opened, close, accountType }): React.JSX.Element {
+export default function CreateAccountModal({ opened, onClose, accountType }): React.JSX.Element {
     const [name, setName] = useState('');
 
     const { tns } = useNamespaceTranslation('modals');
@@ -21,6 +21,7 @@ export default function CreateAccountModal({ opened, close, accountType }): Reac
             password: '',
             confirmPassword: '',
             roles: [],
+            groups: [],
         },
 
         validate: {
@@ -28,31 +29,31 @@ export default function CreateAccountModal({ opened, close, accountType }): Reac
         }
     })
 
-    const onClose = () => {
+    const closeModal = () => {
         form.reset();
-        close();
+        onClose();
     }
 
-    const onChange = () => {
+    const onFormChange = () => {
         const vals = form.getValues();
         setName(`${vals.name} ${vals.surname}`);
     }
 
-    const onSubmit = form.onSubmit(values => {
+    const onFormSubmit = form.onSubmit(values => {
         console.log(values);
-        onClose();
+        closeModal();
     });
 
     return (
 
         <Modal
             opened={opened}
-            onClose={onClose}
-            onChange={onChange}
+            onClose={closeModal}
+            onChange={onFormChange}
             title={tns('custom.create-account.title')}
             size='480'
         >
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onFormSubmit}>
             <Stack className={classes.container}>
                 <Group align='top' justify='space-between'>
                     <Stack>
@@ -78,7 +79,7 @@ export default function CreateAccountModal({ opened, close, accountType }): Reac
                             {...form.getInputProps('email')}
                         />
                     </Stack>
-                    <Avatar name={name} size={rem(128)} color="initials" />
+                    <Avatar name={name} size={rem(128)} color={name && 'initials'} />
                 </Group>
                 <PasswordInput
                     label='Account password'
@@ -100,18 +101,34 @@ export default function CreateAccountModal({ opened, close, accountType }): Reac
                     data={[accountType]}
                     value={accountType}
                     disabled
+                    autoFocus={false}
                 />
-                <MultiSelect
-                    clearable
-                    checkIconPosition='left'
-                    label='Roles:'
-                    data={['Machine Manager', 'Account Administrator']}
-                    classNames={borderless}
-                    key={form.key('roles')}
-                    {...form.getInputProps('roles')}
-                />
+                {accountType === 'Administrative' ? 
+                    <MultiSelect
+                        clearable
+                        checkIconPosition='left'
+                        label='Roles:'
+                        data={['Machine Manager', 'Account Administrator']}
+                        classNames={borderless}
+                        placeholder='Select roles'
+                        key={form.key('roles')}
+                        {...form.getInputProps('roles')}
+                        autoFocus
+                    /> :
+                    <MultiSelect
+                        clearable
+                        checkIconPosition='left'
+                        label='Groups:'
+                        data={['4ta2']}
+                        classNames={borderless}
+                        placeholder='Select groups'
+                        key={form.key('groups')}
+                        {...form.getInputProps('groups')}
+                        autoFocus
+                    />
+                }
                 <SimpleGrid cols={2}>
-                    <Button onClick={onClose} variant='light' color='cherry.9'>Cancel</Button>
+                    <Button onClick={closeModal} variant='light' color='cherry.9'>Cancel</Button>
                     <Button type='submit' variant='light' color='suse-green.8'>Confirm</Button>
                 </SimpleGrid>
             </Stack>

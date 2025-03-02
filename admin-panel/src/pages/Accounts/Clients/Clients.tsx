@@ -1,7 +1,7 @@
 import React from "react";
 import AccountTable from "../../../components/organisms/AccountTable/AccountTable";
 import { ActionIcon, Checkbox, Paper, Stack } from "@mantine/core";
-import classes from './Admins.module.css';
+import classes from './Clients.module.css';
 import DateDifferenceCell from "../../../components/atoms/table/DateDifferenceCell";
 import RolesCell from "../../../components/atoms/table/RolesCell";
 import BuisnessCardCell from "../../../components/atoms/table/BuisnessCardCell";
@@ -70,7 +70,7 @@ const Admins = () : React.JSX.Element => {
     return (
         <Stack w='100%'>
             <Paper className={classes.tablePaper}>
-                <AccountTable columns={columns} accountData={data}/>
+                <AccountTable columns={columns} accountData={data} accountType='Client'/>
             </Paper>
 
         </Stack>

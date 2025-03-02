@@ -36,3 +36,5 @@ export interface Page {
 }
 
 export type Credits = Credit[];
+
+export type AccountType = 'Administrative' | 'Client';

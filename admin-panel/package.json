@@ -21,6 +21,7 @@
     "@tanstack/react-table": "^8.21.2",
     "@xyflow/react": "^12.3.2",
     "fparser": "^3.1.0",
+    "framer-motion": "^12.4.7",
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^3.0.1",

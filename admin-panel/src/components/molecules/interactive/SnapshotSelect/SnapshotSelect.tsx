@@ -60,7 +60,7 @@ export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshot
         <>
             <ConfirmationModal
                 opened={confirmationOpened}
-                onCancel={onModalCancel}
+                onClose={onModalCancel}
                 onConfirm={onModalConfirm}
                 title={t('confirm.np-loading-config.title', {ns: 'modals'})}
                 confirmButtonProps={{ color: 'red.7' }}

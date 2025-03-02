@@ -134,13 +134,13 @@
             "title": "Snapshot Renaming Complete",
             "message_one": "Successfully renamed {{count}} snapshot.",
             "message_few": "Successfully renamed {{count}} snapshots.",
-            "message_many": "Successfully renamed {{count}} snapshots."
+            "message_other": "Successfully renamed {{count}} snapshots."
         },
         "snapshot-remove": {
             "title": "Snapshot Removal Complete",
             "message_one": "Successfully removed {{count}} snapshot.",
             "message_few": "Successfully removed {{count}} snapshots.",
-            "message_many": "Successfully removed {{count}} snapshots."
+            "message_other": "Successfully removed {{count}} snapshots."
         },
         "snapshot-loaded": {
             "title": "Snapshot Loaded",

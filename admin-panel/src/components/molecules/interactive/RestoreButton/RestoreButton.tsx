@@ -9,8 +9,6 @@ export default function RestoreButton({ onConfirm, buttonProps, modalProps }: Re
 
     const [opened, { open, close }] = useDisclosure();
 
-    const onClick = () => open();
-    const onCancel = () => close();
     const onConfirmModal = () => {
         close();
         onConfirm();
@@ -21,13 +19,13 @@ export default function RestoreButton({ onConfirm, buttonProps, modalProps }: Re
             <ConfirmationModal
                 {...modalProps}
                 opened={opened}
-                onCancel={onCancel}
+                onClose={close}
                 onConfirm={onConfirmModal}
                 confirmButtonProps={{ color: 'red.7' }}
             />
             <Button
                 {...buttonProps}
-                onClick={onClick}
+                onClick={open}
                 variant='default'
             >
                 {t('discard')}

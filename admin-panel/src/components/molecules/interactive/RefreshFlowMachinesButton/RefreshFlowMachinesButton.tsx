@@ -14,7 +14,6 @@ export default function RefreshFlowMachinesButton({isDirty, refreshMachines} : R
     const Icon = isDirty ? IconRefreshAlert : IconRefresh;
 
     const onClick = () => isDirty ? open() : onConfirm();
-    const onCancel = () => close();
     const onConfirm = () => {
         close();
         refreshMachines();
@@ -25,7 +24,7 @@ export default function RefreshFlowMachinesButton({isDirty, refreshMachines} : R
         <>
             <ConfirmationModal 
                 opened={opened} 
-                onCancel={onCancel}
+                onClose={close}
                 onConfirm={onConfirm}
                 title={t('confirm.np-refresh.title', {ns: 'modals'})}
                 message={t('confirm.np-refresh.description', {ns: 'modals'})}

@@ -131,7 +131,7 @@ export interface ConfirmationModalProps {
     title?: string;
     cancelButtonProps?: ButtonProps;
     confirmButtonProps?: ButtonProps;
-    onCancel: () => void;
+    onClose: () => void;
     onConfirm: () => void;
 }
 
@@ -177,6 +177,8 @@ export interface TableSearchProps {
 }
 
 export interface ModalButtonProps extends ButtonProps {
-    Modal: ComponentType<{opened: boolean; close: () => void}>;
+    ModalComponent: ComponentType<{opened: boolean; onClose: () => void}>;
+    ButtonComponent?: ComponentType<any>;
     modalProps?: any,
+    [key: string]: any,
 }

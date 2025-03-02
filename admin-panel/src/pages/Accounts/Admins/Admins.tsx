@@ -6,6 +6,8 @@ import DateDifferenceCell from "../../../components/atoms/table/DateDifferenceCe
 import RolesCell from "../../../components/atoms/table/RolesCell";
 import BuisnessCardCell from "../../../components/atoms/table/BuisnessCardCell";
 import { IconDotsVertical } from "@tabler/icons-react";
+import ModalButton from "../../../components/atoms/interactive/ModalButton/ModalButton";
+import AccountDisplayModal from "../../../components/molecules/modals/AccountDisplayModal/AccountDisplayModal";
 
 const columns = [
     {
@@ -50,12 +52,31 @@ const columns = [
         accessorKey: 'options',
         header: '',
         enableSorting: false,
-        cell: () => <ActionIcon variant="transparent" color='dimmed'><IconDotsVertical/></ActionIcon>
+        cell: () => <ModalButton 
+            ModalComponent={AccountDisplayModal}
+            ButtonComponent={ActionIcon}
+            variant='transparent'
+            color='dimmed'
+            size='sm'
+        >
+            <IconDotsVertical/>
+        </ModalButton>
     }
 ]
 
 const data = [
     {
+        uuid: '123456789',
+        details: {
+            'name': 'Tux',
+            'surname': '10',
+            'email': 'tux.10@domain.com'
+        },
+        roles: ['ACCOUNT MANAGER'],
+        lastActive: new Date('2025-02-25'),
+    },
+    {
+        uuid: 'abc',
         details: {
             'name': 'Tux',
             'surname': '10',
@@ -70,7 +91,7 @@ const Admins = () : React.JSX.Element => {
     return (
         <Stack w='100%'>
             <Paper className={classes.tablePaper}>
-                <AccountTable columns={columns} accountData={data}/>
+                <AccountTable columns={columns} accountData={data} accountType='Administrative'/>
             </Paper>
 
         </Stack>
