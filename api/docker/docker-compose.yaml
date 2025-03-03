@@ -1,6 +1,7 @@
 services:
   api:
     container_name: cherry-api
+    hostname: cherry-api
     restart: always
     image: "ghcr.io/krzysztoff27/cherry-api:latest"
     environment:
