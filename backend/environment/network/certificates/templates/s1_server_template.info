@@ -1,5 +1,7 @@
 organization = cherry-vm-manager
-cn = 10.10.10.254
+cn = 
+dns_name = 
+ip_address = 10.10.10.254
 tls_www_server
 encryption_key
 signing_key

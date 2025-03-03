@@ -11,6 +11,14 @@ if ((EUID != 0)); then
 fi
 
 ###############################
+# Modify server cert template
+###############################
+server_template='./templates/s1_server_template.info'
+hostname=$(cat /proc/sys/kernel/hostname)
+sed -i "s/^cn[[:space:]]*=[[:space:]]*$/cn = $hostname/" "$server_template"
+sed -i "s/^dns_name[[:space:]]*=[[:space:]]*$/dns_name = $hostname/" "$server_template"
+
+###############################
 #  Certificate Authority PK
 ###############################
 runuser -u CherryWorker -- sudo certtool --generate-privkey > certificate_authority_key.pem
@@ -27,7 +35,8 @@ runuser -u CherryWorker -- sudo certtool --generate-self-signed \
 runuser -u CherryWorker -- sudo chmod 644 certificate_authority_certificate.pem
 
 #Copy cert to the Cherry-API container
-runuser -u CherryWorker -- docker cp certificate_authority_certificate.pem cherry-api:/usr/local/share/ca-certificates
+runuser -u CherryWorker -- docker exec -it cherry-api mkdir -p /etc/pki/CA
+runuser -u CherryWorker -- sudo docker cp certificate_authority_certificate.pem cherry-api:/etc/pki/CA/cacert.pem
 runuser -u CherryWorker -- docker exec -it cherry-api update-ca-certificates
 
 #Copy cert to the host system
@@ -78,8 +87,6 @@ runuser -u CherryWorker -- sudo certtool --generate-certificate \
                                     --outfile cherry-api_client_certificate.pem
 runuser -u CherryWorker -- sudo chmod 644 cherry-api_client_certificate.pem
 
-runuser -u CherryWorker -- docker exec -it cherry-api mkdir -p /etc/pki/CA
-runuser -u CherryWorker -- sudo docker cp certificate_authority_certificate.pem cherry-api:/etc/pki/CA/cacert.pem
 runuser -u CherryWorker -- docker exec -it cherry-api mkdir -p /etc/pki/libvirt/private
 runuser -u CherryWorker -- sudo docker cp cherry-api_client_key.pem cherry-api:/etc/pki/libvirt/private/clientkey.pem
 runuser -u CherryWorker -- sudo docker cp cherry-api_client_certificate.pem cherry-api:/etc/pki/libvirt/clientcert.pem
