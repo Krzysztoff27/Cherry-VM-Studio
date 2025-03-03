@@ -17,7 +17,7 @@ fi
 
 ###############################
 #       env variables
-###############################
+###############################c
 source ../../env/infrastructure.env
 
 ###############################
@@ -69,6 +69,7 @@ runuser -u CherryWorker -- sudo ip netns exec ${CONTAINER_GUACD} ip link set dev
 runuser -u CherryWorker -- sudo ip netns exec ${NS_RASBUS} ip link set dev ${VETH_RASBUS_API} master ${BR_RASBR}
 runuser -u CherryWorker -- sudo ip netns exec ${NS_RASBUS} ip link set dev ${VETH_RASBUS_GUACD} master ${BR_RASBR}
 runuser -u CherryWorker -- sudo ip netns exec ${NS_RASBUS} ip link set dev ${VETH_RASBUS_EXT} master ${BR_RASBR}
+runuser -u CherryWorker -- sudo ip netns exec ${NS_RASBUS} ip link set dev ${VETH_RASBUS_LIBVIRT} master ${BR_RASBR}
 
 #attach VETH_VMBR_RASBUS end to the BR_VMBR on the host network namespace
 runuser -u CherryWorker -- sudo ip link set dev ${VETH_VMBR_RASBUS} master ${BR_VMBR}
