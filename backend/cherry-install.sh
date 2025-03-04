@@ -14,17 +14,22 @@ fi
 ###############################
 readonly LOGS_DIRECTORY='./logs/cherry-install/'
 LOGS_FILE="${LOGS_DIRECTORY}$(date +%d-%m-%y_%H-%M-%S).log"; readonly LOGS_FILE
+
 #Sourcing env variables
 source ./environment/env/directories.env
 source ./environment/env/colors.env
 source ./environment/env/addresses.env
+
 #Sourcing utilities
 source ./environment/system/utilities.sh
+
 #Installation specific functions
 source ./environment/system/install/general.sh
 source ./environment/system/install/docker.sh
 source ./environment/system/install/daemons.sh
 source ./environment/system/install/libvirt.sh
+source ./environment/system/install/network_infrastructure.sh
+
 #URI for virsh operations performed on the system session of qemu by CherryWorker. Export the variable for use in subshells.
 readonly LIBVIRT_DEFAULT_URI='qemu:///system'; export LIBVIRT_DEFAULT_URI
 
@@ -52,21 +57,47 @@ trap 'sigint_handler' SIGINT
 #Calls for certain functions - parts of the whole environment initialization process
 installation(){
     print_begin_notice
+
+    #Prerequisites - host os preparation
     #disable_network_manager
     #install_zypper_packages
     #install_zypper_patterns
     #create_user
+
+    #Host os daemons configuration
     configure_daemon_libvirt
     #configure_daemon_docker
+
+    #Docker containers configuration - Proxy, API, Panel, Apache Guacamole
     #create_docker_networks
     #get_domain_name
     #configure_container_traefik
     #configure_container_guacamole
     #configure_container_cherry-api
     #configure_container_cherry-admin-panel
-    #configure_file_ownership
+
+    #Network infrastructure configuration - cherry-rasBus namespace devices
+    attach_docker_namespaces
+    create_bridge_vm
+    create_ns_rasbus
+    create_veth_pairs
+    create_bridge_rasbr
+    attach_docker_containers
+    attach_veths_rasbus
+    create_bridge_vm
+    #Addressing previously created devices
+    address_ns_host
+    address_ns_rasbus
+    address_docker_containers
+
+    #Firewall configuration
     #create_vm_firewall
+
+    #Libvirt VM guests configuration
     create_vm_networks
+
+    #System configuration
+    #configure_file_ownership
     print_finish_notice
 }
 installation

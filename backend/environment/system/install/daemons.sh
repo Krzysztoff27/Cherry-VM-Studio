@@ -18,16 +18,24 @@ configure_daemon_libvirt(){
     runuser -u CherryWorker -- cp "$LIBVIRTD_CONFIG_FILE" "${LIBVIRTD_CONFIG_FILE}.bak"
     ok_handler
     printf '[i] Modifying libvirt monolithic daemon config: '
-    runuser -u CherryWorker -- set_config_param "listen_tls" 1 "${LIBVIRTD_CONFIG_FILE}"
-    runuser -u CherryWorker -- set_config_param "listen_tcp" 0 "${LIBVIRTD_CONFIG_FILE}"
-    runuser -u CherryWorker -- set_config_param "tls_port" "16514" "${LIBVIRTD_CONFIG_FILE}"
-    runuser -u CherryWorker -- set_config_param "listen_addr" "${IP_LIBVIRT}" "${LIBVIRTD_CONFIG_FILE}"
-    runuser -u CherryWorker -- set_config_param "auth_tls" "none" "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'listen_tls' 1 "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'listen_tcp' 0 "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'tls_port' '16514' "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'listen_addr' '10.10.10.254' "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'auth_tls' "none" "${LIBVIRTD_CONFIG_FILE}"
+    ok_handler
+    printf '[i] Installing libvirt TLS socket override file: '
+    runuser -u CherryWorker -- touch '/etc/systemd/system/libvirtd-tls.socket.d/override.conf'
+    override_lines=('[Socket]' 'ListenStream=' 'ListenStream=10.10.10.254:16514')
+    printf '%s\n' "${override_lines[@]}" > '/etc/systemd/system/libvirtd-tls.socket.d/override.conf'
     ok_handler
     printf '[i] Enabling libvirt monolithic daemon and TLS socket to run on startup: '
     runuser -u CherryWorker -- sudo systemctl -q stop libvirtd.service
     runuser -u CherryWorker -- sudo systemctl -q enable --now libvirtd-tls.socket
     runuser -u CherryWorker -- sudo systemctl -q enable libvirtd.service
+    ok_handler
+    printf '[i] Starting libvirt TLS socket: '
+    runsuer -u CherryWorker -- sudo systemctl -q start libvirtd-tls.socket
     ok_handler
     printf '[i] Starting libvirt monolithic daemon: '
     runuser -u CherryWorker -- sudo systemctl -q start libvirtd.service 
@@ -48,7 +56,7 @@ configure_daemon_docker(){
     printf '[i] Starting docker daemon: '
     systemctl -q start docker.service 
     ok_handler
-    printf "[i] Creating directory structure ($DIR_DOCKER) and copying docker files: "
+    printf "[i] Creating directory structure ("${DIR_DOCKER}") and copying docker files: "
     mkdir -p "$DIR_DOCKER"
     cp -r ../docker/. "$DIR_DOCKER"
     ok_handler
