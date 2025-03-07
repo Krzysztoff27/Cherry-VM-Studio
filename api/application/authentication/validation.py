@@ -24,8 +24,6 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> User | None:
     user = get_user_by_username(username)
     if user is None: raise CredentialsException()
     return user
-
-
     
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
