@@ -1,7 +1,8 @@
 import jwt
 from datetime import datetime, timedelta, timezone
 from application import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DELTA, REFRESH_TOKEN_EXPIRE_DELTA
-from .models import User, Token, TokenTypes, Tokens
+from .models import Token, TokenTypes, Tokens
+from application.users import User
 
 def create_token(type: TokenTypes, data: dict, expires_delta: timedelta) -> Token:
     to_encode = data.copy()

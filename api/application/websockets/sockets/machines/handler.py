@@ -3,7 +3,7 @@ from fastapi import status, HTTPException
 from json import JSONDecodeError
 from pydantic import ValidationError
 from application.exceptions import RaisedException
-from application.authentication.users import get_current_user
+from application.authentication.validation import get_authenticated_user
 from ...handlers.websocket_handler import WebSocketHandler
 from ...handlers.subscription_manager import SubscriptionManager
 from ...models import Command
@@ -31,13 +31,13 @@ class MachinesWebsocketHandler(WebSocketHandler):
     async def validate_command(self, json: dict) -> Command:
         try:
             command = Command.model_validate(json) # validate the structure
-            get_current_user(command.access_token) # validate the authorization token
+            get_authenticated_user(command.access_token) # validate the authorization token
             return command 
         except ValidationError:
             # Validation error occurs when command structure is invalid
             raise RaisedException("Command validation error. Ensure that sent messages follow the expected structure:\nhttps://krzysztof27.notion.site/Cherry-API-7923eecc00564cb38c4d01d6696d201f")
         except HTTPException as e:
-            # HTTPException is raised by get_current_user when token is invalid or user has missing permissions
+            # HTTPException is raised by get_authenticated_user when token is invalid or user has missing permissions
             if(e.status_code == status.HTTP_403_FORBIDDEN): 
                 raise RaisedException("Authenticated user does not belong to the access group.")
             raise RaisedException("Authentication failed.")
