@@ -9,6 +9,7 @@ import CreateAccountModal from "../../../modals/account/CreateAccountModal/Creat
 import ModalButton from "../../atoms/interactive/ModalButton/ModalButton.jsx";
 import ExpandingButton from "../../atoms/interactive/ExpandingButton/ExpandingButton.jsx";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
+import AccountTableControls from "../../molecules/interactive/AccountTableControls/AccountTableControls.jsx";
 
 const AccountTable = ({ columns, accountData, accountType }): React.JSX.Element => {
     const [data, setData] = useState(accountData);
@@ -34,48 +35,14 @@ const AccountTable = ({ columns, accountData, accountType }): React.JSX.Element 
         getPaginationRowModel: getPaginationRowModel(),
     });
 
-    const anyRowsSelected = () => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
+    
 
     return (
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
                     <TableStateHeading {...table} />
-                    <Group justify="flex-end">
-                        <TableSearch
-                            id='details'
-                            setFilters={onFilteringChange}
-                            toggleAllRowsSelected={table.toggleAllRowsSelected}
-                        />
-                        <Button fw={400} w={100} variant="default" leftSection={<IconFilter size={16} />}>Filters</Button>
-                        <Button fw={400} w={180} variant="default" leftSection={<IconFileImport size={16} />}>Import accounts</Button>
-                        <ModalButton
-                            ButtonComponent={ExpandingButton}
-                            ModalComponent={DeleteAccountsModal}
-                            modalProps={{
-                                uuids: table.getSelectedRowModel().rows.map(row => row.id)
-                            }}
-                            mounted={anyRowsSelected()}
-                            w={180}
-                            parentGap='1rem'
-                            variant="filled"
-                            color="cherry.9"
-                            leftSection={<IconTrash size={16} stroke={3} />}
-                        >
-                                Delete selected
-                        </ModalButton>
-                        <ModalButton
-                            ModalComponent={CreateAccountModal}
-                            modalProps={{ accountType }}
-                            w={180}
-                            color="black"
-                            variant="white"
-                            leftSection={<IconUserPlus size={16} stroke={3} />}
-                        >
-                            Create account
-                        </ModalButton>
-
-                    </Group>
+                    <AccountTableControls table={table} accountType={accountType} onFilteringChange={onFilteringChange}/>
                 </Group>
                 <Box className={classes.table} >
                     {table.getHeaderGroups().map(headerGroup =>

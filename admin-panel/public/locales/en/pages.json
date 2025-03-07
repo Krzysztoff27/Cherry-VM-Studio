@@ -13,12 +13,12 @@
         "cards": {
             "guacamole": {
                 "title": "Apache Guacamole Panel",
-                "description": "Apache Guacamole is a free and open-source, cross-platform, clientless remote desktop gateway maintained by the Apache Software Foundation.",
+                "description": "Guacamole is an HTML5 web application that provides access to desktop environments using remote desktop protocols (such as VNC or RDP).",
                 "logo-alt": "Apache Guacamole Logo"
             },
             "traefik": {
                 "title": "Traefik Proxy Panel",
-                "description": "Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
+                "description": "Traefik is a open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
                 "logo-alt": "Traefik Proxy Logo"
             }
         }
@@ -80,14 +80,39 @@
         "connectivity": "API & Panel connectivity"
     },
     "accounts": {
-        "last-active-seconds_zero": "Now",
-        "last-active-seconds_one": "{{count}} second ago",
-        "last-active-seconds_other": "{{count}} seconds ago",
-        "last-active-minutes_one": "{{count}} minute ago",
-        "last-active-minutes_other": "{{count}} minutes ago",
-        "last-active-hours_one": "{{count}} hour ago",
-        "last-active-hours_other": "{{count}} hours ago",
-        "last-active-days_one": "{{count}} day ago",
-        "last-active-days_other": "{{count}} days ago"
+        "controls": {
+            "all-accounts": "All accounts",
+            "selected-accounts": "Selected accounts",
+            "filtered-results": "Filtered results",
+            "search": "Search",
+            "filters": "Filters",
+            "import-accounts": "Import accounts",
+            "create-account": "Create account",
+            "delete-selected": "Delete selected",
+            "view-profile": "View profile",
+            "edit-account": "Edit account",
+            "delete": "Delete"   
+        },
+        "table": {
+            "headers": {
+                "user": "User",
+                "roles": "Roles",
+                "last-active": "Last active",
+                "groups": "Groups"
+            },
+            "cells": {
+                "last-active": {
+                    "seconds_zero": "Now",
+                    "seconds_one": "{{count}} second ago",
+                    "seconds_other": "{{count}} seconds ago",
+                    "minutes_one": "{{count}} minute ago",
+                    "minutes_other": "{{count}} minutes ago",
+                    "hours_one": "{{count}} hour ago",
+                    "hours_other": "{{count}} hours ago",
+                    "days_one": "{{count}} day ago",
+                    "days_other": "{{count}} days ago"
+                }
+            }
+        }
     }
 }

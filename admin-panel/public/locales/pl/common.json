@@ -34,5 +34,6 @@
     "desktop": "Desktop",
     "server": "Serwer",
     "changes-saved": "Zapisano zmiany",
-    "no-changes": "Brak wykrytych zmian"
+    "no-changes": "Brak wykrytych zmian",
+    "search": "Wyszukaj"
 }

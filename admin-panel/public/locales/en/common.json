@@ -34,5 +34,6 @@
     "desktop": "Desktop",
     "server": "Server",
     "changes-saved": "Changes saved",
-    "no-changes": "No changes"
+    "no-changes": "No changes",
+    "search": "Search"
 }

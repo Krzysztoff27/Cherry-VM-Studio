@@ -8,6 +8,7 @@ import BuisnessCardCell from "../../../components/atoms/table/BuisnessCardCell";
 import AccountOptionsCell from "../../../components/atoms/table/AccountOptionsCell";
 import { useDisclosure } from "@mantine/hooks";
 import ProfileModal from "../../../modals/account/ProfileModal/ProfileModal";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const data = [
     {
@@ -653,6 +654,8 @@ const data = [
 ];
 
 const Admins = (): React.JSX.Element => {
+    const {tns} = useNamespaceTranslation('pages');
+
     const columns = [
         {
             accessorKey: 'selection',
@@ -676,20 +679,20 @@ const Admins = (): React.JSX.Element => {
         },
         {
             accessorKey: 'details',
-            header: 'Name',
+            header: tns('accounts.table.headers.user'),
             cell: BuisnessCardCell,
             sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
             filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
         },
         {
             accessorKey: 'roles',
-            header: 'Roles',
+            header: tns('accounts.table.headers.roles'),
             enableSorting: false,
             cell: RolesCell
         },
         {
             accessorKey: 'lastActive',
-            header: 'Last Active',
+            header: tns('accounts.table.headers.last-active'),
             cell: DateDifferenceCell,
         },
         {

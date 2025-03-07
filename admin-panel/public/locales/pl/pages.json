@@ -1,8 +1,8 @@
 {
     "home": {
         "title": "Witaj w Wiśniowym Panelu Kontrolnym!",
-        "description1": "Ta aplikacja internetowa jest centrum zarządzania dla Twojego Cherry VM Managera.\nJej głównym celem jest zapewnienie przyjaznego interfejsu do kontrolowania wdrożonych maszyn.",
-        "description2": "W celu tworzenia bardziej zaawansowanych konfiguracji poniżej zalecamy przejść do paneli podserwisów:",
+        "description1": "Znajdujesz się w panelu kontrolnym stworzonym do zarządzania Twoim Cherry VM Managerem.\n Jego głównym celem jest zapewnienie intuicyjnego interfejsu do kontrolowania wdrożonych maszyn.",
+        "description2": "W celu tworzenia bardziej zaawansowane konfiguracje, skorzystaj z paneli serwisów, na których bazuje CVMM:",
         "cherry-admin-panel": {
             "start": "Panel umożliwia:",
             "feature1": "Monitorowanie maszyn wirtualnych i ich aktywności.",
@@ -13,12 +13,12 @@
         "cards": {
             "guacamole": {
                 "title": "Panel Apache Guacamole",
-                "description": "Apache Guacamole is a free and open-source, cross-platform, clientless remote desktop gateway maintained by the Apache Software Foundation.",
+                "description": "Guacamole to aplikacja webowa oparta na HTML5, która umożliwia dostęp do środowisk pulpitu zdalnego za pomocą protokołów takich jak VNC czy RDP.",
                 "logo-alt": "Apache Guacamole Logo"
             },
             "traefik": {
                 "title": "Panel Traefik Proxy",
-                "description": "Traefik is the leading open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
+                "description": "Traefik to open-source'owy reverse proxy i load balancer dla aplikacji opartych na protokołach HTTP i TCP.",
                 "logo-alt": "Traefik Proxy Logo"
             }
         }
@@ -60,7 +60,7 @@
             "load-config": "Załaduj konfigurację",
             "default-presets": "Profile konfiguracji",
             "saved-snapshots": "Zapisane migawki",
-            "presets" : {
+            "presets": {
                 "DesktopX - ServerX": "DesktopX - SerwerX",
                 "Unified Intnet": "Jedna sieć",
                 "Group-Based Intnet": "Sieć na grupę",
@@ -69,18 +69,43 @@
         }
     },
     "accounts": {
-        "last-active-seconds_zero": "Teraz",
-        "last-active-seconds_one": "{{count}} sekundę temu",
-        "last-active-seconds_few": "{{count}} sekundy temu",
-        "last-active-seconds_many": "{{count}} sekund temu",
-        "last-active-minutes_one": "{{count}} minutę temu",
-        "last-active-minutes_few": "{{count}} minuty temu",
-        "last-active-minutes_many": "{{count}} minut temu",
-        "last-active-hours_one": "{{count}} godzinę temu",
-        "last-active-hours_few": "{{count}} godziny temu",
-        "last-active-hours_many": "{{count}} godzin temu",
-        "last-active-days_one": "{{count}} dzień temu",
-        "last-active-days_few": "{{count}} dni temu",
-        "last-active-days_many": "{{count}} dni temu"
+        "controls": {
+            "all-accounts": "Wszystkie konta",
+            "selected-accounts": "Wybrane konta",
+            "filtered-results": "Przefiltrowane wyniki",
+            "search": "Wyszukaj",
+            "filters": "Filtruj",
+            "import-accounts": "Zaimportuj konta",
+            "create-account": "Utwórz konto",
+            "delete-selected": "Usuń zaznaczone",
+            "view-profile": "Zobacz profil",
+            "edit-account": "Edytuj profil",
+            "delete": "Usuń"
+        },
+        "table": {
+            "headers": {
+                "user": "Użytkownik",
+                "roles": "Role",
+                "last-active": "Ostatnia aktywność",
+                "groups": "Grupy"
+            },
+            "cells": {
+                "last-active": {
+                    "seconds_zero": "W tej chwili",
+                    "seconds_one": "{{count}} sekundę temu",
+                    "seconds_few": "{{count}} sekundy temu",
+                    "seconds_many": "{{count}} sekund temu",
+                    "minutes_one": "{{count}} minutę temu",
+                    "minutes_few": "{{count}} minuty temu",
+                    "minutes_many": "{{count}} minut temu",
+                    "hours_one": "{{count}} godzinę temu",
+                    "hours_few": "{{count}} godziny temu",
+                    "hours_many": "{{count}} godzin temu",
+                    "days_one": "{{count}} dzień temu",
+                    "days_few": "{{count}} dni temu",
+                    "days_many": "{{count}} dni temu"
+                }
+            }
+        }
     }
 }

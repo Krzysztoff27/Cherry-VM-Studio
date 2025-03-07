@@ -3,12 +3,17 @@ import { ActionIcon, Button, Menu, Portal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import ProfileModal from "../../../modals/account/ProfileModal/ProfileModal";
 import classes from "./AccountOptionsCell.module.css";
+import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const AccountOptionsCell = ({row}): React.JSX.Element => {
+    const uuid = row.id;
+    const {tns} = useNamespaceTranslation('pages');
     const [menuOpened, {close: closeMenu, toggle: toggleMenu}] = useDisclosure(false);
     const [profileOpened, {open: openProfile, close: closeProfile}] = useDisclosure(false);
+    const [deleteModalOpened, {open: openDeleteModal, close: closeDeleteModal}] = useDisclosure(false);
 
-    // we're not using ModalButton here since the modal would get unmounted along with the disapperaing button
+    // we're not using ModalButton here since the modal would get unmounted along with the disapperaing menu
 
     return (
         <>
@@ -16,7 +21,12 @@ const AccountOptionsCell = ({row}): React.JSX.Element => {
                 <ProfileModal 
                     opened={profileOpened} 
                     onClose={closeProfile}
-                    uuid={row.id}
+                    uuid={uuid}
+                />
+                <DeleteAccountsModal
+                    opened={deleteModalOpened}
+                    onClose={closeDeleteModal}
+                    uuids={[uuid]}
                 />
             </Portal>
             <Menu 
@@ -25,7 +35,6 @@ const AccountOptionsCell = ({row}): React.JSX.Element => {
                 shadow="xl" 
                 position="left" 
                 width={160} 
-                withArrow 
             >
                 <Menu.Target>
                     <ActionIcon
@@ -36,7 +45,7 @@ const AccountOptionsCell = ({row}): React.JSX.Element => {
                         <IconDotsVertical />
                     </ActionIcon>
                 </Menu.Target>
-                <Menu.Dropdown p={0}>
+                <Menu.Dropdown p={0} bd={'2px solid var(--mantine-color-dark-5)'}>
                     <Button.Group orientation="vertical">
                         <Button
                             className={classes.button}
@@ -48,7 +57,7 @@ const AccountOptionsCell = ({row}): React.JSX.Element => {
                                 closeMenu();
                             }}
                         >
-                            View profile
+                            {tns('accounts.controls.view-profile')}
                         </Button>
                         <Button 
                             className={classes.button}
@@ -60,15 +69,19 @@ const AccountOptionsCell = ({row}): React.JSX.Element => {
                                 closeMenu();
                             }}
                         >
-                            Edit account
+                            {tns('accounts.controls.edit-account')}
                         </Button>
                         <Button 
                             className={`${classes.button} ${classes.delete}`} 
                             variant="default"
                             justify="right"
                             rightSection={<IconTrash size={20}/>}
+                            onClick={() => {
+                                openDeleteModal();
+                                closeMenu();
+                            }}
                         >
-                            Delete
+                            {tns('accounts.controls.delete')}
                         </Button>
                     </Button.Group>
                 </Menu.Dropdown>
