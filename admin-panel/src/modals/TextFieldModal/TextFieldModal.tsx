@@ -1,8 +1,8 @@
 import { Button, Loader, Modal, Stack, TextInput } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import { TextFieldModalProps } from "../../../../types/components.types";
 import { useTranslation } from "react-i18next";
 import { useField } from "@mantine/form";
+import { TextFieldModalProps } from "../../types/components.types";
 
 const TextFieldModal = (p : TextFieldModalProps) : React.JSX.Element => {
     const { t } = useTranslation();

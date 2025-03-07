@@ -2,7 +2,9 @@ import { Avatar, Badge, Button, Group, List, Modal, PasswordInput, Stack, Text, 
 import { useDisclosure } from "@mantine/hooks";
 import { IconEdit } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import RolesCell from "../../../atoms/table/RolesCell";
+import RolesCell from "../../../components/atoms/table/RolesCell";
+import ModalButton from "../../../components/atoms/interactive/ModalButton/ModalButton";
+import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 
 const EditMode = ({ onSubmit, onClose, toggle }) => (
     <>
@@ -78,9 +80,9 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
                         }}
 
                     />
-                    <Button variant="default" flex='1' leftSection={<IconEdit size={20} />} bd='none'>
+                    <ModalButton ModalComponent={ChangePasswordModal} variant="default" flex='1' leftSection={<IconEdit size={20} />} bd='none'>
                         Change password
-                    </Button>
+                    </ModalButton>
                 </Group>
 
             </Stack>
@@ -101,8 +103,8 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
             }
         </Group>
         <Group w='100%' justify="center">
-            <Button w={100} variant="light" color='cherry' onClick={toggle}>Cancel</Button>
-            <Button w={100} variant="light" color='suse-green' onClick={() => {
+            <Button w={100} variant="light" color='gray' onClick={toggle}>Cancel</Button>
+            <Button w={100} variant="white" c='black' onClick={() => {
                 onSubmit();
                 toggle();
             }}>Save</Button>
@@ -116,9 +118,9 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
         <Stack align='center' gap='4' w='100%'>
             <Title order={5} c='dimmed' fw='500'>janusz.maurykowski@domain.domain2.com</Title>
             <Title order={3}>Janusz Maurykowski</Title>
-            <Button variant="default" w='50%' m='12' leftSection={<IconEdit size={20} />} bd='none'>
+            <ModalButton ModalComponent={ChangePasswordModal} variant="default" w='50%' m='12' leftSection={<IconEdit size={20} />} bd='none'>
                 Change password
-            </Button>
+            </ModalButton>
         </Stack>
         <List size='sm' c='dark.1'>
             <List.Item>This user can VIEW, MANAGE all machines.</List.Item>
@@ -126,7 +128,7 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
             <List.Item>This user can VIEW, MANAGE owned client groups.</List.Item>
             <List.Item>This user can CREATE new client groups.</List.Item>
         </List>
-            
+
         <Group w='80%' bg='dark.8' p='sm' flex={1} align="start" style={{ borderRadius: '8px' }}>
             {
                 ["TEACHER", "GROUP CREATOR"].map((role, i) => (
@@ -149,10 +151,10 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
     </>
 )
 
-const AccountDisplayModal = ({ opened, onClose }): React.JSX.Element => {
+const ProfileModal = ({ opened, onClose, uuid }): React.JSX.Element => {
     const [editMode, { toggle, close: closeEditMode }] = useDisclosure(false);
 
-    // useEffect(() => {closeEditMode()}, [opened])
+    useEffect(() => { closeEditMode() }, []);
 
     const onSubmit = () => {
 
@@ -165,13 +167,13 @@ const AccountDisplayModal = ({ opened, onClose }): React.JSX.Element => {
             size='lg'
         >
             <Stack align="center" gap='sm' h='560'>
-                {editMode ? 
-                    <EditMode onSubmit={onSubmit} onClose={onClose} toggle={toggle}/> :
-                    <ViewMode onSubmit={onSubmit} onClose={onClose} toggle={toggle}/>
+                {editMode ?
+                    <EditMode onSubmit={onSubmit} onClose={onClose} toggle={toggle} /> :
+                    <ViewMode onSubmit={onSubmit} onClose={onClose} toggle={toggle} />
                 }
             </Stack>
         </Modal>
     );
 }
 
-export default AccountDisplayModal;
+export default ProfileModal;

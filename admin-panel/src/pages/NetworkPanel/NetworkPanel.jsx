@@ -9,7 +9,7 @@ import FloatingConnectionLine from '../../components/atoms/flow-connections/Floa
 import FlowPanel from '../../components/organisms/FlowPanel/FlowPanel.tsx';
 import IntnetNode from '../../components/atoms/flow-nodes/IntnetNode/IntnetNode.jsx';
 import MachineNode from '../../components/atoms/flow-nodes/MachineNode/MachineNode.jsx';
-import Prompt from '../../components/molecules/modals/Prompt/Prompt.jsx';
+import Prompt from '../../modals/base/Prompt/Prompt.jsx';
 
 import useFetch from '../../hooks/useFetch.ts';
 import useApi from '../../hooks/useApi';

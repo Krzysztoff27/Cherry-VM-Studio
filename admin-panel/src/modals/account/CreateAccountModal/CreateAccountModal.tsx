@@ -1,6 +1,6 @@
 import { Avatar, Button, Group, Modal, MultiSelect, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from '@mantine/core';
 import classes from './CreateAccountModal.module.css';
-import useNamespaceTranslation from '../../../../hooks/useNamespaceTranslation';
+import useNamespaceTranslation from '../../../hooks/useNamespaceTranslation';
 import { matchesField, useForm } from '@mantine/form';
 import { useState } from 'react';
 

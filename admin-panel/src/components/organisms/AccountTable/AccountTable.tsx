@@ -5,10 +5,10 @@ import { useState } from "react";
 import classes from './AccountTable.module.css';
 import TableSearch from "../../molecules/interactive/TableSearch/TableSearch";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import CreateAccountModal from "../../molecules/modals/CreateAccountModal/CreateAccountModal.jsx";
+import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
 import ModalButton from "../../atoms/interactive/ModalButton/ModalButton.jsx";
 import ExpandingButton from "../../atoms/interactive/ExpandingButton/ExpandingButton.jsx";
-import DeleteAccountsModal from "../../molecules/modals/DeleteAccountsModal/DeleteAccountsModal.jsx";
+import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 
 const AccountTable = ({ columns, accountData, accountType }): React.JSX.Element => {
     const [data, setData] = useState(accountData);

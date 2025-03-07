@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core';
-import ConfirmationModal from '../../../atoms/modals/ConfirmationModal/ConfirmationModal';
 import { useDisclosure } from '@mantine/hooks';
 import { useTranslation } from 'react-i18next';
 import { RestoreButtonProps } from '../../../../types/components.types';
+import ConfirmationModal from '../../../../modals/base/ConfirmationModal/ConfirmationModal';
 
 export default function RestoreButton({ onConfirm, buttonProps, modalProps }: RestoreButtonProps) {
     const { t } = useTranslation();

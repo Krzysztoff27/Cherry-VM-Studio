@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import useApi from "../../../../hooks/useApi.ts";
-import ConfirmationModal from "../../../atoms/modals/ConfirmationModal/ConfirmationModal.tsx";
+import ConfirmationModal from "../../../../modals/base/ConfirmationModal/ConfirmationModal.tsx";
 import { SnapshotSelectProps } from "../../../../types/components.types.ts";
 
 const VALUE_SEPERATOR = ':::';

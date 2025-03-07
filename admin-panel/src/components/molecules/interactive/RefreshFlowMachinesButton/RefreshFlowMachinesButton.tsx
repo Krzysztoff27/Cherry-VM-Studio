@@ -3,8 +3,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconRefresh, IconRefreshAlert } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import useMantineNotifications from '../../../../hooks/useMantineNotifications';
-import ConfirmationModal from '../../../atoms/modals/ConfirmationModal/ConfirmationModal';
 import { RefreshFlowMachinesButtonProps } from '../../../../types/components.types';
+import ConfirmationModal from '../../../../modals/base/ConfirmationModal/ConfirmationModal';
 
 export default function RefreshFlowMachinesButton({isDirty, refreshMachines} : RefreshFlowMachinesButtonProps) {
     const { t } = useTranslation();

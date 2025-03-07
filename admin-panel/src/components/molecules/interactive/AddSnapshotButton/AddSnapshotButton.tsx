@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconCameraPlus } from "@tabler/icons-react";
-import AddSnapshotModal from "../../modals/AddSnapshotModal/AddSnapshotModal";
+import AddSnapshotModal from "../../../../modals/networks/AddSnapshotModal/AddSnapshotModal";
 
 export default function AddSnapshotButton({ postSnapshot, initiateSnapshotDataUpdate }) {
     const [opened, { open, close }] = useDisclosure();

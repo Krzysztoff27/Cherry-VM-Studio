@@ -1,5 +1,5 @@
 import React from "react";
-import ConfirmationModal from "../../../atoms/modals/ConfirmationModal/ConfirmationModal";
+import ConfirmationModal from "../../base/ConfirmationModal/ConfirmationModal";
 
 const DeleteAccountsModal = ({opened, onClose, uuids}) : React.JSX.Element => {
 

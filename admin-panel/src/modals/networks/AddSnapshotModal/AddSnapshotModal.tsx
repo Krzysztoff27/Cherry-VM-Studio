@@ -1,9 +1,9 @@
 import { List, Stack, Text } from "@mantine/core";
 import { useState } from "react";
-import useErrorHandler from "../../../../hooks/useErrorHandler";
-import useMantineNotifications from "../../../../hooks/useMantineNotifications";
-import TextFieldModal from "../../../atoms/modals/TextFieldModal/TextFieldModal";
-import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
+import useErrorHandler from "../../../hooks/useErrorHandler.ts";
+import useMantineNotifications from "../../../hooks/useMantineNotifications.tsx";
+import TextFieldModal from "../../base/TextFieldModal/TextFieldModal.tsx";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.ts";
 
 const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpdate }) => {
     const { tns } = useNamespaceTranslation('modals');
