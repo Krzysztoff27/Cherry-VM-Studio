@@ -14,16 +14,22 @@ fi
 ###############################
 readonly LOGS_DIRECTORY='./logs/cherry-remove/'
 LOGS_FILE="${LOGS_DIRECTORY}$(date +%d-%m-%y_%H-%M-%S).log"; readonly LOGS_FILE
+
 #Sourcing env variables
 source ./environment/env/directories.env
 source ./environment/env/colors.env
+source ./environment/env/infrastructure.env
+
 #Sourcing utilities
 source ./environment/system/utilities.sh
+
 #Removal specific functions
 source ./environment/system/remove/general.sh
 source ./environment/system/remove/docker.sh
 source ./environment/system/remove/daemons.sh
 source ./environment/system/remove/libvirt.sh
+source ./environment/system/remove/network_infrastructure.sh
+
 #URI for virsh operations performed on the system session of qemu by CherryWorker. Export the variable for use in subshells.
 readonly LIBVIRT_DEFAULT_URI='qemu:///system'; export LIBVIRT_DEFAULT_URI
 
@@ -51,15 +57,29 @@ trap 'sigint_handler' SIGINT
 #Calls for certain functions - parts of the whole environment removal process
 removal(){
     print_begin_notice
+    
+
+    #VM removal
     remove_vm_networks
     #remove_vm_firewall
+
+    #Network infrastructure removal
+    cleanup_ns_rasbus
+    cleanup_host_os
+    remove_docker_namespaces
+
+    #Docker infrastructure removal
     #configure_container_guacamole
     #configure_container_traefik
     #configure_container_cherry-api
     #configure_container_cherry-admin-panel
     #remove_docker_networks
+
+    #System daemons cleanup
     #configure_daemon_docker
     #configure_daemon_libvirt
+
+    #System cleanup 
     #remove_user
     #remove_zypper_patterns
     #remove_zypper_packages

@@ -18,7 +18,7 @@ LOGS_FILE="${LOGS_DIRECTORY}$(date +%d-%m-%y_%H-%M-%S).log"; readonly LOGS_FILE
 #Sourcing env variables
 source ./environment/env/directories.env
 source ./environment/env/colors.env
-source ./environment/env/addresses.env
+source ./environment/env/infrastructure.env
 
 #Sourcing utilities
 source ./environment/system/utilities.sh
