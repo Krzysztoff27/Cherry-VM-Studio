@@ -1,4 +1,4 @@
-import { Button, Group } from "@mantine/core";
+import { ActionIcon, Button, Group, useMatches } from "@mantine/core";
 import React from "react";
 import TableSearch from "../TableSearch/TableSearch";
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
@@ -8,50 +8,143 @@ import { IconFileImport, IconFilter, IconTrash, IconUserPlus } from "@tabler/ico
 import CreateAccountModal from "../../../../modals/account/CreateAccountModal/CreateAccountModal";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
-const AccountTableControls = ({table, accountType, onFilteringChange}): React.JSX.Element => {
-    const {tns} = useNamespaceTranslation('pages');
+const AccountTableControls = ({ table, accountType, onFilteringChange }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages");
     const anyRowsSelected = () => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
-    const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id)
+    const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
+
+    const createAccountButton = useMatches({
+        base: {
+            component: ActionIcon,
+            props: {
+                size: 36,
+                color: "black",
+                variant: "white",
+            },
+            children: (
+                <IconUserPlus
+                    size={20}
+                    stroke={3}
+                />
+            ),
+        },
+        lg: {
+            component: Button,
+            props: {
+                w: 180,
+                color: "black",
+                variant: "white",
+                leftSection: (
+                    <IconUserPlus
+                        size={16}
+                        stroke={3}
+                    />
+                ),
+            },
+            children: tns("accounts.controls.create-account"),
+        },
+    });
+
+    const filterButton = useMatches({
+        base: {
+            component: ActionIcon,
+            props: { size: "36", variant: "default" },
+            children: <IconFilter size={20} />,
+        },
+        xl: {
+            component: Button,
+            props: { fw: 400, w: 120, variant: "default", leftSection: <IconFilter size={16} /> },
+            children: tns("accounts.controls.filters"),
+        },
+    });
+
+    const importButton = useMatches({
+        base: {
+            component: ActionIcon,
+            props: { size: "36", variant: "default" },
+            children: <IconFileImport size={20} />,
+        },
+        xl: {
+            component: Button,
+            props: { fw: 400, w: 140, variant: "default", leftSection: <IconFileImport size={16} /> },
+            children: tns("accounts.controls.import"),
+        },
+    });
+
+    const deleteButton = useMatches({
+        base: {
+            props: {
+                buttonProps: {
+                    ButtonComponent: ActionIcon,
+                    mounted: anyRowsSelected(),
+                    w: 36,
+                    h: 36,
+                    parentGap: "1rem",
+                    variant: "filled",
+                    color: "cherry.9",
+                },
+            },
+            children: (
+                <IconTrash
+                    size={20}
+                    stroke={3}
+                />
+            ),
+        },
+        lg: {
+            props: {
+                buttonProps: {
+                    ButtonComponent: Button,
+                    mounted: anyRowsSelected(),
+                    w: 180,
+                    parentGap: "1rem",
+                    variant: "filled",
+                    color: "cherry.9",
+                    leftSection: (
+                        <IconTrash
+                            size={16}
+                            stroke={3}
+                        />
+                    ),
+                },
+            },
+            children: tns("accounts.controls.delete-selected"),
+        },
+    });
 
     return (
-        <Group justify="flex-end">
+        <Group
+            justify="flex-end"
+            flex="1"
+        >
             <TableSearch
-                id='details'
+                id="details"
                 setFilters={onFilteringChange}
                 toggleAllRowsSelected={table.toggleAllRowsSelected}
+                maw="300"
+                miw="100px"
+                flex="1"
             />
-            <Button fw={400} w={100} variant="default" leftSection={<IconFilter size={16} />}>
-                {tns('accounts.controls.filters')}
-            </Button>
-            <Button fw={400} w={180} variant="default" leftSection={<IconFileImport size={16} />}>
-                {tns('accounts.controls.import-accounts')}
-            </Button>
+            <filterButton.component {...filterButton.props}>{filterButton.children}</filterButton.component>
+            <importButton.component {...importButton.props}>{importButton.children}</importButton.component>
+            <ModalButton
+                ModalComponent={CreateAccountModal}
+                ButtonComponent={createAccountButton.component}
+                buttonProps={createAccountButton.props}
+                modalProps={{ accountType }}
+            >
+                {createAccountButton.children}
+            </ModalButton>
             <ModalButton
                 ButtonComponent={ExpandingButton}
                 ModalComponent={DeleteAccountsModal}
-                modalProps={{uuids: selectedUuids}}
-                mounted={anyRowsSelected()}
-                w={180}
-                parentGap='1rem'
-                variant="filled"
-                color="cherry.9"
-                leftSection={<IconTrash size={16} stroke={3} />}
+                modalProps={{ uuids: selectedUuids }}
+                {...deleteButton.props}
             >
-                {tns('accounts.controls.delete-selected')}
+                {deleteButton.children}
             </ModalButton>
-            <ModalButton
-                ModalComponent={CreateAccountModal}
-                modalProps={{ accountType }}
-                w={180}
-                color="black"
-                variant="white"
-                leftSection={<IconUserPlus size={16} stroke={3} />}
-            >
-                {tns('accounts.controls.create-account')}
-            </ModalButton>
-
         </Group>
     );
-}
+};
 
 export default AccountTableControls;

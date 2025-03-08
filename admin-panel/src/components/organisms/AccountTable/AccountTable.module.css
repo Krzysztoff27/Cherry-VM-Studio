@@ -1,4 +1,5 @@
-.container, .top{
+.container,
+.top {
     flex: 1;
     min-height: 0;
 }
@@ -47,21 +48,26 @@
     background-color: color-mix(in srgb, var(--mantine-color-cherry-9) 15%, transparent);
 }
 
-.tr > * {
-    flex: 1;
-}
-
-.tr > *:first-child, .tr > *:last-child {
-    flex: 0;
-    min-width: 50px;
-    justify-content: center;
-}
-
-.th, .td {
+.th,
+.td {
+    flex: 2;
+    min-width: 100px;
     display: flex;
     align-items: center;
     gap: 8px;
+    overflow: hidden;
 
     padding: var(--mantine-spacing-md);
-    
+}
+
+.th:nth-child(4),
+.td:nth-child(4) {
+    flex: 1;
+}
+
+.tr > *:first-child,
+.tr > *:last-child {
+    flex: 0;
+    min-width: 50px;
+    justify-content: center;
 }

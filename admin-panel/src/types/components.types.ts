@@ -1,4 +1,4 @@
-import { ButtonProps, ModalProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
+import { ActionIconProps, ButtonProps, ModalProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
 import { TablerIcon } from "@tabler/icons-react";
 import { ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
@@ -27,22 +27,22 @@ export interface MediumPanelButonProps extends ButtonProps {
 }
 
 export interface NavButtonProps {
-    label: string;              // aria-label
-    active?: boolean;           // is currently selected? default = false
+    label: string; // aria-label
+    active?: boolean; // is currently selected? default = false
     icon: React.ReactElement;
-    [x: string]: unknown
+    [x: string]: unknown;
 }
 
 export interface MachineTitleProps extends TitleProps {
     machine: MachineData;
 }
 
-export interface MachineControlsProps { 
+export interface MachineControlsProps {
     currentState: MachineState;
     size?: string | number | null | undefined;
 }
 
-export interface SparklineWithTextProps extends Omit<SparklineProps, 'data'> {
+export interface SparklineWithTextProps extends Omit<SparklineProps, "data"> {
     label: string;
     chartData: Array<number>;
 }
@@ -58,7 +58,7 @@ export interface CollapsibleGroupToggleProps {
     label: string;
 }
 
-export interface PopoverRadioGroupProps extends Omit<PopoverProps, 'value' | 'onChange' | 'classNames'> {
+export interface PopoverRadioGroupProps extends Omit<PopoverProps, "value" | "onChange" | "classNames"> {
     value: string;
     options: { value: string; label: string }[];
     // target: React.JSX.Element;
@@ -118,7 +118,7 @@ export interface ApplyButtonProps extends ButtonProps {
     isDirty?: boolean | null;
 }
 
-export interface RestoreButtonProps { 
+export interface RestoreButtonProps {
     onConfirm: () => void;
     buttonProps: ButtonProps;
     modalProps: object;
@@ -158,27 +158,40 @@ export interface ContentTableProps {
 }
 
 export interface BusinessCardProps {
-    imageSrc: string,
-    alt?: string,
+    imageSrc: string;
+    alt?: string;
     name: string;
     comment: string;
     link?: string;
+    withAvatar?: boolean;
 }
 
 export interface CellProps {
-    getValue: () => any,
-    renderValue: () => any,
+    getValue: () => any;
+    renderValue: () => any;
 }
 
 export interface TableSearchProps {
     id: string;
     setFilters: (prev: any) => any;
     toggleAllRowsSelected: (val: boolean) => void;
+    [x: string]: any;
 }
 
-export interface ModalButtonProps extends ButtonProps {
-    ModalComponent: ComponentType<{opened: boolean; onClose: () => void}>;
+export interface ModalButtonProps {
+    ModalComponent: ComponentType<{ opened: boolean; onClose: () => void }>;
     ButtonComponent?: ComponentType<any>;
-    modalProps?: any,
-    [key: string]: any,
+    modalProps?: any;
+    buttonProps?: any;
+    children: any;
+}
+
+export interface ExpandingButtonProps extends ButtonProps {
+    ButtonComponent?: ComponentType<any>;
+    parentGap: string; // the gap property in the parent flex container
+    mounted: boolean;
+    children: any;
+    ease: string;
+    duration: number;
+    w: number;
 }

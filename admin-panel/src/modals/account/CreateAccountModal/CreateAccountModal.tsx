@@ -103,7 +103,7 @@ export default function CreateAccountModal({ opened, onClose, accountType }): Re
                     disabled
                     autoFocus={false}
                 />
-                {accountType === 'Administrative' ? 
+                {accountType === 'administrative' ? 
                     <MultiSelect
                         clearable
                         checkIconPosition='left'

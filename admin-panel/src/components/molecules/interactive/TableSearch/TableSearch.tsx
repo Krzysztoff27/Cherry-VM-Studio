@@ -5,7 +5,7 @@ import { Filter } from "../../../../types/table.types";
 import { TableSearchProps } from "../../../../types/components.types";
 import { useTranslation } from "react-i18next";
 
-const TableSearch = ({ setFilters, id, toggleAllRowsSelected } : TableSearchProps): React.JSX.Element => {
+const TableSearch = ({ setFilters, id, toggleAllRowsSelected, ...props } : TableSearchProps): React.JSX.Element => {
     const {t} = useTranslation();
 
     const updateFilters = (value: string) => setFilters((prev: Filter[]) =>
@@ -19,10 +19,10 @@ const TableSearch = ({ setFilters, id, toggleAllRowsSelected } : TableSearchProp
 
     return (
         <TextInput
-            w={300}
             placeholder={t('search')}
             leftSection={<IconSearch size={16} />}
             onChange={onChange}
+            {...props}
         />
     );
 }
