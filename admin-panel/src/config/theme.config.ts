@@ -5,6 +5,13 @@ const theme = createTheme({
     fontFamily: 'FontAwesome, Poppins',
     defaultRadius: 'md',
     primaryColor: 'cherry',
+    breakpoints: {
+        xs: '30em',
+        sm: '48em',
+        md: '72em',
+        lg: '84em',
+        xl: '96em',
+    },
     colors: {
         'suse-green': [
             "#f2fde7",
