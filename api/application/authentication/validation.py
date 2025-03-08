@@ -1,16 +1,13 @@
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
-from passlib.context import CryptContext
 from application.exceptions import CredentialsException
-from typing import Callable
 from application import SECRET_KEY, ALGORITHM
 
 from .models import Token, TokenTypes
 from .tokens import is_token_of_type
+from .passwords import verify_password
 from application.users import get_user_by_username
 from application.users.models import User
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def validate_user_token(token: Token, token_type: TokenTypes) -> User | None:
     try:
@@ -24,9 +21,6 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> User | None:
     user = get_user_by_username(username)
     if user is None: raise CredentialsException()
     return user
-    
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
 
 def authenticate_user(username: str, password: str):
     user = get_user_by_username(username)

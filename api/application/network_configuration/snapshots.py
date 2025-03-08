@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 import re
-import uuid
+from uuid import uuid4
 
 from config import FILES_CONFIG
 from utils.file import JSONHandler
@@ -28,7 +28,7 @@ def validate_snapshot_name(snapshot_name: str):
 
 def create_snapshot(snapshot: SnapshotCreate):
     snapshots = get_snapshots()
-    snapshot = jsonable_encoder({**jsonable_encoder(snapshot), 'uuid': str(uuid.uuid4())})
+    snapshot = jsonable_encoder({**jsonable_encoder(snapshot), 'uuid': str(uuid4())})
     snapshots.append(snapshot)
     snapshots_database.write(snapshots)
     return Snapshot(**snapshot)

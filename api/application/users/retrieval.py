@@ -8,17 +8,20 @@ from .models import UserInDB, User, Filters
 
 users_database = JSONHandler(FILES_CONFIG.users)
 
-def get_user_by_username(username: str) -> User | None:
+def get_user_by_username(username: str) -> UserInDB | None:
     users = users_database.read()
     return next((UserInDB(**user) for user in users.values() if user["username"] == username), None)
 
-def get_user_by_uuid(uuid: str) -> User | None:
+def get_user_by_email(email: str) -> UserInDB | None:
+    users = users_database.read()
+    return next((UserInDB(**user) for user in users.values() if user["email"] == email), None)
+
+def get_user_by_uuid(uuid: str) -> UserInDB | None:
     users = users_database.read()
     if uuid in users:
-        user_dict = users[uuid]
-        return UserInDB(**user_dict)
+        return UserInDB(**users[uuid])
     
-def get_all_users():
+def get_all_users() -> dict[str, UserInDB]:
     users = users_database.read()
     if not users: 
         return {}
