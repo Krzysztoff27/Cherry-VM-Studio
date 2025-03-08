@@ -1,16 +1,20 @@
 from pydantic import BaseModel
 from typing import Literal
 
+AccountTypes = Literal["administrative", "client"]
+
 class User(BaseModel):
     uuid: str
     username: str
     email: str
     name: str
     surname: str
-    account_type: Literal["administrative", "client"]
+    account_type: AccountTypes
 
 class UserInDB(User):
     password: str  # hashed
+    roles: list[str] | None = None
+    groups: list[str] | None = None
     
 class Administrator(User):
     roles: list[str]
