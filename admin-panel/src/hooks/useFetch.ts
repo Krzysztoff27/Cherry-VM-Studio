@@ -8,7 +8,9 @@ const useFetch = (path: string, options: object | undefined = undefined): useFet
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshValue, setRefreshValue] = useState<boolean>(false);
 
-    const refresh = () => setRefreshValue(prev => !prev);
+    const refresh = () => {
+        setRefreshValue(prev => !prev);
+    };
 
     const { getRequest } = useApi();
 

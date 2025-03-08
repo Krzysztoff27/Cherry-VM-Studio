@@ -1,139 +1,209 @@
-import { Avatar, Button, Group, Modal, MultiSelect, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from '@mantine/core';
-import classes from './CreateAccountModal.module.css';
-import useNamespaceTranslation from '../../../hooks/useNamespaceTranslation';
-import { matchesField, useForm } from '@mantine/form';
-import { useState } from 'react';
+import { Avatar, Button, Group, Modal, MultiSelect, PasswordInput, Popover, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import classes from "./CreateAccountModal.module.css";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
+import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
+import { useState } from "react";
+import PasswordInputWithStrength from "../../../components/molecules/interactive/PasswordInputWithStrength/PasswordInputWithStrength";
+import useApi from "../../../hooks/useApi";
+import { ErrorCallbackFunction } from "../../../types/hooks.types";
+import useErrorHandler from "../../../hooks/useErrorHandler";
+import useMantineNotifications from "../../../hooks/useMantineNotifications";
 
 const borderless = {
     input: classes.borderless,
-}
+};
 
-export default function CreateAccountModal({ opened, onClose, accountType }): React.JSX.Element {
-    const [name, setName] = useState('');
+export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
+    const [fullName, setFullName] = useState("");
+    const { t, tns } = useNamespaceTranslation("modals");
+    const { postRequest } = useApi();
+    const { parseAndHandleError } = useErrorHandler();
+    const { sendNotification } = useMantineNotifications();
 
-    const { tns } = useNamespaceTranslation('modals');
     const form = useForm({
-        mode: 'uncontrolled',
         initialValues: {
-            name: '',
-            surname: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
+            name: "",
+            surname: "",
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
             roles: [],
             groups: [],
         },
 
         validate: {
-            confirmPassword: matchesField('password', 'Passwords are not the same')
-        }
-    })
+            name: hasLength({ max: 50 }, tns("create-account.validation.name-too-long")),
+            surname: hasLength({ max: 50 }, tns("create-account.validation.surname-too-long")),
+            username: val =>
+                /\s/.test(val)
+                    ? tns("create-account.validation.username-spaces")
+                    : !/^[\w.-]+$/.test(val)
+                    ? tns("create-account.validation.username-invalid-characters")
+                    : !/[a-zA-Z]/.test(val[0])
+                    ? tns("create-account.validation.username-invalid-first")
+                    : val.length < 3
+                    ? tns("create-account.validation.username-too-short")
+                    : val.length > 24
+                    ? tns("create-account.validation.username-too-long")
+                    : null,
+            email: isEmail(tns("create-account.validation.email-invalid")),
+            password: val =>
+                val.length < 10
+                    ? tns("create-account.validation.password-too-short")
+                    : !/[0-9]/.test(val)
+                    ? tns("create-account.validation.password-no-number")
+                    : !/[a-z]/.test(val)
+                    ? tns("create-account.validation.password-no-lowercase")
+                    : !/[A-Z]/.test(val)
+                    ? tns("create-account.validation.password-no-uppercase")
+                    : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
+                    ? tns("create-account.validation.password-no-special")
+                    : null,
+            confirmPassword: matchesField("password", tns("create-account.validation.passwords-not-equal")),
+        },
+    });
 
     const closeModal = () => {
         form.reset();
         onClose();
-    }
+    };
 
     const onFormChange = () => {
         const vals = form.getValues();
-        setName(`${vals.name} ${vals.surname}`);
-    }
+        setFullName(`${vals.name} ${vals.surname}`);
+    };
 
-    const onFormSubmit = form.onSubmit(values => {
-        console.log(values);
+    const onPostError: ErrorCallbackFunction = (response, json) => {
+        if (response.status != 409) parseAndHandleError(response, json);
+        if (/username/.test(json?.detail)) form.setFieldError("username", tns("create-account.validation.username-duplicate"));
+        else if (/email/.test(json?.detail)) form.setFieldError("email", tns("create-account.validation.email-duplicate"));
+    };
+
+    const onFormSubmit = form.onSubmit(async ({ confirmPassword: _, ...values }) => {
+        const res = await postRequest("user/create", JSON.stringify({ account_type: accountType, ...values }), undefined, onPostError);
+        if (!res) return;
+
+        sendNotification("account.created", undefined, { username: res.username });
         closeModal();
+        onSubmit?.();
     });
 
     return (
-
         <Modal
             opened={opened}
             onClose={closeModal}
             onChange={onFormChange}
-            title={tns('custom.create-account.title')}
-            size='480'
+            title={tns("create-account.title")}
+            size="480"
         >
             <form onSubmit={onFormSubmit}>
-            <Stack className={classes.container}>
-                <Group align='top' justify='space-between'>
-                    <Stack>
-                        <TextInput
-                            placeholder='Name'
-                            w={300}
-                            key={form.key('name')}
-                            classNames={borderless}
-                            {...form.getInputProps('name')}
+                <Stack className={classes.container}>
+                    <Group
+                        align="top"
+                        justify="space-between"
+                    >
+                        <Stack>
+                            <TextInput
+                                placeholder={t("name")}
+                                w={300}
+                                classNames={borderless}
+                                key={form.key("name")}
+                                {...form.getInputProps("name")}
+                            />
+                            <TextInput
+                                placeholder={t("surname")}
+                                w={300}
+                                classNames={borderless}
+                                key={form.key("surname")}
+                                {...form.getInputProps("surname")}
+                            />
+                            <TextInput
+                                placeholder={t("username")}
+                                w={300}
+                                key={form.key("username")}
+                                classNames={borderless}
+                                {...form.getInputProps("username")}
+                            />
+                            <TextInput
+                                placeholder={t("email")}
+                                w={300}
+                                key={form.key("email")}
+                                classNames={borderless}
+                                {...form.getInputProps("email")}
+                            />
+                        </Stack>
+                        <Avatar
+                            name={fullName}
+                            size={rem(128)}
+                            color={fullName.length > 1 && "initials"}
                         />
-                        <TextInput
-                            placeholder='Surname'
-                            w={300}
-                            key={form.key('surname')}
-                            classNames={borderless}
-                            {...form.getInputProps('surname')}
-                        />
-                        <TextInput
-                            placeholder='Email'
-                            w={300}
-                            key={form.key('email')}
-                            classNames={borderless}
-                            {...form.getInputProps('email')}
-                        />
-                    </Stack>
-                    <Avatar name={name} size={rem(128)} color={name && 'initials'} />
-                </Group>
-                <PasswordInput
-                    label='Account password'
-                    placeholder='Enter password here'
-                    key={form.key('password')}
-                    {...form.getInputProps('password')}
-                    classNames={borderless}
-                    flex='3'
-                />
-                <PasswordInput
-                    label='Confirm Password'
-                    placeholder='Confirm password here'
-                    key={form.key('confirmPassword')}
-                    classNames={borderless}
-                    {...form.getInputProps('confirmPassword')}
-                />
-                <Select
-                    label='Account type'
-                    data={[accountType]}
-                    value={accountType}
-                    disabled
-                    autoFocus={false}
-                />
-                {accountType === 'administrative' ? 
-                    <MultiSelect
-                        clearable
-                        checkIconPosition='left'
-                        label='Roles:'
-                        data={['Machine Manager', 'Account Administrator']}
+                    </Group>
+                    <PasswordInputWithStrength
+                        label={tns("create-account.account-password")}
+                        placeholder={tns("create-account.password-placeholder")}
+                        key={form.key("password")}
+                        {...form.getInputProps("password")}
                         classNames={borderless}
-                        placeholder='Select roles'
-                        key={form.key('roles')}
-                        {...form.getInputProps('roles')}
-                        autoFocus
-                    /> :
-                    <MultiSelect
-                        clearable
-                        checkIconPosition='left'
-                        label='Groups:'
-                        data={['4ta2']}
-                        classNames={borderless}
-                        placeholder='Select groups'
-                        key={form.key('groups')}
-                        {...form.getInputProps('groups')}
-                        autoFocus
+                        flex="3"
                     />
-                }
-                <SimpleGrid cols={2}>
-                    <Button onClick={closeModal} variant='light' color='cherry.9'>Cancel</Button>
-                    <Button type='submit' variant='light' color='suse-green.8'>Confirm</Button>
-                </SimpleGrid>
-            </Stack>
+                    <PasswordInput
+                        label={tns("create-account.confirm-password")}
+                        placeholder={tns("create-account.confirm-password-placeholder")}
+                        key={form.key("confirmPassword")}
+                        classNames={borderless}
+                        {...form.getInputProps("confirmPassword")}
+                    />
+                    <Select
+                        label={tns("create-account.account-type")}
+                        data={[tns(`create-account.account-types.${accountType}`)]}
+                        value={tns(`create-account.account-types.${accountType}`)}
+                        disabled
+                        autoFocus={false}
+                    />
+                    {accountType === "administrative" ? (
+                        <MultiSelect
+                            clearable
+                            checkIconPosition="left"
+                            label={tns("create-account.roles")}
+                            data={["Machine Manager", "Account Administrator"]}
+                            classNames={borderless}
+                            placeholder={tns("create-account.select-roles")}
+                            key={form.key("roles")}
+                            {...form.getInputProps("roles")}
+                            autoFocus
+                        />
+                    ) : (
+                        <MultiSelect
+                            clearable
+                            checkIconPosition="left"
+                            label={tns("create-account.groups")}
+                            data={["4ta2"]}
+                            classNames={borderless}
+                            placeholder={tns("create-account.select-groups")}
+                            key={form.key("groups")}
+                            {...form.getInputProps("groups")}
+                            autoFocus
+                        />
+                    )}
+                    <SimpleGrid cols={2}>
+                        <Button
+                            onClick={closeModal}
+                            variant="light"
+                            color="cherry.9"
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="light"
+                            color="suse-green.8"
+                        >
+                            {t("confirm")}
+                        </Button>
+                    </SimpleGrid>
+                </Stack>
             </form>
         </Modal>
-    )
-
+    );
 }

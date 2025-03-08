@@ -1,33 +1,12 @@
-import { ActionIcon, Box, Button, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
-import {
-    IconCaretDownFilled,
-    IconCaretUpDown,
-    IconCaretUpFilled,
-    IconFileImport,
-    IconFilter,
-    IconTrash,
-    IconUserPlus,
-} from "@tabler/icons-react";
-import {
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
+import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
+import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
+import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useState } from "react";
 import classes from "./AccountTable.module.css";
-import TableSearch from "../../molecules/interactive/TableSearch/TableSearch";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
-import ModalButton from "../../atoms/interactive/ModalButton/ModalButton.jsx";
-import ExpandingButton from "../../atoms/interactive/ExpandingButton/ExpandingButton.jsx";
-import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 import AccountTableControls from "../../molecules/interactive/AccountTableControls/AccountTableControls.jsx";
 
-const AccountTable = ({ columns, tableData, accountType }): React.JSX.Element => {
-    const [data, setData] = useState(tableData);
+const AccountTable = ({ columns, data, accountType, refreshData }): React.JSX.Element => {
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
@@ -59,6 +38,7 @@ const AccountTable = ({ columns, tableData, accountType }): React.JSX.Element =>
                         table={table}
                         accountType={accountType}
                         onFilteringChange={onFilteringChange}
+                        refreshData={refreshData}
                     />
                 </Group>
                 <Box className={classes.table}>

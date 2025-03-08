@@ -81,7 +81,7 @@
             "message": ""
         },
         "650": {
-            "title": "Couldn't Load the Network Configuration", 
+            "title": "Couldn't Load the Network Configuration",
             "message": "Error occurred during load due to invalid configuration."
         },
         "651": {
@@ -103,6 +103,12 @@
         "651-CUSTOM-FUNCTION": {
             "title": "Could Not Load The Preset",
             "message": "An error occured during calculation of the \"{{key}}\" custom function."
+        }
+    },
+    "account": {
+        "created": {
+            "title": "Account Created",
+            "message": "Successfully created user {{username}}."
         }
     },
     "network-panel": {

@@ -274,14 +274,12 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
     </>
 );
 
-const ProfileModal = ({ opened, onClose, uuid }): React.JSX.Element => {
+const ProfileModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
     const [editMode, { toggle, close: closeEditMode }] = useDisclosure(false);
 
     useEffect(() => {
         closeEditMode();
     }, []);
-
-    const onSubmit = () => {};
 
     return (
         <Modal

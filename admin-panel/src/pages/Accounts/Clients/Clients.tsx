@@ -10,8 +10,18 @@ import CheckboxHeader from "../../../components/atoms/table/CheckboxHeader";
 import CheckboxCell from "../../../components/atoms/table/CheckboxCell";
 import AccountOptionsCell from "../../../components/atoms/table/AccountOptionsCell";
 import useFetch from "../../../hooks/useFetch";
+import Loading from "../../../components/atoms/feedback/Loading/Loading";
 
 const Clients = (): React.JSX.Element => {
+    const { data, error, loading, refresh } = useFetch("/users?account_type=client");
+
+    const tableData = safeObjectValues(data).map(({ uuid, username, name, surname, email, groups = [] }) => ({
+        uuid,
+        groups,
+        lastActive: null,
+        details: { username, name, surname, email },
+    }));
+
     const columns = [
         {
             accessorKey: "selection",
@@ -23,10 +33,8 @@ const Clients = (): React.JSX.Element => {
             accessorKey: "details",
             header: "Name",
             cell: BusinessCardCell,
-            sortingFn: (rowA: any, rowB: any, columndId: string) =>
-                rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
-            filterFn: (row: any, columnId: string, filterValue: string) =>
-                row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
+            sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
+            filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
         },
         {
             accessorKey: "groups",
@@ -43,29 +51,26 @@ const Clients = (): React.JSX.Element => {
             accessorKey: "options",
             header: "",
             enableSorting: false,
-            cell: AccountOptionsCell,
+            cell: props => (
+                <AccountOptionsCell
+                    {...props}
+                    refreshData={refresh}
+                />
+            ),
         },
     ];
 
-    const { data, error, loading } = useFetch("/users?account_type=client");
-
-    const tableData = safeObjectValues(data).map(({ uuid, username, name, surname, email, groups = [] }) => ({
-        uuid,
-        groups,
-        lastActive: null,
-        details: { username, name, surname, email },
-    }));
-
-    console.log(error);
-    if (loading || error) return;
+    if (error) throw error;
+    if (loading) return <Loading />;
 
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
                 <AccountTable
+                    data={tableData}
                     columns={columns}
-                    tableData={tableData}
-                    accountType="clients"
+                    accountType="client"
+                    refreshData={refresh}
                 />
             </Paper>
         </Stack>

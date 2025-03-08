@@ -2,12 +2,21 @@ import { Button } from "@mantine/core";
 import { motion } from "framer-motion";
 import { ExpandingButtonProps } from "../../../../types/components.types";
 
-const ExpandingButton = ({ ButtonComponent = Button, w, parentGap = '0', mounted, children, ease = 'easeInOut', duration = 0.3, ...props } : ExpandingButtonProps): React.JSX.Element => (
+const ExpandingButton = ({
+    ButtonComponent = Button,
+    w,
+    parentGap = "0",
+    mounted,
+    children,
+    ease = "easeInOut",
+    duration = 0.2,
+    ...props
+}: ExpandingButtonProps): React.JSX.Element => (
     <motion.div
         initial={{
             width: 0,
             opacity: 0,
-            marginRight: `-${parentGap}`
+            marginRight: `-${parentGap}`,
         }}
         animate={{
             width: mounted ? w : 0,
@@ -21,11 +30,14 @@ const ExpandingButton = ({ ButtonComponent = Button, w, parentGap = '0', mounted
         }}
         autoFocus={mounted}
     >
-        <ButtonComponent w='100%' autoFocus={mounted} {...props}>
+        <ButtonComponent
+            w="100%"
+            autoFocus={mounted}
+            {...props}
+        >
             {children}
         </ButtonComponent>
     </motion.div>
 );
-
 
 export default ExpandingButton;

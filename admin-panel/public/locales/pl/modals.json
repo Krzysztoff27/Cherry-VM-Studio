@@ -1,27 +1,64 @@
 {
-    "custom": {
-        "new-snapshot": {
-            "title": "Nowa migawka",
-            "description": "Tworzona migawka będzie zawierać obecną konfigurację, w tym:",
-            "bullet-point1": "Połączenia do sieci wewnętrznych",
-            "bullet-point2": "Pozycje maszyn na planszy",
-            "bullet-point3": "Pozycje sieci wewnętrznych na planszy",
-            "note": "Uwaga: Nazwa migawki musi być unikatowa",
-            "placeholder": "Wpisz nazwę migawki",
-            "error-too-short": "Nazwa migawki musi składać się z przynajmniej 3 znaków",
-            "error-too-long": "Nazwa migawki nie może być dłuższa niż 24 znaków",
-            "error-bad-characters": "Nazwa migawki może składać się jedynie z liter alfabetu angielskiego, cyfr i poniższych znaków:"
+    "new-snapshot": {
+        "title": "Nowa migawka",
+        "description": "Tworzona migawka będzie zawierać obecną konfigurację, w tym:",
+        "bullet-point1": "Połączenia do sieci wewnętrznych",
+        "bullet-point2": "Pozycje maszyn na planszy",
+        "bullet-point3": "Pozycje sieci wewnętrznych na planszy",
+        "note": "Uwaga: Nazwa migawki musi być unikatowa",
+        "placeholder": "Wpisz nazwę migawki",
+        "error-too-short": "Nazwa migawki musi składać się z przynajmniej 3 znaków",
+        "error-too-long": "Nazwa migawki nie może być dłuższa niż 24 znaków",
+        "error-bad-characters": "Nazwa migawki może składać się jedynie z liter alfabetu angielskiego, cyfr i poniższych znaków:"
+    },
+    "modify-snapshots": {
+        "title": "Edytuj i usuwaj migawki",
+        "title-empty": "Brak migawek",
+        "description-empty1": "Aby stworzyć migawkę, kliknij przycisk",
+        "description-empty2": "w górnym !",
+        "warning_one": "{{count}} migawka zostanie usunięta!",
+        "warning_few": "{{count}} migawki zostaną usunięte!",
+        "warning_many": "{{count}} migawek zostanie usunięte!",
+        "name-input-placeholder": "Wpisz nazwę migawki",
+        "delete-snapshot-label": "Usuń migawkę"
+    },
+    "create-account": {
+        "title": "Stwórz nowe konto",
+        "name": "Imię",
+        "surname": "Nazwisko",
+        "username": "Nazwa użytkownika",
+        "email": "Email",
+        "account-password": "Hasło",
+        "confirm-password": "Potwierdź hasło",
+        "generate-password": "Wygeneruj hasło",
+        "password-placeholder": "Wpisz hasło",
+        "confirm-password-placeholder": "Potwierdź hasło",
+        "account-type": "Rodzaj konta",
+        "account-types": {
+            "administrative": "Administracyjne",
+            "client": "Klienckie"
         },
-        "modify-snapshots": {
-            "title": "Edytuj i usuwaj migawki",
-            "title-empty": "Brak migawek",
-            "description-empty1": "Aby stworzyć migawkę, kliknij przycisk",
-            "description-empty2": "w górnym !",
-            "warning_one": "{{count}} migawka zostanie usunięta!",
-            "warning_few": "{{count}} migawki zostaną usunięte!",
-            "warning_many": "{{count}} migawek zostanie usunięte!",
-            "name-input-placeholder": "Wpisz nazwę migawki",
-            "delete-snapshot-label": "Usuń migawkę"
+        "roles": "Role",
+        "select-roles": "Wybierz role",
+        "groups": "Grupy",
+        "select-groups": "Wybierz grupy",
+        "validation": {
+            "name-too-long": "Długość imienia nie może przekraczać 50 znaków.",
+            "surname-too-long": "Długość nazwiska nie może przekraczać 50 znaków.",
+            "username-too-short": "Nazwa użytkownika musi mieć co najmniej 3 znaki.",
+            "username-too-long": "Długość nazwy użytkownika nie może przekraczać 24 znaków.",
+            "username-spaces": "Nazwa użytkownika nie może zawierać spacji.",
+            "username-invalid-first": "Nazwa użytkownika musi zaczynać się od litery.",
+            "username-invalid-characters": "Nazwa użytkownika może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
+            "username-duplicate": "Użytkownik o tej nazwie już istnieje.",
+            "email-invalid": "Nieprawidłowy adres email.",
+            "email-duplicate": "Użytkownik o tym adresie email już istnieje.",
+            "password-too-short": "Hasło musi mieć co najmniej 10 znaków.",
+            "password-no-number": "Hasło musi zawierać co najmniej jedną cyfrę.",
+            "password-no-lowercase": "Hasło musi zawierać co najmniej jedną małą literę.",
+            "password-no-uppercase": "Hasło musi zawierać co najmniej jedną wielką literę.",
+            "password-no-special": "Hasło musi zawierać co najmniej jeden znak specjalny.",
+            "passwords-not-equal": "Hasła nie są identyczne."
         }
     },
     "confirm": {

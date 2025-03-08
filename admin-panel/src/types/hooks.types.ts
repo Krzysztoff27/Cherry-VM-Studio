@@ -8,12 +8,12 @@ export interface useFetchReturn {
 }
 
 interface Tokens {
-    access_token: string | null,
-    refresh_token: string | null
+    access_token: string | null;
+    refresh_token: string | null;
 }
 
 export interface useAuthReturn {
-    tokens: Tokens
+    tokens: Tokens;
     authOptions: RequestInit | null;
     refreshOptions: RequestInit | null;
     logout: () => void;
@@ -22,7 +22,6 @@ export interface useAuthReturn {
     setRefreshToken: (token: string | null) => void;
 }
 
-
 export interface useApiWebSocketReturn {
     setUrl: (path: string) => void;
     sendCommand: (method: WebSocketCommandMethods, data: object) => void;
@@ -30,33 +29,22 @@ export interface useApiWebSocketReturn {
     connectionStatus: string;
 }
 
-export type ErrorCallbackFunction = (
-    response: Response, json: object
-) => void | Promise<void>
+export type ErrorCallbackFunction = (response: Response, json: { [x: string]: any }) => void | Promise<void>;
 
-type HTMLRequestFunction = (
-    relativePath: string,
-    options?: RequestInit,
-    errorCallback?: ErrorCallbackFunction,
-) => Promise<any>;
+type HTMLRequestFunction = (relativePath: string, options?: RequestInit, errorCallback?: ErrorCallbackFunction) => Promise<any>;
 
-type HTMLBodyRequestFunction = (
-    relativePath: string,
-    body?: BodyInit,
-    options?: RequestInit,
-    errorCallback?: ErrorCallbackFunction,
-) => Promise<any>;
+type HTMLBodyRequestFunction = (relativePath: string, body?: BodyInit, options?: RequestInit, errorCallback?: ErrorCallbackFunction) => Promise<any>;
 
 export interface useApiReturn {
     getPath: Function;
     getRequest: HTMLRequestFunction;
     postRequest: HTMLBodyRequestFunction;
-    putRequest: HTMLBodyRequestFunction
+    putRequest: HTMLBodyRequestFunction;
     deleteRequest: HTMLRequestFunction;
 }
 
 export interface sendNotificationProps {
-    color?: string | null,
-    loading?: boolean,
-    uniqueId?: boolean,
+    color?: string | null;
+    loading?: boolean;
+    uniqueId?: boolean;
 }

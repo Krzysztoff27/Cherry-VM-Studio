@@ -8,7 +8,7 @@ import { IconFileImport, IconFilter, IconTrash, IconUserPlus } from "@tabler/ico
 import CreateAccountModal from "../../../../modals/account/CreateAccountModal/CreateAccountModal";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
-const AccountTableControls = ({ table, accountType, onFilteringChange }): React.JSX.Element => {
+const AccountTableControls = ({ table, accountType, onFilteringChange, refreshData }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages");
     const anyRowsSelected = () => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
     const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
@@ -131,14 +131,14 @@ const AccountTableControls = ({ table, accountType, onFilteringChange }): React.
                 ModalComponent={CreateAccountModal}
                 ButtonComponent={createAccountButton.component}
                 buttonProps={createAccountButton.props}
-                modalProps={{ accountType }}
+                modalProps={{ accountType, onSubmit: refreshData }}
             >
                 {createAccountButton.children}
             </ModalButton>
             <ModalButton
                 ButtonComponent={ExpandingButton}
                 ModalComponent={DeleteAccountsModal}
-                modalProps={{ uuids: selectedUuids }}
+                modalProps={{ uuids: selectedUuids, onSubmit: refreshData }}
                 {...deleteButton.props}
             >
                 {deleteButton.children}

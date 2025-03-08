@@ -1,29 +1,63 @@
 {
-    "custom": {
-        "new-snapshot": {
-            "title": "New snapshot",
-            "description": "The snapshot will save the current state of the panel:",
-            "bullet-point1": "Current connections and internal networks",
-            "bullet-point2": "Position of machines in the flow",
-            "bullet-point3": "Position of internal networks in the flow",
-            "note": "Note: Snapshot name must be unique",
-            "placeholder": "Enter the snapshot's name",
-            "error-too-short": "Snapshot name must be at least 3 characters long.",
-            "error-too-long": "Snapshot name must not be longer than 24 characters.",
-            "error-bad-characters": "Snapshot names can only include letters, digits and following special characters:"
+    "new-snapshot": {
+        "title": "New snapshot",
+        "description": "The snapshot will save the current state of the panel:",
+        "bullet-point1": "Current connections and internal networks",
+        "bullet-point2": "Position of machines in the flow",
+        "bullet-point3": "Position of internal networks in the flow",
+        "note": "Note: Snapshot name must be unique",
+        "placeholder": "Enter the snapshot's name",
+        "error-too-short": "Snapshot name must be at least 3 characters long.",
+        "error-too-long": "Snapshot name must not be longer than 24 characters.",
+        "error-bad-characters": "Snapshot names can only include letters, digits and following special characters:"
+    },
+    "modify-snapshots": {
+        "title": "Modify and delete snapshots",
+        "title-empty": "No snapshots available to edit",
+        "description-empty1": "To get started, create a new snapshot by clicking the",
+        "description-empty2": "button in the panel!",
+        "warning_one": "{{count}} snapshot will be pernamently deleted!",
+        "warning_other": "{{count}} snapshots will be pernamently deleted!",
+        "name-input-placeholder": "Enter new snapshot name",
+        "delete-snapshot-label": "Delete snapshot"
+    },
+    "create-account": {
+        "title": "Create new account",
+        "name": "Name",
+        "surname": "Surname",
+        "username": "Username",
+        "email": "Email",
+        "account-password": "Account password",
+        "confirm-password": "Confirm password",
+        "generate-password": "Generate password",
+        "password-placeholder": "Enter password here",
+        "confirm-password-placeholder": "Confirm password here",
+        "account-type": "Account type",
+        "account-types": {
+            "administrative": "Administrative",
+            "client": "Client"
         },
-        "modify-snapshots": {
-            "title": "Modify and delete snapshots",
-            "title-empty": "No snapshots available to edit",
-            "description-empty1": "To get started, create a new snapshot by clicking the",
-            "description-empty2": "button in the panel!",
-            "warning_one": "{{count}} snapshot will be pernamently deleted!",
-            "warning_other": "{{count}} snapshots will be pernamently deleted!",
-            "name-input-placeholder": "Enter new snapshot name",
-            "delete-snapshot-label": "Delete snapshot"
-        },
-        "create-account": {
-            "title": "Create new account"
+        "roles": "Role",
+        "select-roles": "Select roles",
+        "groups": "Groups",
+        "select-groups": "Select groups",
+        "validation": {
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "surname-too-long": "Surname length cannot exceed 50 characters.",
+            "username-too-short": "Username must be at least 3 characters long.",
+            "username-too-long": "Username length cannot exceed 24 characters.",
+            "username-spaces": "Username cannot contain spaces.",
+            "username-invalid-first": "Username must start with a letter.",
+            "username-invalid-characters": "Username may only contain alphanumeric characters, underscores, hyphens and periods.",
+            "username-duplicate": "User with this username already exists.",
+            "email-invalid": "Invalid email.",
+            "email-duplicate": "User with this email already exists.",
+            "password-too-short": "Password must be at least 10 characters long.",
+            "password-no-number": "Password must contain at least one digit.",
+            "password-no-lowercase": "Password must contain at least one lowercase letter.",
+            "password-no-uppercase": "Password must contain at least one uppercase letter.",
+            "password-no-special": "Password must contain at least one special symbol.",
+            "passwords-not-equal": "Passwords are not the same."
         }
     },
     "confirm": {

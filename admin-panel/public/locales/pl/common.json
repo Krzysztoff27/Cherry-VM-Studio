@@ -35,5 +35,8 @@
     "server": "Serwer",
     "changes-saved": "Zapisano zmiany",
     "no-changes": "Brak wykrytych zmian",
-    "search": "Wyszukaj"
+    "search": "Wyszukaj",
+    "name": "Imię",
+    "surname": "Nazwisko",
+    "email": "Email"
 }

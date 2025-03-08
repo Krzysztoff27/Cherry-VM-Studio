@@ -35,5 +35,8 @@
     "server": "Server",
     "changes-saved": "Changes saved",
     "no-changes": "No changes",
-    "search": "Search"
+    "search": "Search",
+    "name": "Name",
+    "surname": "Surname",
+    "email": "Email"
 }
