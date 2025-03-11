@@ -3,7 +3,7 @@ import { WebSocketCommandMethods } from "./api.types";
 export interface useFetchReturn {
     loading: boolean;
     error: Response | null;
-    data: object | null;
+    data: any | null;
     refresh: () => void;
 }
 

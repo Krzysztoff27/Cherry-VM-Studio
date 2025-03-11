@@ -13,65 +13,10 @@ import useFetch from "../../../hooks/useFetch";
 import Loading from "../../../components/atoms/feedback/Loading/Loading";
 
 const Clients = (): React.JSX.Element => {
-    const { data, error, loading, refresh } = useFetch("/users?account_type=client");
-
-    const tableData = safeObjectValues(data).map(({ uuid, username, name, surname, email, groups = [] }) => ({
-        uuid,
-        groups,
-        lastActive: null,
-        details: { username, name, surname, email },
-    }));
-
-    const columns = [
-        {
-            accessorKey: "selection",
-            enableSorting: false,
-            header: CheckboxHeader,
-            cell: CheckboxCell,
-        },
-        {
-            accessorKey: "details",
-            header: "Name",
-            cell: BusinessCardCell,
-            sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
-            filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
-        },
-        {
-            accessorKey: "groups",
-            header: "Groups",
-            enableSorting: false,
-            cell: RolesCell,
-        },
-        {
-            accessorKey: "lastActive",
-            header: "Last Active",
-            cell: DateDifferenceCell,
-        },
-        {
-            accessorKey: "options",
-            header: "",
-            enableSorting: false,
-            cell: props => (
-                <AccountOptionsCell
-                    {...props}
-                    refreshData={refresh}
-                />
-            ),
-        },
-    ];
-
-    if (error) throw error;
-    if (loading) return <Loading />;
-
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
-                <AccountTable
-                    data={tableData}
-                    columns={columns}
-                    accountType="client"
-                    refreshData={refresh}
-                />
+                <AccountTable accountType="client" />
             </Paper>
         </Stack>
     );

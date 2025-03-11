@@ -1,17 +1,16 @@
-import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
+import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack, Title } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import classes from "./AccountTable.module.css";
-import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import AccountTableControls from "../../molecules/interactive/AccountTableControls/AccountTableControls.jsx";
+import classes from "./GroupsTable.module.css";
 import useFetch from "../../../hooks/useFetch.js";
-import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
+import { safeObjectValues } from "../../../utils/misc.js";
+import GroupTableControls from "../../molecules/interactive/GroupTableControls/GroupTableControls.jsx";
 
-const AccountTable = ({ accountType }): React.JSX.Element => {
-    const { data: userData, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
+const GroupsTable = (): React.JSX.Element => {
+    const { data: groupsData, error, loading, refresh } = useFetch(`/groups`);
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
@@ -20,20 +19,11 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     };
 
-    const columns = useMemo(() => getColumns(accountType, refresh), [accountType, refresh]);
-    const data = useMemo(
-        () =>
-            safeObjectValues(userData).map(({ uuid, username, name, surname, email, groups = [] }) => ({
-                uuid,
-                groups,
-                lastActive: null,
-                details: { username, name, surname, email },
-            })),
-        [userData]
-    );
+    const data = useMemo(() => safeObjectValues(groupsData), [groupsData]);
+    const columns = useMemo(() => getColumns(refresh), [refresh]);
 
     const table = useReactTable({
-        data,
+        data: data,
         columns: columns,
         state: {
             columnFilters,
@@ -47,17 +37,23 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
     });
 
     console.log(data);
-
     if (error) throw error;
 
     return (
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
-                    <TableStateHeading {...table} />
-                    <AccountTableControls
+                    <Group>
+                        <Title order={2}>All groups</Title>
+                        <Title
+                            order={2}
+                            c="dimmed"
+                        >
+                            {table.getRowCount()}
+                        </Title>
+                    </Group>
+                    <GroupTableControls
                         table={table}
-                        accountType={accountType}
                         onFilteringChange={onFilteringChange}
                         refreshData={refresh}
                     />
@@ -130,4 +126,4 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
     );
 };
 
-export default AccountTable;
+export default GroupsTable;
