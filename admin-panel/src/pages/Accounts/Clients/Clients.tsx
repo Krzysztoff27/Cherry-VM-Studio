@@ -11,8 +11,11 @@ import CheckboxCell from "../../../components/atoms/table/CheckboxCell";
 import AccountOptionsCell from "../../../components/atoms/table/AccountOptionsCell";
 import useFetch from "../../../hooks/useFetch";
 import Loading from "../../../components/atoms/feedback/Loading/Loading";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const Clients = (): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages");
+
     const { data, error, loading, refresh } = useFetch("/users?account_type=client");
 
     const tableData = safeObjectValues(data).map(({ uuid, username, name, surname, email, groups = [] }) => ({
@@ -31,20 +34,20 @@ const Clients = (): React.JSX.Element => {
         },
         {
             accessorKey: "details",
-            header: "Name",
+            header: tns("accounts.table.headers.user"),
             cell: BusinessCardCell,
             sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
             filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
         },
         {
             accessorKey: "groups",
-            header: "Groups",
+            header: tns("accounts.table.headers.groups"),
             enableSorting: false,
             cell: RolesCell,
         },
         {
             accessorKey: "lastActive",
-            header: "Last Active",
+            header: tns("accounts.table.headers.last-active"),
             cell: DateDifferenceCell,
         },
         {
