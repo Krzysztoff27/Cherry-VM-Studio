@@ -4,10 +4,10 @@ export interface UrlNode {
     api_requests: string;
     api_websockets: string;
     traefik?: string;
-    guacamole?: string; 
+    guacamole?: string;
 }
 
-export interface UrlConfig { 
+export interface UrlConfig {
     production: UrlNode;
     development: UrlNode;
     staging?: UrlNode;
@@ -37,4 +37,4 @@ export interface Page {
 
 export type Credits = Credit[];
 
-export type AccountType = 'Administrative' | 'Client';
+export type AccountType = "administrative" | "client";
