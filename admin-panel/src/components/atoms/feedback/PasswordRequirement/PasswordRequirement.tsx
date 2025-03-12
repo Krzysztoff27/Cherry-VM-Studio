@@ -1,17 +1,31 @@
 import { IconX, IconCheck } from "@tabler/icons-react";
-import { Text, Box } from "@mantine/core";
+import { Text, Flex } from "@mantine/core";
 
 const PasswordRequirement = ({ meets, label }: { meets: boolean; label: string }) => {
     return (
-        <Text
+        <Flex
             c={meets ? "teal" : "red"}
-            style={{ display: "flex", alignItems: "center" }}
+            align="center"
             mt={7}
-            size="sm"
         >
-            {meets ? <IconCheck size={14} /> : <IconX size={14} />}
-            <Box ml={10}>{label}</Box>
-        </Text>
+            {meets ? (
+                <IconCheck
+                    size={14}
+                    stroke={3}
+                />
+            ) : (
+                <IconX
+                    size={14}
+                    stroke={3}
+                />
+            )}
+            <Text
+                fz="sm"
+                ml={10}
+            >
+                {label}
+            </Text>
+        </Flex>
     );
 };
 
