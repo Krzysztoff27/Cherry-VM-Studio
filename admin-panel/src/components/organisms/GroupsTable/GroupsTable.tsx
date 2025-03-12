@@ -7,9 +7,12 @@ import useFetch from "../../../hooks/useFetch.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import { safeObjectValues } from "../../../utils/misc.js";
-import GroupTableControls from "../../molecules/interactive/GroupTableControls/GroupTableControls.jsx";
+import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
+import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading.jsx";
 
 const GroupsTable = (): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages", "accounts.controls");
     const { data: groupsData, error, loading, refresh } = useFetch(`/groups`);
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -43,19 +46,24 @@ const GroupsTable = (): React.JSX.Element => {
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
-                    <Group>
-                        <Title order={2}>All groups</Title>
-                        <Title
-                            order={2}
-                            c="dimmed"
-                        >
-                            {table.getRowCount()}
-                        </Title>
-                    </Group>
-                    <GroupTableControls
+                    <TableStateHeading
+                        {...table}
+                        translations={{
+                            all: tns("all-groups"),
+                            selected: tns("selected-groups"),
+                            filtered: tns("filtered-results"),
+                        }}
+                    />
+                    <TableControls
                         table={table}
                         onFilteringChange={onFilteringChange}
-                        refreshData={refresh}
+                        modals={{}}
+                        translations={{
+                            create: tns("create-group"),
+                            delete: tns("delete-selected"),
+                            filter: tns("filters"),
+                            import: tns("import"),
+                        }}
                     />
                 </Group>
             </Stack>

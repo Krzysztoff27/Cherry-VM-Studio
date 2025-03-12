@@ -21,7 +21,7 @@ const ExpandingButton = ({
         animate={{
             width: mounted ? w : 0,
             opacity: ~~mounted,
-            marginRight: mounted ? 1 : `-${parentGap}`,
+            marginRight: mounted ? "0" : `-${parentGap}`,
         }}
         transition={{ duration: duration, ease: ease }}
         style={{

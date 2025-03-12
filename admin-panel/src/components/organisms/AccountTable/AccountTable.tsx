@@ -4,13 +4,17 @@ import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel
 import { useMemo, useState } from "react";
 import classes from "./AccountTable.module.css";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import AccountTableControls from "../../molecules/interactive/AccountTableControls/AccountTableControls.jsx";
 import useFetch from "../../../hooks/useFetch.js";
 import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
+import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
+import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
+import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 
 const AccountTable = ({ accountType }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
     const { data: userData, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -46,7 +50,7 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
-    console.log(data);
+    const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
 
     if (error) throw error;
 
@@ -54,12 +58,33 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
-                    <TableStateHeading {...table} />
-                    <AccountTableControls
+                    <TableStateHeading
+                        {...table}
+                        translations={{
+                            all: tns("all-accounts"),
+                            selected: tns("selected-accounts"),
+                            filtered: tns("filtered-results"),
+                        }}
+                    />
+                    <TableControls
                         table={table}
-                        accountType={accountType}
+                        modals={{
+                            create: {
+                                component: CreateAccountModal,
+                                props: { accountType, onSubmit: refresh },
+                            },
+                            delete: {
+                                component: DeleteAccountsModal,
+                                props: { uuids: selectedUuids, onSubmit: refresh },
+                            },
+                        }}
+                        translations={{
+                            create: tns("create-account"),
+                            delete: tns("delete-selected"),
+                            import: tns("import"),
+                            filter: tns("filters"),
+                        }}
                         onFilteringChange={onFilteringChange}
-                        refreshData={refresh}
                     />
                 </Group>
             </Stack>

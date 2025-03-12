@@ -334,8 +334,6 @@ const ProfileModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Re
 
     const Content = editMode ? EditMode : ViewMode;
 
-    console.log(data);
-
     return (
         <Modal
             opened={opened}

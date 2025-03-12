@@ -60,7 +60,7 @@
             "load-config": "Load configuration",
             "default-presets": "Default presets",
             "saved-snapshots": "Saved snapshots",
-            "presets" : {
+            "presets": {
                 "DesktopX - ServerX": "DesktopX - ServerX",
                 "Unified Intnet": "Unified Intnet",
                 "Group-Based Intnet": "Group-Based Intnet",
@@ -82,16 +82,19 @@
     "accounts": {
         "controls": {
             "all-accounts": "All accounts",
+            "all-groups": "All groups",
             "selected-accounts": "Selected accounts",
+            "selected-groups": "Selected groups",
             "filtered-results": "Filtered results",
             "search": "Search",
             "filters": "Filters",
             "import": "Import",
+            "create-group": "Create group",
             "create-account": "Create account",
             "delete-selected": "Delete selected",
             "view-profile": "View profile",
             "edit-account": "Edit account",
-            "delete": "Delete"   
+            "delete": "Delete"
         },
         "table": {
             "headers": {
