@@ -29,7 +29,7 @@ const PasswordInputWithStrength = ({ ...props }: PasswordInputProps): React.JSX.
 
     return (
         <Popover
-            opened={popoverOpened}
+            opened={popoverOpened && strength < 100}
             position="bottom"
             width="target"
             transitionProps={{ transition: "pop" }}
@@ -49,7 +49,7 @@ const PasswordInputWithStrength = ({ ...props }: PasswordInputProps): React.JSX.
                     />
                 </Box>
             </Popover.Target>
-            <Popover.Dropdown>
+            <Popover.Dropdown bd="2px solid var(--mantine-color-dark-5)">
                 <Progress
                     color={color}
                     value={strength}
