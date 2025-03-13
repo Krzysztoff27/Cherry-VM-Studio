@@ -1,8 +1,8 @@
 {
     "footer": {
-        "home": "Home", 
-        "documentation": "Documentation", 
-        "credits": "Credits", 
+        "home": "Home",
+        "documentation": "Documentation",
+        "credits": "Credits",
         "copyright": "Copyright"
     },
     "navbar": {
@@ -14,6 +14,6 @@
         "administrators": "Administrators",
         "users": "Users",
         "clients": "Clients",
-        "groups": "User groups"
+        "groups": "Client groups"
     }
 }
