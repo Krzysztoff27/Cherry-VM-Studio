@@ -31,8 +31,15 @@ class CreatedUser(UserInDB):
     
 class Filters(BaseModel):
     account_type: str | None = None
+    group: str | None = None
     
 class Group(BaseModel):
     uuid: str
     name: str
     users: list[str]
+    
+class CreatedGroup(Group):
+    uuid: str | None = None
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.uuid = str(uuid4()) # generate random uuid on creation

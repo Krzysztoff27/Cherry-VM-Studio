@@ -1,14 +1,9 @@
-import base64
-import uuid
-from fastapi import HTTPException
-from uuid import uuid4
 import re
-
+from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
-from .models import Administrator, Client, CreatedUser, UserInDB, User
-from .retrieval import get_user_by_username, get_user_by_email
 from application.authentication.passwords import hash_password
+from .models import Administrator, Client, UserInDB, Filters, CreatedUser
 
 #
 # to be replaced with SQL queries
@@ -16,7 +11,42 @@ from application.authentication.passwords import hash_password
 
 users_database = JSONHandler(FILES_CONFIG.users)
 
-def validate_details(user_data: CreatedUser):
+def get_user_by_username(username: str) -> UserInDB | None:
+    users = users_database.read()
+    return next((UserInDB(**user) for user in users.values() if user["username"] == username), None)
+
+def get_user_by_email(email: str) -> UserInDB | None:
+    users = users_database.read()
+    return next((UserInDB(**user) for user in users.values() if user["email"] == email), None)
+
+def get_user_by_uuid(uuid: str) -> UserInDB | None:
+    users = users_database.read()
+    if uuid in users:
+        return UserInDB(**users[uuid])
+    
+def get_all_users() -> dict[str, UserInDB]:
+    users = users_database.read()
+    if not users: 
+        return {}
+    return {key: UserInDB(**user) for key, user in users.items()}
+
+def get_filtered_users(filters: Filters):
+    all_users = get_all_users()
+    users = all_users.copy()
+    for key, user in all_users.items():
+        if filters.account_type and filters.account_type != user.account_type:
+            del users[key]
+        if filters.group and ((not user.groups) or (filters.group not in user.groups)):
+            del users[key]
+    return users
+
+def delete_user_by_uuid(uuid: str):
+    users = users_database.read()
+    if uuid in users:
+        del users[uuid]
+        users_database.write(users)
+        
+def validate_user_details(user_data: CreatedUser):
     
     if user_data.account_type != 'administrative' and user_data.account_type != 'client':
         HTTPException(status_code=400, detail="Invalid account type.")
@@ -39,10 +69,8 @@ def validate_details(user_data: CreatedUser):
     if len(user_data.surname) > 50:
         raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
         
-    
-
 def create_user(user_data: CreatedUser) -> UserInDB:
-    validate_details(user_data)
+    validate_user_details(user_data)
         
     users = users_database.read() 
     
@@ -57,4 +85,3 @@ def create_user(user_data: CreatedUser) -> UserInDB:
     
     return user
 
-    

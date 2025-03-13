@@ -1,3 +1,2 @@
-from .retrieval import *
-from .managing import *
+from .users import *
 from .groups import *

@@ -1,9 +1,24 @@
-from application.users.models import Group
+from fastapi import HTTPException
 from application import app
-from application.users.groups import get_all_groups
+from application.users.models import CreatedGroup, Group
+from application.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid
 from application.authentication import DependsOnAuthentication
 
-# returns created user with uuid
+@app.get("/group/{uuid}", response_model=Group, tags=['users'])
+async def __read_group__(uuid: str, current_user: DependsOnAuthentication) -> Group:
+    group = get_group_by_uuid(uuid)
+    if group:
+        return group
+    raise HTTPException(400, f"Group with uuid={uuid} does not exist.")
+
 @app.get("/groups", response_model=dict[str, Group], tags=['users'])
 async def __read_groups__(current_user: DependsOnAuthentication) -> dict[str, Group]:
     return get_all_groups()
+
+@app.post("/group/create", response_model=Group, tags=['users'])
+async def __create_group__(user_data: CreatedGroup, current_user: DependsOnAuthentication) -> Group:
+    return create_group(user_data)
+
+@app.delete("/group/delete/{uuid}", response_model=None, tags=['users'])
+async def __delete_group__(uuid: str, current_user: DependsOnAuthentication) -> None:
+    delete_group_by_uuid(uuid)
