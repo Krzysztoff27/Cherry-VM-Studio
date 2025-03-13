@@ -20,7 +20,6 @@ const ChangePasswordModal = ({ opened, onClose }) => {
     };
 
     const onSubmit = form.onSubmit(values => {
-        console.log(values);
         closeModal();
     });
 

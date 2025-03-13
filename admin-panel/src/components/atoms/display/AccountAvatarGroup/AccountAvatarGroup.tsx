@@ -1,18 +1,21 @@
 import React from "react";
 import { Avatar } from "@mantine/core";
+import { User } from "../../../../types/api.types";
 
-const AccountAvatarGroup = ({ uuids, max = 5 }: { uuids: string[]; max?: number }): React.JSX.Element => {
+const AccountAvatarGroup = ({ users, max = 5 }: { users: User[]; max?: number }): React.JSX.Element => {
+    const getFullName = (user: User) => (user.name || user.surname ? `${user.name} ${user.surname}` : user.username);
+
     return (
         <Avatar.Group>
-            {uuids.map((uuid, index) => (
+            {users.map((user, index) => (
                 <Avatar
                     key={index}
-                    alt={uuid}
-                    name={uuid}
+                    alt={getFullName(user)}
+                    name={getFullName(user)}
                     color="initials"
                 />
             ))}
-            {uuids.length > max && <Avatar radius="xl">+{uuids.length - max}</Avatar>}
+            {users.length > max && <Avatar radius="xl">+{users.length - max}</Avatar>}
         </Avatar.Group>
     );
 };

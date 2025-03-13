@@ -1,28 +1,34 @@
-import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack, Title } from "@mantine/core";
+import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import classes from "./GroupsTable.module.css";
-import useFetch from "../../../hooks/useFetch.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import { safeObjectValues } from "../../../utils/misc.js";
 import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading.jsx";
+import CreateGroupModal from "../../../modals/account/CreateGroupModal/CreateGroupModal.jsx";
+import DeleteGroupsModal from "../../../modals/account/DeleteGroupsModal/DeleteGroupsModal.jsx";
 
-const GroupsTable = (): React.JSX.Element => {
+const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "accounts.controls");
-    const { data: groupsData, error, loading, refresh } = useFetch(`/groups`);
+
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-    const onFilteringChange = (callback: (prev: any) => any) => {
-        setColumnsFilters(callback);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    };
+    const data = useMemo(
+        () =>
+            safeObjectValues(groupData).map(({ uuid, name, users }) => ({
+                uuid,
+                name,
+                count: users.length,
+                users: users.map((uuid: string) => userData?.[uuid] || { uuid: "loading", username: "?" }),
+            })),
+        [groupData, userData]
+    );
 
-    const data = useMemo(() => safeObjectValues(groupsData), [groupsData]);
     const columns = useMemo(() => getColumns(refresh), [refresh]);
 
     const table = useReactTable({
@@ -39,7 +45,18 @@ const GroupsTable = (): React.JSX.Element => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
-    console.log(data);
+    const onFilteringChange = (callback: (prev: any) => any) => {
+        setColumnsFilters(callback);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
+    const onDelete = () => {
+        refresh();
+        table.toggleAllRowsSelected(false);
+    };
+
+    const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
+
     if (error) throw error;
 
     return (
@@ -57,7 +74,16 @@ const GroupsTable = (): React.JSX.Element => {
                     <TableControls
                         table={table}
                         onFilteringChange={onFilteringChange}
-                        modals={{}}
+                        modals={{
+                            create: {
+                                component: CreateGroupModal,
+                                props: { onSubmit: refresh },
+                            },
+                            delete: {
+                                component: DeleteGroupsModal,
+                                props: { uuids: selectedUuids, onSubmit: onDelete },
+                            },
+                        }}
                         translations={{
                             create: tns("create-group"),
                             delete: tns("delete-selected"),
@@ -102,7 +128,10 @@ const GroupsTable = (): React.JSX.Element => {
                 {loading ? (
                     <Loading />
                 ) : (
-                    <ScrollArea className={classes.container}>
+                    <ScrollArea
+                        scrollbars="y"
+                        offsetScrollbars
+                    >
                         {table.getRowModel().rows.map(row => (
                             <Box
                                 className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}

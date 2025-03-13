@@ -1,6 +1,8 @@
 .container {
     display: flex;
     flex: 1;
+    gap: 0;
+    width: 100%;
     min-height: 0;
     justify-content: space-between;
 }
@@ -11,18 +13,12 @@
     max-height: fit-content;
 }
 
-.bottom {
-    width: 100%;
-    flex: 0;
-    height: fit-content;
-    align-items: center;
-}
-
 .table {
     display: flex;
     flex-direction: column;
     min-height: 0;
     flex: 1;
+    margin-top: -44px;
 }
 
 .tr {
@@ -64,23 +60,7 @@
     padding: var(--mantine-spacing-md);
 }
 
-.tr > *:nth-child(2) {
-    flex: 0;
-    min-width: 300px;
-}
-.tr > *:nth-child(3) {
-    flex: 0;
-    min-width: 300px;
-}
-
-.tr > *:first-child {
-    flex: 0;
-    min-width: 50px;
-    justify-content: center;
-}
-
 .tr > *:last-child {
     flex: 0;
-    min-width: 200px;
-    justify-content: center;
+    min-width: 80px;
 }

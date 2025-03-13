@@ -14,13 +14,13 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
             base: {
                 name: "filter",
                 component: ActionIcon,
-                props: { size: "36", variant: "default" },
+                props: { size: "36", variant: "default", disabled: true },
                 children: <IconFilter size={20} />,
             },
             xl: {
                 name: "filter",
                 component: Button,
-                props: { fw: 400, w: 120, variant: "default", leftSection: <IconFilter size={16} /> },
+                props: { fw: 400, w: 120, variant: "default", leftSection: <IconFilter size={16} />, disabled: true },
                 children: translations.filter,
             },
         }),
@@ -28,13 +28,13 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
             base: {
                 name: "import",
                 component: ActionIcon,
-                props: { size: "36", variant: "default" },
+                props: { size: "36", variant: "default", disabled: true },
                 children: <IconFileImport size={20} />,
             },
             xl: {
                 name: "import",
                 component: Button,
-                props: { fw: 400, w: 140, variant: "default", leftSection: <IconFileImport size={16} /> },
+                props: { fw: 400, w: 140, variant: "default", leftSection: <IconFileImport size={16} />, disabled: true },
                 children: translations.import,
             },
         }),

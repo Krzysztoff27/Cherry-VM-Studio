@@ -13,16 +13,10 @@ import CreateAccountModal from "../../../modals/account/CreateAccountModal/Creat
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 
-const AccountTable = ({ accountType }): React.JSX.Element => {
+const AccountTable = ({ accountType, userData, refresh, error, loading }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
-    const { data: userData, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-
-    const onFilteringChange = (callback: (prev: any) => any) => {
-        setColumnsFilters(callback);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    };
 
     const columns = useMemo(() => getColumns(accountType, refresh), [accountType, refresh]);
     const data = useMemo(
@@ -50,6 +44,16 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    const onFilteringChange = (callback: (prev: any) => any) => {
+        setColumnsFilters(callback);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
+    const onDelete = () => {
+        refresh();
+        table.toggleAllRowsSelected(false);
+    };
+
     const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
 
     if (error) throw error;
@@ -75,7 +79,7 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
                             },
                             delete: {
                                 component: DeleteAccountsModal,
-                                props: { uuids: selectedUuids, onSubmit: refresh },
+                                props: { uuids: selectedUuids, onSubmit: onDelete },
                             },
                         }}
                         translations={{
@@ -123,7 +127,10 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
                 {loading ? (
                     <Loading />
                 ) : (
-                    <ScrollArea className={classes.container}>
+                    <ScrollArea
+                        scrollbars="y"
+                        offsetScrollbars
+                    >
                         {table.getRowModel().rows.map(row => (
                             <Box
                                 className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}

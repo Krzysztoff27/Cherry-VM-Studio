@@ -4,7 +4,7 @@ import AccountAvatarGroup from "../display/AccountAvatarGroup/AccountAvatarGroup
 const AvatarsCell = ({ getValue }): React.JSX.Element => {
     return (
         <AccountAvatarGroup
-            uuids={getValue()}
+            users={getValue()}
             max={10}
         />
     );

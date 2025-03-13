@@ -158,12 +158,13 @@ export interface ContentTableProps {
 }
 
 export interface BusinessCardProps {
-    imageSrc: string;
-    alt?: string;
+    imageSrc?: string;
     name: string;
-    comment: string;
+    alt?: string;
+    comment?: string;
     link?: string;
     withAvatar?: boolean;
+    size?: string;
 }
 
 export interface CellProps {

@@ -2,11 +2,11 @@ import React from "react";
 import ConfirmationModal from "../../base/ConfirmationModal/ConfirmationModal";
 import useApi from "../../../hooks/useApi";
 
-const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
+const DeleteGroupsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
     const { deleteRequest } = useApi();
 
     const onConfirm = () => {
-        uuids.forEach(uuid => deleteRequest(`user/delete/${uuid}`));
+        uuids.forEach((uuid: string) => deleteRequest(`group/delete/${uuid}`));
         onClose();
         onSubmit();
     };
@@ -16,7 +16,7 @@ const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuid
             opened={opened}
             onClose={onClose}
             onConfirm={onConfirm}
-            title="Account removal"
+            title="Group removal"
             message={
                 uuids.length > 1
                     ? `All ${uuids.length} selected accounts will be removed. Are you sure you want to continue?`
@@ -27,4 +27,4 @@ const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuid
     );
 };
 
-export default DeleteAccountsModal;
+export default DeleteGroupsModal;

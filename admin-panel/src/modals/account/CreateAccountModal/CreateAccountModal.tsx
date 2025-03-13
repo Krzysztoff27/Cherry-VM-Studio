@@ -9,10 +9,6 @@ import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 
-const borderless = {
-    input: classes.borderless,
-};
-
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
     const { t, tns } = useNamespaceTranslation("modals");
@@ -107,14 +103,14 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             <TextInput
                                 placeholder={t("name")}
                                 w={300}
-                                classNames={borderless}
+                                classNames={{ input: "borderless" }}
                                 key={form.key("name")}
                                 {...form.getInputProps("name")}
                             />
                             <TextInput
                                 placeholder={t("surname")}
                                 w={300}
-                                classNames={borderless}
+                                classNames={{ input: "borderless" }}
                                 key={form.key("surname")}
                                 {...form.getInputProps("surname")}
                             />
@@ -122,14 +118,14 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                                 placeholder={t("username")}
                                 w={300}
                                 key={form.key("username")}
-                                classNames={borderless}
+                                classNames={{ input: "borderless" }}
                                 {...form.getInputProps("username")}
                             />
                             <TextInput
                                 placeholder={t("email")}
                                 w={300}
                                 key={form.key("email")}
-                                classNames={borderless}
+                                classNames={{ input: "borderless" }}
                                 {...form.getInputProps("email")}
                             />
                         </Stack>
@@ -144,14 +140,14 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         placeholder={tns("create-account.password-placeholder")}
                         key={form.key("password")}
                         {...form.getInputProps("password")}
-                        classNames={borderless}
+                        classNames={{ input: "borderless" }}
                         flex="3"
                     />
                     <PasswordInput
                         label={tns("create-account.confirm-password")}
                         placeholder={tns("create-account.confirm-password-placeholder")}
                         key={form.key("confirmPassword")}
-                        classNames={borderless}
+                        classNames={{ input: "borderless" }}
                         {...form.getInputProps("confirmPassword")}
                     />
                     <Select
@@ -167,7 +163,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             checkIconPosition="left"
                             label={tns("create-account.roles")}
                             data={["Machine Manager", "Account Administrator"]}
-                            classNames={borderless}
+                            classNames={{ input: "borderless" }}
                             placeholder={tns("create-account.select-roles")}
                             key={form.key("roles")}
                             {...form.getInputProps("roles")}
@@ -179,7 +175,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             checkIconPosition="left"
                             label={tns("create-account.groups")}
                             data={["4ta2"]}
-                            classNames={borderless}
+                            classNames={{ input: "borderless" }}
                             placeholder={tns("create-account.select-groups")}
                             key={form.key("groups")}
                             {...form.getInputProps("groups")}
