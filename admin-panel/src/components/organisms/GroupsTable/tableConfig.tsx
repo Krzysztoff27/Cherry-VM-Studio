@@ -5,6 +5,8 @@ import CheckboxHeader from "../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../atoms/table/DateDifferenceCell";
 import { IconDotsVertical } from "@tabler/icons-react";
 import AvatarsCell from "../../atoms/table/AvatarsCell";
+import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
+import GroupModal from "../../../modals/account/GroupModal/GroupModal";
 
 export const getColumns = (refresh: () => void) => [
     {
@@ -19,22 +21,28 @@ export const getColumns = (refresh: () => void) => [
         cell: props => <Text>{props.getValue()}</Text>,
     },
     {
+        accessorKey: "count",
+        header: "Client count",
+        cell: props => <Text>{props.getValue()}</Text>,
+    },
+    {
         accessorKey: "users",
-        header: "Users",
+        enableSorting: false,
+        header: "Clients",
         cell: AvatarsCell,
     },
     {
         accessorKey: "options",
         header: "",
         enableSorting: false,
-        cell: props => (
-            <ActionIcon
-                variant="transparent"
-                color="dimmed"
-                size="sm"
+        cell: ({ row }) => (
+            <ModalButton
+                ModalComponent={GroupModal}
+                buttonProps={{ variant: "default", bd: "2px var(--mantine-color-dark-5) solid" }}
+                modalProps={{ uuid: row.id }}
             >
-                <IconDotsVertical />
-            </ActionIcon>
+                View & Edit
+            </ModalButton>
         ),
     },
 ];

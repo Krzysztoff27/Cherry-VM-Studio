@@ -60,6 +60,19 @@
             "passwords-not-equal": "Passwords are not the same."
         }
     },
+    "create-group": {
+        "title": "Create New Group",
+        "description": "You're creating a public group of clients that will be visible and modifiable by all administrators.",
+        "name": "Name",
+        "name-note": "Note: Group name must be unique",
+        "error-clients": "Error occured when loading clients :(",
+        "validation": {
+            "name-too-short": "Group name must be at least 3 characters long.",
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-duplicate": "Group with this name already exists.",
+            "clients-too-few": "Group must consist of at least two clients."
+        }
+    },
     "confirm": {
         "leaving": {
             "title": "You're leaving the page",

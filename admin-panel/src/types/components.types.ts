@@ -158,12 +158,13 @@ export interface ContentTableProps {
 }
 
 export interface BusinessCardProps {
-    imageSrc: string;
-    alt?: string;
+    imageSrc?: string;
     name: string;
-    comment: string;
+    alt?: string;
+    comment?: string;
     link?: string;
     withAvatar?: boolean;
+    size?: string;
 }
 
 export interface CellProps {
@@ -200,4 +201,53 @@ export interface SizeSelectProps {
     sizes: number[];
     value: number;
     setValue: (prev: number | string) => any;
+}
+
+export interface TableControlsButton {
+    name: string;
+    position?: number;
+    component: ComponentType<any>;
+    props?: { [key: string]: any }; // button component props
+    children?: any;
+}
+
+export interface TableControlsModal {
+    component: ComponentType<any>;
+    props?: { [key: string]: any };
+}
+
+export interface TableControlsTranslations {
+    create?: string;
+    delete?: string;
+    import?: string;
+    filter?: string;
+}
+
+export interface TableControlsModals {
+    create?: TableControlsModal;
+    delete?: TableControlsModal;
+    import?: TableControlsModal;
+    filter?: TableControlsModal;
+    [key: string]: TableControlsModal;
+}
+
+export interface TableControlsProps {
+    table: any;
+    modals: TableControlsModals;
+    translations: TableControlsTranslations;
+    additionalButtons?: TableControlsButton[];
+    onFilteringChange: (callback: (prev: any) => any) => void;
+}
+
+export interface TableStateHeadingProps {
+    getIsSomeRowsSelected: () => boolean;
+    getIsAllRowsSelected: () => boolean;
+    getCoreRowModel: () => any;
+    getSelectedRowModel: () => any;
+    getRowCount: () => number;
+    translations: {
+        all: string;
+        selected: string;
+        filtered: string;
+    };
 }

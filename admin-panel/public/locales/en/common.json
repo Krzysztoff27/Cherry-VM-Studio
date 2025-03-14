@@ -38,5 +38,6 @@
     "search": "Search",
     "name": "Name",
     "surname": "Surname",
-    "email": "Email"
+    "email": "Email",
+    "nothing-found": "Nothing found..."
 }

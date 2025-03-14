@@ -71,13 +71,16 @@
     "accounts": {
         "controls": {
             "all-accounts": "Wszystkie konta",
-            "selected-accounts": "Wybrane konta",
+            "all-groups": "Wszystkie grupy",
+            "selected-accounts": "Zaznaczone konta",
+            "selected-groups": "Zaznaczone grupy",
             "filtered-results": "Przefiltrowane wyniki",
             "search": "Wyszukaj",
             "filters": "Filtruj",
             "import": "Zaimportuj",
             "create-account": "Utwórz konto",
             "delete-selected": "Usuń zaznaczone",
+            "create-group": "Utwórz grupę",
             "view-profile": "Zobacz profil",
             "edit-account": "Edytuj profil",
             "delete": "Usuń"

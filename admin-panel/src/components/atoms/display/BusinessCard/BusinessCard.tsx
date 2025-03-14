@@ -2,14 +2,7 @@ import { Avatar, Group, Stack, Text } from "@mantine/core";
 import React from "react";
 import { BusinessCardProps } from "../../../../types/components.types";
 
-const BusinessCard = ({
-    imageSrc,
-    alt,
-    name,
-    comment,
-    link,
-    withAvatar = true,
-}: BusinessCardProps): React.JSX.Element => {
+const BusinessCard = ({ imageSrc, alt, name, comment, link, withAvatar = true, size = "md" }: BusinessCardProps): React.JSX.Element => {
     return (
         <Group wrap="nowrap">
             {withAvatar && (
@@ -17,16 +10,17 @@ const BusinessCard = ({
                     src={imageSrc}
                     alt={alt || name}
                     name={name}
-                    size="md"
+                    size={size}
                     color={name && "initials"}
                 />
             )}
             <Stack gap="0">
-                <Text>{name}</Text>
+                <Text size={size}>{name}</Text>
                 <Text
                     component="a"
                     href={link}
                     c="dimmed"
+                    size={size}
                 >
                     {comment}
                 </Text>

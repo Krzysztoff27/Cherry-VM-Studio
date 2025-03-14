@@ -2,14 +2,15 @@ import { Avatar, Badge, Button, Group, List, Modal, PasswordInput, Stack, Text, 
 import { useDisclosure } from "@mantine/hooks";
 import { IconEdit } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import RolesCell from "../../../components/atoms/table/RolesCell";
 import ModalButton from "../../../components/atoms/interactive/ModalButton/ModalButton";
 import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
+import useFetch from "../../../hooks/useFetch";
+import Loading from "../../../components/atoms/feedback/Loading/Loading";
 
-const EditMode = ({ onSubmit, onClose, toggle }) => (
+const EditMode = ({ onSubmit, onClose, toggle, user }) => (
     <>
         <Avatar
-            name="Janusz Maurykowski"
+            name={`${user.name} ${user.surname}`}
             color="initials"
             size="xl"
         />
@@ -32,37 +33,11 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
                         pr="xs"
                         ta="right"
                     >
-                        Email
-                    </Text>
-                    <TextInput
-                        flex="1"
-                        value="janusz.maurykowski@domain.domain2.com"
-                        styles={{
-                            input: {
-                                // textAlign: 'center',
-                                fontSize: "1rem",
-                                fontWeight: "500",
-                                color: "var(--mantine-color-dimmed)",
-                                border: "none",
-                            },
-                        }}
-                        autoFocus
-                    />
-                </Group>
-                <Group
-                    w="100%"
-                    gap="xs"
-                >
-                    <Text
-                        w="100px"
-                        pr="xs"
-                        ta="right"
-                    >
                         Name
                     </Text>
                     <TextInput
                         flex="1"
-                        value="Janusz"
+                        value={user.name}
                         styles={{
                             input: {
                                 // textAlign: 'center',
@@ -87,7 +62,7 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
                     </Text>
                     <TextInput
                         flex="1"
-                        value="Maurykowski"
+                        value={user.surname}
                         styles={{
                             input: {
                                 // textAlign: 'center',
@@ -97,6 +72,58 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
                                 border: "none",
                             },
                         }}
+                    />
+                </Group>
+                <Group
+                    w="100%"
+                    gap="xs"
+                >
+                    <Text
+                        w="100px"
+                        pr="xs"
+                        ta="right"
+                    >
+                        Username
+                    </Text>
+                    <TextInput
+                        flex="1"
+                        value={user.username}
+                        styles={{
+                            input: {
+                                // textAlign: 'center',
+                                fontSize: "1rem",
+                                fontWeight: "500",
+                                color: "var(--mantine-color-dimmed)",
+                                border: "none",
+                            },
+                        }}
+                        autoFocus
+                    />
+                </Group>
+                <Group
+                    w="100%"
+                    gap="xs"
+                >
+                    <Text
+                        w="100px"
+                        pr="xs"
+                        ta="right"
+                    >
+                        Email
+                    </Text>
+                    <TextInput
+                        flex="1"
+                        value={user.email}
+                        styles={{
+                            input: {
+                                // textAlign: 'center',
+                                fontSize: "1rem",
+                                fontWeight: "500",
+                                color: "var(--mantine-color-dimmed)",
+                                border: "none",
+                            },
+                        }}
+                        autoFocus
                     />
                 </Group>
                 <Group
@@ -129,9 +156,9 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
                     <ModalButton
                         ModalComponent={ChangePasswordModal}
                         buttonProps={{
-                            variant: "default",
                             flex: "1",
-                            border: "none",
+                            variant: "default",
+                            bd: "none",
                             leftSection: <IconEdit size={20} />,
                         }}
                     >
@@ -148,17 +175,29 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
             align="start"
             style={{ borderRadius: "8px" }}
         >
-            {["TEACHER", "GROUP CREATOR"].map((role, i) => (
-                <Badge
-                    key={i}
-                    variant="light"
-                    color="teal"
-                    size="lg"
-                    fw={500}
-                >
-                    {role}
-                </Badge>
-            ))}
+            {user.account_type == "administrative"
+                ? user?.roles?.map((role, i) => (
+                      <Badge
+                          key={i}
+                          variant="light"
+                          color="teal"
+                          size="lg"
+                          fw={500}
+                      >
+                          {role}
+                      </Badge>
+                  ))
+                : user?.groups?.map((group, i) => (
+                      <Badge
+                          key={i}
+                          variant="light"
+                          color="gray"
+                          size="lg"
+                          fw={500}
+                      >
+                          {group}
+                      </Badge>
+                  ))}
         </Group>
         <Group
             w="100%"
@@ -187,39 +226,12 @@ const EditMode = ({ onSubmit, onClose, toggle }) => (
     </>
 );
 
-const ViewMode = ({ onSubmit, onClose, toggle }) => (
-    <>
-        <Avatar
-            name="Janusz Maurykowski"
-            color="initials"
-            size="xl"
-        />
-        <Stack
-            align="center"
-            gap="4"
-            w="100%"
-        >
-            <Title
-                order={5}
-                c="dimmed"
-                fw="500"
-            >
-                janusz.maurykowski@domain.domain2.com
-            </Title>
-            <Title order={3}>Janusz Maurykowski</Title>
-            <ModalButton
-                ModalComponent={ChangePasswordModal}
-                buttonProps={{
-                    variant: "default",
-                    w: "50%",
-                    m: "12",
-                    bd: "none",
-                    leftSection: <IconEdit size={20} />,
-                }}
-            >
-                Change password
-            </ModalButton>
-        </Stack>
+const AdminDetails = ({ user }) => (
+    <Stack
+        w="100%"
+        align="center"
+        flex="1"
+    >
         <List
             size="sm"
             c="dark.1"
@@ -238,11 +250,11 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
             align="start"
             style={{ borderRadius: "8px" }}
         >
-            {["TEACHER", "GROUP CREATOR"].map((role, i) => (
+            {user.roles?.map((role, i) => (
                 <Badge
                     key={i}
                     variant="light"
-                    color="teal"
+                    color="gray"
                     size="lg"
                     fw={500}
                 >
@@ -250,6 +262,41 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
                 </Badge>
             ))}
         </Group>
+    </Stack>
+);
+
+const ViewMode = ({ onSubmit, onClose, toggle, user }) => (
+    <>
+        <Avatar
+            name={`${user.name} ${user.surname}`}
+            color="initials"
+            size="xl"
+        />
+        <Stack
+            align="center"
+            gap="8"
+            w="100%"
+        >
+            <Title
+                order={5}
+                c="dimmed"
+                fw="500"
+            >
+                @{user.username}
+            </Title>
+            <Title order={3}>{`${user.name} ${user.surname}`}</Title>
+            <Badge
+                variant="light"
+                color={user.account_type == "administrative" ? "cherry" : "teal"}
+                size="lg"
+                fw={500}
+            >
+                {user.account_type === "administrative" ? "Administrator" : "Client user"}
+            </Badge>
+        </Stack>
+
+        {user.account_type === "administrative" ? <AdminDetails user={user} /> : <Stack flex="1"></Stack>}
+
         <Group
             w="100%"
             justify="center"
@@ -276,10 +323,16 @@ const ViewMode = ({ onSubmit, onClose, toggle }) => (
 
 const ProfileModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
     const [editMode, { toggle, close: closeEditMode }] = useDisclosure(false);
+    const { data, error, loading } = useFetch(`/user/${uuid}`);
 
     useEffect(() => {
         closeEditMode();
     }, []);
+
+    if (loading) return <Loading />;
+    if (error) throw error;
+
+    const Content = editMode ? EditMode : ViewMode;
 
     return (
         <Modal
@@ -289,22 +342,15 @@ const ProfileModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Re
         >
             <Stack
                 align="center"
-                gap="sm"
+                gap="md"
                 h="560"
             >
-                {editMode ? (
-                    <EditMode
-                        onSubmit={onSubmit}
-                        onClose={onClose}
-                        toggle={toggle}
-                    />
-                ) : (
-                    <ViewMode
-                        onSubmit={onSubmit}
-                        onClose={onClose}
-                        toggle={toggle}
-                    />
-                )}
+                <Content
+                    onSubmit={onSubmit}
+                    onClose={onClose}
+                    toggle={toggle}
+                    user={data}
+                />
             </Stack>
         </Modal>
     );

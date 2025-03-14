@@ -1,0 +1,16 @@
+.borderless {
+    border: none !important;
+}
+
+.border {
+    border: 2px solid var(--mantine-color-dark-5);
+}
+
+.mantine-Button-root[data-variant="default"] {
+    border: 2px solid var(--mantine-color-dark-5);
+    font-weight: 400;
+}
+
+.mantine-Input-input[data-variant="default"] {
+    border: 2px solid var(--mantine-color-dark-5);
+}

@@ -4,22 +4,19 @@ import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel
 import { useMemo, useState } from "react";
 import classes from "./AccountTable.module.css";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import AccountTableControls from "../../molecules/interactive/AccountTableControls/AccountTableControls.jsx";
-import useFetch from "../../../hooks/useFetch.js";
 import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
+import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
+import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
+import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 
-const AccountTable = ({ accountType }): React.JSX.Element => {
-    const { data: userData, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
+const AccountTable = ({ accountType, userData, refresh, error, loading }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-
-    const onFilteringChange = (callback: (prev: any) => any) => {
-        setColumnsFilters(callback);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    };
 
     const columns = useMemo(() => getColumns(accountType, refresh), [accountType, refresh]);
     const data = useMemo(
@@ -49,7 +46,17 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
 
     const setPageSize = (size: number | string) => setPagination(prev => ({ ...prev, pageSize: parseInt(`${size}`) }));
 
-    console.log(data);
+    const onFilteringChange = (callback: (prev: any) => any) => {
+        setColumnsFilters(callback);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
+    const onDelete = () => {
+        refresh();
+        table.toggleAllRowsSelected(false);
+    };
+
+    const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
 
     if (error) throw error;
 
@@ -57,12 +64,33 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
-                    <TableStateHeading {...table} />
-                    <AccountTableControls
+                    <TableStateHeading
+                        {...table}
+                        translations={{
+                            all: tns("all-accounts"),
+                            selected: tns("selected-accounts"),
+                            filtered: tns("filtered-results"),
+                        }}
+                    />
+                    <TableControls
                         table={table}
-                        accountType={accountType}
+                        modals={{
+                            create: {
+                                component: CreateAccountModal,
+                                props: { accountType, onSubmit: refresh },
+                            },
+                            delete: {
+                                component: DeleteAccountsModal,
+                                props: { uuids: selectedUuids, onSubmit: onDelete },
+                            },
+                        }}
+                        translations={{
+                            create: tns("create-account"),
+                            delete: tns("delete-selected"),
+                            import: tns("import"),
+                            filter: tns("filters"),
+                        }}
                         onFilteringChange={onFilteringChange}
-                        refreshData={refresh}
                     />
                 </Group>
             </Stack>
@@ -101,7 +129,10 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
                 {loading ? (
                     <Loading />
                 ) : (
-                    <ScrollArea className={classes.container}>
+                    <ScrollArea
+                        scrollbars="y"
+                        offsetScrollbars
+                    >
                         {table.getRowModel().rows.map(row => (
                             <Box
                                 className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}

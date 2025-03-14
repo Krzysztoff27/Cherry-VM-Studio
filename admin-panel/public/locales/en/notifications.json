@@ -111,6 +111,12 @@
             "message": "Successfully created user {{username}}."
         }
     },
+    "group": {
+        "created": {
+            "title": "Group Created",
+            "message": "Successfully created client group {{name}}"
+        }
+    },
     "network-panel": {
         "flow-init": {
             "title": "Network Configuration Loaded",

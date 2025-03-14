@@ -1,15 +1,14 @@
-.container,
-.top {
+.container {
+    display: flex;
     flex: 1;
     min-height: 0;
+    justify-content: space-between;
 }
 
 .top {
+    display: flex;
+    min-height: 0;
     max-height: fit-content;
-}
-
-.container {
-    justify-content: space-between;
 }
 
 .bottom {
@@ -24,7 +23,6 @@
     flex-direction: column;
     min-height: 0;
     flex: 1;
-    padding-right: 16px;
 }
 
 .tr {
@@ -34,6 +32,7 @@
 
 .tr:has(.th) {
     border-width: 2px;
+    padding-right: 12px;
 }
 
 .tr:last-child {
@@ -55,22 +54,38 @@
 .th,
 .td {
     flex: 2;
-    min-width: 100px;
     display: flex;
+    min-width: 100px;
     align-items: center;
     gap: 8px;
     overflow: hidden;
+    /* border: 1px red solid; */
 
     padding: var(--mantine-spacing-md);
 }
 
-.th:nth-child(4),
-.td:nth-child(4) {
-    flex: 1;
+.tr > *:nth-child(1) {
+    min-width: 50px;
+}
+.tr > *:nth-child(2) {
+    min-width: 200px;
 }
 
-.tr > *:first-child,
-.tr > *:last-child {
+.tr > *:nth-child(3) {
+    min-width: 200px;
+}
+
+.tr > *:nth-child(4) {
+    flex: 1;
+    min-width: 100px;
+}
+
+.tr > *:nth-child(5) {
+    flex: 0;
+    min-width: 50px;
+}
+
+.tr > *:first-child {
     flex: 0;
     min-width: 50px;
     justify-content: center;
