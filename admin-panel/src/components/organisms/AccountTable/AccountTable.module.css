@@ -18,6 +18,12 @@
     align-items: center;
 }
 
+.paginationContainer {
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 var(--mantine-spacing-md);
+}
+
 .table {
     display: flex;
     flex-direction: column;

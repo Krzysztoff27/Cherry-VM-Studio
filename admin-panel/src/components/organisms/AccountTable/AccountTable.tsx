@@ -152,10 +152,7 @@ const AccountTable = ({ accountType, userData, refresh, error, loading }): React
                 )}
             </Box>
             <Stack className={classes.bottom}>
-                <Group
-                    justify="space-between"
-                    w="100%"
-                >
+                <Group className={classes.paginationContainer}>
                     <Box w="50" />
                     <Pagination
                         value={pagination.pageIndex + 1}

@@ -7,18 +7,15 @@ const SizeSelect = ({ sizes, value, setValue }: SizeSelectProps): React.JSX.Elem
 
     return (
         <Select
-            w="75"
-            withCheckIcon={false}
             data={data}
             value={`${value}`}
             onChange={setValue}
-            radius="sm"
-            className="border"
-            styles={{
-                input: {
-                    backgroundColor: "var(--mantine-color-dark-6)",
-                },
+            classNames={{
+                input: "border",
             }}
+            w="75"
+            withCheckIcon={false}
+            allowDeselect={false}
         />
     );
 };
