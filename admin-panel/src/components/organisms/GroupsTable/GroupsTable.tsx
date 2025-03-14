@@ -8,6 +8,7 @@ import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import { safeObjectValues } from "../../../utils/misc.js";
 import GroupTableControls from "../../molecules/interactive/GroupTableControls/GroupTableControls.jsx";
+import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
 
 const GroupsTable = (): React.JSX.Element => {
     const { data: groupsData, error, loading, refresh } = useFetch(`/groups`);
@@ -38,6 +39,8 @@ const GroupsTable = (): React.JSX.Element => {
 
     console.log(data);
     if (error) throw error;
+
+    const setPageSize = (size: number | string) => setPagination(prev => ({ ...prev, pageSize: parseInt(`${size}`) }));
 
     return (
         <Stack className={classes.container}>
@@ -114,13 +117,24 @@ const GroupsTable = (): React.JSX.Element => {
                 )}
             </Box>
             <Stack className={classes.bottom}>
-                <Pagination
-                    value={pagination.pageIndex + 1}
-                    onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
-                    total={table.getPageCount() || 1}
-                    siblings={2}
-                    withEdges
-                />
+                <Group
+                    justify="space-between"
+                    w="100%"
+                >
+                    <Box w="50" />
+                    <Pagination
+                        value={pagination.pageIndex + 1}
+                        onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
+                        total={table.getPageCount() || 1}
+                        siblings={2}
+                        withEdges
+                    />
+                    <SizeSelect
+                        value={pagination.pageSize}
+                        setValue={setPageSize}
+                        sizes={[1, 5, 10, 25, 50]}
+                    />
+                </Group>
             </Stack>
         </Stack>
     );

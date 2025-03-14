@@ -195,3 +195,9 @@ export interface ExpandingButtonProps extends ButtonProps {
     duration: number;
     w: number;
 }
+
+export interface SizeSelectProps {
+    sizes: number[];
+    value: number;
+    setValue: (prev: number | string) => any;
+}

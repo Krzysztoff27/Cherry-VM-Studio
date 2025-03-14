@@ -9,6 +9,7 @@ import useFetch from "../../../hooks/useFetch.js";
 import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
+import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
 
 const AccountTable = ({ accountType }): React.JSX.Element => {
     const { data: userData, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
@@ -45,6 +46,8 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
+
+    const setPageSize = (size: number | string) => setPagination(prev => ({ ...prev, pageSize: parseInt(`${size}`) }));
 
     console.log(data);
 
@@ -118,13 +121,24 @@ const AccountTable = ({ accountType }): React.JSX.Element => {
                 )}
             </Box>
             <Stack className={classes.bottom}>
-                <Pagination
-                    value={pagination.pageIndex + 1}
-                    onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
-                    total={table.getPageCount() || 1}
-                    siblings={2}
-                    withEdges
-                />
+                <Group
+                    justify="space-between"
+                    w="100%"
+                >
+                    <Box w="50" />
+                    <Pagination
+                        value={pagination.pageIndex + 1}
+                        onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
+                        total={table.getPageCount() || 1}
+                        siblings={2}
+                        withEdges
+                    />
+                    <SizeSelect
+                        value={pagination.pageSize}
+                        setValue={setPageSize}
+                        sizes={[1, 5, 10, 25, 50]}
+                    />
+                </Group>
             </Stack>
         </Stack>
     );
