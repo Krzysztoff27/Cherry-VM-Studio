@@ -14,7 +14,14 @@ set_config_param() {
 }
 
 configure_daemon_libvirt(){
-    printf '[i] Making backup of libvirt daemon config file: '
+    printf '[i] Creating directory structure (%s) and copying vm infrastructure .xml files: ' "$DIR_LIBVIRT"
+    runuser -u CherryWorker -- mkdir -p "$DIR_LIBVIRT"
+    runuser -u CherryWorker -- cp -r ../../../libvirt/. "$DIR_LIBVIRT"
+    ok_handler
+    printf '[i] Creating directory structure (%s): ' "$VM_INSTANCES"
+    runuser -u CherryWorker -- mkdir -p "$VM_INSTANCES"
+    ok_handler
+    printf '[i] Creating backup of libvirt daemon config file: '
     runuser -u CherryWorker -- cp "$LIBVIRTD_CONFIG_FILE" "${LIBVIRTD_CONFIG_FILE}.bak"
     ok_handler
     printf '[i] Modifying libvirt monolithic daemon config: '
@@ -23,6 +30,7 @@ configure_daemon_libvirt(){
     runuser -u CherryWorker -- set_config_param 'tls_port' '16514' "${LIBVIRTD_CONFIG_FILE}"
     runuser -u CherryWorker -- set_config_param 'listen_addr' '10.10.10.254' "${LIBVIRTD_CONFIG_FILE}"
     runuser -u CherryWorker -- set_config_param 'auth_tls' "none" "${LIBVIRTD_CONFIG_FILE}"
+    runuser -u CherryWorker -- set_config_param 'tls_allowed_dn_list' '["C=AU,O=cherry-vm-manager,CN=cherry-api"]' "${LIBVIRTD_CONFIG_FILE}"
     ok_handler
     printf '[i] Installing libvirt TLS socket override file: '
     runuser -u CherryWorker -- touch '/etc/systemd/system/libvirtd-tls.socket.d/override.conf'
@@ -32,20 +40,13 @@ configure_daemon_libvirt(){
     printf '[i] Enabling libvirt monolithic daemon and TLS socket to run on startup: '
     runuser -u CherryWorker -- sudo systemctl -q stop libvirtd.service
     runuser -u CherryWorker -- sudo systemctl -q enable --now libvirtd-tls.socket
-    runuser -u CherryWorker -- sudo systemctl -q enable libvirtd.service
+    runuser -u CherryWorker -- sudo systemctl -q enable --now libvirtd.service
     ok_handler
     printf '[i] Starting libvirt TLS socket: '
     runsuer -u CherryWorker -- sudo systemctl -q start libvirtd-tls.socket
     ok_handler
     printf '[i] Starting libvirt monolithic daemon: '
     runuser -u CherryWorker -- sudo systemctl -q start libvirtd.service 
-    ok_handler
-    printf "[i] Creating directory structure ($DIR_LIBVIRT) and copying vm infrastructure .xml files: "
-    runuser -u CherryWorker -- mkdir -p "$DIR_LIBVIRT"
-    runuser -u CherryWorker -- cp -r ../libvirt/. "$DIR_LIBVIRT"
-    ok_handler
-    printf "[i] Creating directory structure ($VM_INSTANCES): "
-    runuser -u CherryWorker -- mkdir -p "$VM_INSTANCES"
     ok_handler
 }
 
@@ -56,22 +57,17 @@ configure_daemon_docker(){
     printf '[i] Starting docker daemon: '
     systemctl -q start docker.service 
     ok_handler
-    printf "[i] Creating directory structure ("${DIR_DOCKER}") and copying docker files: "
+    printf '[i] Creating directory structure (%s) and copying docker files: ' "$DIR_DOCKER"
     mkdir -p "$DIR_DOCKER"
-    cp -r ../docker/. "$DIR_DOCKER"
+    cp -r ../../../docker/. "$DIR_DOCKER"
     ok_handler
-    #Add copying of the files from api/docker and react-admin-panel/docker after building their images
-    printf '[i] Copying docker files for Cherry API: '
+    printf '[i] Copying docker-compose file for Cherry API: '
     mkdir -p "${DIR_DOCKER}cherry-api"
-    cp -r '../../api/api/docker/.' "${DIR_DOCKER}cherry-api"
+    cp -r '../../../../api/api/docker/docker-compose.yaml' "${DIR_DOCKER}cherry-api"
     ok_handler
-    printf '[i] Copying Cherry Admin Panel files for image build: '
-    mkdir -p "${DIR_IMAGE_FILES}cherry-admin-panel"
-    cp -r '../../react-admin-panel/react-admin-panel/.' "${DIR_IMAGE_FILES}cherry-admin-panel"
-    ok_handler
-    printf '[i] Copying docker files for Cherry Admin Panel: '
+    printf '[i] Copying docker-compose file for Cherry Admin Panel: '
     mkdir -p "${DIR_DOCKER}cherry-admin-panel"
-    cp -r '../../react-admin-panel/react-admin-panel/docker/.' "${DIR_DOCKER}cherry-admin-panel"
+    cp -r '../../../../react-admin-panel/react-admin-panel/docker/docker-compose.yaml' "${DIR_DOCKER}cherry-admin-panel"
     ok_handler
 }
 

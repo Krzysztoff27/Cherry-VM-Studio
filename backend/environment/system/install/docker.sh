@@ -4,9 +4,6 @@ create_docker_networks(){
     printf '\n[i] Creating cvmm-internal Docker network: '
     runuser -u CherryWorker -- docker network create -o "com.docker.network.bridge.enable_icc"="true" -o "com.docker.network.bridge.name"="cvmm-internal" --driver=bridge --subnet=172.16.100.0/24 --gateway=172.16.100.1 --internal cvmm-internal > "$LOGS_FILE"
     ok_handler
-    printf '\n[i] Creating cherry-ras-net Docker macvlan network: '
-    runuser -u CherryWorker -- docker network create --driver=macvlan --subnet=192.168.100.0/24 --gateway=192.168.100.1 -o parent=cherry-vm-br -o ipvlan_mode=l2 cherry-ras-net > "$LOGS_FILE"
-    ok_handler
     printf '\n[i] Adding cvmm-internal Docker network to docker firewall zone: '
     runuser -u CherryWorker -- sudo firewall-cmd --add-interface=cvmm-internal --zone=docker --permanent > "$LOGS_FILE"
     runuser -u CherryWorker -- sudo firewall-cmd --reload > "$LOGS_FILE"

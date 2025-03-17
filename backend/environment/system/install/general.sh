@@ -80,7 +80,7 @@ create_user(){
     chmod 700 /home/CherryWorker
     ok_handler
     printf '[i] Adding CherryWorker to system groups: '
-    usermod -a -G docker,libvirt,kvm CherryWorker
+    usermod -a -G docker,libvirt,kvm,CVMM CherryWorker
     ok_handler
     printf '[i] Adding /etc/sudoers.d/cherryworker file: '
     echo "CherryWorker ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/cherryworker > "$LOGS_FILE"

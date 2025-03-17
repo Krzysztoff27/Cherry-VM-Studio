@@ -66,6 +66,7 @@ installation(){
 
     #Host os daemons configuration
     configure_daemon_libvirt
+    generate_tls_certificates
     #configure_daemon_docker
 
     #Docker containers configuration - Proxy, API, Panel, Apache Guacamole
