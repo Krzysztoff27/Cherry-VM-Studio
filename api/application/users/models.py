@@ -47,6 +47,14 @@ AnyUserInDB = Union[AdministratorInDB, ClientInDB]
 
 # represents any valid create user form
 CreateUserForm = Union[CreateAdministratorForm, CreateClientForm]
+        
+class UserModificationForm(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    roles: list[str] | None = None
+    groups: list[str] | None = None
     
 class Filters(BaseModel):
     account_type: AccountTypes | None = None

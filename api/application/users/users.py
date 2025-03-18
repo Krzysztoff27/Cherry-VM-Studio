@@ -4,7 +4,7 @@ from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
 from .permissions import is_admin, is_client
-from .models import AdministratorInDB, ClientInDB, CreateUserForm, AnyUserInDB, Filters
+from .models import AdministratorInDB, ClientInDB, CreateUserForm, AnyUserInDB, Filters, UserModificationForm
 
 #
 # to be replaced with SQL queries
@@ -107,3 +107,6 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
         clients[user_data.uuid] = user.model_dump()
         clients_database.write(clients)
         return user
+
+def modify_user(modification_data: UserModificationForm):
+    pass
