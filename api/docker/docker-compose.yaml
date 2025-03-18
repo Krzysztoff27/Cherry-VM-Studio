@@ -7,7 +7,7 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY}
     volumes:
-      - "/opt/cherry-vm-manager/auth/:/api/data/auth/:ro"
+      - "/opt/cherry-vm-manager/auth/:/api/data/authentication/:ro"
     networks:
       cvmm-internal:
   
