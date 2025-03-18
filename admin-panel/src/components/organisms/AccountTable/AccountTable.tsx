@@ -4,10 +4,10 @@ import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel
 import { useMemo, useState } from "react";
 import classes from "./AccountTable.module.css";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
-import useFetch from "../../../hooks/useFetch.js";
 import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
+import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
 import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
 import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
@@ -43,6 +43,8 @@ const AccountTable = ({ accountType, userData, refresh, error, loading }): React
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
+
+    const setPageSize = (size: number | string) => setPagination(prev => ({ ...prev, pageSize: parseInt(`${size}`) }));
 
     const onFilteringChange = (callback: (prev: any) => any) => {
         setColumnsFilters(callback);
@@ -150,13 +152,21 @@ const AccountTable = ({ accountType, userData, refresh, error, loading }): React
                 )}
             </Box>
             <Stack className={classes.bottom}>
-                <Pagination
-                    value={pagination.pageIndex + 1}
-                    onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
-                    total={table.getPageCount() || 1}
-                    siblings={2}
-                    withEdges
-                />
+                <Group className={classes.paginationContainer}>
+                    <Box w="50" />
+                    <Pagination
+                        value={pagination.pageIndex + 1}
+                        onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
+                        total={table.getPageCount() || 1}
+                        siblings={2}
+                        withEdges
+                    />
+                    <SizeSelect
+                        value={pagination.pageSize}
+                        setValue={setPageSize}
+                        sizes={[1, 5, 10, 25, 50]}
+                    />
+                </Group>
             </Stack>
         </Stack>
     );

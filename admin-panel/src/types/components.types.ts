@@ -197,6 +197,12 @@ export interface ExpandingButtonProps extends ButtonProps {
     w: number;
 }
 
+export interface SizeSelectProps {
+    sizes: number[];
+    value: number;
+    setValue: (prev: number | string) => any;
+}
+
 export interface TableControlsButton {
     name: string;
     position?: number;

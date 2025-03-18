@@ -6,6 +6,7 @@ import classes from "./GroupsTable.module.css";
 import { getColumns } from "./tableConfig.jsx";
 import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import { safeObjectValues } from "../../../utils/misc.js";
+import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
 import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading.jsx";
@@ -58,6 +59,8 @@ const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JS
     const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
 
     if (error) throw error;
+
+    const setPageSize = (size: number | string) => setPagination(prev => ({ ...prev, pageSize: parseInt(`${size}`) }));
 
     return (
         <Stack className={classes.container}>
@@ -151,13 +154,21 @@ const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JS
                 )}
             </Box>
             <Stack className={classes.bottom}>
-                <Pagination
-                    value={pagination.pageIndex + 1}
-                    onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
-                    total={table.getPageCount() || 1}
-                    siblings={2}
-                    withEdges
-                />
+                <Group className={classes.paginationContainer}>
+                    <Box w="50" />
+                    <Pagination
+                        value={pagination.pageIndex + 1}
+                        onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
+                        total={table.getPageCount() || 1}
+                        siblings={2}
+                        withEdges
+                    />
+                    <SizeSelect
+                        value={pagination.pageSize}
+                        setValue={setPageSize}
+                        sizes={[1, 5, 10, 25, 50]}
+                    />
+                </Group>
             </Stack>
         </Stack>
     );
