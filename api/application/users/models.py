@@ -28,6 +28,14 @@ class CreatedUser(UserInDB):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = str(uuid4()) # generate random uuid on creation
+        
+class UserModificationData(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    roles: list[str] | None = None
+    groups: list[str] | None = None
     
 class Filters(BaseModel):
     account_type: str | None = None

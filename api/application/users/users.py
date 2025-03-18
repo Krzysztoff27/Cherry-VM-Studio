@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
-from .models import Administrator, Client, UserInDB, Filters, CreatedUser
+from .models import Administrator, Client, UserInDB, Filters, CreatedUser, UserModificationData
 
 #
 # to be replaced with SQL queries
@@ -85,3 +85,5 @@ def create_user(user_data: CreatedUser) -> UserInDB:
     
     return user
 
+def modify_user(modification_data: UserModificationData):
+    pass

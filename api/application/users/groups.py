@@ -57,3 +57,54 @@ def create_group(group_data: CreatedGroup) -> Group:
     groups_database.write(groups)
     
     return groups[group_data.uuid]
+
+def add_user_to_group(group_uuid, user_uuid) -> None:
+    users = users_database.read()
+    groups = groups_database.read()
+    
+    if not groups[group_uuid]:
+        raise HTTPException(400, f"Group with uuid={group_uuid} does not exist.")
+    
+    if not users[user_uuid]:
+        raise HTTPException(400, f"User with uuid={user_uuid} does not exist.")
+    
+    if users[user_uuid].account_type != 'client':
+        raise HTTPException(400, "Invalid user type. Only users of type client can be added to groups.")
+    
+    if group_uuid in users[user_uuid].groups:
+        raise HTTPException(400, "User already in the group.")
+       
+    if not users[user_uuid].groups:
+        users[user_uuid].groups = []
+        
+    users[user_uuid].groups.append(group_uuid)
+    groups[group_uuid].users.append(user_uuid)
+    
+    users_database.write(users)
+    groups_database.write(groups)
+    
+def remove_user_from_group(group_uuid, user_uuid) -> None:
+    users = users_database.read()
+    groups = groups_database.read()
+    
+    if not groups[group_uuid]:
+        raise HTTPException(400, f"Group with uuid={group_uuid} does not exist.")
+    
+    if not users[user_uuid]:
+        raise HTTPException(400, f"User with uuid={user_uuid} does not exist.")
+    
+    if users[user_uuid].account_type != 'client':
+        raise HTTPException(400, "Invalid user type. Only users of type client can be added to groups.")
+       
+    if group_uuid in users[user_uuid].groups:
+        raise HTTPException(400, "User does not belong to given group.")   
+       
+    if not users[user_uuid].groups:
+        users[user_uuid].groups = []
+        
+    users[user_uuid].groups.remove(group_uuid)
+    groups[group_uuid].users.remove(user_uuid)
+    
+    users_database.write(users)
+    groups_database.write(groups)
+    
