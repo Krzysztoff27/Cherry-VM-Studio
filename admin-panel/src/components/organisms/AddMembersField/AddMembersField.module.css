@@ -1,0 +1,13 @@
+.pillsList {
+    flex-wrap: nowrap;
+    width: fit-content;
+}
+
+.input {
+    overflow: hidden;
+    height: 36px;
+}
+
+.inputField {
+    padding-right: 128px;
+}

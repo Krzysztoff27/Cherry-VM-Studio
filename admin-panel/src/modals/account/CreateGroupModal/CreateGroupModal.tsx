@@ -1,18 +1,16 @@
-import { Avatar, Button, Group, Modal, MultiSelect, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import classes from "./CreateGroupModal.module.css";
+import { Avatar, Button, Group, Modal, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { hasLength, useForm } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import useApi from "../../../hooks/useApi";
 import { IconUsersGroup } from "@tabler/icons-react";
 import useFetch from "../../../hooks/useFetch";
-import { safeObjectValues } from "../../../utils/misc";
-import BusinessCard from "../../../components/atoms/display/BusinessCard/BusinessCard";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
+import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
 
 export default function CreateGroupModal({ opened, onClose, onSubmit }): React.JSX.Element {
-    const { t, tns } = useNamespaceTranslation("modals");
+    const { t, tns } = useNamespaceTranslation("modals", "create-group");
     const { postRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
@@ -25,9 +23,8 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
         },
 
         validate: {
-            name: val =>
-                val.length < 3 ? tns("create-group.validation.name-too-short") : val.length > 50 ? tns("create-group.validation.name-too-long") : null,
-            users: val => !val.length && tns("create-group.validation.clients-too-few"),
+            name: val => (val.length < 3 ? tns("validation.name-too-short") : val.length > 50 ? tns("validation.name-too-long") : null),
+            users: val => !val.length && tns("validation.clients-too-few"),
         },
     });
 
@@ -38,7 +35,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
 
     const onPostError: ErrorCallbackFunction = (response, json) => {
         if (response.status != 409) parseAndHandleError(response, json);
-        if (/name/.test(json?.detail)) form.setFieldError("name", tns("create-group.validation.name-duplicate"));
+        if (/name/.test(json?.detail)) form.setFieldError("name", tns("validation.name-duplicate"));
     };
 
     const onFormSubmit = form.onSubmit(async values => {
@@ -50,27 +47,15 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
         onSubmit?.();
     });
 
-    const options = safeObjectValues(users).map(({ uuid, name, surname, username }) => ({
-        value: uuid,
-        label: name || surname ? `${name} ${surname}` : username,
-    }));
-
-    const renderOption = ({ option }) => (
-        <BusinessCard
-            name={`${users[option.value].name} ${users[option.value].surname}`}
-            size="sm"
-        />
-    );
-
     return (
         <Modal
             opened={opened}
             onClose={closeModal}
-            title={tns("create-group.title")}
+            title={tns("title")}
             size="480"
         >
             <form onSubmit={onFormSubmit}>
-                <Stack className={classes.container}>
+                <Stack>
                     <Group
                         wrap="nowrap"
                         gap="sm"
@@ -78,32 +63,21 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
                         <Avatar color="cherry">
                             <IconUsersGroup />
                         </Avatar>
-                        <Text size="sm">{tns("create-group.description")}</Text>
+                        <Text size="sm">{tns("description")}</Text>
                     </Group>
                     <Stack gap="xs">
                         <TextInput
-                            description={tns("create-group.name-note")}
-                            placeholder={tns("create-group.name")}
+                            description={tns("name-note")}
+                            placeholder={tns("name")}
                             w={300}
                             bd="none"
                             key={form.key("name")}
                             {...form.getInputProps("name")}
                         />
-                        <MultiSelect
-                            placeholder="Pick clients"
-                            nothingFoundMessage={loading ? t("loading") : error ? tns("create-group.error-clients") : false}
-                            data={options}
-                            renderOption={renderOption}
-                            searchable
-                            hidePickedOptions
-                            rightSection={<></>}
-                            classNames={{
-                                dropdown: `border`,
-                                input: classes.clientsInput,
-                            }}
-                            comboboxProps={{
-                                transitionProps: { transition: "pop", duration: 200 },
-                            }}
+                        <UserMultiselect
+                            placeholder={tns("select-clients")}
+                            nothingFoundMessage={loading ? t("loading") : error ? t("error-clients") : false}
+                            users={users}
                             key={form.key("users")}
                             {...form.getInputProps("users")}
                         />

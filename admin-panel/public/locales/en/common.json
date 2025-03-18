@@ -39,5 +39,6 @@
     "name": "Name",
     "surname": "Surname",
     "email": "Email",
-    "nothing-found": "Nothing found..."
+    "nothing-found": "Nothing found...",
+    "error-users": "Error occured while loading users..."
 }

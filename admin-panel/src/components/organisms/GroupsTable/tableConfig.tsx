@@ -1,9 +1,6 @@
-import { ActionIcon, Text } from "@mantine/core";
-import AccountOptionsCell from "../../atoms/table/AccountOptionsCell";
+import { Text } from "@mantine/core";
 import CheckboxCell from "../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../atoms/table/CheckboxHeader";
-import DateDifferenceCell from "../../atoms/table/DateDifferenceCell";
-import { IconDotsVertical } from "@tabler/icons-react";
 import AvatarsCell from "../../atoms/table/AvatarsCell";
 import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
 import GroupModal from "../../../modals/account/GroupModal/GroupModal";

@@ -27,7 +27,7 @@ const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Reac
             >
                 <Group
                     w="100%"
-                    mb="40"
+                    mb="sm"
                 >
                     <Avatar
                         color="cherry"

@@ -11,6 +11,7 @@
     display: flex;
     min-height: 0;
     max-height: fit-content;
+    margin-bottom: var(--mantine-spacing-lg);
 }
 
 .table {
