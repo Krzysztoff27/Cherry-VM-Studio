@@ -4,6 +4,7 @@ import useFetch from "../../../hooks/useFetch";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
+import useMantineNotifications from "../../../hooks/useMantineNotifications";
 
 const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
     const { data: group, error: groupError, loading: groupLoading } = useFetch(`/group/${uuid}`);
@@ -11,7 +12,7 @@ const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Reac
     const { parseAndHandleError } = useErrorHandler();
 
     if (groupLoading || usersLoading) return <Loading />;
-    if (groupError || usersError) parseAndHandleError(groupError || usersError, (groupError || usersError).json());
+    if (groupError || usersError) parseAndHandleError(groupError || usersError);
 
     return (
         <Modal
