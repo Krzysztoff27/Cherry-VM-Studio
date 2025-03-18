@@ -3,7 +3,8 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class FilesConfig:
-    users: Path = Path("data/authentication/users.local.json")
+    administrators: Path = Path("data/authentication/administrators.local.json")
+    clients: Path = Path("data/authentication/clients.local.json")
     groups: Path = Path("data/authentication/groups.local.json")
     network_config_state_save: Path = Path("data/network_configuration/current_state.local.json")
     network_config_snapshots: Path = Path("data/network_configuration/snapshots.local.json")

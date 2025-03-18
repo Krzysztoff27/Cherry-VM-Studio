@@ -5,7 +5,7 @@ from utils.file import JSONHandler
 from config.files_config import FILES_CONFIG
 
 groups_database = JSONHandler(FILES_CONFIG.groups)
-users_database = JSONHandler(FILES_CONFIG.users)
+clients_database = JSONHandler(FILES_CONFIG.clients)
 
 def get_group_by_name(name: str) -> Group | None:
     groups = groups_database.read()
@@ -41,19 +41,19 @@ def validate_group_details(group_data: CreatedGroup, users):
     
 
 def create_group(group_data: CreatedGroup) -> Group:
-    users = users_database.read()
+    clients = clients_database.read()
     
-    group_data.users = list(filter(lambda uuid : uuid in users, group_data.users)) # remove users that do not exist
+    group_data.users = list(filter(lambda uuid : uuid in clients, group_data.users)) # remove users that do not exist
     
-    validate_group_details(group_data, users)
+    validate_group_details(group_data, clients)
     
     groups = groups_database.read()
     groups[group_data.uuid] = group_data.model_dump()
     
     for user_uuid in group_data.users:
-        users[user_uuid]["groups"].append(group_data.uuid)
+        clients[user_uuid]["groups"].append(group_data.uuid)
 
-    users_database.write(users)
+    clients_database.write(clients)
     groups_database.write(groups)
     
     return groups[group_data.uuid]

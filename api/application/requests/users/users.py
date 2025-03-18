@@ -1,6 +1,8 @@
 from fastapi import HTTPException
 from application import app
-from application.users import User, Filters, get_user_by_uuid, get_filtered_users, AccountTypes, Administrator, Client, CreatedUser, create_user, delete_user_by_uuid
+from application.users.users import create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid
+from application.users.permissions import get_manage_user_mask, verify_permissions
+from application.users.models import CreateUserForm, User, Filters, AccountTypes, Administrator, Client
 from application.authentication import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['users'])
@@ -23,9 +25,17 @@ async def __read_users__(
     return get_filtered_users(Filters(account_type=account_type, group=group))
 
 @app.post("/user/create", response_model=Administrator | Client, tags=['users'])
-async def __create_user__(user_data: CreatedUser, current_user: DependsOnAuthentication) -> Administrator | Client:
+async def __create_user__(user_data: CreateUserForm, current_user: DependsOnAuthentication) -> Administrator | Client:   
+    permission = get_manage_user_mask(user_data)
+    verify_permissions(current_user, permission)
     return create_user(user_data)
 
 @app.delete("/user/delete/{uuid}", response_model=None, tags=['users'])
 async def __delete_user__(uuid: str, current_user: DependsOnAuthentication) -> None:
-    delete_user_by_uuid(uuid)
+    user = get_user_by_uuid(uuid)
+    if user:
+        permission = get_manage_user_mask(user)
+        verify_permissions(current_user, permission)
+        delete_user_by_uuid(uuid)
+    
+        

@@ -3,54 +3,71 @@ from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
-from .models import Administrator, Client, UserInDB, Filters, CreatedUser
+from .permissions import is_admin, is_client
+from .models import AdministratorInDB, ClientInDB, CreateUserForm, AnyUserInDB, Filters
 
 #
 # to be replaced with SQL queries
 #
 
-users_database = JSONHandler(FILES_CONFIG.users)
+administrators_database = JSONHandler(FILES_CONFIG.administrators)
+clients_database = JSONHandler(FILES_CONFIG.clients)
 
-def get_user_by_username(username: str) -> UserInDB | None:
-    users = users_database.read()
-    return next((UserInDB(**user) for user in users.values() if user["username"] == username), None)
+def get_administrators() -> dict[str, AdministratorInDB]:
+    return {uuid: AdministratorInDB(**user) for uuid, user in administrators_database.read().items()}
 
-def get_user_by_email(email: str) -> UserInDB | None:
-    users = users_database.read()
-    return next((UserInDB(**user) for user in users.values() if user["email"] == email), None)
+def get_clients() -> dict[str, ClientInDB]:
+    return {uuid: ClientInDB(**user) for uuid, user in clients_database.read().items()}
 
-def get_user_by_uuid(uuid: str) -> UserInDB | None:
-    users = users_database.read()
+def get_all_users() -> dict[str, AdministratorInDB | ClientInDB]:
+    return get_administrators() | get_clients()
+
+def get_user_by_username(username: str) -> AnyUserInDB | None:
+    users = get_all_users()
+    for user in users.values():
+        if user.username == username:
+            return user
+
+def get_user_by_email(email: str) -> AnyUserInDB | None:
+    users = get_all_users()
+    for user in users.values():
+        if user.email == email:
+            return user
+
+def get_user_by_uuid(uuid: str) -> AnyUserInDB | None:
+    users = get_all_users()
     if uuid in users:
-        return UserInDB(**users[uuid])
-    
-def get_all_users() -> dict[str, UserInDB]:
-    users = users_database.read()
-    if not users: 
-        return {}
-    return {key: UserInDB(**user) for key, user in users.items()}
+        return users[uuid]
 
+# CANT WAIT FOR THIS TO BE TURNED INTO SQL... I HATE THIS
 def get_filtered_users(filters: Filters):
-    all_users = get_all_users()
+    if not filters.account_type:
+        all_users = get_all_users()
+    elif filters.account_type == 'administrative':
+        all_users = get_administrators()
+    elif filters.account_type == 'client':
+        all_users = get_clients()
+        
     users = all_users.copy()
+    
     for key, user in all_users.items():
-        if filters.account_type and filters.account_type != user.account_type:
-            del users[key]
-        if filters.group and ((not user.groups) or (filters.group not in user.groups)):
+        if filters.group and ((not is_client(user)) or (not user.groups) or (filters.group not in user.groups)):
             del users[key]
     return users
 
 def delete_user_by_uuid(uuid: str):
-    users = users_database.read()
-    if uuid in users:
-        del users[uuid]
-        users_database.write(users)
+    administrators = administrators_database.read()
+    clients = clients_database.read()
+    
+    if uuid in administrators:
+        del administrators[uuid]
+        administrators_database.write(administrators)
         
-def validate_user_details(user_data: CreatedUser):
-    
-    if user_data.account_type != 'administrative' and user_data.account_type != 'client':
-        HTTPException(status_code=400, detail="Invalid account type.")
-    
+    elif uuid in clients:
+        del clients[uuid]
+        clients_database.write(clients)
+        
+def validate_user_details(user_data: CreateUserForm):    
     if get_user_by_username(user_data.username) is not None:
         raise HTTPException(status_code=409, detail="User with this username already exists.")
     
@@ -69,19 +86,24 @@ def validate_user_details(user_data: CreatedUser):
     if len(user_data.surname) > 50:
         raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
         
-def create_user(user_data: CreatedUser) -> UserInDB:
+def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     validate_user_details(user_data)
-        
-    users = users_database.read() 
-    
-    UserClass = Administrator if user_data.account_type == 'administrative' else Client
-    base_user = UserClass(**user_data.model_dump())
-    base_user.username = base_user.username.lower()
-    
-    user = UserInDB(**base_user.model_dump(), password=hash_password(user_data.password))
-    
-    users[user.uuid] = user.model_dump()
-    users_database.write(users)
-    
-    return user
 
+    print(user_data, type(user_data))
+
+    user_data.username = user_data.username.lower()
+    user_data.password = hash_password(user_data.password)
+        
+    if is_admin(user_data):
+        user = AdministratorInDB(**user_data.model_dump())
+        administrators = administrators_database.read()
+        administrators[user_data.uuid] = user.model_dump()
+        administrators_database.write(administrators)
+        return user
+        
+    if is_client(user_data):
+        user = ClientInDB(**user_data.model_dump())
+        clients = clients_database.read()
+        clients[user_data.uuid] = user.model_dump()
+        clients_database.write(clients)
+        return user

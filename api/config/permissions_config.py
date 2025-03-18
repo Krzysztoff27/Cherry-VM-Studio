@@ -1,0 +1,12 @@
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Permissions:
+    VIEW_ALL_VMS            = 1 << 0
+    MANAGE_ALL_VMS          = 1 << 1
+    MANAGE_CLIENT_USERS     = 1 << 2
+    MANAGE_ADMIN_USERS      = 1 << 3
+    CHANGE_CLIENT_PASSWORD  = 1 << 4
+    CHANGE_ADMIN_PASSWORD   = 1 << 5
+    
+PERMISSIONS = Permissions()

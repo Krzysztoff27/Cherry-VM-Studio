@@ -12,6 +12,7 @@ from application.authentication import DependsOnAuthentication, get_authenticate
 
 @app.get("/vm/all/networkdata", tags=['machine data'])
 async def __get_all_vms_network_data__(current_user: DependsOnAuthentication) -> dict[str, MachineNetworkData]:
+    
     machines = get_machines()
     network_data = {}
     for uuid, machine in machines.items():
