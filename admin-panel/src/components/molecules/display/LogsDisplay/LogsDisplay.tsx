@@ -5,10 +5,10 @@ export default function ConsoleDisplay() {
     const viewport = useRef(null);
     const [logs, setLogs] = useState([]);
 
-    const addNewLog = (log: string) => setLogs(oldLogs => [log, ...oldLogs]); 
-    const scrollToBottom = () => viewport.current?.scrollTo({ top: viewport.current?.scrollHeight, behavior: 'smooth' });
+    const addNewLog = (log: string) => setLogs(oldLogs => [log, ...oldLogs]);
+    const scrollToBottom = () => viewport.current?.scrollTo({ top: viewport.current?.scrollHeight, behavior: "smooth" });
 
-    useEffect(() => { 
+    useEffect(() => {
         scrollToBottom();
 
         // dummy logs:
@@ -17,17 +17,25 @@ export default function ConsoleDisplay() {
     }, []);
 
     return (
-        <Paper bg='dark' p='xs' withBorder>
+        <Paper
+            bg="dark"
+            p="xs"
+        >
             <ScrollArea
                 viewportRef={viewport}
-                h='100%' 
-                ff='Office Code Pro D' 
-                fz='sm'
+                h="100%"
+                ff="Office Code Pro D"
+                fz="sm"
             >
-                <Flex direction='column-reverse' mih='100vh'>
-                    {logs.map((e,i) => <div key={i}>{e}</div>)}
+                <Flex
+                    direction="column-reverse"
+                    mih="100vh"
+                >
+                    {logs.map((e, i) => (
+                        <div key={i}>{e}</div>
+                    ))}
                 </Flex>
             </ScrollArea>
         </Paper>
-    )
+    );
 }

@@ -17,16 +17,31 @@ export default function VirtualMachinePage() {
     };
 
     return (
-        <Grid display='flex' p='4' pt='0' >
-            <StretchingColumn span={6} h='45%'>
-                <MachineDataDisplay uuid={uuid} currentState={currentState}/>
+        <Grid
+            display="flex"
+            p="md"
+        >
+            <StretchingColumn
+                span={6}
+                h="45%"
+            >
+                <MachineDataDisplay
+                    uuid={uuid}
+                    currentState={currentState}
+                />
             </StretchingColumn>
-            <StretchingColumn span={6} h='45%'>
-                <LogsDisplay/>
+            <StretchingColumn
+                span={6}
+                h="45%"
+            >
+                <LogsDisplay />
             </StretchingColumn>
-            <StretchingColumn span={12} h='55%'>
-                <MachineStateChart currentState={currentState}/>
+            <StretchingColumn
+                span={12}
+                h="55%"
+            >
+                <MachineStateChart currentState={currentState} />
             </StretchingColumn>
-        </Grid >
-    )
+        </Grid>
+    );
 }
