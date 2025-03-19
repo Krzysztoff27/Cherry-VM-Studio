@@ -5,6 +5,7 @@ from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
 from .permissions import is_admin, is_client
 from .models import AdministratorInDB, ClientInDB, CreateUserForm, AnyUserInDB, Filters, UserModificationForm
+from .groups import remove_user_from_group
 
 #
 # to be replaced with SQL queries
@@ -64,8 +65,11 @@ def delete_user_by_uuid(uuid: str):
         administrators_database.write(administrators)
         
     elif uuid in clients:
+        for group_uuid in clients[uuid].groups:
+            remove_user_from_group(group_uuid, uuid)
         del clients[uuid]
         clients_database.write(clients)
+        
         
 def validate_user_details(user_data: CreateUserForm):    
     if get_user_by_username(user_data.username) is not None:
@@ -88,8 +92,6 @@ def validate_user_details(user_data: CreateUserForm):
         
 def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     validate_user_details(user_data)
-
-    print(user_data, type(user_data))
 
     user_data.username = user_data.username.lower()
     user_data.password = hash_password(user_data.password)
