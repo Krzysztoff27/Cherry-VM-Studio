@@ -39,5 +39,8 @@
     "name": "Name",
     "surname": "Surname",
     "email": "Email",
-    "nothing-found": "Nothing found..."
+    "nothing-found": "Nothing found...",
+    "administrator": "Administrator",
+    "client": "Client",
+    "client-account": "Client Account"
 }

@@ -109,6 +109,10 @@
         "created": {
             "title": "Account Created",
             "message": "Successfully created user {{username}}."
+        },
+        "modified": {
+            "title": "Account Modified",
+            "message": "Successfully modified user {{username}}."
         }
     },
     "group": {

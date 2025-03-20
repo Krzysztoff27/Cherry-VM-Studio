@@ -97,6 +97,22 @@
             "message": "Wystąpił błąd podczas obliczania funkcji \"{{key}}\"."
         }
     },
+    "account": {
+        "created": {
+            "title": "Utworzono Konto",
+            "message": "Pomyślnie stworzono użytkownika {{username}}."
+        },
+        "modified": {
+            "title": "Zmodifykowano Konto",
+            "message": "Pomyślnie zmodyfikowano użytkownika {{username}}."
+        }
+    },
+    "group": {
+        "created": {
+            "title": "Utworzono Grupę",
+            "message": "Pomyślnie stworzono grupę kliencką {{name}}"
+        }
+    },
     "network-panel": {
         "flow-init": {
             "title": "Konfiguracja sieci załadowana",

@@ -126,30 +126,27 @@ const AccountTable = ({ accountType, userData, refresh, error, loading }): React
                         ))}
                     </Box>
                 ))}
-                {loading ? (
-                    <Loading />
-                ) : (
-                    <ScrollArea
-                        scrollbars="y"
-                        offsetScrollbars
-                    >
-                        {table.getRowModel().rows.map(row => (
-                            <Box
-                                className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                                key={row.id}
-                            >
-                                {row.getVisibleCells().map(cell => (
-                                    <Box
-                                        className={classes.td}
-                                        key={cell.id}
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </Box>
-                                ))}
-                            </Box>
-                        ))}
-                    </ScrollArea>
-                )}
+
+                <ScrollArea
+                    scrollbars="y"
+                    offsetScrollbars
+                >
+                    {table.getRowModel().rows.map(row => (
+                        <Box
+                            className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
+                            key={row.id}
+                        >
+                            {row.getVisibleCells().map(cell => (
+                                <Box
+                                    className={classes.td}
+                                    key={cell.id}
+                                >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </Box>
+                            ))}
+                        </Box>
+                    ))}
+                </ScrollArea>
             </Box>
             <Stack className={classes.bottom}>
                 <Group className={classes.paginationContainer}>

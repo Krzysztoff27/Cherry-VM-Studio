@@ -1,25 +1,25 @@
 /**
  * Checks if variable is type "Object".
- * @param {*} variable 
+ * @param {*} variable
  * @returns {boolean}
  */
-export const isObject = (variable) => typeof variable === 'object' && variable !== null && !Array.isArray(variable)
+export const isObject = variable => typeof variable === "object" && variable !== null && !Array.isArray(variable);
 
 /**
  * Checks if variable is falsy or if it's length is 0
- * @param {*} variable 
+ * @param {*} variable
  * @returns {boolean}
  */
-export const noneOrEmpty = (variable) => !variable || !variable.length;
+export const noneOrEmpty = variable => !variable || !variable.length;
 
 /**
  * Zips keys from keyArray and values from valueArray into one object
- * @param {Array} keyArray 
- * @param {Array} valueArray 
+ * @param {Array} keyArray
+ * @param {Array} valueArray
  * @returns {Object} ZippedObject
  */
-export const zipToObject = (keyArray = [], valueArray = []) => noneOrEmpty(keyArray) || noneOrEmpty(valueArray) ? {} :
-    keyArray.reduce((acc, key, i) => ({ ...acc, [key]: valueArray[i] }), {});
+export const zipToObject = (keyArray = [], valueArray = []) =>
+    noneOrEmpty(keyArray) || noneOrEmpty(valueArray) ? {} : keyArray.reduce((acc, key, i) => ({ ...acc, [key]: valueArray[i] }), {});
 
 /**
  * Provides errorless Object.values experience
@@ -30,10 +30,10 @@ export const safeObjectValues = (obj = {}) => Object.values({ ...obj });
 
 /**
  * Provides errorless Object.keys experience
- * @param {Object} obj 
+ * @param {Object} obj
  * @returns {Array} array of keys
  */
-export const safeObjectKeys = (obj = {}) => Object.keys({...obj});
+export const safeObjectKeys = (obj = {}) => Object.keys({ ...obj });
 
 /**
  * Splits array into chunks
@@ -56,11 +56,11 @@ export const arrayIntoChunks = (array, chunkSize) => {
  */
 export const getCurrentTime = (showSeconds = true) => {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}${showSeconds ? `:${seconds}` : ''}`;
-}
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}${showSeconds ? `:${seconds}` : ""}`;
+};
 
 /**
  * setTimeout synchronized with real clock
@@ -68,9 +68,9 @@ export const getCurrentTime = (showSeconds = true) => {
  * @param {Number} secondsDelay delay in seconds
  * @returns clear timeout function
  */
-export const clockSynchronizedTimeout = (func = () => { }, secondsDelay = 1) => {
+export const clockSynchronizedTimeout = (func = () => {}, secondsDelay = 1) => {
     let timeout;
-    const getDelay = () => 1000 * secondsDelay - new Date().getMilliseconds();;
+    const getDelay = () => 1000 * secondsDelay - new Date().getMilliseconds();
     const syncLoadState = () => {
         func();
         timeout = setTimeout(syncLoadState, getDelay());
@@ -78,34 +78,34 @@ export const clockSynchronizedTimeout = (func = () => { }, secondsDelay = 1) => 
     timeout = setTimeout(syncLoadState, getDelay());
 
     return () => clearTimeout(timeout);
-}
+};
 
 export const isInRange = (value, min, max) => value >= min && value <= max;
 
-export const startsWithLetter = (str = '') => str ? /[a-z]/i.test(str[0]) : false;
+export const startsWithLetter = (str = "") => (str ? /[a-z]/i.test(str[0]) : false);
 
 /**
  * Checks if element is occurs at multiple positions in the array
- * @param {any} element 
- * @param {Array} array 
+ * @param {any} element
+ * @param {Array} array
  * @returns {boolean}
  */
 export const hasMultipleOccurrences = (element, array = []) => array.filter(e => e === element).length > 1;
 
-export const pluralize = (text, refAmount) => `${text}${refAmount > 1 ? 's' : ''}`
+export const pluralize = (text, refAmount) => `${text}${refAmount > 1 ? "s" : ""}`;
 
 /**
  * Safely pushes to the array variable even if array given is undefined. Throws error if arr parameter is defined and is not an array.
- * @param {array|undefined} arr 
+ * @param {array|undefined} arr
  * @param  {...any} elements
  * @returns array with pushed elements | error
  */
 export const safePush = (arr, ...elements) => {
     if (arr === undefined) arr = [];
-    if (!Array.isArray(arr)) throw (`Cannot push values into variable of type ${typeof arr}: ${arr}`)
+    if (!Array.isArray(arr)) throw `Cannot push values into variable of type ${typeof arr}: ${arr}`;
 
     return [...arr, ...elements];
-}
+};
 
 /**
  * Toggles the presence of a value in an array.
@@ -119,9 +119,9 @@ export const toggleInArray = (array, value) => {
     return index === -1 ? [...array, value] : array.filter((_, i) => i !== index);
 };
 
-export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...a || {}, ...b || {}})?.map(key => ({ ...a[key], ...b?.[key] }));
+export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...(a || {}), ...(b || {}) })?.map(key => ({ ...a[key], ...b?.[key] }));
 
-export const validPath = (path = '') => path.startsWith('/') ? path : `/${path}`;
+export const validPath = (path = "") => (path.startsWith("/") ? path : `/${path}`);
 
 export default {
     isObject,
@@ -137,5 +137,5 @@ export default {
     safePush,
     toggleInArray,
     mergeObjectPropertiesToArray,
-    validPath
-}
+    validPath,
+};

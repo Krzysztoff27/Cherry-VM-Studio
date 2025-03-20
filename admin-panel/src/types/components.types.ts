@@ -1,9 +1,9 @@
-import { ActionIconProps, ButtonProps, ModalProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
+import { ActionIconProps, ButtonProps, ModalProps, StackProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
 import { TablerIcon } from "@tabler/icons-react";
 import { ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
 import { PopoverProps } from "@mantine/core";
-import { MachineData, MachineState, MachineStates } from "./api.types";
+import { MachineData, MachineState, MachineStates, User } from "./api.types";
 
 export interface StateDividerProps {
     label: MachineStates;
@@ -250,4 +250,8 @@ export interface TableStateHeadingProps {
         selected: string;
         filtered: string;
     };
+}
+
+export interface PermissionProps extends StackProps {
+    user: User;
 }

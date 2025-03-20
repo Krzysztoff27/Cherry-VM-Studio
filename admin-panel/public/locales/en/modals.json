@@ -60,6 +60,59 @@
             "passwords-not-equal": "Passwords are not the same."
         }
     },
+    "view-account": {
+        "email": "Email",
+        "edit": "Edit",
+        "close": "Close",
+        "roles": "Roles",
+        "groups": "Groups",
+        "assigned-groups": "Assigned groups",
+        "creation-date": "Created",
+        "permissions": "Permissions",
+        "none": "None"
+    },
+    "edit-account": {
+        "title": "Editing account @{{username}}",
+        "account-details": "Account Details",
+        "name": "Name",
+        "surname": "Surname",
+        "username": "Username",
+        "email": "Email",
+        "groups": "Groups",
+        "roles": "Roles",
+        "roles-and-permissions": "Roles & Permissions",
+        "cancel": "Cancel",
+        "save": "Save",
+        "password": "Password",
+        "change-password": "Change password",
+        "permissions": {
+            "client": "This account DOES NOT have any administrative access.",
+            "machines-view-manage": "This user can VIEW, MANAGE all virtual machines.",
+            "machines-view": "This user can VIEW all virtual machines, but MANAGE only their own.",
+            "machines-manage": "This user can VIEW, MANAGE their own virtual machines.",
+            "machines": "This user can VIEW, MANAGE their own virtual machines.",
+            "users-view": "This user can VIEW all accounts.",
+            "users-manage-administrative-client": "This user can MANAGE both administrative and client accounts.",
+            "users-manage-administrative": "This user can MANAGE administrative accounts.",
+            "users-manage-client": "This user can MANAGE client accounts.",
+            "users-password-administrative-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
+            "users-password-administrative": "This user can CHANGE both administrative and client account's PASSWORDS.",
+            "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS."
+        },
+        "validation": {
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "surname-too-long": "Surname length cannot exceed 50 characters.",
+            "username-too-short": "Username must be at least 3 characters long.",
+            "username-too-long": "Username length cannot exceed 24 characters.",
+            "username-spaces": "Username cannot contain spaces.",
+            "username-invalid-first": "Username must start with a letter.",
+            "username-invalid-characters": "Username may only contain alphanumeric characters, underscores, hyphens and periods.",
+            "username-duplicate": "User with this username already exists.",
+            "email-invalid": "Invalid email.",
+            "email-duplicate": "User with this email already exists."
+        }
+    },
+
     "create-group": {
         "title": "Create New Group",
         "description": "You're creating a public group of clients that will be visible and modifiable by all administrators.",
@@ -81,6 +134,16 @@
         "unsaved": {
             "title": "Are you sure?",
             "description": "Performing this action will discard all current changes. Are you sure you want to continue?"
+        },
+        "account-removal": {
+            "title": "Account removal",
+            "description_one": "Selected account will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected accounts will be removed. Are you sure you want to continue?"
+        },
+        "group-removal": {
+            "title": "Group removal",
+            "description_one": "Selected group will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected groups will be removed. Are you sure you want to continue?"
         },
         "np-loading-config": {
             "title": "Confirm loading configuration"

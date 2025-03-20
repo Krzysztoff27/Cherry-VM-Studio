@@ -1,0 +1,28 @@
+.container {
+    width: 100%;
+    flex: 1;
+    padding-left: var(--mantine-spacing-md);
+    min-height: 0;
+    gap: 0;
+}
+
+.label {
+    margin-bottom: var(--mantine-spacing-xs);
+}
+
+.scrollArea {
+    width: 100%;
+}
+
+.badgeGroup {
+    gap: 4px;
+    align-items: start;
+}
+
+.badge {
+    margin-bottom: var(--mantine-spacing-xs);
+}
+
+.emptyMessage {
+    color: var(--mantine-color-dimmed);
+}
