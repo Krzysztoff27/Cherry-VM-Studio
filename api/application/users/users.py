@@ -5,7 +5,7 @@ from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
 from .permissions import is_admin, is_client
 from .models import AdministratorInDB, ClientInDB, CreateUserForm, AnyUserInDB, Filters, UserModificationForm
-from .groups import remove_user_from_group
+from .groups import add_user_to_group, remove_user_from_group
 
 #
 # to be replaced with SQL queries
@@ -110,5 +110,26 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
         clients_database.write(clients)
         return user
 
-def modify_user(modification_data: UserModificationForm):
-    pass
+# GIVE ME SQL ALREADY WITH ITS CASCADE UPDATES PLS
+def modify_user(uuid, modification_data: UserModificationForm) -> AnyUserInDB:
+    user = get_user_by_uuid(uuid)   
+    database = administrators_database if is_admin(user) else clients_database
+    
+    for key, value in modification_data.model_dump().items():
+        if value is not None and hasattr(user, key):
+            
+            if key == 'groups':
+                for group in user.groups:
+                    remove_user_from_group(group, uuid)
+                for group in value:
+                    add_user_to_group(group, uuid)
+                
+            setattr(user, key, value)    
+    
+    users = database.read()
+    users[user.uuid] = user.model_dump()
+    database.write(users)
+    
+    return user
+        
+    

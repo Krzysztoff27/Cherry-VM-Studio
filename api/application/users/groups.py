@@ -68,17 +68,17 @@ def add_user_to_group(group_uuid, user_uuid) -> None:
     if not clients[user_uuid]:
         raise HTTPException(400, f"User with uuid={user_uuid} does not exist.")
     
-    if clients[user_uuid].account_type != 'client':
+    if clients[user_uuid]["account_type"] != 'client':
         raise HTTPException(400, "Invalid user type. Only users of type client can be added to groups.")
     
-    if group_uuid in clients[user_uuid].groups:
-        raise HTTPException(400, "User already in the group.")
-       
-    if not clients[user_uuid].groups:
-        clients[user_uuid].groups = []
+    if not clients[user_uuid]["groups"]:
+        clients[user_uuid]["groups"] = []
         
-    clients[user_uuid].groups.append(group_uuid)
-    groups[group_uuid].users.append(user_uuid)
+    if not group_uuid in clients[user_uuid]["groups"]:
+        raise HTTPException(400, "User already in the group.")
+        
+    clients[user_uuid]["groups"].append(group_uuid)
+    groups[group_uuid]["users"].append(user_uuid)
     
     clients_database.write(clients)
     groups_database.write(groups)
@@ -93,17 +93,17 @@ def remove_user_from_group(group_uuid, user_uuid) -> None:
     if not clients[user_uuid]:
         raise HTTPException(400, f"User with uuid={user_uuid} does not exist.")
     
-    if clients[user_uuid].account_type != 'client':
+    if clients[user_uuid]["account_type"] != 'client':
         raise HTTPException(400, "Invalid user type. Only users of type client can be added to groups.")
        
-    if group_uuid in clients[user_uuid].groups:
-        raise HTTPException(400, "User does not belong to given group.")   
-       
-    if not clients[user_uuid].groups:
-        clients[user_uuid].groups = []
+    if not clients[user_uuid]["groups"]:
+        clients[user_uuid]["groups"] = []
         
-    clients[user_uuid].groups.remove(group_uuid)
-    groups[group_uuid].users.remove(user_uuid)
+    if not group_uuid in clients[user_uuid]["groups"]:
+        raise HTTPException(400, "User does not belong to given group.")   
+
+    clients[user_uuid]["groups"].remove(group_uuid)
+    groups[group_uuid]["users"].remove(user_uuid)
     
     clients_database.write(clients)
     groups_database.write(groups)
