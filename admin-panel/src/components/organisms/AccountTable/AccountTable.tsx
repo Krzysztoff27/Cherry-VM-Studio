@@ -13,12 +13,12 @@ import CreateAccountModal from "../../../modals/account/CreateAccountModal/Creat
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 
-const AccountTable = ({ accountType, userData, refresh, error, loading }): React.JSX.Element => {
+const AccountTable = ({ accountType, userData, refresh, error, loading, openAccountModal }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-    const columns = useMemo(() => getColumns(accountType, refresh), [accountType, refresh]);
+    const columns = useMemo(() => getColumns(accountType, refresh, openAccountModal), [accountType, refresh]);
     const data = useMemo(
         () =>
             safeObjectValues(userData).map(({ uuid, username, name, surname, email, groups = [] }) => ({

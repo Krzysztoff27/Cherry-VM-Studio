@@ -1,32 +1,19 @@
 import { IconDotsVertical, IconEdit, IconTrash, IconUserCircle } from "@tabler/icons-react";
 import { ActionIcon, Button, Menu, Portal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import AccountModal from "../../../modals/account/AccountModal/AccountModal";
 import classes from "./AccountOptionsCell.module.css";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { useState } from "react";
 
-const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
+const AccountOptionsCell = ({ row, refreshData, openAccountModal }): React.JSX.Element => {
     const uuid = row.id;
     const { tns } = useNamespaceTranslation("pages");
     const [menuOpened, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false);
-    const [accountMode, setAccountMode] = useState(false);
-    const [accountOpened, { open: openAccount, close: closeAccount }] = useDisclosure(false);
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
-
-    // we're not using ModalButton here since the modal would get unmounted along with the disapperaing menu
 
     return (
         <>
             <Portal>
-                <AccountModal
-                    opened={accountOpened}
-                    onClose={closeAccount}
-                    uuid={uuid}
-                    onSubmit={refreshData}
-                    mode={accountMode}
-                />
                 <DeleteAccountsModal
                     opened={deleteModalOpened}
                     onClose={closeDeleteModal}
@@ -61,8 +48,7 @@ const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
                             justify="right"
                             rightSection={<IconUserCircle size={20} />}
                             onClick={() => {
-                                setAccountMode(false);
-                                openAccount();
+                                openAccountModal(uuid, false);
                                 closeMenu();
                             }}
                         >
@@ -74,8 +60,7 @@ const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
                             justify="right"
                             rightSection={<IconEdit size={20} />}
                             onClick={() => {
-                                setAccountMode(true);
-                                openAccount();
+                                openAccountModal(uuid, true);
                                 closeMenu();
                             }}
                         >
