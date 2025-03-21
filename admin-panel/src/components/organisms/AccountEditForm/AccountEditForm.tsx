@@ -12,7 +12,7 @@ import AccountHeading from "../../../components/atoms/display/AccountHeading/Acc
 
 const AccountEditForm = ({ onCancel, onSubmit, user }) => {
     const { tns } = useNamespaceTranslation("modals", "edit-account");
-    const { postRequest } = useApi();
+    const { putRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
 
@@ -62,7 +62,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
     };
 
     const onFormSubmit = form.onSubmit(async values => {
-        const res = await postRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
+        const res = await putRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
         if (!res) return;
 
         sendNotification("account.modified", undefined, { username: res.username });
