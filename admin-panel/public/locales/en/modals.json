@@ -21,26 +21,34 @@
         "name-input-placeholder": "Enter new snapshot name",
         "delete-snapshot-label": "Delete snapshot"
     },
-    "create-account": {
-        "title": "Create new account",
+    "account": {
+        "title-create": "Create new account",
         "name": "Name",
         "surname": "Surname",
+        "name-surname": "Name",
         "username": "Username",
         "email": "Email",
+        "password": "Password",
         "account-password": "Account password",
         "confirm-password": "Confirm password",
         "generate-password": "Generate password",
+        "change-password": "Change password",
+        "new-password": "New password",
+        "new-password-placeholder": "Enter the new password",
         "password-placeholder": "Enter password here",
         "confirm-password-placeholder": "Confirm password here",
-        "account-type": "Account type",
-        "account-types": {
-            "administrative": "Administrative",
-            "client": "Client"
-        },
-        "roles": "Role",
-        "select-roles": "Select roles",
+        "assigned-groups": "Assigned groups",
+        "account-details": "Account Details",
+        "creation-date": "Created",
+        "roles": "Roles",
         "groups": "Groups",
+        "select-roles": "Select roles",
         "select-groups": "Select groups",
+        "roles-and-permissions": "Roles & Permissions",
+        "permissions": "Permissions",
+        "account-type": "Account type",
+        "administrative": "Administrative",
+        "client": "Client",
         "validation": {
             "name-too-long": "Name length cannot exceed 50 characters.",
             "surname-too-long": "Surname length cannot exceed 50 characters.",
@@ -58,34 +66,8 @@
             "password-no-uppercase": "Password must contain at least one uppercase letter.",
             "password-no-special": "Password must contain at least one special symbol.",
             "passwords-not-equal": "Passwords are not the same."
-        }
-    },
-    "view-account": {
-        "email": "Email",
-        "edit": "Edit",
-        "close": "Close",
-        "roles": "Roles",
-        "groups": "Groups",
-        "assigned-groups": "Assigned groups",
-        "creation-date": "Created",
-        "permissions": "Permissions",
-        "none": "None"
-    },
-    "edit-account": {
-        "title": "Editing account @{{username}}",
-        "account-details": "Account Details",
-        "name": "Name",
-        "surname": "Surname",
-        "username": "Username",
-        "email": "Email",
-        "groups": "Groups",
-        "roles": "Roles",
-        "roles-and-permissions": "Roles & Permissions",
-        "cancel": "Cancel",
-        "save": "Save",
-        "password": "Password",
-        "change-password": "Change password",
-        "permissions": {
+        },
+        "permission-list": {
             "client": "This account DOES NOT have any administrative access.",
             "machines-view-manage": "This user can VIEW, MANAGE all virtual machines.",
             "machines-view": "This user can VIEW all virtual machines, but MANAGE only their own.",
@@ -98,21 +80,8 @@
             "users-password-administrative-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
             "users-password-administrative": "This user can CHANGE both administrative and client account's PASSWORDS.",
             "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS."
-        },
-        "validation": {
-            "name-too-long": "Name length cannot exceed 50 characters.",
-            "surname-too-long": "Surname length cannot exceed 50 characters.",
-            "username-too-short": "Username must be at least 3 characters long.",
-            "username-too-long": "Username length cannot exceed 24 characters.",
-            "username-spaces": "Username cannot contain spaces.",
-            "username-invalid-first": "Username must start with a letter.",
-            "username-invalid-characters": "Username may only contain alphanumeric characters, underscores, hyphens and periods.",
-            "username-duplicate": "User with this username already exists.",
-            "email-invalid": "Invalid email.",
-            "email-duplicate": "User with this email already exists."
         }
     },
-
     "create-group": {
         "title": "Create New Group",
         "description": "You're creating a public group of clients that will be visible and modifiable by all administrators.",

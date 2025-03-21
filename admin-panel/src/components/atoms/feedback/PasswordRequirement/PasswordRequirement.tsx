@@ -4,7 +4,7 @@ import { Text, Flex } from "@mantine/core";
 const PasswordRequirement = ({ meets, label }: { meets: boolean; label: string }) => {
     return (
         <Flex
-            c={meets ? "teal" : "red"}
+            c={meets ? "suse-green" : "cherry.4"}
             align="center"
             mt={7}
         >

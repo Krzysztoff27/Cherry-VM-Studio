@@ -6,7 +6,7 @@ import BadgeGroup from "../../../components/atoms/display/BadgeGroup/BadgeGroup"
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
 
 const AccountDisplay = ({ onClose, onEdit, user }) => {
-    const { t, tns } = useNamespaceTranslation("modals", "view-account");
+    const { t, tns } = useNamespaceTranslation("modals", "account");
 
     return (
         <Stack pos="relative">
@@ -43,13 +43,13 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                     <BadgeGroup
                         label={`${tns("roles")}:`}
                         items={user?.roles}
-                        emptyMessage={`${tns("none")}`}
+                        emptyMessage={`${t("none")}`}
                     />
                 ) : (
                     <BadgeGroup
                         label={`${tns("assigned-groups")}:`}
                         items={user?.groups}
-                        emptyMessage={`${tns("none")}`}
+                        emptyMessage={`${t("none")}`}
                     />
                 )}
                 <Group className={classes.buttonGroup}>
@@ -57,13 +57,13 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                         className={classes.editButton}
                         onClick={onEdit}
                     >
-                        {tns("edit")}
+                        {t("edit")}
                     </Button>
                     <Button
                         className={classes.closeButton}
                         onClick={onClose}
                     >
-                        {tns("close")}
+                        {t("close")}
                     </Button>
                 </Group>
             </Stack>

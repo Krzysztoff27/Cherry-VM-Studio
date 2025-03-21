@@ -5,7 +5,7 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { PermissionProps } from "../../../../types/components.types";
 
 const PermissionsList = ({ user, ...props }: PermissionProps): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("modals", "edit-account.permissions");
+    const { tns } = useNamespaceTranslation("modals", "account.permission-list");
     const hasPermission = permissionMask => (user.permissions & permissionMask) !== 0;
 
     if (user.account_type === "client")

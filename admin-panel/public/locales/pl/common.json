@@ -42,5 +42,7 @@
     "nothing-found": "Brak wyników...",
     "administrator": "Administrator",
     "client": "Klient",
-    "client-account": "Konto Klienckie"
+    "client-account": "Konto Klienckie",
+    "edit": "Edytuj",
+    "none": "Brak"
 }

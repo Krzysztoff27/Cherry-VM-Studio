@@ -22,26 +22,32 @@
         "name-input-placeholder": "Wpisz nazwę migawki",
         "delete-snapshot-label": "Usuń migawkę"
     },
-    "create-account": {
-        "title": "Stwórz nowe konto",
+    "account": {
+        "title-create": "Stwórz nowe konto",
         "name": "Imię",
         "surname": "Nazwisko",
+        "name-surname": "Imię i Nazwisko",
         "username": "Nazwa użytkownika",
         "email": "Email",
+        "password": "Hasło",
         "account-password": "Hasło",
         "confirm-password": "Potwierdź hasło",
         "generate-password": "Wygeneruj hasło",
+        "change-password": "Zmień hasło",
         "password-placeholder": "Wpisz hasło",
         "confirm-password-placeholder": "Potwierdź hasło",
-        "account-type": "Rodzaj konta",
-        "account-types": {
-            "administrative": "Administracyjne",
-            "client": "Klienckie"
-        },
+        "assigned-groups": "Przydzielone grupy",
+        "account-details": "Szczegóły Konta",
+        "creation-date": "Utworzone",
         "roles": "Role",
-        "select-roles": "Wybierz role",
         "groups": "Grupy",
+        "select-roles": "Wybierz role",
         "select-groups": "Wybierz grupy",
+        "roles-and-permissions": "Role i Uprawnienia",
+        "permissions": "Uprawnienia",
+        "account-type": "Rodzaj konta",
+        "administrative": "Administracyjne",
+        "client": "Klienckie",
         "validation": {
             "name-too-long": "Długość imienia nie może przekraczać 50 znaków.",
             "surname-too-long": "Długość nazwiska nie może przekraczać 50 znaków.",
@@ -59,34 +65,8 @@
             "password-no-uppercase": "Hasło musi zawierać co najmniej jedną wielką literę.",
             "password-no-special": "Hasło musi zawierać co najmniej jeden znak specjalny.",
             "passwords-not-equal": "Hasła nie są identyczne."
-        }
-    },
-    "view-account": {
-        "email": "Email",
-        "edit": "Edytuj",
-        "close": "Zamknij",
-        "roles": "Role",
-        "groups": "Grupy",
-        "assigned-groups": "Przydzielone grupy",
-        "permissions": "Uprawnienia",
-        "creation-date": "Utworzone",
-        "none": "Brak"
-    },
-    "edit-account": {
-        "title": "Edytowanie konta @{{username}}",
-        "account-details": "Szczegóły Konta",
-        "name": "Imię",
-        "surname": "Nazwisko",
-        "username": "Login",
-        "email": "Email",
-        "groups": "Grupy",
-        "roles": "Role",
-        "roles-and-permissions": "Role i Uprawnienia",
-        "cancel": "Anuluj",
-        "save": "Zapisz",
-        "password": "Hasło",
-        "change-password": "Zmień hasło",
-        "permissions": {
+        },
+        "permission-list": {
             "client": "Ten użytkownik NIE MA DOSTĘPU do panelu administracyjnego.",
             "machines-view-manage": "Ten użytkownik może PRZEGLĄDAĆ oraz ZARZĄDZAĆ wszystkimi maszynami wirtualnymi.",
             "machines-view": "Ten użytkownik może PRZEGLĄDAĆ wszystkie maszyny wirtualne, lecz ZARZĄDZAĆ jedynie swoimi.",
@@ -99,18 +79,6 @@
             "users-password-administrative-client": "Ten użytkownik może ZMIENIAĆ HASŁA kontom administratorskim oraz klienckim.",
             "users-password-administrative": "Ten użytkownik może ZMIENIAĆ HASŁA kontom administratorskim.",
             "users-password-client": "Ten użytkownik może ZMIENIAĆ HASŁA kontom klienckim."
-        },
-        "validation": {
-            "name-too-long": "Długość imienia nie może przekraczać 50 znaków.",
-            "surname-too-long": "Długość nazwiska nie może przekraczać 50 znaków.",
-            "username-too-short": "Nazwa użytkownika musi mieć co najmniej 3 znaki.",
-            "username-too-long": "Długość nazwy użytkownika nie może przekraczać 24 znaków.",
-            "username-spaces": "Nazwa użytkownika nie może zawierać spacji.",
-            "username-invalid-first": "Nazwa użytkownika musi zaczynać się od litery.",
-            "username-invalid-characters": "Nazwa użytkownika może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
-            "username-duplicate": "Użytkownik o tej nazwie już istnieje.",
-            "email-invalid": "Nieprawidłowy adres email.",
-            "email-duplicate": "Użytkownik o tym adresie email już istnieje."
         }
     },
     "confirm": {

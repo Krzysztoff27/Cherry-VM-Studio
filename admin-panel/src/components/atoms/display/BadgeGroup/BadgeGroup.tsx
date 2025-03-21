@@ -1,7 +1,7 @@
 import { Badge, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import classes from "./BadgeGroup.module.css";
 
-const BadgeGroup = ({ items, label, emptyMessage = "None" }) => {
+const BadgeGroup = ({ items, label, emptyMessage = "" }) => {
     return (
         <Stack className={classes.container}>
             {label && (

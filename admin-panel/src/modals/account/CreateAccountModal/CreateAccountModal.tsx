@@ -11,7 +11,7 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
-    const { t, tns } = useNamespaceTranslation("modals", "create-account");
+    const { t, tns } = useNamespaceTranslation("modals", "account");
     const { postRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
@@ -58,16 +58,15 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                     : null,
             confirmPassword: matchesField("password", tns("validation.passwords-not-equal")),
         },
+        onValuesChange: values => {
+            setFullName(values.name || values.surname ? `${values.name} ${values.surname}` : values.username);
+            form.setFieldValue("username", values.username.toLowerCase());
+        },
     });
 
     const closeModal = () => {
         form.reset();
         onClose();
-    };
-
-    const onFormChange = () => {
-        const vals = form.getValues();
-        setFullName(`${vals.name} ${vals.surname}`);
     };
 
     const onPostError: ErrorCallbackFunction = (response, json) => {
@@ -89,8 +88,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         <Modal
             opened={opened}
             onClose={closeModal}
-            onChange={onFormChange}
-            title={tns("title")}
+            title={tns("title-create")}
             size="480"
         >
             <form onSubmit={onFormSubmit}>
@@ -120,7 +118,6 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                                 key={form.key("username")}
                                 classNames={{ input: "borderless" }}
                                 {...form.getInputProps("username")}
-                                onChange={e => form.setFieldValue("username", `${e.currentTarget.value}`.toLowerCase())}
                             />
                             <TextInput
                                 placeholder={t("email")}
@@ -153,8 +150,8 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                     />
                     <Select
                         label={tns("account-type")}
-                        data={[tns(`account-types.${accountType}`)]}
-                        value={tns(`account-types.${accountType}`)}
+                        data={[tns(`${accountType}`)]}
+                        value={tns(`${accountType}`)}
                         disabled
                         autoFocus={false}
                     />

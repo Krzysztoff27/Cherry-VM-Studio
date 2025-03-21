@@ -42,5 +42,7 @@
     "nothing-found": "Nothing found...",
     "administrator": "Administrator",
     "client": "Client",
-    "client-account": "Client Account"
+    "client-account": "Client Account",
+    "edit": "Edit",
+    "none": "None"
 }

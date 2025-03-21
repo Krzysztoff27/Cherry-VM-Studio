@@ -9,9 +9,11 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
+import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
+import ChangePasswordModal from "../../../modals/account/ChangePasswordModal/ChangePasswordModal";
 
 const AccountEditForm = ({ onCancel, onSubmit, user }) => {
-    const { tns } = useNamespaceTranslation("modals", "edit-account");
+    const { t, tns } = useNamespaceTranslation("modals", "account");
     const { putRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
@@ -41,6 +43,9 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                     ? tns("validation.username-too-long")
                     : null,
             email: isEmail(tns("validation.email-invalid")),
+        },
+        onValuesChange: values => {
+            form.setFieldValue("username", values.username.toLowerCase());
         },
     });
 
@@ -91,7 +96,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                             {tns("account-details")}
                         </Title>
                         <Group className={classes.inputGroup}>
-                            <Text className={classes.label}>{tns("name")}</Text>
+                            <Text className={classes.label}>{tns("name-surname")}</Text>
                             <TextInput
                                 leftSection={<IconLabelFilled size={20} />}
                                 key={form.key("name")}
@@ -112,7 +117,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                                 key={form.key("username")}
                                 {...form.getInputProps("username")}
                                 className={classes.input}
-                                onChange={e => form.setFieldValue("username", `${e.currentTarget.value}`.toLowerCase())}
                             />
                         </Group>
                         <Group className={classes.inputGroup}>
@@ -122,19 +126,22 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                                 key={form.key("email")}
                                 {...form.getInputProps("email")}
                                 className={classes.input}
-                                onChange={e => form.setFieldValue("email", `${e.currentTarget.value}`.toLowerCase())}
                             />
                         </Group>
                         <Group className={classes.inputGroup}>
                             <Text className={classes.label}>{tns("password")}</Text>
-                            <Button
-                                variant="default"
-                                leftSection={<IconEdit size={20} />}
-                                rightSection={<></>}
-                                flex={1.08}
+                            <ModalButton
+                                ModalComponent={ChangePasswordModal}
+                                modalProps={{ uuid: user.uuid }}
+                                buttonProps={{
+                                    variant: "default",
+                                    leftSection: <IconEdit size={20} />,
+                                    rightSection: <></>,
+                                    flex: 1,
+                                }}
                             >
                                 {tns("change-password")}
-                            </Button>
+                            </ModalButton>
                             <Button
                                 flex={1}
                                 style={{ visibility: "hidden" }}
@@ -182,7 +189,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                         onClick={onCancel}
                         className={classes.cancelButton}
                     >
-                        {tns("cancel")}
+                        {t("cancel")}
                     </Button>
                     <Button
                         type="submit"
@@ -190,7 +197,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                         c="black"
                         className={classes.saveButton}
                     >
-                        {tns("save")}
+                        {t("save")}
                     </Button>
                 </Group>
             </Stack>
