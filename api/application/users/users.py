@@ -14,6 +14,12 @@ from .groups import add_user_to_group, remove_user_from_group
 administrators_database = JSONHandler(FILES_CONFIG.administrators)
 clients_database = JSONHandler(FILES_CONFIG.clients)
 
+def get_parent_database(user: AnyUserInDB) -> JSONHandler:
+    if is_admin(user):
+        return administrators_database
+    if is_client(user):
+        return clients_database
+
 def get_administrators() -> dict[str, AdministratorInDB]:
     return {uuid: AdministratorInDB(**user) for uuid, user in administrators_database.read().items()}
 
@@ -98,22 +104,17 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
         
     if is_admin(user_data):
         user = AdministratorInDB(**user_data.model_dump())
-        administrators = administrators_database.read()
-        administrators[user_data.uuid] = user.model_dump()
-        administrators_database.write(administrators)
-        return user
-        
     if is_client(user_data):
         user = ClientInDB(**user_data.model_dump())
-        clients = clients_database.read()
-        clients[user_data.uuid] = user.model_dump()
-        clients_database.write(clients)
-        return user
+        
+    users = get_parent_database(user).read()
+    users[user_data.uuid] = user.model_dump()
+    users.write(users)
+    return user
 
 # GIVE ME SQL ALREADY WITH ITS CASCADE UPDATES PLS
 def modify_user(uuid, modification_data: UserModificationForm) -> AnyUserInDB:
-    user = get_user_by_uuid(uuid)   
-    database = administrators_database if is_admin(user) else clients_database
+    user = get_user_by_uuid(uuid) 
     
     for key, value in modification_data.model_dump().items():
         if value is not None and hasattr(user, key):
@@ -126,10 +127,23 @@ def modify_user(uuid, modification_data: UserModificationForm) -> AnyUserInDB:
                 
             setattr(user, key, value)    
     
+    database = get_parent_database(user)
     users = database.read()
     users[user.uuid] = user.model_dump()
     database.write(users)
     
     return user
         
+def change_user_password(uuid, new_password):
+    
+    if not re.match(REGEX_CONFIG.password, new_password):
+        raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.")
+    
+    user = get_user_by_uuid(uuid)   
+    database = get_parent_database(user)
+    
+    users = database.read()
+    users[user.uuid]["password"] = hash_password(new_password)
+    database.write(users)
+    
     
