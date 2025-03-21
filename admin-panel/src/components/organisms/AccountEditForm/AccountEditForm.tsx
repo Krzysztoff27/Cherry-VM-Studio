@@ -9,14 +9,17 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
-import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
-import ChangePasswordModal from "../../../modals/account/ChangePasswordModal/ChangePasswordModal";
+import usePermissions from "../../../hooks/usePermissions";
+import PERMISSIONS from "../../../config/permissions.config";
 
-const AccountEditForm = ({ onCancel, onSubmit, user }) => {
+const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { putRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
+    const { hasPermissions } = usePermissions();
+
+    const canChangePassword = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
     const form = useForm({
         initialValues: {
@@ -130,18 +133,16 @@ const AccountEditForm = ({ onCancel, onSubmit, user }) => {
                         </Group>
                         <Group className={classes.inputGroup}>
                             <Text className={classes.label}>{tns("password")}</Text>
-                            <ModalButton
-                                ModalComponent={ChangePasswordModal}
-                                modalProps={{ uuid: user.uuid }}
-                                buttonProps={{
-                                    variant: "default",
-                                    leftSection: <IconEdit size={20} />,
-                                    rightSection: <></>,
-                                    flex: 1,
-                                }}
+                            <Button
+                                variant="default"
+                                leftSection={<IconEdit size={20} />}
+                                rightSection={<></>}
+                                flex="1"
+                                onClick={() => openPasswordModal(user.uuid)}
+                                disabled={!canChangePassword}
                             >
                                 {tns("change-password")}
-                            </ModalButton>
+                            </Button>
                             <Button
                                 flex={1}
                                 style={{ visibility: "hidden" }}

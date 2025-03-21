@@ -37,8 +37,12 @@
 
 .editButton {
     width: 100px;
-    background-color: white;
     color: black;
+
+    &:disabled,
+    &[data-disabled] {
+        color: var(--mantine-color-dark-3);
+    }
 }
 
 .closeButton {

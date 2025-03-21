@@ -4,9 +4,14 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import PermissionsList from "../../atoms/display/PermissionsList/PermissionsList";
 import BadgeGroup from "../../../components/atoms/display/BadgeGroup/BadgeGroup";
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
+import usePermissions from "../../../hooks/usePermissions";
+import PERMISSIONS from "../../../config/permissions.config";
 
 const AccountDisplay = ({ onClose, onEdit, user }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
+    const { hasPermissions } = usePermissions();
+
+    const canEdit = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.MANAGE_ADMIN_USERS : PERMISSIONS.MANAGE_CLIENT_USERS);
 
     return (
         <Stack pos="relative">
@@ -55,7 +60,9 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                 <Group className={classes.buttonGroup}>
                     <Button
                         className={classes.editButton}
+                        variant="white"
                         onClick={onEdit}
+                        disabled={!canEdit}
                     >
                         {t("edit")}
                     </Button>

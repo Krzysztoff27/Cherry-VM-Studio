@@ -84,7 +84,8 @@
             "view-profile": "Zobacz profil",
             "edit-account": "Edytuj profil",
             "delete": "Usuń",
-            "view-and-edit": "Podgląd/Edycja"
+            "view-and-edit": "Podgląd/Edycja",
+            "change-password": "Zmień hasło"
         },
         "table": {
             "headers": {

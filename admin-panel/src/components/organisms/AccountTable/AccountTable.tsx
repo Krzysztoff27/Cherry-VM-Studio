@@ -12,13 +12,17 @@ import TableControls from "../../molecules/interactive/TableControls/TableContro
 import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
+import useFetch from "../../../hooks/useFetch.js";
+import PERMISSIONS from "../../../config/permissions.config.js";
+import usePermissions from "../../../hooks/usePermissions.js";
 
-const AccountTable = ({ accountType, userData, refresh, error, loading, openAccountModal }): React.JSX.Element => {
+const AccountTable = ({ accountType, userData, refresh, error, openAccountModal, openPasswordModal }): React.JSX.Element => {
+    const { hasPermissions } = usePermissions();
     const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-    const columns = useMemo(() => getColumns(accountType, refresh, openAccountModal), [accountType, refresh]);
+    const columns = useMemo(() => getColumns(accountType, refresh, openAccountModal, openPasswordModal), [accountType, refresh]);
     const data = useMemo(
         () =>
             safeObjectValues(userData).map(({ uuid, username, name, surname, email, groups = [] }) => ({
@@ -74,6 +78,7 @@ const AccountTable = ({ accountType, userData, refresh, error, loading, openAcco
                     />
                     <TableControls
                         table={table}
+                        viewMode={!hasPermissions(accountType === "administrative" ? PERMISSIONS.MANAGE_ADMIN_USERS : PERMISSIONS.MANAGE_CLIENT_USERS)}
                         modals={{
                             create: {
                                 component: CreateAccountModal,
@@ -161,7 +166,7 @@ const AccountTable = ({ accountType, userData, refresh, error, loading, openAcco
                     <SizeSelect
                         value={pagination.pageSize}
                         setValue={setPageSize}
-                        sizes={[1, 5, 10, 25, 50]}
+                        sizes={[5, 10, 25, 50]}
                     />
                 </Group>
             </Stack>

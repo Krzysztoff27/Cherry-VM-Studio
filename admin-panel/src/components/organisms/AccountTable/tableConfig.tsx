@@ -6,7 +6,7 @@ import CheckboxHeader from "../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../atoms/table/DateDifferenceCell";
 import RolesCell from "../../atoms/table/RolesCell";
 
-export const getColumns = (accountType: AccountType, refresh: () => void, openAccountModal: () => void) => [
+export const getColumns = (accountType: AccountType, refresh: () => void, openAccountModal: () => void, openPasswordModal: () => void) => [
     {
         accessorKey: "selection",
         enableSorting: false,
@@ -47,7 +47,9 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
             <AccountOptionsCell
                 {...props}
                 openAccountModal={openAccountModal}
+                openPasswordModal={openPasswordModal}
                 refreshData={refresh}
+                accountType={accountType}
             />
         ),
     },

@@ -4,7 +4,7 @@ import { Modal } from "@mantine/core";
 import AccountDisplay from "../../../components/organisms/AccountDisplay/AccountDisplay";
 import AccountEditForm from "../../../components/organisms/AccountEditForm/AccountEditForm";
 
-const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, onSubmit = () => undefined }): React.JSX.Element => {
+const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
     const [editMode, setEditMode] = useState<boolean>(mode);
     const { data, error, loading, refresh: refreshUser } = useFetch(`/user/${uuid}`);
 
@@ -41,6 +41,7 @@ const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, onSubmit = ()
                             toggle();
                             refresh();
                         }}
+                        openPasswordModal={openPasswordModal}
                     />
                 ) : (
                     <AccountDisplay

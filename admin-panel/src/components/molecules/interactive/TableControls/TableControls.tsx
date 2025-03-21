@@ -6,7 +6,7 @@ import { IconFileImport, IconFilter, IconTrash, IconUserPlus } from "@tabler/ico
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
 import { TableControlsButton, TableControlsProps } from "../../../../types/components.types";
 
-const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [], translations }: TableControlsProps): React.JSX.Element => {
+const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [], translations, viewMode = false }: TableControlsProps): React.JSX.Element => {
     const anyRowsSelected = () => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
 
     const buttons: TableControlsButton[] = [
@@ -46,6 +46,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     size: 36,
                     color: "black",
                     variant: "white",
+                    disabled: viewMode,
                 },
                 children: (
                     <IconUserPlus
@@ -61,6 +62,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     w: 180,
                     color: "black",
                     variant: "white",
+                    disabled: viewMode,
                     leftSection: (
                         <IconUserPlus
                             size={16}
@@ -83,6 +85,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     parentGap: "1rem",
                     variant: "filled",
                     color: "cherry.9",
+                    disabled: viewMode,
                 },
                 children: (
                     <IconTrash
@@ -107,6 +110,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                             stroke={3}
                         />
                     ),
+                    disabled: viewMode,
                 },
                 children: translations.delete,
             },
