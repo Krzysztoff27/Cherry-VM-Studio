@@ -1,6 +1,6 @@
 from starlette.websockets import WebSocket, WebSocketState
 from application.machines import get_machines
-from utils.dict import pushToDict
+from utils.dict import push_to_dict
 from ...models import DataResponse
 from ...handlers.websocket_handler import WebSocketHandler
 
@@ -26,7 +26,7 @@ async def broadcast_current_data(subscriptions: Subscriptions) -> None:
         # push uuid to the subscriptions_by_websocket for each subscribed websocket 
         for websocket in subscribed:
             if websocket.application_state == WebSocketState.CONNECTED: 
-                pushToDict(subscriptions_by_websocket, websocket, uuid)
+                push_to_dict(subscriptions_by_websocket, websocket, uuid)
     
     # prepare and send data for each websocket
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):

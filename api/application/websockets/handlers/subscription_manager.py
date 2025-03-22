@@ -27,16 +27,16 @@ class SubscriptionManager(BaseModel):
             raise RaisedException(f"Already unsubscribed from \"{key}\".")
         self.removeSubscription(key, websocket)
 
-    def unsubscribeFromAll(self, websocket):
+    def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
         for key in list(self.subscriptions): # snapshot for removing data while iterating
             if websocket in self.subscriptions[key]: 
                 self.removeSubscription(key, websocket)
 
-    def removeKey(self, key):
+    def remove_key(self, key):
         del self.subscriptions[key]
         
-    def removeSubscription(self, key, websocket):
+    def remove_subscription(self, key, websocket):
         """ if its the last subscription for the resource, delete the resource uuid from subscriptions """
         if len(self.subscriptions[key]) == 1: self.removeKey(key)
         else: self.subscriptions[key].remove(websocket)

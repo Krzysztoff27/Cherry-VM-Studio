@@ -23,7 +23,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
                     await self.reject(None, f"Error occured during message decoding. Detail: {e}")
         except WebSocketDisconnect:
             # when websocket disconnects, unsubscribe it for all
-            return self.subscription_manager.unsubscribeFromAll(self.websocket)
+            return self.subscription_manager.unsubscribe_from_all(self.websocket)
         except Exception as e:
             print(f"Unhandled error with websocket {self.websocket}:\n {e}")
 
