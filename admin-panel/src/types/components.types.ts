@@ -236,6 +236,7 @@ export interface TableControlsProps {
     modals: TableControlsModals;
     translations: TableControlsTranslations;
     additionalButtons?: TableControlsButton[];
+    viewMode?: boolean;
     onFilteringChange: (callback: (prev: any) => any) => void;
 }
 

@@ -1,6 +1,4 @@
 const PERMISSIONS = {
-    NONE: 0,
-
     VIEW_ALL_VMS: 1 << 0,
     MANAGE_ALL_VMS: 1 << 1,
     MANAGE_CLIENT_USERS: 1 << 2,

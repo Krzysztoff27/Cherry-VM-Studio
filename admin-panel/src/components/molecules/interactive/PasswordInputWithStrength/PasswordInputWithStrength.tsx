@@ -18,7 +18,7 @@ const PasswordInputWithStrength = ({ ...props }: PasswordInputProps): React.JSX.
     const [value, setValue] = useState("");
 
     const strength = getPasswordStrength(value);
-    const color = strength === 100 ? "teal" : strength > 50 ? "yellow" : "red";
+    const color = strength === 100 ? "suse-green" : strength > 50 ? "yellow" : "cherry";
     const checks = passwordRequirements.map(({ label, re }, i) => (
         <PasswordRequirement
             key={i}

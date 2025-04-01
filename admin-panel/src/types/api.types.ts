@@ -60,4 +60,5 @@ export interface User {
     account_type: AccountType;
     roles?: string[];
     groups?: string[];
+    permissions: number;
 }

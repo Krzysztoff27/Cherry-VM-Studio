@@ -8,8 +8,8 @@ const config: UrlConfig = {
         traefik: `http://traefik.${window.location.hostname}/dashboard`,
     },
     development: {
-        api_requests: `http://${window.location.hostname}:8000`,
-        api_websockets: `ws://${window.location.hostname}:8000`,
+        api_requests: `http://127.0.0.1:8000`,
+        api_websockets: `ws://127.0.0.1:8000`,
     },
 };
 

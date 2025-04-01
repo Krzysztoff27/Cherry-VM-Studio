@@ -40,5 +40,13 @@
     "surname": "Surname",
     "email": "Email",
     "nothing-found": "Nothing found...",
+<<<<<<< HEAD
     "error-users": "Error occured while loading users..."
+=======
+    "administrator": "Administrator",
+    "client": "Client",
+    "client-account": "Client Account",
+    "edit": "Edit",
+    "none": "None"
+>>>>>>> e011aa31d9ddb815fa966946680966afc1abcd7c
 }

@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
+import { ActionIcon, Box, Group, Pagination, ScrollArea, Skeleton, Stack } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -13,7 +13,7 @@ import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableS
 import CreateGroupModal from "../../../modals/account/CreateGroupModal/CreateGroupModal.jsx";
 import DeleteGroupsModal from "../../../modals/account/DeleteGroupsModal/DeleteGroupsModal.jsx";
 
-const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JSX.Element => {
+const GroupsTable = ({ userData, groupData, error, loading, refresh, openGroupModal }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "accounts.controls");
 
     const [columnFilters, setColumnsFilters] = useState([]);
@@ -30,7 +30,7 @@ const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JS
         [groupData, userData]
     );
 
-    const columns = useMemo(() => getColumns(refresh), [refresh]);
+    const columns = useMemo(() => getColumns(refresh, openGroupModal), [refresh, openGroupModal]);
 
     const table = useReactTable({
         data: data,
@@ -128,30 +128,27 @@ const GroupsTable = ({ userData, groupData, error, loading, refresh }): React.JS
                         ))}
                     </Box>
                 ))}
-                {loading ? (
-                    <Loading />
-                ) : (
-                    <ScrollArea
-                        scrollbars="y"
-                        offsetScrollbars
-                    >
-                        {table.getRowModel().rows.map(row => (
-                            <Box
-                                className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                                key={row.id}
-                            >
-                                {row.getVisibleCells().map(cell => (
-                                    <Box
-                                        className={classes.td}
-                                        key={cell.id}
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </Box>
-                                ))}
-                            </Box>
-                        ))}
-                    </ScrollArea>
-                )}
+
+                <ScrollArea
+                    scrollbars="y"
+                    offsetScrollbars
+                >
+                    {table.getRowModel().rows.map(row => (
+                        <Box
+                            className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
+                            key={row.id}
+                        >
+                            {row.getVisibleCells().map(cell => (
+                                <Box
+                                    className={classes.td}
+                                    key={cell.id}
+                                >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </Box>
+                            ))}
+                        </Box>
+                    ))}
+                </ScrollArea>
             </Box>
             <Stack className={classes.bottom}>
                 <Group className={classes.paginationContainer}>

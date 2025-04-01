@@ -1,17 +1,79 @@
-import { Avatar, Group, Modal, Stack, Text, Title } from "@mantine/core";
-import Loading from "../../../components/atoms/feedback/Loading/Loading";
+import { Avatar, Group, Modal, Skeleton, Stack, Text, Title } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
+import classes from "./GroupModal.module.css";
+
+const Placeholder = () => (
+    <Stack className={classes.container}>
+        <Group className={classes.header}>
+            <Skeleton
+                height="56"
+                circle
+            />
+            <Stack flex="1">
+                <Skeleton
+                    w="40%"
+                    height={16}
+                    radius="xl"
+                />
+                <Skeleton
+                    w="30%"
+                    height={8}
+                    radius="xl"
+                />
+            </Stack>
+        </Group>
+        <Group w="100%">
+            <Skeleton
+                height={8}
+                radius="xl"
+                w="100%"
+            />
+            <Skeleton
+                height={8}
+                radius="xl"
+                w="100%"
+            />
+        </Group>
+        <Stack
+            w="90%"
+            mt="lg"
+        >
+            {...Array(5).fill(
+                <Group w="100%">
+                    <Skeleton
+                        height="40"
+                        circle
+                    />
+                    <Stack
+                        flex="1"
+                        align="stretch"
+                    >
+                        <Skeleton
+                            height={8}
+                            radius="xl"
+                        />
+                        <Skeleton
+                            height={6}
+                            radius="xl"
+                        />
+                    </Stack>
+                    <Skeleton
+                        height="30"
+                        w="10%"
+                    ></Skeleton>
+                </Group>
+            )}
+        </Stack>
+    </Stack>
+);
 
 const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
-    const { data: group, error: groupError, loading: groupLoading } = useFetch(`/group/${uuid}`);
-    const { data: users, error: usersError, loading: usersLoading, refresh: refreshUsers } = useFetch(`/users?group=${uuid}`);
+    const { data: group, loading: groupLoading } = useFetch(`/group/${uuid}`);
+    const { data: users, loading: usersLoading, refresh: refreshUsers } = useFetch(`/users?group=${uuid}`);
     const { parseAndHandleError } = useErrorHandler();
-
-    if (groupLoading || usersLoading) return <Loading />;
-    if (groupError || usersError) parseAndHandleError(groupError || usersError, (groupError || usersError).json());
 
     return (
         <Modal

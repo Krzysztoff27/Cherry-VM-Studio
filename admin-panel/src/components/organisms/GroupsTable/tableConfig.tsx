@@ -1,11 +1,11 @@
-import { Text } from "@mantine/core";
+import { Button, Text } from "@mantine/core";
 import CheckboxCell from "../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../atoms/table/CheckboxHeader";
 import AvatarsCell from "../../atoms/table/AvatarsCell";
 import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
 import GroupModal from "../../../modals/account/GroupModal/GroupModal";
 
-export const getColumns = (refresh: () => void) => [
+export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) => void) => [
     {
         accessorKey: "selection",
         enableSorting: false,
@@ -33,13 +33,13 @@ export const getColumns = (refresh: () => void) => [
         header: "",
         enableSorting: false,
         cell: ({ row }) => (
-            <ModalButton
-                ModalComponent={GroupModal}
-                buttonProps={{ variant: "default", bd: "2px var(--mantine-color-dark-5) solid" }}
-                modalProps={{ uuid: row.id }}
+            <Button
+                variant="default"
+                className="border"
+                onClick={() => openGroupModal(row.id)}
             >
                 View & Edit
-            </ModalButton>
+            </Button>
         ),
     },
 ];

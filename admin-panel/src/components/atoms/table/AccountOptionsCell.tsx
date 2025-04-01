@@ -1,29 +1,25 @@
-import { IconDotsVertical, IconEdit, IconTrash, IconUserCircle } from "@tabler/icons-react";
+import { IconDotsVertical, IconEdit, IconKey, IconPassword, IconTrash, IconUserCircle } from "@tabler/icons-react";
 import { ActionIcon, Button, Menu, Portal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import ProfileModal from "../../../modals/account/ProfileModal/ProfileModal";
 import classes from "./AccountOptionsCell.module.css";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
+import usePermissions from "../../../hooks/usePermissions";
+import PERMISSIONS from "../../../config/permissions.config";
 
-const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
+const AccountOptionsCell = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }): React.JSX.Element => {
     const uuid = row.id;
     const { tns } = useNamespaceTranslation("pages");
+    const { hasPermissions } = usePermissions();
     const [menuOpened, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false);
-    const [profileOpened, { open: openProfile, close: closeProfile }] = useDisclosure(false);
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
 
-    // we're not using ModalButton here since the modal would get unmounted along with the disapperaing menu
+    const canEdit = hasPermissions(accountType === "administrative" ? PERMISSIONS.MANAGE_ADMIN_USERS : PERMISSIONS.MANAGE_CLIENT_USERS);
+    const canChangePassword = hasPermissions(accountType === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
     return (
         <>
             <Portal>
-                <ProfileModal
-                    opened={profileOpened}
-                    onClose={closeProfile}
-                    uuid={uuid}
-                    onSubmit={refreshData}
-                />
                 <DeleteAccountsModal
                     opened={deleteModalOpened}
                     onClose={closeDeleteModal}
@@ -36,7 +32,7 @@ const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
                 onChange={toggleMenu}
                 shadow="xl"
                 position="left"
-                width={160}
+                width={200}
             >
                 <Menu.Target>
                     <ActionIcon
@@ -58,7 +54,7 @@ const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
                             justify="right"
                             rightSection={<IconUserCircle size={20} />}
                             onClick={() => {
-                                openProfile();
+                                openAccountModal(uuid, false);
                                 closeMenu();
                             }}
                         >
@@ -69,18 +65,33 @@ const AccountOptionsCell = ({ row, refreshData }): React.JSX.Element => {
                             variant="default"
                             justify="right"
                             rightSection={<IconEdit size={20} />}
+                            disabled={!canEdit}
                             onClick={() => {
-                                openProfile();
+                                openAccountModal(uuid, true);
                                 closeMenu();
                             }}
                         >
                             {tns("accounts.controls.edit-account")}
                         </Button>
                         <Button
+                            className={classes.button}
+                            variant="default"
+                            justify="right"
+                            rightSection={<IconKey size={20} />}
+                            disabled={!canChangePassword}
+                            onClick={() => {
+                                openPasswordModal(uuid);
+                                closeMenu();
+                            }}
+                        >
+                            {tns("accounts.controls.change-password")}
+                        </Button>
+                        <Button
                             className={`${classes.button} ${classes.delete}`}
                             variant="default"
                             justify="right"
                             rightSection={<IconTrash size={20} />}
+                            disabled={!canEdit}
                             onClick={() => {
                                 openDeleteModal();
                                 closeMenu();

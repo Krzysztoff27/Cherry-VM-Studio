@@ -12,9 +12,8 @@ import NetworkPanel from "./pages/NetworkPanel/NetworkPanel";
 import LoginPage from "./pages/Login/LoginPage";
 import MachinesPage from "./pages/Machines/Machines";
 import Dobre from "./pages/Dobre/Dobre";
-import Admins from "./pages/Accounts/Admins/Admins";
-import Clients from "./pages/Accounts/Clients/Clients";
 import Groups from "./pages/Accounts/Groups/Groups";
+import Users from "./pages/Accounts/Users/Users";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -35,8 +34,8 @@ const router = createBrowserRouter(
                 </Route>
                 <Route element={<PanelLayout doubleNavbar/>}>
                     <Route path='/accounts'                 element={<Navigate to='/accounts/admins'/>}/>
-                    <Route path='/accounts/admins'          element={<Admins/>}/>
-                    <Route path='/accounts/clients'         element={<Clients/>}/>
+                    <Route path='/accounts/admins'          element={<Users accountType="administrative"/>}/>
+                    <Route path='/accounts/clients'         element={<Users accountType="client"/>}/>
                     <Route path='/accounts/groups'          element={<Groups/>}/>
                 </Route>
             </Route>

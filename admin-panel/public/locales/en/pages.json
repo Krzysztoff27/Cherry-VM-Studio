@@ -94,7 +94,9 @@
             "delete-selected": "Delete selected",
             "view-profile": "View profile",
             "edit-account": "Edit account",
-            "delete": "Delete"
+            "delete": "Delete",
+            "view-and-edit": "View & Edit",
+            "change-password": "Change password"
         },
         "table": {
             "headers": {

@@ -21,26 +21,34 @@
         "name-input-placeholder": "Enter new snapshot name",
         "delete-snapshot-label": "Delete snapshot"
     },
-    "create-account": {
-        "title": "Create new account",
+    "account": {
+        "title-create": "Create new account",
         "name": "Name",
         "surname": "Surname",
+        "name-surname": "Name",
         "username": "Username",
         "email": "Email",
+        "password": "Password",
         "account-password": "Account password",
         "confirm-password": "Confirm password",
         "generate-password": "Generate password",
+        "change-password": "Change password",
+        "new-password": "New password",
+        "new-password-placeholder": "Enter the new password",
         "password-placeholder": "Enter password here",
         "confirm-password-placeholder": "Confirm password here",
-        "account-type": "Account type",
-        "account-types": {
-            "administrative": "Administrative",
-            "client": "Client"
-        },
-        "roles": "Role",
-        "select-roles": "Select roles",
+        "assigned-groups": "Assigned groups",
+        "account-details": "Account Details",
+        "creation-date": "Created",
+        "roles": "Roles",
         "groups": "Groups",
+        "select-roles": "Select roles",
         "select-groups": "Select groups",
+        "roles-and-permissions": "Roles & Permissions",
+        "permissions": "Permissions",
+        "account-type": "Account type",
+        "administrative": "Administrative",
+        "client": "Client",
         "validation": {
             "name-too-long": "Name length cannot exceed 50 characters.",
             "surname-too-long": "Surname length cannot exceed 50 characters.",
@@ -58,6 +66,20 @@
             "password-no-uppercase": "Password must contain at least one uppercase letter.",
             "password-no-special": "Password must contain at least one special symbol.",
             "passwords-not-equal": "Passwords are not the same."
+        },
+        "permission-list": {
+            "client": "This account DOES NOT have any administrative access.",
+            "machines-view-manage": "This user can VIEW, MANAGE all virtual machines.",
+            "machines-view": "This user can VIEW all virtual machines, but MANAGE only their own.",
+            "machines-manage": "This user can VIEW, MANAGE their own virtual machines.",
+            "machines": "This user can VIEW, MANAGE their own virtual machines.",
+            "users-view": "This user can VIEW all accounts.",
+            "users-manage-administrative-client": "This user can MANAGE both administrative and client accounts.",
+            "users-manage-administrative": "This user can MANAGE administrative accounts.",
+            "users-manage-client": "This user can MANAGE client accounts.",
+            "users-password-administrative-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
+            "users-password-administrative": "This user can CHANGE both administrative and client account's PASSWORDS.",
+            "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS."
         }
     },
     "create-group": {
@@ -82,6 +104,16 @@
         "unsaved": {
             "title": "Are you sure?",
             "description": "Performing this action will discard all current changes. Are you sure you want to continue?"
+        },
+        "account-removal": {
+            "title": "Account removal",
+            "description_one": "Selected account will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected accounts will be removed. Are you sure you want to continue?"
+        },
+        "group-removal": {
+            "title": "Group removal",
+            "description_one": "Selected group will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected groups will be removed. Are you sure you want to continue?"
         },
         "np-loading-config": {
             "title": "Confirm loading configuration"

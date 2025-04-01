@@ -11,7 +11,7 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
-    const { t, tns } = useNamespaceTranslation("modals");
+    const { t, tns } = useNamespaceTranslation("modals", "account");
     const { postRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
@@ -29,34 +29,38 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         },
 
         validate: {
-            name: hasLength({ max: 50 }, tns("create-account.validation.name-too-long")),
-            surname: hasLength({ max: 50 }, tns("create-account.validation.surname-too-long")),
+            name: hasLength({ max: 50 }, tns("validation.name-too-long")),
+            surname: hasLength({ max: 50 }, tns("validation.surname-too-long")),
             username: val =>
                 /\s/.test(val)
-                    ? tns("create-account.validation.username-spaces")
+                    ? tns("validation.username-spaces")
                     : !/^[\w.-]+$/.test(val)
-                    ? tns("create-account.validation.username-invalid-characters")
+                    ? tns("validation.username-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])
-                    ? tns("create-account.validation.username-invalid-first")
+                    ? tns("validation.username-invalid-first")
                     : val.length < 3
-                    ? tns("create-account.validation.username-too-short")
+                    ? tns("validation.username-too-short")
                     : val.length > 24
-                    ? tns("create-account.validation.username-too-long")
+                    ? tns("validation.username-too-long")
                     : null,
-            email: isEmail(tns("create-account.validation.email-invalid")),
+            email: isEmail(tns("validation.email-invalid")),
             password: val =>
                 val.length < 10
-                    ? tns("create-account.validation.password-too-short")
+                    ? tns("validation.password-too-short")
                     : !/[0-9]/.test(val)
-                    ? tns("create-account.validation.password-no-number")
+                    ? tns("validation.password-no-number")
                     : !/[a-z]/.test(val)
-                    ? tns("create-account.validation.password-no-lowercase")
+                    ? tns("validation.password-no-lowercase")
                     : !/[A-Z]/.test(val)
-                    ? tns("create-account.validation.password-no-uppercase")
+                    ? tns("validation.password-no-uppercase")
                     : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
-                    ? tns("create-account.validation.password-no-special")
+                    ? tns("validation.password-no-special")
                     : null,
-            confirmPassword: matchesField("password", tns("create-account.validation.passwords-not-equal")),
+            confirmPassword: matchesField("password", tns("validation.passwords-not-equal")),
+        },
+        onValuesChange: values => {
+            setFullName(values.name || values.surname ? `${values.name} ${values.surname}` : values.username);
+            form.setFieldValue("username", values.username.toLowerCase());
         },
     });
 
@@ -65,15 +69,10 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         onClose();
     };
 
-    const onFormChange = () => {
-        const vals = form.getValues();
-        setFullName(`${vals.name} ${vals.surname}`);
-    };
-
     const onPostError: ErrorCallbackFunction = (response, json) => {
         if (response.status != 409) parseAndHandleError(response, json);
-        if (/username/.test(json?.detail)) form.setFieldError("username", tns("create-account.validation.username-duplicate"));
-        else if (/email/.test(json?.detail)) form.setFieldError("email", tns("create-account.validation.email-duplicate"));
+        if (/username/.test(json?.detail)) form.setFieldError("username", tns("validation.username-duplicate"));
+        else if (/email/.test(json?.detail)) form.setFieldError("email", tns("validation.email-duplicate"));
     };
 
     const onFormSubmit = form.onSubmit(async ({ confirmPassword: _, ...values }) => {
@@ -89,8 +88,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         <Modal
             opened={opened}
             onClose={closeModal}
-            onChange={onFormChange}
-            title={tns("create-account.title")}
+            title={tns("title-create")}
             size="480"
         >
             <form onSubmit={onFormSubmit}>
@@ -136,24 +134,24 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         />
                     </Group>
                     <PasswordInputWithStrength
-                        label={tns("create-account.account-password")}
-                        placeholder={tns("create-account.password-placeholder")}
+                        label={tns("account-password")}
+                        placeholder={tns("password-placeholder")}
                         key={form.key("password")}
                         {...form.getInputProps("password")}
                         classNames={{ input: "borderless" }}
                         flex="3"
                     />
                     <PasswordInput
-                        label={tns("create-account.confirm-password")}
-                        placeholder={tns("create-account.confirm-password-placeholder")}
+                        label={tns("confirm-password")}
+                        placeholder={tns("confirm-password-placeholder")}
                         key={form.key("confirmPassword")}
                         classNames={{ input: "borderless" }}
                         {...form.getInputProps("confirmPassword")}
                     />
                     <Select
-                        label={tns("create-account.account-type")}
-                        data={[tns(`create-account.account-types.${accountType}`)]}
-                        value={tns(`create-account.account-types.${accountType}`)}
+                        label={tns("account-type")}
+                        data={[tns(`${accountType}`)]}
+                        value={tns(`${accountType}`)}
                         disabled
                         autoFocus={false}
                     />
@@ -161,10 +159,10 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         <MultiSelect
                             clearable
                             checkIconPosition="left"
-                            label={tns("create-account.roles")}
+                            label={tns("roles")}
                             data={["Machine Manager", "Account Administrator"]}
                             classNames={{ input: "borderless" }}
-                            placeholder={tns("create-account.select-roles")}
+                            placeholder={tns("select-roles")}
                             key={form.key("roles")}
                             {...form.getInputProps("roles")}
                             autoFocus
@@ -173,10 +171,10 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         <MultiSelect
                             clearable
                             checkIconPosition="left"
-                            label={tns("create-account.groups")}
+                            label={tns("groups")}
                             data={["4ta2"]}
                             classNames={{ input: "borderless" }}
-                            placeholder={tns("create-account.select-groups")}
+                            placeholder={tns("select-groups")}
                             key={form.key("groups")}
                             {...form.getInputProps("groups")}
                             autoFocus
