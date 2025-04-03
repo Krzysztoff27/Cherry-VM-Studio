@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 
+from pydantic import BaseModel
+
 @dataclass(frozen=True)
 class DatabaseConfig:
     host: str = "localhost"
-    user: str = ""
-    port: str = ""
-    password: str = ""
+    port: str = "9000"
+    user: str = "postgres"
+    password: str = "qazwsx"
+    dbname: str = "cvmm-dev"
+    max_connections: int = 20
     
 DATABASE_CONFIG = DatabaseConfig()

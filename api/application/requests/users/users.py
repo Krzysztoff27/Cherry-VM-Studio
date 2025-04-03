@@ -1,9 +1,12 @@
 from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from application.authentication.validation import get_user_from_refresh_token
 from application import app
-from application.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
+from application.users.users import change_user_password, create_user, get_all_users, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
 from application.users.permissions import verify_can_change_password, verify_can_manage_user
-from application.users.models import CreateUserForm, User, Filters, AccountTypes, Administrator, Client, UserModificationForm
+from application.users.models import AnyUser, CreateUserForm, User, Filters, AccountTypes, Administrator, Client, UserModificationForm
 from application.authentication import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['users'])
@@ -22,8 +25,9 @@ async def __read_users__(
     current_user: DependsOnAuthentication,
     account_type: AccountTypes | None = None,
     group: str | None = None
-) -> list[User]:
-    return get_filtered_users(Filters(account_type=account_type, group=group))
+) -> list[AnyUser]:
+    return JSONResponse(content=jsonable_encoder(get_all_users()))
+    # return get_filtered_users(Filters(account_type=account_type, group=group))
 
 @app.post("/user/create", response_model=Administrator | Client, tags=['users'])
 async def __create_user__(user_data: CreateUserForm, current_user: DependsOnAuthentication) -> Administrator | Client:   

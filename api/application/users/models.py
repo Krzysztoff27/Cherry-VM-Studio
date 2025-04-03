@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 from pydantic import BaseModel
 from typing import Literal, Union
 
@@ -7,12 +7,12 @@ AccountTypes = Literal["administrative", "client"]
 # groups
 
 class Group(BaseModel):
-    uuid: str
+    uuid: UUID
     name: str
     users: list[str]
     
 class CreatedGroup(Group):
-    uuid: str | None = None
+    uuid: UUID | None = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = str(uuid4()) # generate random uuid on creation
@@ -20,14 +20,14 @@ class CreatedGroup(Group):
 # roles
 
 class Role(BaseModel):
-    uuid: str
+    uuid: UUID
     name: str
     permissions: int
 
 # users
 
 class User(BaseModel):
-    uuid: str
+    uuid: UUID
     username: str
     email: str
     name: str = ""
@@ -35,7 +35,7 @@ class User(BaseModel):
     account_type: AccountTypes
     
 class AdministratorInDB(BaseModel):
-    uuid: str
+    uuid: UUID
     password: str
     username: str
     email: str
@@ -43,7 +43,7 @@ class AdministratorInDB(BaseModel):
     surname: str = ""
     
 class ClientInDB(BaseModel):
-    uuid: str
+    uuid: UUID
     password: str
     username: str
     email: str
@@ -53,11 +53,19 @@ class ClientInDB(BaseModel):
 class Administrator(AdministratorInDB):
     account_type: Literal['administrative'] = 'administrative'
     roles: list[Role] = []
-    permissions: int
+    permissions: int = 0
 
 class Client(ClientInDB):
     account_type: Literal['client'] = 'client'
     groups: list[Group] = []
+    
+class AdministratorsRoles:
+    administrator_uuid: UUID
+    role_uuid: UUID
+    
+class ClientsGroups:
+    client_uuid: UUID
+    group_uuid: UUID
     
 # represents any user type
 AnyUser = Union[Administrator, Client] 
@@ -65,21 +73,21 @@ AnyUser = Union[Administrator, Client]
 # represents any user type in the database
 AnyUserInDB = Union[AdministratorInDB, ClientInDB]
 
-# represents any valid create user form
-CreateUserForm = Union[CreateAdministratorForm, CreateClientForm]
 
 class CreateAdministratorForm(AdministratorInDB):
-    uuid: str | None = None
+    uuid: UUID | None = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = str(uuid4()) # generate random uuid on creation
+        self.uuid = uuid4() # generate random uuid on creation
         
 class CreateClientForm(ClientInDB):
-    uuid: str | None = None
+    uuid: UUID | None = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = str(uuid4()) # generate random uuid on creation
+        self.uuid = uuid4() # generate random uuid on creation
         
+# represents any valid create user form
+CreateUserForm = Union[CreateAdministratorForm, CreateClientForm]
         
 class UserModificationForm(BaseModel):
     username: str | None = None
