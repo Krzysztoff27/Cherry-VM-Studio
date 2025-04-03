@@ -1,5 +1,6 @@
 import re
 from typing import Literal
+from uuid import UUID
 from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
@@ -19,60 +20,81 @@ def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_client(user):
         return 'clients'
 
-def get_roles() -> dict[str, Role]:
+def get_roles() -> dict[UUID, Role]:
     return select_schema_dict(Role, "uuid", "SELECT * FROM roles")
 
-def get_groups() -> dict[str, Group]:
+def get_groups() -> dict[UUID, Group]:
     return select_schema_dict(Group, "uuid", "SELECT * FROM groups")
 
-def get_administrators() -> dict[str, Administrator]:
+def get_administrators() -> dict[UUID, Administrator]:
     administrators_in_db = select_schema_dict(AdministratorInDB, "uuid", "SELECT * FROM administrators")
     administrator_roles = select_schema(AdministratorsRoles, "SELECT * FROM administrators_roles")
         
-    administrators : dict[str, Administrator] = {}
+    administrators : dict[UUID, Administrator] = {}
     roles = get_roles()
     
     for uuid, administrator in administrators_in_db.items():
         administrators[uuid] = Administrator(**administrator.model_dump(), account_type="administrative")
     
-    for administrator_uuid, role_uuid in administrator_roles:
-        administrators[administrator_uuid].roles.append(roles[role_uuid])
-        administrators[administrator_uuid].permissions |= roles[role_uuid].permissions
+    for link in administrator_roles:
+        administrators[link.administrator_uuid].roles.append(roles[link.role_uuid])
+        administrators[link.administrator_uuid].permissions |= roles[link.role_uuid].permissions
         
     return administrators
     
-def get_clients() -> dict[str, Client]:
+def get_clients() -> dict[UUID, Client]:
     clients_in_db = select_schema_dict(ClientInDB, "uuid", "SELECT * FROM clients")
     client_roles = select_schema(ClientsGroups, "SELECT * FROM clients_groups")
         
-    clients : dict[str, Client] = {}
+    clients : dict[UUID, Client] = {}
     groups = get_groups()
     
     for uuid, client in clients_in_db.items():
-        clients[uuid] = Client(**client.model_dump(), account_type="administrative")
+        clients[uuid] = Client(**client.model_dump(), account_type="client")
     
-    for client_uuid, role_uuid in client_roles:
-        clients[client_uuid].groups.append(groups[role_uuid])
+    for link in client_roles:
+        clients[link.client_uuid].groups.append(groups[link.group_uuid])
         
     return clients   
 
-def get_all_users() -> dict[str, Administrator | Client]:
+def get_all_users() -> dict[UUID, Administrator | Client]:
     return get_administrators() | get_clients()
 
-def get_user_with_condition(sql_where: str, params: tuple | list | None = None) -> AnyUser | None:
-    administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE {sql_where}", params)
+def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
+    administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE administrators.{field_name} = (%s)", (value,))
     if administrator: 
+        roles = select_schema(Role, 
+           f"SELECT * FROM roles "
+           f"JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid "
+           f"JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid "
+           f"WHERE administrators.{field_name} = (%s)", (value,)                                                      
+        )
+        
+        for role in roles:
+            administrator.roles.append(Role.model_validate(role))
         return administrator
-    return select_schema_one(Client, f"SELECT * FROM clients WHERE {sql_where}", params)
+        
+    client = select_schema_one(Client, f"SELECT * FROM clients WHERE clients.{field_name} = (%s)", (value,))
+    groups = select_schema(Role, 
+        f"SELECT * FROM groups "
+        f"JOIN clients_groups ON groups.uuid = clients_groups.group_uuid "
+        f"JOIN clients ON clients_groups.client_uuid = clients.uuid "
+        f"WHERE clients.{field_name} = (%s)", (value,)                                                        
+    )
+    
+    for group in groups:
+        client.groups.append(Group.model_validate(group))
+    return client
+    
 
 def get_user_by_username(username: str) -> AnyUser | None:
-    return get_user_with_condition("username = (%s)", (username,))
+    return get_user_by_field("username", username)
 
 def get_user_by_email(email: str) -> AnyUser | None:
-    return get_user_with_condition("email = (%s)", (email,))
+    return get_user_by_field("email", email)
 
-def get_user_by_uuid(uuid: str) -> AnyUser | None:
-    return get_user_with_condition("uuid = (%s)", (uuid,))
+def get_user_by_uuid(uuid: UUID) -> AnyUser | None:
+    return get_user_by_field("uuid", uuid)
 
 def get_filtered_users(filters: Filters):
     pass

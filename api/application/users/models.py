@@ -9,7 +9,6 @@ AccountTypes = Literal["administrative", "client"]
 class Group(BaseModel):
     uuid: UUID
     name: str
-    users: list[str]
     
 class CreatedGroup(Group):
     uuid: UUID | None = None
@@ -59,11 +58,11 @@ class Client(ClientInDB):
     account_type: Literal['client'] = 'client'
     groups: list[Group] = []
     
-class AdministratorsRoles:
+class AdministratorsRoles(BaseModel):
     administrator_uuid: UUID
     role_uuid: UUID
     
-class ClientsGroups:
+class ClientsGroups(BaseModel):
     client_uuid: UUID
     group_uuid: UUID
     
