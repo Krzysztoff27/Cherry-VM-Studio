@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
-from application.postgresql import select_schema, select_schema_dict, select_schema_one
+from application.postgresql import select_schema, select_schema_dict, select_schema_one, select_single_field
 from .permissions import is_admin, is_client
 from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, Group, Role, UserModificationForm
 from .groups import add_user_to_group, remove_user_from_group
@@ -27,14 +27,9 @@ def get_groups() -> dict[UUID, Group]:
     return select_schema_dict(Group, "uuid", "SELECT * FROM groups")
 
 def get_administrators() -> dict[UUID, Administrator]:
-    administrators_in_db = select_schema_dict(AdministratorInDB, "uuid", "SELECT * FROM administrators")
+    administrators = select_schema_dict(Administrator, "uuid", "SELECT * FROM administrators")
     administrator_roles = select_schema(AdministratorsRoles, "SELECT * FROM administrators_roles")
-        
-    administrators : dict[UUID, Administrator] = {}
     roles = get_roles()
-    
-    for uuid, administrator in administrators_in_db.items():
-        administrators[uuid] = Administrator(**administrator.model_dump(), account_type="administrative")
     
     for link in administrator_roles:
         administrators[link.administrator_uuid].roles.append(roles[link.role_uuid])
@@ -43,14 +38,9 @@ def get_administrators() -> dict[UUID, Administrator]:
     return administrators
     
 def get_clients() -> dict[UUID, Client]:
-    clients_in_db = select_schema_dict(ClientInDB, "uuid", "SELECT * FROM clients")
+    clients = select_schema_dict(Client, "uuid", "SELECT * FROM clients")
     client_roles = select_schema(ClientsGroups, "SELECT * FROM clients_groups")
-        
-    clients : dict[UUID, Client] = {}
     groups = get_groups()
-    
-    for uuid, client in clients_in_db.items():
-        clients[uuid] = Client(**client.model_dump(), account_type="client")
     
     for link in client_roles:
         clients[link.client_uuid].groups.append(groups[link.group_uuid])
@@ -64,7 +54,7 @@ def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
     administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE administrators.{field_name} = (%s)", (value,))
     if administrator: 
         roles = select_schema(Role, 
-           f"SELECT * FROM roles "
+           f"SELECT roles.* FROM roles "
            f"JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid "
            f"JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid "
            f"WHERE administrators.{field_name} = (%s)", (value,)                                                      
@@ -75,8 +65,8 @@ def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
         return administrator
         
     client = select_schema_one(Client, f"SELECT * FROM clients WHERE clients.{field_name} = (%s)", (value,))
-    groups = select_schema(Role, 
-        f"SELECT * FROM groups "
+    groups = select_schema(Group, 
+        f"SELECT groups.* FROM groups "
         f"JOIN clients_groups ON groups.uuid = clients_groups.group_uuid "
         f"JOIN clients ON clients_groups.client_uuid = clients.uuid "
         f"WHERE clients.{field_name} = (%s)", (value,)                                                        
@@ -97,20 +87,36 @@ def get_user_by_uuid(uuid: UUID) -> AnyUser | None:
     return get_user_by_field("uuid", uuid)
 
 def get_filtered_users(filters: Filters):
-    pass
-    # if not filters.account_type:
-    #     all_users = get_all_users()
-    # elif filters.account_type == 'administrative':
-    #     all_users = get_administrators()
-    # elif filters.account_type == 'client':
-    #     all_users = get_clients()
-        
-    # users = all_users.copy()
+    if not len(filters.model_dump(exclude_none=True).items()):
+        return get_all_users()
     
-    # for key, user in all_users.items():
-    #     if filters.group and ((not is_client(user)) or (not user.groups) or (filters.group not in user.groups)):
-    #         del users[key]
-    # return users
+    uuids = []
+    
+    # get uuids of admins that pass the filters
+    if (not filters.account_type or filters.account_type == 'administrative') and not filters.group:
+        query = """
+            SELECT DISTINCT administrators.uuid FROM administrators 
+            JOIN administrators_roles ON administrators.uuid = administrators_roles.administrator_uuid
+            JOIN roles ON administrators_roles.role_uuid = roles.uuid
+        """
+        if filters.role: query += " WHERE roles.uuid = %(role)s"
+        # implement more filters for admins here if needed
+        
+        uuids.extend(select_single_field("uuid", query, {"role": filters.role}))
+       
+    # get uuids of clients that pass the filters
+    if (not filters.account_type or filters.account_type == 'client') and not filters.role:
+        query = """
+            SELECT DISTINCT clients.uuid FROM clients
+            JOIN clients_groups ON clients.uuid = clients_groups.client_uuid
+            JOIN groups ON clients_groups.group_uuid = groups.uuid
+        """
+        if filters.group: query += " WHERE groups.uuid = %(group)s"
+        # implement more filters for clients here if needed
+        
+        uuids.extend(select_single_field("uuid", query, {"group": filters.group}))
+    
+    return {uuid: get_user_by_uuid(uuid) for uuid in uuids}
 
 def delete_user_by_uuid(uuid: str):
     pass

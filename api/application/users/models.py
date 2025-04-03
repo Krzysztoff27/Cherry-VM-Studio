@@ -98,5 +98,6 @@ class UserModificationForm(BaseModel):
     
 class Filters(BaseModel):
     account_type: AccountTypes | None = None
-    group: str | None = None
-    
+    group: UUID | None = None
+    role: UUID | None = None
+        

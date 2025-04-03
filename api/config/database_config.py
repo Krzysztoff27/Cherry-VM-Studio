@@ -9,6 +9,7 @@ class DatabaseConfig:
     user: str = "postgres"
     password: str = "qazwsx"
     dbname: str = "cvmm-dev"
-    max_connections: int = 20
+    max_connections: int = 20    
+    timeout_seconds: float = 5   # request timeout
     
 DATABASE_CONFIG = DatabaseConfig()

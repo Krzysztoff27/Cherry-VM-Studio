@@ -10,11 +10,11 @@ from application.users.models import AnyUser, CreateUserForm, User, Filters, Acc
 from application.authentication import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['users'])
-async def __read_user_me__(current_user: DependsOnAuthentication) -> Administrator | Client:
+async def __read_user_me__(current_user: DependsOnAuthentication) -> AnyUser:
     return current_user
 
 @app.get("/user/{uuid}", response_model=Administrator | Client, tags=['users'])
-async def __read_user__(uuid: str, current_user: DependsOnAuthentication) -> Administrator | Client:
+async def __read_user__(uuid: str, current_user: DependsOnAuthentication) -> AnyUser:
     user = get_user_by_uuid(uuid)
     if user: 
         return user
@@ -24,10 +24,12 @@ async def __read_user__(uuid: str, current_user: DependsOnAuthentication) -> Adm
 async def __read_users__(
     current_user: DependsOnAuthentication,
     account_type: AccountTypes | None = None,
-    group: str | None = None
+    group: str | None = None,
+    role: str | None = None,
 ) -> list[AnyUser]:
-    return JSONResponse(content=jsonable_encoder(get_all_users()))
-    # return get_filtered_users(Filters(account_type=account_type, group=group))
+    filters = Filters(account_type=account_type, group=group, role=role)
+    users = get_filtered_users(filters)
+    return JSONResponse(content=jsonable_encoder(users))
 
 @app.post("/user/create", response_model=Administrator | Client, tags=['users'])
 async def __create_user__(user_data: CreateUserForm, current_user: DependsOnAuthentication) -> Administrator | Client:   
