@@ -1,5 +1,4 @@
-import { ActionIcon, Button, Text } from "@mantine/core";
-import AccountOptionsCell from "../../atoms/table/AccountOptionsCell";
+import { Button, Text } from "@mantine/core";
 import CheckboxCell from "../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../atoms/table/CheckboxHeader";
 import AvatarsCell from "../../atoms/table/AvatarsCell";

@@ -81,28 +81,32 @@ const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Reac
             onClose={onClose}
             size="xl"
         >
-            {groupLoading || usersLoading || !group ? (
-                <Placeholder />
-            ) : (
-                <Stack className={classes.container}>
-                    <Group className={classes.header}>
-                        <Avatar
-                            color="cherry"
-                            size="lg"
-                        >
-                            <IconUsersGroup size={32} />
-                        </Avatar>
-                        <Stack gap="0">
-                            <Title order={2}>{group?.name}</Title>
-                            <Text c="dimmed">{group?.users?.length} clients</Text>
-                        </Stack>
-                    </Group>
-                    <MembersTable
-                        usersData={users}
-                        refresh={refreshUsers}
-                    />
-                </Stack>
-            )}
+            <Stack
+                align="center"
+                h="560"
+                p="md"
+                pt="0"
+            >
+                <Group
+                    w="100%"
+                    mb="sm"
+                >
+                    <Avatar
+                        color="cherry"
+                        size="lg"
+                    >
+                        <IconUsersGroup size={32} />
+                    </Avatar>
+                    <Stack gap="0">
+                        <Title order={2}>{group.name}</Title>
+                        <Text c="dimmed">{group.users.length} clients</Text>
+                    </Stack>
+                </Group>
+                <MembersTable
+                    usersData={users}
+                    refresh={refreshUsers}
+                />
+            </Stack>
         </Modal>
     );
 };

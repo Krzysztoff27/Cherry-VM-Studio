@@ -1,9 +1,10 @@
-.clientsInput {
+.input {
     overflow-y: auto;
     min-height: 100px;
     max-height: 400px;
     /* padding: 12px; */
 }
-.dropdown {
-    height: 100px;
+
+.pill {
+    border-radius: 8px;
 }

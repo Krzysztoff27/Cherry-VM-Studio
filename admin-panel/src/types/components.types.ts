@@ -1,4 +1,4 @@
-import { ActionIconProps, ButtonProps, ModalProps, StackProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
+import { ActionIconProps, ButtonProps, ModalProps, MultiSelectProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
 import { TablerIcon } from "@tabler/icons-react";
 import { ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
@@ -253,6 +253,6 @@ export interface TableStateHeadingProps {
     };
 }
 
-export interface PermissionProps extends StackProps {
-    user: User;
+export interface UserMultiselectProps extends MultiSelectProps {
+    users: User[];
 }

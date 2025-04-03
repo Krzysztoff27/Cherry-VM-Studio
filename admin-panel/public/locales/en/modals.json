@@ -87,6 +87,7 @@
         "description": "You're creating a public group of clients that will be visible and modifiable by all administrators.",
         "name": "Name",
         "name-note": "Note: Group name must be unique",
+        "select-clients": "Select clients",
         "error-clients": "Error occured when loading clients :(",
         "validation": {
             "name-too-short": "Group name must be at least 3 characters long.",

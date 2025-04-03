@@ -71,22 +71,20 @@
 }
 
 .tr > *:nth-child(2) {
-    flex: 0;
-    min-width: 300px;
+    min-width: 75px;
 }
 .tr > *:nth-child(3) {
-    flex: 0;
-    min-width: 300px;
+    min-width: 75px;
 }
 
 .tr > *:first-child {
-    flex: 0;
     min-width: 50px;
+    flex: 0;
     justify-content: center;
 }
 
 .tr > *:last-child {
-    flex: 0;
     min-width: 200px;
+    flex: 0;
     justify-content: center;
 }
