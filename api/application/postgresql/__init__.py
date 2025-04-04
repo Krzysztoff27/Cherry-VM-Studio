@@ -19,28 +19,30 @@ pool = psycopg_pool.ConnectionPool(
     },
 )
 
-def select_single_field(key_name: str, query: str, params: Params | None = None) -> list[any]:
+# sends SELECT query and returns returned rows
+
+def select_rows(query: str, params: Params | None = None) -> list[dict[str, any]]:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(query=query, params=params)
             rows = cursor.fetchall()
+    return rows
+
+def select_single_field(key_name: str, query: str, params: Params | None = None) -> list[any]:
+    rows = select_rows(query, params)
     return [row[key_name] for row in rows]
 
+# select schema functions fetch data from the select query and validate it using the given pydantic model
+
 def select_schema(model: Type[BaseModel], query: str, params: Params | None = None) -> list[any]:
-    with pool.connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(query=query, params=params)
-            rows = cursor.fetchall() 
+    rows = select_rows(query, params)
     return [model.model_validate(row) for row in rows]
 
-
 def select_schema_dict(model: Type[BaseModel], key_name: str, query: str, params: Params | None = None) -> dict[str, any]:
-    with pool.connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(query=query, params=params)
-            rows = cursor.fetchall() 
+    rows = select_rows(query, params)
     return {row[key_name]: model.model_validate(row) for row in rows}
 
+# returns first row of the SELECT query validated with given model
 def select_schema_one(model: Type[BaseModel], query: str, params: Params | None = None) -> Type[BaseModel] | None:
     with pool.connection() as connection:
         with connection.cursor() as cursor:

@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
-from application.postgresql import select_schema, select_schema_dict, select_schema_one, select_single_field
+from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, select_single_field
 from .permissions import is_admin, is_client
 from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, Group, Role, UserModificationForm
 from .groups import add_user_to_group, remove_user_from_group
@@ -90,7 +90,7 @@ def get_filtered_users(filters: Filters):
     if not len(filters.model_dump(exclude_none=True).items()):
         return get_all_users()
     
-    uuids = []
+    users = {}
     
     # get uuids of admins that pass the filters
     if (not filters.account_type or filters.account_type == 'administrative') and not filters.group:
@@ -102,7 +102,19 @@ def get_filtered_users(filters: Filters):
         if filters.role: query += " WHERE roles.uuid = %(role)s"
         # implement more filters for admins here if needed
         
-        uuids.extend(select_single_field("uuid", query, {"role": filters.role}))
+        # role data matched to the admin uuid
+        relevant_roles = select_rows(f"""
+            SELECT administrators_roles.administrator_uuid, roles.* FROM roles
+            JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid
+            WHERE administrators_roles.administrator_uuid = ({query})
+        """, {"role": filters.role})
+        
+        admins = select_schema_dict(Administrator, "uuid", f"SELECT * FROM administrators WHERE uuid = ({query})", {"role": filters.role})
+        
+        for role_data in relevant_roles:
+            admins[role_data["administrator_uuid"]].roles.append(Role.model_validate(role_data))
+        
+        users.update(admins)
        
     # get uuids of clients that pass the filters
     if (not filters.account_type or filters.account_type == 'client') and not filters.role:
@@ -114,9 +126,21 @@ def get_filtered_users(filters: Filters):
         if filters.group: query += " WHERE groups.uuid = %(group)s"
         # implement more filters for clients here if needed
         
-        uuids.extend(select_single_field("uuid", query, {"group": filters.group}))
+        # group data matched to the client uuid
+        relevant_groups = select_rows(f"""
+            SELECT clients_groups.client_uuid, groups.* FROM groups
+            JOIN clients_groups ON groups.uuid = clients_groups.group_uuid
+            WHERE clients_groups.client_uuid = ({query})
+        """, {"group": filters.group})
+        
+        clients = select_schema_dict(Client, "uuid", f"SELECT * FROM clients WHERE uuid = ({query})", {"group": filters.group})
+        
+        for group_data in relevant_groups:
+            clients[group_data["client_uuid"]].groups.append(Group.model_validate(group_data))
+        
+        users.update(clients)
     
-    return {uuid: get_user_by_uuid(uuid) for uuid in uuids}
+    return users
 
 def delete_user_by_uuid(uuid: str):
     pass
