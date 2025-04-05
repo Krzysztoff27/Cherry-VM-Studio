@@ -95,7 +95,7 @@ def remove_user_from_group(group_uuid, client_uuid) -> None:
     
     with pool.connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM clients_groups WHERE user_uuid = %s AND group_uuid = %s", (client_uuid, group_uuid))
+            cursor.execute("DELETE FROM clients_groups WHERE client_uuid = %s AND group_uuid = %s", (client_uuid, group_uuid))
             connection.commit()
 
     

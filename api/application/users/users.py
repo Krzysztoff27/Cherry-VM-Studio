@@ -97,8 +97,8 @@ def get_filtered_users(filters: Filters):
     if (not filters.account_type or filters.account_type == 'administrative') and not filters.group:
         query = """
             SELECT DISTINCT administrators.uuid FROM administrators 
-            JOIN administrators_roles ON administrators.uuid = administrators_roles.administrator_uuid
-            JOIN roles ON administrators_roles.role_uuid = roles.uuid
+            LEFT JOIN administrators_roles ON administrators.uuid = administrators_roles.administrator_uuid
+            LEFT JOIN roles ON administrators_roles.role_uuid = roles.uuid
         """
         if filters.role: query += " WHERE roles.uuid = %(role)s"
         # implement more filters for admins here if needed
@@ -107,10 +107,10 @@ def get_filtered_users(filters: Filters):
         relevant_roles = select_rows(f"""
             SELECT administrators_roles.administrator_uuid, roles.* FROM roles
             JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid
-            WHERE administrators_roles.administrator_uuid = ({query})
+            WHERE administrators_roles.administrator_uuid IN ({query})
         """, {"role": filters.role})
         
-        admins = select_schema_dict(Administrator, "uuid", f"SELECT * FROM administrators WHERE uuid = ({query})", {"role": filters.role})
+        admins = select_schema_dict(Administrator, "uuid", f"SELECT * FROM administrators WHERE uuid IN ({query})", {"role": filters.role})
         
         for role_data in relevant_roles:
             admins[role_data["administrator_uuid"]].roles.append(RoleInDB.model_validate(role_data))
@@ -121,20 +121,21 @@ def get_filtered_users(filters: Filters):
     if (not filters.account_type or filters.account_type == 'client') and not filters.role:
         query = """
             SELECT DISTINCT clients.uuid FROM clients
-            JOIN clients_groups ON clients.uuid = clients_groups.client_uuid
-            JOIN groups ON clients_groups.group_uuid = groups.uuid
+            LEFT JOIN clients_groups ON clients.uuid = clients_groups.client_uuid
+            LEFT JOIN groups ON clients_groups.group_uuid = groups.uuid
         """
-        if filters.group: query += " WHERE groups.uuid = %(group)s"
+        if filters.group:
+            query += " WHERE groups.uuid = %(group)s"
         # implement more filters for clients here if needed
         
         # group data matched to the client uuid
         relevant_groups = select_rows(f"""
             SELECT clients_groups.client_uuid, groups.* FROM groups
             JOIN clients_groups ON groups.uuid = clients_groups.group_uuid
-            WHERE clients_groups.client_uuid = ({query})
+            WHERE clients_groups.client_uuid IN ({query})
         """, {"group": filters.group})
         
-        clients = select_schema_dict(Client, "uuid", f"SELECT * FROM clients WHERE uuid = ({query})", {"group": filters.group})
+        clients = select_schema_dict(Client, "uuid", f"SELECT * FROM clients WHERE uuid IN ({query})", {"group": filters.group})
         
         for group_data in relevant_groups:
             clients[group_data["client_uuid"]].groups.append(GroupInDB.model_validate(group_data))
@@ -190,7 +191,7 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
                     for role_uuid in user_data.roles:
                         cursor.execute(f"""
                             INSERT INTO administrators_roles (administrator_uuid, role_uuid)
-                            VALUES (%(administrator_uuid)s, %(role_uuid))               
+                            VALUES (%(administrator_uuid)s, %(role_uuid)s)               
                         """, {"administrator_uuid": user_data.uuid, "role_uuid": role_uuid})
                         
                 elif is_client(user_data):
@@ -202,7 +203,7 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
                     for group_uuid in user_data.groups:
                         cursor.execute(f"""
                             INSERT INTO clients_groups (client_uuid, group_uuid)
-                            VALUES (%(client_uuid)s, %(group_uuid))               
+                            VALUES (%(client_uuid)s, %(group_uuid)s)               
                         """, {"client_uuid": user_data.uuid, "group_uuid": group_uuid})  
     return get_user_by_uuid(user_data.uuid)
     

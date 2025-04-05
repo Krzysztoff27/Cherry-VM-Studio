@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from application import app
 from application.users.models import CreatedGroup, Group
-from application.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid
+from application.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid, join_user_to_group, remove_user_from_group
 from application.authentication import DependsOnAuthentication
 
 @app.get("/group/{uuid}", response_model=Group, tags=['users'])
@@ -23,3 +23,13 @@ async def __create_group__(group_data: CreatedGroup, current_user: DependsOnAuth
 @app.delete("/group/delete/{uuid}", response_model=None, tags=['users'])
 async def __delete_group__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
     delete_group_by_uuid(uuid)
+    
+@app.put("/group/join/{uuid}", response_model=None, tags=['users'])
+async def __join_user_to_group__(uuid: UUID, users: list[UUID], current_user: DependsOnAuthentication) -> None:
+    for user in users: 
+        join_user_to_group(uuid, user)
+    
+@app.put("/group/leave/{uuid}", response_model=None, tags=['users'])
+async def __join_user_to_group__(uuid: UUID, users: list[UUID], current_user: DependsOnAuthentication) -> None:
+    for user in users:
+        remove_user_from_group(uuid, user)

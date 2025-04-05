@@ -77,12 +77,14 @@ class CreatedGroup(Group):
 
 class CreateAdministratorForm(Administrator):
     uuid: UUID | None = None
+    roles: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = uuid4() # generate random uuid on creation
         
 class CreateClientForm(Client):
     uuid: UUID | None = None
+    groups: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = uuid4() # generate random uuid on creation
