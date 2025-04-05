@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Stack, Title, Group, TextInput, Button, MultiSelect, Text, Box, ScrollArea } from "@mantine/core";
 import { IconLabelFilled, IconAt, IconMail, IconEdit } from "@tabler/icons-react";
 import classes from "./AccountEditForm.module.css";
@@ -11,6 +11,8 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
 import usePermissions from "../../../hooks/usePermissions";
 import PERMISSIONS from "../../../config/permissions.config";
+import useFetch from "../../../hooks/useFetch";
+import { safeObjectValues } from "../../../utils/misc";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -18,6 +20,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { hasPermissions } = usePermissions();
+    const { data: groups } = useFetch("groups")
 
     const canChangePassword = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
@@ -58,8 +61,8 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
             surname: user?.surname ?? "",
             username: user?.username ?? "",
             email: user?.email ?? "",
-            roles: user?.roles ?? [],
-            groups: user?.groups ?? [],
+            roles: user?.roles?.map(role => role.uuid) ?? [],
+            groups: user?.groups?.map(group => group.uuid) ?? [],
         });
     }, [JSON.stringify(user)]);
 
@@ -76,6 +79,18 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         sendNotification("account.modified", undefined, { username: res.username });
         onSubmit?.();
     });
+
+    const sortByLabel = (a, b) => a.label.localeCompare(b.label);
+
+    const groupOptions = useMemo(() => 
+        safeObjectValues(groups)
+            .map(group => ({
+                label: group.name,
+                value: group.uuid
+            }))
+            .sort(sortByLabel), 
+        [JSON.stringify(user)]
+    );
 
     return (
         <form
@@ -175,6 +190,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 <MultiSelect
                                     placeholder={tns("groups")}
                                     key={form.key("groups")}
+                                    data={groupOptions}
                                     {...form.getInputProps("groups")}
                                     className={classes.input}
                                 />

@@ -74,6 +74,11 @@
     min-width: 75px;
 }
 .tr > *:nth-child(3) {
+    flex: 0;
+    min-width: 300px;
+}
+.tr > *:nth-child(4) {
+    flex: 3;
     min-width: 75px;
 }
 

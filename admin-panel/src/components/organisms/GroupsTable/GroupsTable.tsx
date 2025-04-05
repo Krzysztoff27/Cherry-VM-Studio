@@ -13,7 +13,7 @@ import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableS
 import CreateGroupModal from "../../../modals/account/CreateGroupModal/CreateGroupModal.jsx";
 import DeleteGroupsModal from "../../../modals/account/DeleteGroupsModal/DeleteGroupsModal.jsx";
 
-const GroupsTable = ({ userData, groupData, error, loading, refresh, openGroupModal }): React.JSX.Element => {
+const GroupsTable = ({ groupData, error, loading, refresh, openGroupModal }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "accounts.controls");
 
     const [columnFilters, setColumnsFilters] = useState([]);
@@ -25,9 +25,9 @@ const GroupsTable = ({ userData, groupData, error, loading, refresh, openGroupMo
                 uuid,
                 name,
                 count: users.length,
-                users: users.map((uuid: string) => userData?.[uuid] || { uuid: "loading", username: "?" }),
+                users,
             })),
-        [groupData, userData]
+        [groupData]
     );
 
     const columns = useMemo(() => getColumns(refresh, openGroupModal), [refresh, openGroupModal]);

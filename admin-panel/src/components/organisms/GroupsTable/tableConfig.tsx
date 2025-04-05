@@ -19,13 +19,13 @@ export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) =
     },
     {
         accessorKey: "count",
-        header: "Client count",
+        header: "Member count",
         cell: props => <Text>{props.getValue()}</Text>,
     },
     {
         accessorKey: "users",
         enableSorting: false,
-        header: "Clients",
+        header: "Members",
         cell: AvatarsCell,
     },
     {

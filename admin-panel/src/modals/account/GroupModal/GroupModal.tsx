@@ -4,6 +4,8 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
 import classes from "./GroupModal.module.css";
+import AddMembersField from "../../../components/organisms/AddMembersField/AddMembersField";
+import useApi from "../../../hooks/useApi";
 
 const Placeholder = () => (
     <Stack className={classes.container}>
@@ -70,10 +72,15 @@ const Placeholder = () => (
     </Stack>
 );
 
-const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
-    const { data: group, loading: groupLoading } = useFetch(`/group/${uuid}`);
-    const { data: users, loading: usersLoading, refresh: refreshUsers } = useFetch(`/users?group=${uuid}`);
-    const { parseAndHandleError } = useErrorHandler();
+const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
+    const { data: group, loading, refresh } = useFetch(`/group/${uuid}`);
+    const { putRequest } = useApi();
+
+    const removeMember = async (member: string) => {
+        await putRequest(`group/leave/${uuid}`, JSON.stringify([member]));
+        refresh();
+        refreshTable();
+    };
 
     return (
         <Modal
@@ -81,32 +88,51 @@ const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Reac
             onClose={onClose}
             size="xl"
         >
-            <Stack
-                align="center"
-                h="560"
-                p="md"
-                pt="0"
-            >
-                <Group
-                    w="100%"
-                    mb="sm"
+            {!group || loading ? (
+                <Placeholder />
+            ) : (
+                <Stack
+                    align="center"
+                    h="560"
+                    p="md"
+                    pt="0"
+                    gap="xl"
                 >
-                    <Avatar
-                        color="cherry"
-                        size="lg"
+                    <Group
+                        w="100%"
+                        mb="sm"
                     >
-                        <IconUsersGroup size={32} />
-                    </Avatar>
-                    <Stack gap="0">
-                        <Title order={2}>{group.name}</Title>
-                        <Text c="dimmed">{group.users.length} clients</Text>
+                        <Avatar
+                            color="cherry"
+                            size="xl"
+                        >
+                            <IconUsersGroup size={48} />
+                        </Avatar>
+                        <Stack gap="0">
+                            <Title order={2}>{group.name}</Title>
+                            <Text c="dimmed">{group.users.length} clients</Text>
+                        </Stack>
+                    </Group>
+
+                    <Stack
+                        w="100%"
+                        flex="1"
+                        gap="42"
+                        mih="0"
+                    >
+                        <AddMembersField
+                            alreadyAddedUsers={group.users}
+                            groupUuid={uuid}
+                            refresh={refresh}
+                        />
+                        <MembersTable
+                            usersData={group.users}
+                            refresh={refresh}
+                            removeMember={removeMember}
+                        />
                     </Stack>
-                </Group>
-                <MembersTable
-                    usersData={users}
-                    refresh={refreshUsers}
-                />
-            </Stack>
+                </Stack>
+            )}
         </Modal>
     );
 };

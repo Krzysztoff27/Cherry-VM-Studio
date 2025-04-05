@@ -4,7 +4,8 @@ import BusinessCardCell from "../../atoms/table/BusinessCardCell";
 import CheckboxCell from "../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../atoms/table/DateDifferenceCell";
-import RolesCell from "../../atoms/table/RolesCell";
+import RolesCell from "../../atoms/table/BadgesCell";
+import BadgesCell from "../../atoms/table/BadgesCell";
 
 export const getColumns = (accountType: AccountType, refresh: () => void, openAccountModal: () => void, openPasswordModal: () => void) => [
     {
@@ -25,13 +26,13 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
             accessorKey: "roles",
             header: "Roles",
             enableSorting: false,
-            cell: RolesCell,
+            cell: BadgesCell,
         },
         client: {
             accessorKey: "groups",
             header: "Groups",
             enableSorting: false,
-            cell: RolesCell,
+            cell: BadgesCell,
         },
     }[accountType],
     {

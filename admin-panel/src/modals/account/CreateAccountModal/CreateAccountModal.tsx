@@ -2,12 +2,14 @@ import { Avatar, Button, Group, Modal, MultiSelect, PasswordInput, Popover, rem,
 import classes from "./CreateAccountModal.module.css";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PasswordInputWithStrength from "../../../components/molecules/interactive/PasswordInputWithStrength/PasswordInputWithStrength";
 import useApi from "../../../hooks/useApi";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
+import useFetch from "../../../hooks/useFetch";
+import { safeObjectValues } from "../../../utils/misc";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
@@ -15,6 +17,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     const { postRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
+    const { data: groups } = useFetch("groups");
 
     const form = useForm({
         initialValues: {
@@ -76,13 +79,31 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     };
 
     const onFormSubmit = form.onSubmit(async ({ confirmPassword: _, ...values }) => {
-        const res = await postRequest("user/create", JSON.stringify({ account_type: accountType, ...values }), undefined, onPostError);
+        const body = { account_type: accountType, ...values };
+        if (accountType === "administrative") delete body.groups;
+        else if (accountType === "client") delete body.roles;
+        console.log(body);
+
+        const res = await postRequest("user/create", JSON.stringify(body), undefined, onPostError);
         if (!res) return;
 
         sendNotification("account.created", undefined, { username: res.username });
         closeModal();
         onSubmit?.();
     });
+
+    const sortByLabel = (a, b) => a.label.localeCompare(b.label);
+
+    const groupOptions = useMemo(
+        () =>
+            safeObjectValues(groups)
+                .map(group => ({
+                    label: group.name,
+                    value: group.uuid,
+                }))
+                .sort(sortByLabel),
+        [opened]
+    );
 
     return (
         <Modal
@@ -172,7 +193,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             clearable
                             checkIconPosition="left"
                             label={tns("groups")}
-                            data={["4ta2"]}
+                            data={groupOptions}
                             classNames={{ input: "borderless" }}
                             placeholder={tns("select-groups")}
                             key={form.key("groups")}

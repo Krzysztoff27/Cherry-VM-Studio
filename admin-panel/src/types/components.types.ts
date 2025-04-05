@@ -3,7 +3,7 @@ import { TablerIcon } from "@tabler/icons-react";
 import { ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
 import { PopoverProps } from "@mantine/core";
-import { MachineData, MachineState, MachineStates, User } from "./api.types";
+import { MachineData, MachineState, MachineStates, User, UserInDB } from "./api.types";
 
 export interface StateDividerProps {
     label: MachineStates;
@@ -254,5 +254,6 @@ export interface TableStateHeadingProps {
 }
 
 export interface UserMultiselectProps extends MultiSelectProps {
-    users: User[];
+    users: UserInDB[];
+    classNames?: { [key: string]: any };
 }

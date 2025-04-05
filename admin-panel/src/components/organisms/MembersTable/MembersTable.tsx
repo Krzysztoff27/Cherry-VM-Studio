@@ -2,25 +2,17 @@ import React, { useMemo, useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { safeObjectValues } from "../../../utils/misc";
 import BusinessCardCell from "../../atoms/table/BusinessCardCell";
-import { ActionIcon, Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconLinkOff } from "@tabler/icons-react";
-import { flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { ActionIcon, Box, Button, ScrollArea, Stack } from "@mantine/core";
+import { IconLinkOff } from "@tabler/icons-react";
+import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
-import TableSearch from "../../molecules/interactive/TableSearch/TableSearch";
-import UserMultiselect from "../../molecules/interactive/UserMultiselect/UserMultiselect";
 import AddMembersField from "../AddMembersField/AddMembersField";
+import useApi from "../../../hooks/useApi";
 
-const MembersTable = ({ usersData, refresh }): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("pages", "accounts.controls");
-    const [columnFilters, setColumnsFilters] = useState([]);
-
-    const onFilteringChange = (callback: (prev: any) => any) => {
-        setColumnsFilters(callback);
-    };
-
+const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element => {
     const data = useMemo(
         () =>
-            safeObjectValues(usersData).map(({ uuid, name, surname, username, email }) => ({
+            usersData.map(({ uuid, name, surname, username, email }) => ({
                 uuid,
                 details: { name, surname, email, username },
             })),
@@ -36,13 +28,16 @@ const MembersTable = ({ usersData, refresh }): React.JSX.Element => {
         {
             accessorKey: "options",
             header: "",
-            cell: props => (
-                <ActionIcon
+            cell: ({ row }) => (
+                <Button
                     color="cherry"
                     variant="light"
+                    leftSection={<IconLinkOff size={16} />}
+                    size="sm"
+                    onClick={() => removeMember(row.id)}
                 >
-                    <IconLinkOff />
-                </ActionIcon>
+                    Remove user
+                </Button>
             ),
         },
     ];
@@ -50,19 +45,13 @@ const MembersTable = ({ usersData, refresh }): React.JSX.Element => {
     const table = useReactTable({
         data: data,
         columns: columns,
-        state: {
-            columnFilters,
-        },
         getRowId: (row: any) => row.uuid,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
     });
 
     return (
         <Stack className={classes.container}>
-            <Stack className={classes.top}>
-                <AddMembersField users={usersData} />
-            </Stack>
+            <Stack className={classes.top}></Stack>
             <Box className={classes.table}>
                 {table.getHeaderGroups().map(headerGroup => (
                     <Box
@@ -80,10 +69,7 @@ const MembersTable = ({ usersData, refresh }): React.JSX.Element => {
                     </Box>
                 ))}
 
-                <ScrollArea
-                    scrollbars="y"
-                    offsetScrollbars
-                >
+                <ScrollArea scrollbars="y">
                     {table.getRowModel().rows.map(row => (
                         <Box
                             className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
