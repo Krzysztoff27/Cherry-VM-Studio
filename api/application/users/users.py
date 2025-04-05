@@ -1,13 +1,13 @@
 import re
 from typing import Literal
-from uuid import UUID, uuid4
+from uuid import UUID
 from fastapi import HTTPException
-from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
-from .permissions import is_admin, is_client
-from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, GroupInDB, Role, RoleInDB, UserModificationForm
+from .roles import verify_role_integrity
+from .permissions import is_admin, is_client, verify_permission_integrity
+from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, GroupInDB, RoleInDB, UserModificationForm
 
 def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_admin(user):
@@ -150,8 +150,11 @@ def delete_user_by_uuid(uuid: str):
     
     with pool.connection() as connection:
         with connection.cursor() as cursor:
-            with connection.transaction():
-                cursor.execute(f"DELETE FROM {table} WHERE uuid = %s", (uuid,))
+            cursor.execute(f"DELETE FROM {table} WHERE uuid = %s", (uuid,))
+            if is_admin(user) and not verify_role_integrity(cursor):
+                connection.rollback()
+                raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
+            connection.commit()
         
         
 def validate_user_details(user_data: CreateUserForm):    

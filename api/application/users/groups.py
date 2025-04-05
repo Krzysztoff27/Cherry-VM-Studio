@@ -1,7 +1,5 @@
-from tokenize import group
 from uuid import UUID
 from fastapi import HTTPException
-from application.users.permissions import is_client
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
 from application.users.models import ClientInDB, CreatedGroup, Group
 from utils.file import JSONHandler

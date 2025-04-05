@@ -1,5 +1,5 @@
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Literal, Union
 
 AccountTypes = Literal["administrative", "client"]
