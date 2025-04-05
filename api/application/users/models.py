@@ -1,37 +1,21 @@
 from uuid import UUID, uuid4
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal, Union
 
 AccountTypes = Literal["administrative", "client"]
 
-# groups
+# --------------------------
+# database models
+# --------------------------
 
-class Group(BaseModel):
+class GroupInDB(BaseModel):
     uuid: UUID
     name: str
     
-class CreatedGroup(Group):
-    uuid: UUID | None = None
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uuid = str(uuid4()) # generate random uuid on creation
-        
-# roles
-
-class Role(BaseModel):
+class RoleInDB(BaseModel):
     uuid: UUID
     name: str
     permissions: int
-
-# users
-
-class User(BaseModel):
-    uuid: UUID
-    username: str
-    email: str
-    name: str = ""
-    surname: str = ""
-    account_type: AccountTypes
     
 class AdministratorInDB(BaseModel):
     uuid: UUID
@@ -48,15 +32,6 @@ class ClientInDB(BaseModel):
     email: str
     name: str = ""
     surname: str = ""
-  
-class Administrator(AdministratorInDB):
-    account_type: Literal['administrative'] = 'administrative'
-    roles: list[Role] = []
-    permissions: int = 0
-
-class Client(ClientInDB):
-    account_type: Literal['client'] = 'client'
-    groups: list[Group] = []
     
 class AdministratorsRoles(BaseModel):
     administrator_uuid: UUID
@@ -66,35 +41,61 @@ class ClientsGroups(BaseModel):
     client_uuid: UUID
     group_uuid: UUID
     
-# represents any user type
-AnyUser = Union[Administrator, Client] 
+AnyUserInDB = Union[AdministratorInDB, ClientInDB] # represents any user type in the database
+    
+# --------------------------
+# API response return models
+# --------------------------
+    
+class Group(GroupInDB):
+    users: list[ClientInDB] = []
 
-# represents any user type in the database
-AnyUserInDB = Union[AdministratorInDB, ClientInDB]
+class Role(RoleInDB):
+    users: list[AdministratorInDB] = []
+    
+class Administrator(AdministratorInDB):
+    account_type: Literal["administrative"] = "administrative"
+    roles: list[RoleInDB] = []
+    permissions: int = 0
 
+class Client(ClientInDB):
+    account_type: Literal["client"] = "client"
+    groups: list[GroupInDB] = []
+    
+AnyUser = Union[Administrator, Client] # represents any user type
 
-class CreateAdministratorForm(AdministratorInDB):
+# --------------------------
+# API request argument models
+# --------------------------
+
+class CreatedGroup(Group):
+    uuid: UUID | None = None
+    users: list[UUID] = []
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.uuid = str(uuid4()) # generate random uuid on creation
+
+class CreateAdministratorForm(Administrator):
     uuid: UUID | None = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = uuid4() # generate random uuid on creation
         
-class CreateClientForm(ClientInDB):
+class CreateClientForm(Client):
     uuid: UUID | None = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.uuid = uuid4() # generate random uuid on creation
-        
-# represents any valid create user form
-CreateUserForm = Union[CreateAdministratorForm, CreateClientForm]
+
+CreateUserForm = Union[CreateAdministratorForm, CreateClientForm] # represents any valid create user form
         
 class UserModificationForm(BaseModel):
     username: str | None = None
     email: str | None = None
     name: str | None = None
     surname: str | None = None
-    roles: list[str] | None = None
-    groups: list[str] | None = None
+    roles: list[str] = []
+    groups: list[str] = []
     
 class Filters(BaseModel):
     account_type: AccountTypes | None = None

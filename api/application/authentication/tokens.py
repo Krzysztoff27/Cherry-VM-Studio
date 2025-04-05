@@ -1,7 +1,7 @@
 import jwt
 from datetime import datetime, timedelta, timezone
 from application import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DELTA, REFRESH_TOKEN_EXPIRE_DELTA
-from application.users import User
+from application.users import AnyUser
 from .models import Token, TokenTypes, Tokens
 
 def create_token(type: TokenTypes, data: dict, expires_delta: timedelta) -> Token:
@@ -15,7 +15,7 @@ def create_access_token(data: dict, expires_delta: timedelta) -> Token:
 def create_refresh_token(data: dict, expires_delta: timedelta) -> Token:
     return create_token("refresh", data, expires_delta)
 
-def get_user_tokens(user: User):
+def get_user_tokens(user: AnyUser):
     return Tokens(
         access_token = create_access_token({"sub": user.username}, ACCESS_TOKEN_EXPIRE_DELTA),
         refresh_token = create_refresh_token({"sub": user.username}, REFRESH_TOKEN_EXPIRE_DELTA)

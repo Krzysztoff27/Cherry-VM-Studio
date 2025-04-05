@@ -2,11 +2,10 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from application.authentication.validation import get_user_from_refresh_token
 from application import app
-from application.users.users import change_user_password, create_user, get_all_users, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
+from application.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
 from application.users.permissions import verify_can_change_password, verify_can_manage_user
-from application.users.models import AnyUser, CreateUserForm, User, Filters, AccountTypes, Administrator, Client, UserModificationForm
+from application.users.models import AnyUser, CreateUserForm, Filters, AccountTypes, Administrator, Client, UserModificationForm
 from application.authentication import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['users'])

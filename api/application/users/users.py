@@ -1,18 +1,13 @@
 import re
 from typing import Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 from fastapi import HTTPException
 from utils.file import JSONHandler
 from config import FILES_CONFIG, REGEX_CONFIG
 from application.authentication.passwords import hash_password
-from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, select_single_field
+from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
 from .permissions import is_admin, is_client
-from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, Group, Role, UserModificationForm
-from .groups import add_user_to_group, remove_user_from_group
-
-#
-# to be replaced with SQL queries
-#
+from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, GroupInDB, Role, RoleInDB, UserModificationForm
 
 def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_admin(user):
@@ -20,16 +15,10 @@ def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_client(user):
         return 'clients'
 
-def get_roles() -> dict[UUID, Role]:
-    return select_schema_dict(Role, "uuid", "SELECT * FROM roles")
-
-def get_groups() -> dict[UUID, Group]:
-    return select_schema_dict(Group, "uuid", "SELECT * FROM groups")
-
 def get_administrators() -> dict[UUID, Administrator]:
     administrators = select_schema_dict(Administrator, "uuid", "SELECT * FROM administrators")
     administrator_roles = select_schema(AdministratorsRoles, "SELECT * FROM administrators_roles")
-    roles = get_roles()
+    roles = select_schema_dict(RoleInDB, "uuid", "SELECT * FROM roles")
     
     for link in administrator_roles:
         administrators[link.administrator_uuid].roles.append(roles[link.role_uuid])
@@ -40,7 +29,7 @@ def get_administrators() -> dict[UUID, Administrator]:
 def get_clients() -> dict[UUID, Client]:
     clients = select_schema_dict(Client, "uuid", "SELECT * FROM clients")
     client_roles = select_schema(ClientsGroups, "SELECT * FROM clients_groups")
-    groups = get_groups()
+    groups = select_schema_dict(GroupInDB, "uuid", "SELECT * FROM groups")
     
     for link in client_roles:
         clients[link.client_uuid].groups.append(groups[link.group_uuid])
@@ -50,32 +39,44 @@ def get_clients() -> dict[UUID, Client]:
 def get_all_users() -> dict[UUID, Administrator | Client]:
     return get_administrators() | get_clients()
 
-def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
+def get_administrator_by_field(field_name: str, value: str) -> Administrator | None:
     administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE administrators.{field_name} = (%s)", (value,))
-    if administrator: 
-        roles = select_schema(Role, 
-           f"SELECT roles.* FROM roles "
-           f"JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid "
-           f"JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid "
-           f"WHERE administrators.{field_name} = (%s)", (value,)                                                      
-        )
+    
+    if not administrator:
+        return
+    
+    administrator.roles = select_schema(RoleInDB, 
+        f"SELECT roles.* FROM roles "
+        f"JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid "
+        f"JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid "
+        f"WHERE administrators.{field_name} = (%s)", (value,)                                                      
+    )
+    
+    for role in administrator.roles:
+        administrator.permissions |= role.permissions
         
-        for role in roles:
-            administrator.roles.append(Role.model_validate(role))
-        return administrator
-        
+    return administrator
+
+def get_client_by_field(field_name: str, value: str) -> Client | None:
     client = select_schema_one(Client, f"SELECT * FROM clients WHERE clients.{field_name} = (%s)", (value,))
-    groups = select_schema(Group, 
+    
+    if not client:
+        return
+    
+    client.groups = select_schema(GroupInDB, 
         f"SELECT groups.* FROM groups "
         f"JOIN clients_groups ON groups.uuid = clients_groups.group_uuid "
         f"JOIN clients ON clients_groups.client_uuid = clients.uuid "
         f"WHERE clients.{field_name} = (%s)", (value,)                                                        
     )
     
-    for group in groups:
-        client.groups.append(Group.model_validate(group))
     return client
-    
+
+def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
+    administrator = get_administrator_by_field(field_name, value)
+    if administrator:
+        return administrator
+    return get_client_by_field(field_name, value)
 
 def get_user_by_username(username: str) -> AnyUser | None:
     return get_user_by_field("username", username)
@@ -112,7 +113,7 @@ def get_filtered_users(filters: Filters):
         admins = select_schema_dict(Administrator, "uuid", f"SELECT * FROM administrators WHERE uuid = ({query})", {"role": filters.role})
         
         for role_data in relevant_roles:
-            admins[role_data["administrator_uuid"]].roles.append(Role.model_validate(role_data))
+            admins[role_data["administrator_uuid"]].roles.append(RoleInDB.model_validate(role_data))
         
         users.update(admins)
        
@@ -136,26 +137,20 @@ def get_filtered_users(filters: Filters):
         clients = select_schema_dict(Client, "uuid", f"SELECT * FROM clients WHERE uuid = ({query})", {"group": filters.group})
         
         for group_data in relevant_groups:
-            clients[group_data["client_uuid"]].groups.append(Group.model_validate(group_data))
+            clients[group_data["client_uuid"]].groups.append(GroupInDB.model_validate(group_data))
         
         users.update(clients)
     
     return users
 
 def delete_user_by_uuid(uuid: str):
-    pass
-    # administrators = administrators_database.read()
-    # clients = clients_database.read()
+    user = get_user_by_uuid(uuid)
+    table = get_parent_table(user)
     
-    # if uuid in administrators:
-    #     del administrators[uuid]
-    #     administrators_database.write(administrators)
-        
-    # elif uuid in clients:
-    #     for group_uuid in clients[uuid].groups:
-    #         remove_user_from_group(group_uuid, uuid)
-    #     del clients[uuid]
-    #     clients_database.write(clients)
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            with connection.transaction():
+                cursor.execute(f"DELETE FROM {table} WHERE uuid = %s", (uuid,))
         
         
 def validate_user_details(user_data: CreateUserForm):    
@@ -178,43 +173,44 @@ def validate_user_details(user_data: CreateUserForm):
         raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
         
 def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
-    pass
-    # validate_user_details(user_data)
+    validate_user_details(user_data)
 
-    # user_data.username = user_data.username.lower()
-    # user_data.password = hash_password(user_data.password)
-        
-    # if is_admin(user_data):
-    #     user = AdministratorInDB(**user_data.model_dump())
-    # if is_client(user_data):
-    #     user = ClientInDB(**user_data.model_dump())
-        
-    # users = get_parent_database(user).read()
-    # users[user_data.uuid] = user.model_dump()
-    # users.write(users)
-    # return user
+    user_data.username = user_data.username.lower()
+    user_data.password = hash_password(user_data.password)
+    
+    with pool.connection() as connection:
+        with connection.cursor() as cursor: 
+            with connection.transaction():
+                if is_admin(user_data):
+                    cursor.execute(f"""
+                        INSERT INTO administrators (uuid, username, password, name, surname, email)
+                        VALUES (%(uuid)s, %(username)s, %(password)s, %(name)s, %(surname)s, %(email)s)
+                    """, user_data.model_dump())
+                    
+                    for role_uuid in user_data.roles:
+                        cursor.execute(f"""
+                            INSERT INTO administrators_roles (administrator_uuid, role_uuid)
+                            VALUES (%(administrator_uuid)s, %(role_uuid))               
+                        """, {"administrator_uuid": user_data.uuid, "role_uuid": role_uuid})
+                        
+                elif is_client(user_data):
+                    cursor.execute(f"""
+                        INSERT INTO clients (uuid, username, password, name, surname, email)
+                        VALUES (%(uuid)s, %(username)s, %(password)s, %(name)s, %(surname)s, %(email)s)
+                    """, user_data.model_dump())
+                    
+                    for group_uuid in user_data.groups:
+                        cursor.execute(f"""
+                            INSERT INTO clients_groups (client_uuid, group_uuid)
+                            VALUES (%(client_uuid)s, %(group_uuid))               
+                        """, {"client_uuid": user_data.uuid, "group_uuid": group_uuid})  
+    return get_user_by_uuid(user_data.uuid)
+    
 
 def modify_user(uuid, modification_data: UserModificationForm) -> AnyUserInDB:
-    pass
-    # user = get_user_by_uuid(uuid) 
+    user = get_user_by_uuid(uuid) 
     
-    # for key, value in modification_data.model_dump().items():
-    #     if value is not None and hasattr(user, key):
-            
-    #         if key == 'groups':
-    #             for group in user.groups:
-    #                 remove_user_from_group(group, uuid)
-    #             for group in value:
-    #                 add_user_to_group(group, uuid)
-                
-    #         setattr(user, key, value)    
     
-    # database = get_parent_database(user)
-    # users = database.read()
-    # users[user.uuid] = user.model_dump()
-    # database.write(users)
-    
-    # return user
         
 def change_user_password(uuid, new_password):
     pass

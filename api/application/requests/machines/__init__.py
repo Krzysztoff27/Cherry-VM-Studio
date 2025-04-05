@@ -1,10 +1,7 @@
-from fastapi import Depends
-from typing import Annotated
-
 from application import app
 from application.machines import get_machine, get_machines
 from application.machines.models import MachineNetworkData
-from application.authentication import DependsOnAuthentication, get_authenticated_user, User
+from application.authentication import DependsOnAuthentication
 
 ###############################
 #       data requests
