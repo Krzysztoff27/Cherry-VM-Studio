@@ -90,14 +90,14 @@ class CreateClientForm(Client):
         self.uuid = uuid4() # generate random uuid on creation
 
 CreateUserForm = Union[CreateAdministratorForm, CreateClientForm] # represents any valid create user form
-        
-class UserModificationForm(BaseModel):
+
+class ModifyUserForm(BaseModel):
     username: str | None = None
     email: str | None = None
     name: str | None = None
     surname: str | None = None
-    roles: list[str] = []
-    groups: list[str] = []
+    roles: list[UUID] | None = None
+    groups: list[UUID] | None = None
     
 class Filters(BaseModel):
     account_type: AccountTypes | None = None

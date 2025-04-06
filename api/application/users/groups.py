@@ -1,5 +1,6 @@
 from uuid import UUID
 from fastapi import HTTPException
+from utils.uuid import is_valid_uuid
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
 from application.users.models import ClientInDB, CreatedGroup, Group
 from utils.file import JSONHandler
@@ -24,8 +25,9 @@ def get_group_by_field(field_name: str, value: str) -> Group | None:
 def get_group_by_name(name: str) -> Group | None:
     return get_group_by_field("name", name)
 
-def get_group_by_uuid(uuid: str) -> Group | None:
-    return get_group_by_field("uuid", uuid)
+def get_group_by_uuid(uuid: UUID) -> Group | None:
+    if is_valid_uuid(uuid):
+        return get_group_by_field("uuid", uuid) 
 
 def get_all_groups() -> dict[UUID, Group]:
     groups = select_schema_dict(Group, "uuid", "SELECT * FROM groups")
@@ -40,7 +42,7 @@ def get_all_groups() -> dict[UUID, Group]:
     
     return groups
 
-def delete_group_by_uuid(uuid: str):
+def delete_group_by_uuid(uuid: UUID):
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(f"DELETE FROM groups WHERE uuid = %s", (uuid,))
@@ -66,6 +68,21 @@ def create_group(group_data: CreatedGroup) -> Group:
                     cursor.execute("INSERT INTO clients_groups (client_uuid, group_uuid) VALUES (%s, %s) ON CONFLICT DO NOTHING", (user_uuid, group_data.uuid))
     return get_group_by_uuid(group_data.uuid)            
             
+
+def update_user_groups(user_uuid: UUID, old_groups: set[UUID] | list[UUID], new_groups: set[UUID] | list[UUID]):
+    old_groups = set(old_groups)
+    new_groups = set(new_groups)
+    
+    to_leave = old_groups - new_groups
+    to_join = new_groups - old_groups
+    
+    for group in to_leave:
+        if is_valid_uuid(group):
+            remove_user_from_group(group, user_uuid)
+    for group in to_join:
+        if is_valid_uuid(group):
+            join_user_to_group(group, user_uuid)
+        
 
 def join_user_to_group(group_uuid, client_uuid) -> None:
     group = get_group_by_uuid(group_uuid)

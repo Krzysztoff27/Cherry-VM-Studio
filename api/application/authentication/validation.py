@@ -19,7 +19,8 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser | None:
 
     username: str = payload.get("sub")
     user = get_user_by_username(username)
-    if user is None: raise CredentialsException()
+    if user is None: 
+        raise CredentialsException()
     return user
 
 def authenticate_user(username: str, password: str):

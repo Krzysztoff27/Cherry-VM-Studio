@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class VirtualMachineData(BaseModel):            # * parent class with properties needed in every request
     uuid: str                                   # unique ID for each machine
-    group: str | None = None                    # string of a corresponding machine group e.g.: "Desktop" or "Server"
+    group: str | None = None                    # string of a corresponding machine group e.g.: "desktop" or "server"
     group_member_id: int | None = None          # unique ID for each machine in the scope of a group
 
 class MachineNetworkData(VirtualMachineData):   # * this data will be requested once per page load

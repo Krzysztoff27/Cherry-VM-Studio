@@ -2,12 +2,13 @@ import re
 from typing import Literal
 from uuid import UUID
 from fastapi import HTTPException
-from config import FILES_CONFIG, REGEX_CONFIG
+from config.regex_config import REGEX_CONFIG
+from application.users.groups import update_user_groups
 from application.authentication.passwords import hash_password
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
-from .roles import verify_role_integrity
-from .permissions import is_admin, is_client, verify_permission_integrity
-from .models import Administrator, AdministratorInDB, AdministratorsRoles, AnyUser, Client, ClientInDB, ClientsGroups, CreateUserForm, AnyUserInDB, Filters, GroupInDB, RoleInDB, UserModificationForm
+from .roles import update_user_roles, verify_role_integrity
+from .permissions import is_admin, is_client
+from .models import *
 
 def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_admin(user):
@@ -155,30 +156,9 @@ def delete_user_by_uuid(uuid: str):
                 connection.rollback()
                 raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
             connection.commit()
-        
-        
-def validate_user_details(user_data: CreateUserForm):    
-    if get_user_by_username(user_data.username) is not None:
-        raise HTTPException(status_code=409, detail="User with this username already exists.")
     
-    if get_user_by_email(user_data.email) is not None:
-        raise HTTPException(status_code=409, detail="User with this email already exists.")
-    
-    if not re.match(REGEX_CONFIG.username, user_data.username):
-        raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
-    
-    if not re.match(REGEX_CONFIG.password, user_data.password):
-        raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.")
-    
-    if len(user_data.name) > 50:
-        raise HTTPException(status_code=400, detail="Name field cannot contain more than 50 characters.")
-    
-    if len(user_data.surname) > 50:
-        raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
         
 def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
-    validate_user_details(user_data)
-
     user_data.username = user_data.username.lower()
     user_data.password = hash_password(user_data.password)
     
@@ -211,22 +191,55 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     return get_user_by_uuid(user_data.uuid)
     
 
-def modify_user(uuid, modification_data: UserModificationForm) -> AnyUserInDB:
-    user = get_user_by_uuid(uuid) 
+def modify_user(user_uuid, modification_data: ModifyUserForm) -> AnyUser:
+    user = get_user_by_uuid(user_uuid)
     
+    if not user:
+        return
+    
+    set_statement = ""
+    if modification_data.username   is not None and modification_data.username != user.username:    set_statement += "username = %(username)s"
+    if modification_data.email      is not None and modification_data.email != user.email:          set_statement += "email = %(email)s"
+    if modification_data.name       is not None and modification_data.name != user.name:            set_statement += "name = %(name)s"
+    if modification_data.surname    is not None and modification_data.surname != user.surname:      set_statement += "surname = %(surname)s"
+            
+    params = {**modification_data.model_dump(), "uuid": user_uuid}
+            
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            if is_admin(user):
+                if len(set_statement):
+                    cursor.execute(f"UPDATE administrators SET {set_statement} WHERE uuid = %(uuid)s", params)
+                
+                if modification_data.roles is not None:                    
+                    update_user_roles(user_uuid, set(role.uuid for role in user.roles), set(modification_data.roles))
+                
+            elif is_client(user):
+                if len(set_statement):
+                    cursor.execute(f"UPDATE clients SET {set_statement} WHERE uuid = %(uuid)s", params)
+                
+                if modification_data.groups is not None:                    
+                    update_user_groups(user_uuid, set(group.uuid for group in user.groups), set(modification_data.groups))
+                
+            connection.commit()
+            
+    return get_user_by_uuid(user_uuid)
     
         
 def change_user_password(uuid, new_password):
-    pass
+    user = get_user_by_uuid(uuid)
     
-    # if not re.match(REGEX_CONFIG.password, new_password):
-    #     raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.")
+    if not user:
+        raise HTTPException(status_code=400, detail="User with UUID={user_uuid} does not exist.")
     
-    # user = get_user_by_uuid(uuid)   
-    # database = get_parent_database(user)
+    if not re.match(REGEX_CONFIG.password, new_password):
+        raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.") 
     
-    # users = database.read()
-    # users[user.uuid]["password"] = hash_password(new_password)
-    # database.write(users)
-    
+    table = get_parent_table(user)
+    hashed_password = hash_password(new_password)
+ 
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(f"UPDATE {table} SET password = %s WHERE uuid = %s", (hashed_password, uuid,))
+            connection.commit()
     
