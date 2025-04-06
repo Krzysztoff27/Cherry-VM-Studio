@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from config.permissions_config import PERMISSIONS
-from application.users.models import AnyUserInDB, AnyUser
+from application.users.models import AnyUser, RoleInDB
 
 def is_admin(user: AnyUser):
     return user.account_type == 'administrative'
@@ -28,3 +28,13 @@ def verify_can_change_password(current_user: AnyUser, modified_user: AnyUser):
     
     mask = PERMISSIONS.CHANGE_ADMIN_PASSWORD if is_admin(modified_user) else PERMISSIONS.CHANGE_CLIENT_PASSWORD    
     verify_permissions(current_user, mask)
+    
+# checks if permissions of all assigned roles sum up to full permissions
+def verify_permission_integrity(assigned_roles: RoleInDB):
+    max_permissions = PERMISSIONS.get_max_permissions()
+    permissions = 0
+    for role in assigned_roles:
+        permissions |= role.permissions
+        if permissions == max_permissions:
+            return True
+    return permissions == max_permissions 

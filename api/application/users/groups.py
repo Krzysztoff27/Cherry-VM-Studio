@@ -1,7 +1,5 @@
-from tokenize import group
 from uuid import UUID
 from fastapi import HTTPException
-from application.users.permissions import is_client
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
 from application.users.models import ClientInDB, CreatedGroup, Group
 from utils.file import JSONHandler
@@ -95,7 +93,7 @@ def remove_user_from_group(group_uuid, client_uuid) -> None:
     
     with pool.connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM clients_groups WHERE user_uuid = %s AND group_uuid = %s", (client_uuid, group_uuid))
+            cursor.execute("DELETE FROM clients_groups WHERE client_uuid = %s AND group_uuid = %s", (client_uuid, group_uuid))
             connection.commit()
 
     
