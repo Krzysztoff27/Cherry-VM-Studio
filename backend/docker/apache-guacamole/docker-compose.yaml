@@ -25,7 +25,7 @@ services:
       cvmm-internal:
 
   database:
-    container_name: cvmm-guacamole-db
+    container_name: cherry-guac-db
     restart: always
     image: postgres
     environment:
