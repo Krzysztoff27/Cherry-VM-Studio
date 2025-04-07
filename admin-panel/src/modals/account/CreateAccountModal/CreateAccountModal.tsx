@@ -18,6 +18,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { data: groups } = useFetch("groups");
+    const { data: roles } = useFetch("roles");
 
     const form = useForm({
         initialValues: {
@@ -94,16 +95,16 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
 
     const sortByLabel = (a, b) => a.label.localeCompare(b.label);
 
-    const groupOptions = useMemo(
-        () =>
-            safeObjectValues(groups)
-                .map(group => ({
-                    label: group.name,
-                    value: group.uuid,
-                }))
-                .sort(sortByLabel),
-        [opened]
-    );
+    const getLabels = (list: { name: string; uuid: string }[]) =>
+        list
+            .map(group => ({
+                label: group.name,
+                value: group.uuid,
+            }))
+            .sort(sortByLabel);
+
+    const groupOptions = getLabels(safeObjectValues(groups));
+    const roleOptions = getLabels(safeObjectValues(roles));
 
     return (
         <Modal
@@ -181,7 +182,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             clearable
                             checkIconPosition="left"
                             label={tns("roles")}
-                            data={["Machine Manager", "Account Administrator"]}
+                            data={roleOptions}
                             classNames={{ input: "borderless" }}
                             placeholder={tns("select-roles")}
                             key={form.key("roles")}

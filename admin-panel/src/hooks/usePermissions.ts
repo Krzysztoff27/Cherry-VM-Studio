@@ -7,7 +7,10 @@ export default function usePermissions() {
     const { data: loggedInUser } = useFetch("user");
 
     const hasPermissions = (requiredPermissions: number) =>
-        loggedInUser?.permissions && (loggedInUser.permissions | requiredPermissions) === loggedInUser.permissions;
+        loggedInUser &&
+        loggedInUser?.account_type === "administrative" &&
+        loggedInUser?.permissions &&
+        (loggedInUser.permissions | requiredPermissions) === loggedInUser.permissions;
 
     return {
         hasPermissions,
