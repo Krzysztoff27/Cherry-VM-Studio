@@ -8,6 +8,10 @@
             "title": "Bad Request",
             "message": "Your request could not be processed due to an error. Please verify your input and try again."
         },
+        "400-CANNOT-REMOVE-USER": {
+            "title": "Cannot Remove User",
+            "message": "Cannot remove user as it would leave at least one permission unassigned. Please make sure to pass the permissions to another account first."
+        },
         "401": {
             "title": "Unauthorized",
             "message": "You are not authorized to access this resource. Please log in to continue."

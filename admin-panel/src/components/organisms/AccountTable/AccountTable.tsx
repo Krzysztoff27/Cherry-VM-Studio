@@ -6,13 +6,11 @@ import classes from "./AccountTable.module.css";
 import TableStateHeading from "../../molecules/feedback/TableStateHeading/TableStateHeading";
 import { safeObjectValues } from "../../../utils/misc.js";
 import { getColumns } from "./tableConfig.jsx";
-import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 import SizeSelect from "../../atoms/interactive/SizeSelect/SizeSelect.jsx";
 import TableControls from "../../molecules/interactive/TableControls/TableControls.jsx";
 import CreateAccountModal from "../../../modals/account/CreateAccountModal/CreateAccountModal.jsx";
 import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal.jsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
-import useFetch from "../../../hooks/useFetch.js";
 import PERMISSIONS from "../../../config/permissions.config.js";
 import usePermissions from "../../../hooks/usePermissions.js";
 
@@ -25,9 +23,10 @@ const AccountTable = ({ accountType, userData, refresh, error, openAccountModal,
     const columns = useMemo(() => getColumns(accountType, refresh, openAccountModal, openPasswordModal), [accountType, refresh]);
     const data = useMemo(
         () =>
-            safeObjectValues(userData).map(({ uuid, username, name, surname, email, groups = [] }) => ({
+            safeObjectValues(userData).map(({ uuid, username, name, surname, email, roles = [], groups = [] }) => ({
                 uuid,
-                groups,
+                roles: roles.map(role => role.name),
+                groups: groups.map(group => group.name),
                 lastActive: null,
                 details: { username, name, surname, email },
             })),

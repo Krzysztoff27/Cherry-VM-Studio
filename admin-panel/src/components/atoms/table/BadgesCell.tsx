@@ -2,7 +2,7 @@ import { Badge, Group } from "@mantine/core";
 import React from "react";
 import { CellProps } from "../../../types/components.types";
 
-const RolesCell = ({getValue} : CellProps) : React.JSX.Element => {
+const BadgesCell = ({getValue} : CellProps) : React.JSX.Element => {
     return (
         <Group>
             {(getValue() || []).map((role: string, i) =>
@@ -20,4 +20,4 @@ const RolesCell = ({getValue} : CellProps) : React.JSX.Element => {
     );
 }
 
-export default RolesCell;
+export default BadgesCell;

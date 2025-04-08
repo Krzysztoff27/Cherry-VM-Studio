@@ -5,7 +5,7 @@ import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
 import Home from "./pages/Home/Home";
 import Desktops from "./pages/Desktops/Desktops";
 import { Protected, ReverseProtected } from "./wrappers/Protected";
-import Credits from "./pages/Credits/Credits";
+import Credits from "./pages/Credits/Credits.tsx";
 import Copyright from "./pages/Copyright/Copyright";
 import VirtualMachinePage from "./pages/VirtualMachine/VirtualMachinePage";
 import NetworkPanel from "./pages/NetworkPanel/NetworkPanel";

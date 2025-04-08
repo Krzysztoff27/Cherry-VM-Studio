@@ -7,8 +7,7 @@ import { Paper, Portal, Stack } from "@mantine/core";
 import { useState } from "react";
 
 const Groups = (): React.JSX.Element => {
-    const { data: groupData, error: groupError, loading: groupLoading, refresh: groupRefresh } = useFetch(`/groups`);
-    const { data: userData, error: userError, loading: userLoading, refresh: userRefresh } = useFetch("/users?account_type=client");
+    const { data: groupData, error, loading, refresh } = useFetch(`/groups`);
 
     const [currentUuid, setCurrentUuid] = useState<string>("");
     const [opened, { open, close }] = useDisclosure();
@@ -24,16 +23,13 @@ const Groups = (): React.JSX.Element => {
                     opened={opened}
                     onClose={close}
                     uuid={currentUuid}
+                    refreshTable={refresh}
                 />
                 <GroupsTable
-                    userData={userData}
                     groupData={groupData}
-                    error={groupError || userError}
-                    loading={groupLoading || userLoading}
-                    refresh={() => {
-                        groupRefresh();
-                        userRefresh();
-                    }}
+                    error={error}
+                    loading={loading}
+                    refresh={refresh}
                     openGroupModal={openGroupModal}
                 />
             </Paper>

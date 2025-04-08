@@ -51,14 +51,34 @@ export interface ErrorResponseBody {
     [x: string]: any;
 }
 
-export interface User {
+// users related
+
+export interface UserInDB {
     uuid: string;
     username: string;
     email: string;
     name: string;
     surname: string;
+}
+
+export interface GroupInDB {
+    uuid: string
+    name: string
+}
+
+export interface RoleInDB {
+    uuid: string
+    name: string
+    permissions: number
+}
+
+export interface Group extends GroupInDB {
+    users: UserInDB[]
+}
+
+export interface User extends UserInDB {
     account_type: AccountType;
-    roles?: string[];
-    groups?: string[];
+    roles?: RoleInDB[];
+    groups?: GroupInDB[];
     permissions: number;
 }

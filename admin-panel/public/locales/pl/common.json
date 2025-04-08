@@ -40,6 +40,7 @@
     "surname": "Nazwisko",
     "email": "Email",
     "nothing-found": "Brak wyników...",
+    "error-users": "Wystąpił błąd podczas ładowania użytkowników...",
     "administrator": "Administrator",
     "client": "Klient",
     "client-account": "Konto Klienckie",

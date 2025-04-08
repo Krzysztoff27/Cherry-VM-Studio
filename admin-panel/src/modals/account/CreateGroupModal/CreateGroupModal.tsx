@@ -8,6 +8,7 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
+import { safeObjectValues } from "../../../utils/misc";
 
 export default function CreateGroupModal({ opened, onClose, onSubmit }): React.JSX.Element {
     const { t, tns } = useNamespaceTranslation("modals", "create-group");
@@ -77,7 +78,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
                         <UserMultiselect
                             placeholder={tns("select-clients")}
                             nothingFoundMessage={loading ? t("loading") : error ? t("error-clients") : false}
-                            users={users}
+                            users={safeObjectValues(users)}
                             key={form.key("users")}
                             {...form.getInputProps("users")}
                         />

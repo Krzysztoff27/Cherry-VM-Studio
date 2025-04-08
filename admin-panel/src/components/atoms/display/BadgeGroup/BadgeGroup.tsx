@@ -17,6 +17,7 @@ const BadgeGroup = ({ items, label, emptyMessage = "" }) => {
                 type="always"
                 scrollbarSize="0.65rem"
                 className={classes.scrollArea}
+                scrollbars="y"
             >
                 <Group
                     align="start"

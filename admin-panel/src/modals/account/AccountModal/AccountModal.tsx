@@ -33,22 +33,26 @@ const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordM
                 }}
                 withCloseButton={false}
             >
-                {editMode ? (
-                    <AccountEditForm
-                        user={data}
-                        onCancel={toggle}
-                        onSubmit={() => {
-                            toggle();
-                            refresh();
-                        }}
-                        openPasswordModal={openPasswordModal}
-                    />
+                {!loading && data ? (
+                    editMode ? (
+                        <AccountEditForm
+                            user={data}
+                            onCancel={toggle}
+                            onSubmit={() => {
+                                toggle();
+                                refresh();
+                            }}
+                            openPasswordModal={openPasswordModal}
+                        />
+                    ) : (
+                        <AccountDisplay
+                            user={data}
+                            onClose={onClose}
+                            onEdit={toggle}
+                        />
+                    )
                 ) : (
-                    <AccountDisplay
-                        user={data}
-                        onClose={onClose}
-                        onEdit={toggle}
-                    />
+                    ""
                 )}
             </Modal>
         </>

@@ -20,16 +20,20 @@
     min-height: 0;
     flex: 1;
     margin-top: -44px;
+    background-color: var(--mantine-color-dark-6);
+    border-radius: var(--mantine-radius-md);
+    overflow: hidden;
+    /* border: solid 2px var(--mantine-color-dark-5); */
 }
 
 .tr {
     display: flex;
-    border-bottom: 1px solid var(--mantine-color-dark-6);
+    padding: 4px;
+    /* border-bottom: 1px solid var(--mantine-color-dark-6); */
 }
 
 .tr:has(.th) {
-    border-width: 2px;
-    padding-right: 12px;
+    display: none;
 }
 
 .tr:last-child {
@@ -37,7 +41,7 @@
 }
 
 .tr:hover:not(:has(.th)):not(.selected) {
-    background-color: var(--mantine-color-dark-6);
+    background-color: var(--mantine-color-dark-5);
 }
 
 .tr.selected {
@@ -63,5 +67,7 @@
 
 .tr > *:last-child {
     flex: 0;
-    min-width: 80px;
+    justify-content: end;
+
+    min-width: 200px;
 }

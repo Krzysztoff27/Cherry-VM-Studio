@@ -1,4 +1,5 @@
 import { TablerIcon } from "@tabler/icons-react";
+import { ComponentType } from "react";
 
 export interface UrlNode {
     api_requests: string;
@@ -13,19 +14,17 @@ export interface UrlConfig {
     staging?: UrlNode;
 }
 
-interface Contributor {
+interface Social {
+    name: string;
+    url: string;
+    icon: ComponentType<any>;
+}
+
+export interface Contributor {
     name: string;
     avatar: string;
-    url?: string;
-}
-
-export interface Contributors {
-    [key: string]: Contributor;
-}
-
-interface Credit {
-    key: string; // language key
-    contributors: Contributor[];
+    socials?: Social[];
+    contributions?: string[];
 }
 
 export interface Page {
@@ -34,7 +33,5 @@ export interface Page {
     icon: TablerIcon;
     subpages?: Page[];
 }
-
-export type Credits = Credit[];
 
 export type AccountType = "administrative" | "client";

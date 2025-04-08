@@ -1,12 +1,13 @@
 export const ERROR_DETAIL_MAPPING = {
-    'Incorrect username or password.': '401-LOGIN',
-    'Please log in to the panel again.': '401-SESSION',
-    'Snapshot not found': '404-SNAPSHOT',
-    'Preset not found': '404-PRESET',
+    "Incorrect username or password.": "401-LOGIN",
+    "Please log in to the panel again.": "401-SESSION",
+    "Snapshot not found": "404-SNAPSHOT",
+    "Preset not found": "404-PRESET",
 };
 
 export const ERRORS = {
     HTTP_400_BAD_REQUEST: "400",
+    HTTP_400_CANNOT_REMOVE_USER: "400-CANNOT-REMOVE-USER",
     HTTP_401_UNAUTHORIZED: "401",
     HTTP_401_LOGIN_FAILED: "401-LOGIN",
     HTTP_401_SESSION_EXPIRED: "401-SESSION",
@@ -31,4 +32,4 @@ export const ERRORS = {
     CVMM_651_NETWORK_PRESET_CALC_FAILED_CUSTOM_FUNC: "651-CUSTOM-FUNCTION",
 };
 
-export default {ERRORS, ERROR_DETAIL_MAPPING};
+export default { ERRORS, ERROR_DETAIL_MAPPING };

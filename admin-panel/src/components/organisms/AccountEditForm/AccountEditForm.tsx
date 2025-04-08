@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Stack, Title, Group, TextInput, Button, MultiSelect, Text, Box, ScrollArea } from "@mantine/core";
 import { IconLabelFilled, IconAt, IconMail, IconEdit } from "@tabler/icons-react";
 import classes from "./AccountEditForm.module.css";
@@ -11,6 +11,8 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
 import usePermissions from "../../../hooks/usePermissions";
 import PERMISSIONS from "../../../config/permissions.config";
+import useFetch from "../../../hooks/useFetch";
+import { safeObjectValues } from "../../../utils/misc";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -18,6 +20,8 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { hasPermissions } = usePermissions();
+    const { data: groups } = useFetch("groups");
+    const { data: roles } = useFetch("roles");
 
     const canChangePassword = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
@@ -52,30 +56,58 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         },
     });
 
-    useEffect(() => {
+    const resetValues = () =>
         form.setValues({
             name: user?.name ?? "",
             surname: user?.surname ?? "",
             username: user?.username ?? "",
             email: user?.email ?? "",
-            roles: user?.roles ?? [],
-            groups: user?.groups ?? [],
+            roles: user?.roles?.map(role => role.uuid) ?? [],
+            groups: user?.groups?.map(group => group.uuid) ?? [],
         });
+
+    useEffect(() => {
+        resetValues();
     }, [JSON.stringify(user)]);
 
     const onPostError: ErrorCallbackFunction = (response, json) => {
-        if (response.status != 409) parseAndHandleError(response, json);
-        if (/username/.test(json?.detail)) form.setFieldError("username", tns("validation.username-duplicate"));
-        else if (/email/.test(json?.detail)) form.setFieldError("email", tns("validation.email-duplicate"));
+        if (response.status == 400) {
+            if (/permission unassigned/.test(json?.detail)) {
+                const match = json.detail.match(/UUID=([a-f0-9-]+)/i);
+                const roleUuid = match ? match[1] : null;
+                const roleName = roles[roleUuid].name;
+                form.setFieldValue("roles", user?.roles?.map(role => role.uuid) ?? []);
+                return form.setFieldError("roles", tns("validation.cannot-revoke-role", { name: roleName }));
+            }
+        }
+        if (response.status == 409) {
+            if (/username/.test(json?.detail)) return form.setFieldError("username", tns("validation.username-duplicate"));
+            if (/email/.test(json?.detail)) return form.setFieldError("email", tns("validation.email-duplicate"));
+        }
+        parseAndHandleError(response, json);
     };
 
     const onFormSubmit = form.onSubmit(async values => {
+        console.log(values);
         const res = await putRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
         if (!res) return;
 
         sendNotification("account.modified", undefined, { username: res.username });
         onSubmit?.();
     });
+
+    const sortByLabel = (a, b) => a.label.localeCompare(b.label);
+
+    const getLabels = (list: { name: string; uuid: string }[]) =>
+        list
+            .map(group => ({
+                label: group.name,
+                value: group.uuid,
+            }))
+            .sort(sortByLabel);
+
+    const groupOptions = getLabels(safeObjectValues(groups));
+    const roleOptions = getLabels(safeObjectValues(roles));
 
     return (
         <form
@@ -160,6 +192,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 <MultiSelect
                                     placeholder={tns("roles")}
                                     key={form.key("roles")}
+                                    data={roleOptions}
                                     {...form.getInputProps("roles")}
                                     className={classes.input}
                                 />
@@ -175,6 +208,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 <MultiSelect
                                     placeholder={tns("groups")}
                                     key={form.key("groups")}
+                                    data={groupOptions}
                                     {...form.getInputProps("groups")}
                                     className={classes.input}
                                 />

@@ -65,7 +65,8 @@
             "password-no-lowercase": "Password must contain at least one lowercase letter.",
             "password-no-uppercase": "Password must contain at least one uppercase letter.",
             "password-no-special": "Password must contain at least one special symbol.",
-            "passwords-not-equal": "Passwords are not the same."
+            "passwords-not-equal": "Passwords are not the same.",
+            "cannot-revoke-role": "Cannot revoke role {{name}} from this user as it would leave at least one permission unassigned and pernamently lock access to essential CVMM features."
         },
         "permission-list": {
             "client": "This account DOES NOT have any administrative access.",
