@@ -73,7 +73,7 @@ const Placeholder = () => (
 const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): React.JSX.Element => {
     const { data: group, loading: groupLoading } = useFetch(`/group/${uuid}`);
     const { data: users, loading: usersLoading, refresh: refreshUsers } = useFetch(`/users?group=${uuid}`);
-    const { parseAndHandleError } = useErrorHandler();
+
 
     return (
         <Modal
@@ -81,32 +81,35 @@ const GroupModal = ({ opened, onClose, uuid, onSubmit = () => undefined }): Reac
             onClose={onClose}
             size="xl"
         >
-            <Stack
-                align="center"
-                h="560"
-                p="md"
-                pt="0"
-            >
-                <Group
-                    w="100%"
-                    mb="sm"
+            {!group || groupLoading ? 
+                <Placeholder/> :
+                <Stack
+                    align="center"
+                    h="560"
+                    p="md"
+                    pt="0"
                 >
-                    <Avatar
-                        color="cherry"
-                        size="lg"
+                    <Group
+                        w="100%"
+                        mb="sm"
                     >
-                        <IconUsersGroup size={32} />
-                    </Avatar>
-                    <Stack gap="0">
-                        <Title order={2}>{group.name}</Title>
-                        <Text c="dimmed">{group.users.length} clients</Text>
-                    </Stack>
-                </Group>
-                <MembersTable
-                    usersData={users}
-                    refresh={refreshUsers}
-                />
-            </Stack>
+                        <Avatar
+                            color="cherry"
+                            size="lg"
+                        >
+                            <IconUsersGroup size={32} />
+                        </Avatar>
+                        <Stack gap="0">
+                            <Title order={2}>{group?.name}</Title>
+                            <Text c="dimmed">{group?.users?.length} clients</Text>
+                        </Stack>
+                    </Group>
+                    <MembersTable
+                        usersData={users}
+                        refresh={refreshUsers}
+                    />
+                </Stack>
+            }
         </Modal>
     );
 };
