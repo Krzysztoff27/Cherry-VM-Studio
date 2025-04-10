@@ -34,6 +34,12 @@ export const safeObjectValues = (obj = {}) => Object.values({ ...obj });
  * @returns {Array} array of keys
  */
 export const safeObjectKeys = (obj = {}) => Object.keys({ ...obj });
+/**
+ * Provides errorless Object.entries experience
+ * @param {Object} obj
+ * @returns {Array} array of keys
+ */
+export const safeObjectEntries = (obj = {}) => Object.entries({ ...obj });
 
 /**
  * Splits array into chunks

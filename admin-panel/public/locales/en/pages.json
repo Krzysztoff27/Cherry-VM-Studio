@@ -118,6 +118,17 @@
                     "days_other": "{{count}} days ago"
                 }
             }
+        },
+        "permissions": {
+            "intro": "This role allows users to",
+            "view-machines": "view all machines",
+            "manage-machines": "manage all machines",
+            "manage-client-accounts": "create, edit and remove client accounts",
+            "manage-administrative-accounts": "create, edit and remove administrative accounts",
+            "manage-all-accounts": "create, edit and remove all accounts",
+            "modify-clients-credentials": "modify client accounts' credentials",
+            "modify-administrators-credentials": "modify administrative accounts' credentials",
+            "modify-credentials": "modify all accounts' credentials"
         }
     }
 }

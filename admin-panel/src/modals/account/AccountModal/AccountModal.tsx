@@ -18,8 +18,6 @@ const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordM
         setEditMode(mode);
     }, [mode]);
 
-    if (error) throw error;
-
     return (
         <>
             <Modal
@@ -33,7 +31,7 @@ const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordM
                 }}
                 withCloseButton={false}
             >
-                {!loading && data ? (
+                {!loading && !error && data ? (
                     editMode ? (
                         <AccountEditForm
                             user={data}

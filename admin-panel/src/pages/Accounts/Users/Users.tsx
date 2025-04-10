@@ -35,14 +35,16 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
-                <AccountModal
-                    mode={accountModalMode}
-                    opened={modalsOpened.account}
-                    refreshTable={refresh}
-                    onClose={closeAccountModal}
-                    openPasswordModal={openPasswordModal}
-                    uuid={currentUuid}
-                />
+                {currentUuid && (
+                    <AccountModal
+                        mode={accountModalMode}
+                        opened={modalsOpened.account}
+                        refreshTable={refresh}
+                        onClose={closeAccountModal}
+                        openPasswordModal={openPasswordModal}
+                        uuid={currentUuid}
+                    />
+                )}
                 <ChangePasswordModal
                     uuid={currentUuid}
                     opened={modalsOpened.password}

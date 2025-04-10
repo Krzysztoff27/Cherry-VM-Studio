@@ -13,6 +13,7 @@ import usePermissions from "../../../hooks/usePermissions";
 import PERMISSIONS from "../../../config/permissions.config";
 import useFetch from "../../../hooks/useFetch";
 import { safeObjectValues } from "../../../utils/misc";
+import RoleInfoCard from "../../atoms/display/RoleInfoCard/RoleInfoCard";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -109,6 +110,8 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const groupOptions = getLabels(safeObjectValues(groups));
     const roleOptions = getLabels(safeObjectValues(roles));
 
+    const renderOptions = ({ option, checked }) => <RoleInfoCard role={roles[option.value]} />;
+
     return (
         <form
             onSubmit={onFormSubmit}
@@ -191,10 +194,11 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 </Title>
                                 <MultiSelect
                                     placeholder={tns("roles")}
-                                    key={form.key("roles")}
                                     data={roleOptions}
-                                    {...form.getInputProps("roles")}
+                                    renderOption={renderOptions}
                                     className={classes.input}
+                                    key={form.key("roles")}
+                                    {...form.getInputProps("roles")}
                                 />
                             </>
                         ) : (
@@ -207,10 +211,11 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 </Title>
                                 <MultiSelect
                                     placeholder={tns("groups")}
-                                    key={form.key("groups")}
                                     data={groupOptions}
-                                    {...form.getInputProps("groups")}
+                                    renderOption={renderOptions}
                                     className={classes.input}
+                                    key={form.key("groups")}
+                                    {...form.getInputProps("groups")}
                                 />
                             </>
                         )}
