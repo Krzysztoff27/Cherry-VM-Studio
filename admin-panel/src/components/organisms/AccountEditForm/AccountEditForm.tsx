@@ -125,6 +125,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                     offsetScrollbars
                     type="always"
                     scrollbarSize="0.65rem"
+                    scrollbars="y"
                 >
                     <Stack className={classes.content}>
                         <Title
@@ -196,7 +197,9 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                     placeholder={tns("roles")}
                                     data={roleOptions}
                                     renderOption={renderOptions}
+                                    hidePickedOptions={true}
                                     className={classes.input}
+                                    comboboxProps={{ position: "top" }}
                                     key={form.key("roles")}
                                     {...form.getInputProps("roles")}
                                 />
@@ -213,7 +216,9 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                     placeholder={tns("groups")}
                                     data={groupOptions}
                                     renderOption={renderOptions}
+                                    hidePickedOptions={true}
                                     className={classes.input}
+                                    comboboxProps={{ position: "top" }}
                                     key={form.key("groups")}
                                     {...form.getInputProps("groups")}
                                 />

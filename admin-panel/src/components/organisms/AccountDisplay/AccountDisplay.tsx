@@ -26,7 +26,7 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                             span
                             className={classes.detailValue}
                         >
-                            {` ${user?.email}`}
+                            {` ${user?.email || "-"}`}
                         </Text>
                     </Text>
                     <Text className={classes.detailLabel}>

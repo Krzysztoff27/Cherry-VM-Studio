@@ -9,7 +9,7 @@ const AccountHeading = ({ user }): React.JSX.Element => {
         <>
             <Group className={classes.group}>
                 <Avatar
-                    name={`${user?.name} ${user?.surname}`}
+                    name={user?.name || user?.surname ? `${user?.name} ${user?.surname}` : user?.username}
                     color="initials"
                     size="96"
                     className={classes.avatar}

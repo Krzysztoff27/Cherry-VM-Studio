@@ -16,7 +16,9 @@ const useFetch = (path: string, options: object | undefined = undefined): useFet
 
     useEffect(() => {
         const fetchData = async () => {
+            setData(null);
             setError(null);
+            setLoading(true);
 
             const onError = (response: Response, body: object) => {
                 setData(null);

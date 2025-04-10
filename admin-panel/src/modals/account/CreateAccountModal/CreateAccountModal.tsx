@@ -10,6 +10,7 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import useFetch from "../../../hooks/useFetch";
 import { safeObjectValues } from "../../../utils/misc";
+import RoleInfoCard from "../../../components/atoms/display/RoleInfoCard/RoleInfoCard";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
@@ -106,6 +107,8 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     const groupOptions = getLabels(safeObjectValues(groups));
     const roleOptions = getLabels(safeObjectValues(roles));
 
+    const renderOptions = ({ option, checked }) => <RoleInfoCard role={roles[option.value]} />;
+
     return (
         <Modal
             opened={opened}
@@ -184,7 +187,9 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             label={tns("roles")}
                             data={roleOptions}
                             classNames={{ input: "borderless" }}
+                            hidePickedOptions={true}
                             placeholder={tns("select-roles")}
+                            renderOption={renderOptions}
                             key={form.key("roles")}
                             {...form.getInputProps("roles")}
                             autoFocus
@@ -196,7 +201,9 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                             label={tns("groups")}
                             data={groupOptions}
                             classNames={{ input: "borderless" }}
+                            hidePickedOptions={true}
                             placeholder={tns("select-groups")}
+                            renderOption={renderOptions}
                             key={form.key("groups")}
                             {...form.getInputProps("groups")}
                             autoFocus

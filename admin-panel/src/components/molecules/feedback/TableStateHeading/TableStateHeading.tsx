@@ -1,4 +1,4 @@
-import { Group, Title } from "@mantine/core";
+import { Group, Loader, Title } from "@mantine/core";
 import React from "react";
 
 const TableStateHeading = ({
@@ -8,6 +8,7 @@ const TableStateHeading = ({
     getSelectedRowModel,
     getRowCount,
     translations,
+    loading,
 }): React.JSX.Element => {
     const areRowsSelected = getIsSomeRowsSelected() || getIsAllRowsSelected();
     const areRowsFiltered = getCoreRowModel().rows.length !== getRowCount();
@@ -23,7 +24,7 @@ const TableStateHeading = ({
                 order={2}
                 c={color}
             >
-                {amount}
+                {!loading && amount}
             </Title>
         </Group>
     );

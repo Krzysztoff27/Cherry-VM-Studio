@@ -11,7 +11,8 @@ export default function RoleInfoCard({ role }: { role: RoleInDB }) {
 
     const roleHasPermission = (required: number) => (role.permissions | required) == role.permissions;
 
-    let description = tns("permissions.intro");
+    let description = `${tns("permissions.intro")} `;
+    let matched = [];
 
     // for each group it chooses the first mask that matches
     const groupedPermissionKeys = [
@@ -26,20 +27,30 @@ export default function RoleInfoCard({ role }: { role: RoleInDB }) {
         },
         {
             [PERMISSIONS.CHANGE_CLIENT_PASSWORD | PERMISSIONS.CHANGE_ADMIN_PASSWORD]: "permissions.modify-credentials",
-            [PERMISSIONS.CHANGE_CLIENT_PASSWORD]: "permissions.modify-client-credentials",
+            [PERMISSIONS.CHANGE_CLIENT_PASSWORD]: "permissions.modify-clients-credentials",
             [PERMISSIONS.CHANGE_ADMIN_PASSWORD]: "permissions.modify-administrators-credentials",
         },
     ];
 
     groupedPermissionKeys.forEach(group => {
         const found = safeObjectKeys(group).find((permission: number) => roleHasPermission(permission));
-        if (found !== -1) description += ` ${group[found]}`;
+        if (found) {
+            console.log(found);
+            matched.push(tns(group[found]));
+        }
     });
+
+    description += `${matched.join(", ")}.`;
 
     return (
         <Stack gap="0">
             <Title order={6}>{role.name}</Title>
-            <Text c="dimmed">{description}</Text>
+            <Text
+                c="dimmed"
+                size="sm"
+            >
+                {description}
+            </Text>
         </Stack>
     );
 }

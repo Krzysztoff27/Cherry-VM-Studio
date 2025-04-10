@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Pagination, ScrollArea, Stack } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -13,8 +13,10 @@ import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/Del
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.js";
 import PERMISSIONS from "../../../config/permissions.config.js";
 import usePermissions from "../../../hooks/usePermissions.js";
+import PlaceholderAccountTableRecord from "../../atoms/placeholders/PlaceholderAccountTableRecord/PlaceholderAccountTableRecord.jsx";
+import Loading from "../../atoms/feedback/Loading/Loading.jsx";
 
-const AccountTable = ({ accountType, userData, refresh, error, openAccountModal, openPasswordModal }): React.JSX.Element => {
+const AccountTable = ({ accountType, userData, loading, refresh, error, openAccountModal, openPasswordModal }): React.JSX.Element => {
     const { hasPermissions } = usePermissions();
     const { tns } = useNamespaceTranslation("pages", "accounts.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
@@ -23,12 +25,17 @@ const AccountTable = ({ accountType, userData, refresh, error, openAccountModal,
     const columns = useMemo(() => getColumns(accountType, refresh, openAccountModal, openPasswordModal), [accountType, refresh]);
     const data = useMemo(
         () =>
-            safeObjectValues(userData).map(({ uuid, username, name, surname, email, roles = [], groups = [] }) => ({
-                uuid,
-                roles: roles.map(role => role.name),
-                groups: groups.map(group => group.name),
-                lastActive: null,
-                details: { username, name, surname, email },
+            safeObjectValues(userData).map(user => ({
+                uuid: user.uuid,
+                roles: user?.roles?.map(role => role.name),
+                groups: user?.groups?.map(group => group.name),
+                lastActive: user.last_active,
+                details: {
+                    username: user.username,
+                    name: user.name,
+                    surname: user.surname,
+                    email: user.email,
+                },
             })),
         [userData]
     );
@@ -61,14 +68,13 @@ const AccountTable = ({ accountType, userData, refresh, error, openAccountModal,
 
     const selectedUuids = table.getSelectedRowModel().rows.map(row => row.id);
 
-    if (error) throw error;
-
     return (
         <Stack className={classes.container}>
             <Stack className={classes.top}>
                 <Group justify="space-between">
                     <TableStateHeading
                         {...table}
+                        loading={loading}
                         translations={{
                             all: tns("all-accounts"),
                             selected: tns("selected-accounts"),
@@ -130,27 +136,28 @@ const AccountTable = ({ accountType, userData, refresh, error, openAccountModal,
                         ))}
                     </Box>
                 ))}
-
-                <ScrollArea
-                    scrollbars="y"
-                    offsetScrollbars
-                >
-                    {table.getRowModel().rows.map(row => (
-                        <Box
-                            className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                            key={row.id}
-                        >
-                            {row.getVisibleCells().map(cell => (
-                                <Box
-                                    className={classes.td}
-                                    key={cell.id}
-                                >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Box>
-                            ))}
-                        </Box>
-                    ))}
-                </ScrollArea>
+                {!loading && !error && (
+                    <ScrollArea
+                        scrollbars="y"
+                        offsetScrollbars
+                    >
+                        {table.getRowModel().rows.map(row => (
+                            <Box
+                                className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
+                                key={row.id}
+                            >
+                                {row.getVisibleCells().map(cell => (
+                                    <Box
+                                        className={classes.td}
+                                        key={cell.id}
+                                    >
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </Box>
+                                ))}
+                            </Box>
+                        ))}
+                    </ScrollArea>
+                )}
             </Box>
             <Stack className={classes.bottom}>
                 <Group className={classes.paginationContainer}>

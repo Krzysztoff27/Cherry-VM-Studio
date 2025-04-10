@@ -32,6 +32,8 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
 
     const closeAccountModal = () => setModalsOpened(prev => ({ ...prev, account: false }));
 
+    console.log(data, loading, error);
+
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
@@ -53,6 +55,7 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
                 <AccountTable
                     accountType={accountType}
                     userData={data}
+                    loading={loading}
                     error={error}
                     refresh={refresh}
                     openAccountModal={openAccountModal}

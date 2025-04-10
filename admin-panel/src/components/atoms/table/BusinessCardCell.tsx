@@ -9,7 +9,7 @@ const BusinessCardCell = ({ getValue }): React.JSX.Element => {
         <BusinessCard
             imageSrc={avatar}
             comment={email}
-            name={`${name} ${surname}`}
+            name={name || surname ? `${name} ${surname}` : username}
             withAvatar={useMediaQuery(`(min-width: 1200px)`)}
         />
     );
