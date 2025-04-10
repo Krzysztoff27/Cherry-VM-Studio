@@ -25,20 +25,21 @@ class SubscriptionManager(BaseModel):
         """ remove websocket subscription from the key """
         if not key in self.subscriptions or websocket not in self.subscriptions[key]:
             raise RaisedException(f"Already unsubscribed from \"{key}\".")
-        self.removeSubscription(key, websocket)
+        self.remove_subscription(key, websocket)
 
     def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
+        self.stop_continous_broadcast()
         for key in list(self.subscriptions): # snapshot for removing data while iterating
             if websocket in self.subscriptions[key]: 
-                self.removeSubscription(key, websocket)
+                self.remove_subscription(key, websocket)
 
     def remove_key(self, key):
         del self.subscriptions[key]
         
     def remove_subscription(self, key, websocket):
         """ if its the last subscription for the resource, delete the resource uuid from subscriptions """
-        if len(self.subscriptions[key]) == 1: self.removeKey(key)
+        if len(self.subscriptions[key]) == 1: self.remove_key(key)
         else: self.subscriptions[key].remove(websocket)
         
     async def run_continuous_broadcast(self, intervalInSeconds):
@@ -50,5 +51,5 @@ class SubscriptionManager(BaseModel):
             await self.broadcast_data(self.subscriptions)
             await asyncio.sleep(intervalInSeconds)
             
-    async def stop_continous_broadcast(self):
+    def stop_continous_broadcast(self):
         self.broadcasting = False

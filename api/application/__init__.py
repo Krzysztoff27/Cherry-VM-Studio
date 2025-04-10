@@ -50,6 +50,9 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
                 content={"detail": "Invalid UUID format."},
                 headers={"Access-Control-Allow-Origin": "*"},
             )
+            
+    logging.error(f"Unhandled exception: {exc}") 
+            
     return JSONResponse(
         status_code=422,
         content={"detail": "Invalid type or form of the passed content."},

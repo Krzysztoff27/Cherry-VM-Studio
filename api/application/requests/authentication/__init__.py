@@ -8,7 +8,7 @@ from application.exceptions import HTTPUnauthorizedException
 
 FormData = Annotated[OAuth2PasswordRequestForm, Depends()]
 
-@app.post("/token", tags=['Authentication'])
+@app.post("/token", response_model=Tokens, tags=['Authentication'])
 async def __login_for_access_token__(form_data: FormData) -> Tokens:
     user = authenticate_user(form_data.username, form_data.password)
     if not user:

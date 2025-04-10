@@ -1,3 +1,4 @@
+import datetime as dt
 from uuid import UUID, uuid4
 from pydantic import BaseModel
 from typing import Literal, Union
@@ -21,17 +22,23 @@ class AdministratorInDB(BaseModel):
     uuid: UUID
     password: str
     username: str
-    email: str
-    name: str = ""
-    surname: str = ""
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    creation_date: dt.date = dt.date.today()
+    last_active: dt.datetime | None = None
+    disabled: bool = False
     
 class ClientInDB(BaseModel):
     uuid: UUID
     password: str
     username: str
-    email: str
-    name: str = ""
-    surname: str = ""
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    creation_date: dt.date = dt.date.today()
+    last_active: dt.datetime | None = None
+    disabled: bool = False
     
 class AdministratorsRoles(BaseModel):
     administrator_uuid: UUID
