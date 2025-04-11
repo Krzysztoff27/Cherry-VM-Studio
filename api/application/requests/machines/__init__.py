@@ -7,8 +7,15 @@ from application.authentication import DependsOnAuthentication
 #       data requests
 ###############################
 
+@app.get("/machines/global")
+async def get_all_machines(current_user: DependsOnAuthentication) -> dict[str, MachineNetworkData]:
+    pass
+    # should return all machines deployed in the CVMM
+
 @app.get("/machines", tags=['Machine Data'])
-async def __get_all_vms_network_data__(current_user: DependsOnAuthentication) -> dict[str, MachineNetworkData]:
+async def get_all_logged_in_users_vm_network_data__(current_user: DependsOnAuthentication) -> dict[str, MachineNetworkData]:
+    
+    # should return current_user's machines
     
     machines = get_machines()
     network_data = {}
