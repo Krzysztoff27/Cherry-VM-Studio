@@ -257,3 +257,12 @@ export interface UserMultiselectProps extends MultiSelectProps {
     users: UserInDB[];
     classNames?: { [key: string]: any };
 }
+
+export interface TablePaginationProps {
+    pagination: {
+        pageIndex: number;
+        pageSize: number;
+    };
+    setPagination: (prev: any) => void;
+    getPageCount: () => number | null | undefined;
+}

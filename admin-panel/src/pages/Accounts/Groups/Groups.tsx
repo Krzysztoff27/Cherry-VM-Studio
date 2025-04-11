@@ -1,9 +1,9 @@
 import { useDisclosure } from "@mantine/hooks";
-import GroupsTable from "../../../components/organisms/GroupsTable/GroupsTable";
+import GroupsTable from "../../../components/organisms/tables/GroupsTable/GroupsTable";
 import useFetch from "../../../hooks/useFetch";
 import GroupModal from "../../../modals/account/GroupModal/GroupModal";
 import classes from "./Groups.module.css";
-import { Paper, Portal, Stack } from "@mantine/core";
+import { Paper, Stack } from "@mantine/core";
 import { useState } from "react";
 
 const Groups = (): React.JSX.Element => {

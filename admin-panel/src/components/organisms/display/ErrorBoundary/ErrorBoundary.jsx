@@ -1,7 +1,7 @@
 import { Button, Center } from "@mantine/core";
 import { useNavigate, useRouteError } from "react-router-dom";
 import classes from "./ErrorBoundary.module.css";
-import useAuth from "../../../hooks/useAuth.ts";
+import useAuth from "../../../../hooks/useAuth";
 import { useTranslation } from "react-i18next";
 
 export default function ErrorBoundary() {

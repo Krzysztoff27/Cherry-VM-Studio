@@ -45,5 +45,6 @@
     "client": "Client",
     "client-account": "Client Account",
     "edit": "Edit",
-    "none": "None"
+    "none": "None",
+    "view-&-edit": "View & Edit"
 }

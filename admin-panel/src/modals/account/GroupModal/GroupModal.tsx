@@ -4,7 +4,7 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
 import classes from "./GroupModal.module.css";
-import AddMembersField from "../../../components/organisms/AddMembersField/AddMembersField";
+import AddMembersField from "../../../components/molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";
 
 const Placeholder = () => (

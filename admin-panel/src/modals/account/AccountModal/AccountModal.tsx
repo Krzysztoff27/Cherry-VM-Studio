@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import useFetch from "../../../hooks/useFetch";
 import { Modal } from "@mantine/core";
-import AccountDisplay from "../../../components/organisms/AccountDisplay/AccountDisplay";
-import AccountEditForm from "../../../components/organisms/AccountEditForm/AccountEditForm";
+import AccountDisplay from "../../../components/organisms/display/AccountDisplay/AccountDisplay";
+import AccountEditForm from "../../../components/organisms/forms/AccountEditForm/AccountEditForm";
 
 const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
     const [editMode, setEditMode] = useState<boolean>(mode);

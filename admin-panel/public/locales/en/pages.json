@@ -101,9 +101,12 @@
         "table": {
             "headers": {
                 "user": "User",
+                "name": "Name",
                 "roles": "Roles",
                 "last-active": "Last active",
-                "groups": "Groups"
+                "groups": "Groups",
+                "member-count": "Member count",
+                "members": "Members"
             },
             "cells": {
                 "last-active": {

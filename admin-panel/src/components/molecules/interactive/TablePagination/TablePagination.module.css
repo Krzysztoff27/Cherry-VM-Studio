@@ -1,0 +1,8 @@
+.container {
+    flex: 0;
+    height: fit-content;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 var(--mantine-spacing-md);
+}

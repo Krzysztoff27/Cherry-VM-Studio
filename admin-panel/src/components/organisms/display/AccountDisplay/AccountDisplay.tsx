@@ -1,11 +1,11 @@
 import { Stack, Group, Text, Box, Button, Title } from "@mantine/core";
 import classes from "./AccountDisplay.module.css";
-import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import PermissionsList from "../../atoms/display/PermissionsList/PermissionsList";
-import BadgeGroup from "../../../components/atoms/display/BadgeGroup/BadgeGroup";
-import AccountHeading from "../../../components/atoms/display/AccountHeading/AccountHeading";
-import usePermissions from "../../../hooks/usePermissions";
-import PERMISSIONS from "../../../config/permissions.config";
+import PERMISSIONS from "../../../../config/permissions.config";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import usePermissions from "../../../../hooks/usePermissions";
+import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
+import BadgeGroup from "../../../atoms/display/BadgeGroup/BadgeGroup";
+import PermissionsList from "../../../atoms/display/PermissionsList/PermissionsList";
 
 const AccountDisplay = ({ onClose, onEdit, user }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");

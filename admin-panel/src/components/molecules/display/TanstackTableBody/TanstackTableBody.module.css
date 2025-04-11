@@ -41,3 +41,7 @@
 
     padding: var(--mantine-spacing-md);
 }
+
+.th {
+    font-weight: 500;
+}

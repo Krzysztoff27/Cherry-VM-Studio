@@ -6,7 +6,7 @@ import { ActionIcon, Box, Button, ScrollArea, Stack } from "@mantine/core";
 import { IconLinkOff } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
-import AddMembersField from "../AddMembersField/AddMembersField";
+import AddMembersField from "../../molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";
 
 const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element => {

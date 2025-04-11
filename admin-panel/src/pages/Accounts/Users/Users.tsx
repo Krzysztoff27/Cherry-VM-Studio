@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AccountTable from "../../../components/organisms/AccountTable/AccountTable";
+import AccountTable from "../../../components/organisms/tables/AccountTable/AccountTable";
 import useFetch from "../../../hooks/useFetch";
 import AccountModal from "../../../modals/account/AccountModal/AccountModal";
 import classes from "./Users.module.css";
@@ -31,8 +31,6 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
     };
 
     const closeAccountModal = () => setModalsOpened(prev => ({ ...prev, account: false }));
-
-    console.log(data, loading, error);
 
     return (
         <Stack w="100%">

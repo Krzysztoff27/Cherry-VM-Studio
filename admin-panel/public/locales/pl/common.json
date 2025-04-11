@@ -45,5 +45,6 @@
     "client": "Klient",
     "client-account": "Konto Klienckie",
     "edit": "Edytuj",
-    "none": "Brak"
+    "none": "Brak",
+    "view-&-edit": "Podgląd/Edycja"
 }

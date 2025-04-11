@@ -90,9 +90,12 @@
         "table": {
             "headers": {
                 "user": "Użytkownik",
+                "name": "Nazwa",
                 "roles": "Role",
                 "last-active": "Ostatnia aktywność",
-                "groups": "Grupy"
+                "groups": "Grupy",
+                "member-count": "Liczba członków",
+                "members": "Członkowie"
             },
             "cells": {
                 "last-active": {

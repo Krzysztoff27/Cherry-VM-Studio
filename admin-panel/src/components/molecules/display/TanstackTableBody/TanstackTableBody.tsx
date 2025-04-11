@@ -2,7 +2,7 @@ import { ActionIcon, Box, ScrollArea } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
 import { flexRender } from "@tanstack/react-table";
 import React from "react";
-import classes from "TanstackTableBody.module.css";
+import classes from "./TanstackTableBody.module.css";
 
 const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
     return (
@@ -16,6 +16,13 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                         <Box
                             className={classes.th}
                             key={header.id}
+                            style={{
+                                flexBasis: header.getSize(),
+                                flexGrow: 1, // allows to grow and fill available space
+                                flexShrink: 0, // optional: don't shrink below minSize
+                                minWidth: header.column.columnDef.minSize,
+                                maxWidth: header.column.columnDef.maxSize,
+                            }}
                         >
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             {header.column.getCanSort() && (
@@ -53,6 +60,13 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                                 <Box
                                     className={classes.td}
                                     key={cell.id}
+                                    style={{
+                                        flexBasis: cell.column.getSize(),
+                                        flexGrow: 1,
+                                        flexShrink: 0,
+                                        minWidth: cell.column.columnDef.minSize,
+                                        maxWidth: cell.column.columnDef.maxSize,
+                                    }}
                                 >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </Box>

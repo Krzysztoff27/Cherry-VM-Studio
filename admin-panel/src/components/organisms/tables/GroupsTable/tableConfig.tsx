@@ -1,9 +1,8 @@
 import { Button, Text } from "@mantine/core";
-import CheckboxCell from "../../atoms/table/CheckboxCell";
-import CheckboxHeader from "../../atoms/table/CheckboxHeader";
-import AvatarsCell from "../../atoms/table/AvatarsCell";
-import ModalButton from "../../atoms/interactive/ModalButton/ModalButton";
-import GroupModal from "../../../modals/account/GroupModal/GroupModal";
+import { t } from "i18next";
+import AvatarsCell from "../../../atoms/table/AvatarsCell";
+import CheckboxCell from "../../../atoms/table/CheckboxCell";
+import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 
 export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) => void) => [
     {
@@ -11,22 +10,28 @@ export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) =
         enableSorting: false,
         header: CheckboxHeader,
         cell: CheckboxCell,
+        size: 50,
+        maxSize: 50,
     },
     {
         accessorKey: "name",
-        header: "Name",
+        header: t("accounts.table.headers.name", { ns: "pages" }),
         cell: props => <Text>{props.getValue()}</Text>,
+        minSize: 160,
     },
     {
         accessorKey: "count",
-        header: "Member count",
+        header: t("accounts.table.headers.member-count", { ns: "pages" }),
         cell: props => <Text>{props.getValue()}</Text>,
+        minSize: 150,
+        maxSize: 300,
     },
     {
         accessorKey: "users",
         enableSorting: false,
-        header: "Members",
+        header: t("accounts.table.headers.members", { ns: "pages" }),
         cell: AvatarsCell,
+        minSize: 300,
     },
     {
         accessorKey: "options",
@@ -37,9 +42,12 @@ export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) =
                 variant="default"
                 className="border"
                 onClick={() => openGroupModal(row.id)}
+                w="180"
             >
-                View & Edit
+                {t("view-&-edit")}
             </Button>
         ),
+        minSize: 200,
+        maxSize: 200,
     },
 ];
