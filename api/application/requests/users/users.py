@@ -11,7 +11,7 @@ from application.users.validation import validate_creation_details, validate_mod
 from application.authentication import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['Users'])
-async def __read_user_me__(current_user: DependsOnAuthentication) -> AnyUser:
+async def __read_logged_in_user__(current_user: DependsOnAuthentication) -> AnyUser:
     return current_user
 
 @app.get("/user/{uuid}", response_model=Administrator | Client, tags=['Users'])
