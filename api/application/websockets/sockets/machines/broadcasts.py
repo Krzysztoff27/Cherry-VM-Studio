@@ -17,22 +17,23 @@ def get_machine_states():
 """ Function for periodical broadcast of states of the machines """
 """ subscriptions - dictionary mapping websockets subscribed to machine by its uuid (key - uuid, value - list of websockets)"""
 async def broadcast_current_data(subscriptions: Subscriptions) -> None:
-    machines = get_machines()
-    subscriptions_by_websocket = {} # key - websocket, value - list of uuids of subscribed machines
+    pass
+    # machines = get_machines()
+    # subscriptions_by_websocket = {} # key - websocket, value - list of uuids of subscribed machines
 
-    for uuid, subscribed in list(subscriptions.items()):
-        # if machine has no subscribed websockets, move on to the next one
-        if not subscribed: continue 
+    # for uuid, subscribed in list(subscriptions.items()):
+    #     # if machine has no subscribed websockets, move on to the next one
+    #     if not subscribed: continue 
         
-        # push uuid to the subscriptions_by_websocket for each subscribed websocket 
-        for websocket in subscribed:
-            if websocket.application_state == WebSocketState.CONNECTED: 
-                push_to_dict(subscriptions_by_websocket, websocket, uuid)
+    #     # push uuid to the subscriptions_by_websocket for each subscribed websocket 
+    #     for websocket in subscribed:
+    #         if websocket.application_state == WebSocketState.CONNECTED: 
+    #             push_to_dict(subscriptions_by_websocket, websocket, uuid)
     
-    # prepare and send data for each websocket
-    for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
-        body = {}
-        for uuid in machine_uuids: 
-            body[uuid] = machines[uuid].get_current_state().model_dump()
+    # # prepare and send data for each websocket
+    # for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
+    #     body = {}
+    #     for uuid in machine_uuids: 
+    #         body[uuid] = machines[uuid].get_current_state().model_dump()
         
-        await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
+    #     await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
