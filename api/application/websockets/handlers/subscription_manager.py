@@ -29,7 +29,6 @@ class SubscriptionManager(BaseModel):
 
     def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
-        self.stop_continous_broadcast()
         for key in list(self.subscriptions): # snapshot for removing data while iterating
             if websocket in self.subscriptions[key]: 
                 self.remove_subscription(key, websocket)
@@ -45,7 +44,6 @@ class SubscriptionManager(BaseModel):
     async def run_continuous_broadcast(self, intervalInSeconds):
         """ start running the broadcast data function for the subscriptions every interval """
         if self.broadcasting: return # if already broadcasting no need to double it
-        
         self.broadcasting = True
         while self.broadcasting and self.broadcast_data:
             await self.broadcast_data(self.subscriptions)

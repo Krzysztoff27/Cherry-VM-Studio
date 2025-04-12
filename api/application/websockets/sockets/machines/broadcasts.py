@@ -1,3 +1,4 @@
+from fastapi.encoders import jsonable_encoder
 from starlette.websockets import WebSocket, WebSocketState
 from application.machines import get_machines
 from utils.dict import push_to_dict
@@ -32,6 +33,6 @@ async def broadcast_current_data(subscriptions: Subscriptions) -> None:
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
         body = {}
         for uuid in machine_uuids: 
-            body[uuid] = machines[uuid].get_current_state()
+            body[uuid] = machines[uuid].get_current_state().model_dump()
         
-        await websocket.send_json(DataResponse(body = body).model_dump())    
+        await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    

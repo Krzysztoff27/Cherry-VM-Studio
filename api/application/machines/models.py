@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 from pydantic import BaseModel
 from application.users.models import ClientInDB
 
@@ -20,5 +20,5 @@ class MachineState(VirtualMachineData):         # * when displaying a page needi
     cpu: int = 0                                # ∈ <0,100> % of CPU usage
     ram_max: int | None = None                  # RAM assigned to the VM in MB
     ram_used: int | None = None                 # RAM used by the VM in MB
-    deployed_at: date | None = None
+    deployed_at: datetime.datetime | None = None
     # ... the more the better
