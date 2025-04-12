@@ -51,12 +51,32 @@ CREATE TABLE clients_groups (
     FOREIGN KEY(group_uuid) REFERENCES groups(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE deployed_machines (
+    uuid UUID PRIMARY KEY,
+    group VARCHAR(24),
+    group_member_id INT,
+    owner_uuid UUID,
+    port INT,
+    domain VARCHAR(255),
+    FOREIGN KEY(owner_uuid) REFERENCES administrators(owner_uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE machines_clients (
+    machine_uuid UUID,
+    client_uuid UUID,
+    PRIMARY KEY(machine_uuid, client_uuid),
+    FOREIGN KEY(machine_uuid) REFERENCES deployed_machines(uuid) ON DELETE CASCADE,
+    FOREIGN KEY(client_uuid) REFERENCES clients(uuid) ON DELETE CASCADE
+);
+
 CREATE INDEX administrators_idx ON administrators (uuid, username, email);
 CREATE INDEX clients_idx ON clients (uuid, username, email);
 CREATE INDEX roles_idx ON roles (uuid);
 CREATE INDEX groups_idx ON groups (uuid);
 CREATE INDEX administrators_roles_idx ON administrators_roles (administrator_uuid, role_uuid);
 CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
+CREATE INDEX deployed_machines_idx ON deployed_machines (uuid, group, owner_uuid);
+CREATE INDEX machines_clients_idx ON machines_clients (machine_uuid, client_uuid);
 
 -- Insert roles
 INSERT INTO roles (name, permissions)
