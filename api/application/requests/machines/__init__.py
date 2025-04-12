@@ -3,6 +3,7 @@ from application import app
 from application.machines import get_machine, get_machines
 from application.machines.models import MachineNetworkData
 from application.authentication import DependsOnAuthentication
+import libvirt
 
 ###############################
 #       data requests
