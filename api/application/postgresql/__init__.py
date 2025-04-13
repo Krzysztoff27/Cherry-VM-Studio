@@ -21,6 +21,13 @@ pool = psycopg_pool.ConnectionPool(
 
 # sends SELECT query and returns returned rows
 
+def select_one(query: str, params: Params | None = None) -> dict[str, any] | None:
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query=query, params=params)
+            row = cursor.fetchone()
+    return row
+
 def select_rows(query: str, params: Params | None = None) -> list[dict[str, any]]:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
@@ -44,10 +51,7 @@ def select_schema_dict(model: Type[BaseModel], key_name: str, query: str, params
 
 # returns first row of the SELECT query validated with given model
 def select_schema_one(model: Type[BaseModel], query: str, params: Params | None = None) -> Type[BaseModel] | None:
-    with pool.connection() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(query=query, params=params)
-            row = cursor.fetchone()
+    row = select_one(query, params)
     if not row:
         return None
     return model.model_validate(row)

@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from starlette.websockets import WebSocket, WebSocketState
-from application.machines import get_machines
+from application.machines import get_all_machines
 from utils.dict import push_to_dict
 from ...models import DataResponse
 from ...handlers.websocket_handler import WebSocketHandler
@@ -8,7 +8,7 @@ from ...handlers.websocket_handler import WebSocketHandler
 Subscriptions = dict[str, list[WebSocket | WebSocketHandler]]
 
 def get_machine_states():
-    machines = get_machines()
+    machines = get_all_machines()
     states = {}
     for machine in machines:
         states[machine.uuid] = machine.get_current_state()
