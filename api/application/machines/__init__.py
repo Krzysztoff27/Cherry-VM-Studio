@@ -1,9 +1,7 @@
 from uuid import UUID
 
-from httpx import Client
-from api.application.users.models import AdministratorInDB, ClientInDB
+from application.users.models import AdministratorInDB, ClientInDB
 from application.postgresql import select_schema_dict, select_schema_one
-
 
 def get_machines_owner(machine_uuid) -> AdministratorInDB | None:
     return select_schema_one(AdministratorInDB, """
@@ -13,7 +11,7 @@ def get_machines_owner(machine_uuid) -> AdministratorInDB | None:
     """, (machine_uuid,))
     
     
-def get_clients_assigned_to_machine(machine_uuid) -> dict[UUID, Client]:
+def get_clients_assigned_to_machine(machine_uuid) -> dict[UUID, ClientInDB]:
     return select_schema_dict(ClientInDB, "uuid", """
         SELECT clients.* FROM clients
         RIGHT JOIN deployed_machines_clients ON clients.uuid = deployed_machines_clients.client_uuid
