@@ -1,27 +1,22 @@
 from uuid import UUID
 from application import app
-from application.machines import get_machine, get_machines
-from application.machines.models import MachineNetworkData
+from application.machines import get_all_machines, get_user_machines, get_machine
+from application.machines.models import MachineData
 from application.authentication import DependsOnAuthentication
-import libvirt
+from application.users.permissions import verify_permissions
+from config.permissions_config import PERMISSIONS
 
-###############################
-#       data requests
-###############################
-
-@app.get("/machines/global", response_model=dict[UUID, MachineNetworkData], tags=['Machine Data'])
-async def get_all_machines(current_user: DependsOnAuthentication) -> dict[UUID, MachineNetworkData]:
-
+@app.get("/machines/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
+async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
+    verify_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS)
     # should return all machines deployed in the CVMM
-    return {}
+    return get_all_machines()
 
-@app.get("/machines", response_model=dict[UUID, MachineNetworkData], tags=['Machine Data'])
-async def get_all_logged_in_users_vm_network_data__(current_user: DependsOnAuthentication) -> dict[UUID, MachineNetworkData]:
-    
+@app.get("/machines", response_model=dict[UUID, MachineData], tags=['Machine Data'])
+async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     # should return current_user's machines
-    return {}
+    return get_user_machines()
 
-@app.get("/machine/{uuid}", response_model=dict[UUID, MachineNetworkData], tags=['Machine Data'])
-async def __get_vm_network_data__(uuid: str, current_user: DependsOnAuthentication) -> MachineNetworkData | None:  
-    
-    return None
+@app.get("/machine/{uuid}", response_model=dict[UUID, MachineData], tags=['Machine Data'])
+async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:  
+    return get_machine(uuid)
