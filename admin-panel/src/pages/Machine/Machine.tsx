@@ -10,7 +10,7 @@ import useFetch from "../../hooks/useFetch.ts";
 
 export default function Machine() {
     const { uuid } = useParams();
-    const { data: machineData } = useFetch(`machines/${uuid}`);
+    const { data: machineData, loading, error } = useFetch(`machines/${uuid}`);
     const { machinesState } = useMachineState(uuid);
     const currentState: MachineState = machinesState[uuid] || {
         uuid: uuid,
@@ -18,36 +18,38 @@ export default function Machine() {
         loading: true,
     };
 
-    if (!machineData) {
-        throw { status: 404 };
-    }
+    if (error) throw error;
 
     return (
         <Grid
             display="flex"
             p="md"
         >
-            <StretchingColumn
-                span={6}
-                h="45%"
-            >
-                <MachineDataDisplay
-                    uuid={uuid}
-                    currentState={currentState}
-                />
-            </StretchingColumn>
-            <StretchingColumn
-                span={6}
-                h="45%"
-            >
-                <LogsDisplay />
-            </StretchingColumn>
-            <StretchingColumn
-                span={12}
-                h="55%"
-            >
-                <MachineStateChart currentState={currentState} />
-            </StretchingColumn>
+            {!loading && (
+                <>
+                    <StretchingColumn
+                        span={6}
+                        h="45%"
+                    >
+                        <MachineDataDisplay
+                            uuid={uuid}
+                            currentState={currentState}
+                        />
+                    </StretchingColumn>
+                    <StretchingColumn
+                        span={6}
+                        h="45%"
+                    >
+                        <LogsDisplay />
+                    </StretchingColumn>
+                    <StretchingColumn
+                        span={12}
+                        h="55%"
+                    >
+                        <MachineStateChart currentState={currentState} />
+                    </StretchingColumn>
+                </>
+            )}
         </Grid>
     );
 }
