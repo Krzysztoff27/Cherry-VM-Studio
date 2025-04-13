@@ -14,7 +14,7 @@ export default function NavbarLayout({ doubleNavbar = false }: { doubleNavbar?: 
             <AppShell.Navbar className={classes.appshellNavbar}>{doubleNavbar ? <DoubleNavbar /> : <Navbar />}</AppShell.Navbar>
             <AppShell.Main
                 className={classes.appshellMain}
-                pl={doubleNavbar ? 275 : 75}
+                pl={doubleNavbar ? 295 : 75}
             >
                 <Container
                     fluid

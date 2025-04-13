@@ -223,6 +223,13 @@ export interface TableControlsTranslations {
     filter?: string;
 }
 
+export interface TableControlsIcons {
+    create?: TablerIcon;
+    delete?: TablerIcon;
+    import?: TablerIcon;
+    filter?: TablerIcon;
+}
+
 export interface TableControlsModals {
     create?: TableControlsModal;
     delete?: TableControlsModal;
@@ -237,7 +244,10 @@ export interface TableControlsProps {
     translations: TableControlsTranslations;
     additionalButtons?: TableControlsButton[];
     viewMode?: boolean;
-    onFilteringChange: (callback: (prev: any) => any) => void;
+    withImports?: boolean;
+    withFilters?: boolean;
+    icons?: TableControlsIcons;
+    onFilteringChange?: (callback: (prev: any) => any) => void;
 }
 
 export interface TableStateHeadingProps {

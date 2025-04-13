@@ -22,7 +22,7 @@ const GroupsTable = ({ groupData, error, loading, refresh, openGroupModal }): Re
         () =>
             safeObjectValues(groupData).map(({ uuid, name, users }) => ({
                 uuid,
-                name,
+                details: name,
                 count: users.length,
                 users,
             })),

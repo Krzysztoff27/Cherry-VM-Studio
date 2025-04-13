@@ -2,42 +2,66 @@ import { ActionIcon, Button, Group, useMatches } from "@mantine/core";
 import React from "react";
 import TableSearch from "../TableSearch/TableSearch";
 import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
-import { IconFileImport, IconFilter, IconTrash, IconUserPlus } from "@tabler/icons-react";
+import { IconFileImport, IconFilter, IconPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
 import { TableControlsButton, TableControlsProps } from "../../../../types/components.types";
 
-const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [], translations, viewMode = false }: TableControlsProps): React.JSX.Element => {
+const TableControls = ({
+    table,
+    modals,
+    additionalButtons = [],
+    icons = {},
+    translations,
+    withImports = true,
+    withFilters = true,
+    viewMode = false,
+    onFilteringChange,
+}: TableControlsProps): React.JSX.Element => {
     const anyRowsSelected = () => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
 
+    icons = {
+        ...{
+            create: IconPlus,
+            delete: IconTrash,
+            filter: IconFilter,
+            import: IconFileImport,
+        },
+        ...icons,
+    };
+
+    const filtersButton = useMatches({
+        base: {
+            name: "filter",
+            component: ActionIcon,
+            props: { size: "36", variant: "default", disabled: true },
+            children: <icons.filter size={20} />,
+        },
+        xl: {
+            name: "filter",
+            component: Button,
+            props: { fw: 400, w: 120, variant: "default", leftSection: <IconFilter size={16} />, disabled: true },
+            children: translations.filter,
+        },
+    });
+
+    const importButton = useMatches({
+        base: {
+            name: "import",
+            component: ActionIcon,
+            props: { size: "36", variant: "default", disabled: true },
+            children: <icons.import size={20} />,
+        },
+        xl: {
+            name: "import",
+            component: Button,
+            props: { fw: 400, w: 140, variant: "default", leftSection: <icons.import size={16} />, disabled: true },
+            children: translations.import,
+        },
+    });
+
     const buttons: TableControlsButton[] = [
-        useMatches({
-            base: {
-                name: "filter",
-                component: ActionIcon,
-                props: { size: "36", variant: "default", disabled: true },
-                children: <IconFilter size={20} />,
-            },
-            xl: {
-                name: "filter",
-                component: Button,
-                props: { fw: 400, w: 120, variant: "default", leftSection: <IconFilter size={16} />, disabled: true },
-                children: translations.filter,
-            },
-        }),
-        useMatches({
-            base: {
-                name: "import",
-                component: ActionIcon,
-                props: { size: "36", variant: "default", disabled: true },
-                children: <IconFileImport size={20} />,
-            },
-            xl: {
-                name: "import",
-                component: Button,
-                props: { fw: 400, w: 140, variant: "default", leftSection: <IconFileImport size={16} />, disabled: true },
-                children: translations.import,
-            },
-        }),
+        withFilters && filtersButton,
+        withImports && importButton,
         useMatches({
             base: {
                 name: "create",
@@ -49,7 +73,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     disabled: viewMode,
                 },
                 children: (
-                    <IconUserPlus
+                    <icons.create
                         size={20}
                         stroke={3}
                     />
@@ -64,7 +88,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     variant: "white",
                     disabled: viewMode,
                     leftSection: (
-                        <IconUserPlus
+                        <icons.create
                             size={16}
                             stroke={3}
                         />
@@ -88,7 +112,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     disabled: viewMode,
                 },
                 children: (
-                    <IconTrash
+                    <icons.delete
                         size={20}
                         stroke={3}
                     />
@@ -105,7 +129,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                     variant: "filled",
                     color: "cherry.9",
                     leftSection: (
-                        <IconTrash
+                        <icons.delete
                             size={16}
                             stroke={3}
                         />
@@ -115,7 +139,7 @@ const TableControls = ({ table, onFilteringChange, modals, additionalButtons = [
                 children: translations.delete,
             },
         }),
-    ];
+    ].filter(e => e);
 
     const insertAtPos = (button: TableControlsButton) => buttons.splice(isNaN(button.position) ? buttons.length : button.position, 0, button);
     const hasModal = (buttonName: string) => !!modals[buttonName];

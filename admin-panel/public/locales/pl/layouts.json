@@ -1,20 +1,21 @@
 {
     "footer": {
-        "home": "Strona główna", 
-        "documentation": "Dokumentacja", 
-        "credits": "Twórcy", 
+        "home": "Strona główna",
+        "documentation": "Dokumentacja",
+        "credits": "Twórcy",
         "copyright": "Prawa autorskie"
     },
     "navbar": {
         "home": "Strona główna",
-        "virtual-machines": "Maszyny wirtualne",
+        "machines": "Maszyny wirtualne",
         "desktops": "Desktopy",
         "network-panel": "Panel Konfiguracji Sieci",
         "accounts": "Zarządzanie kontami",
         "users": "Użytkownicy",
         "administrators": "Administratorzy",
         "clients": "Konta klienckie",
-        "groups": "Grupy klientów"
-
+        "groups": "Grupy klientów",
+        "your-library": "Twoja biblioteka",
+        "all-machines": "Wszystkie maszyny"
     }
 }

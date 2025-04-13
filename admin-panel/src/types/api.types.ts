@@ -7,26 +7,6 @@ export interface TokenRequestForm {
 
 export type MachineStates = "online" | "offline" | "loading" | "fetching";
 
-export interface MachineData {
-    uuid: string;
-    group: string;
-    group_member_id: number;
-    domain: string;
-    port: number;
-}
-
-export interface MachineState {
-    uuid: string;
-    active: boolean;
-    loading: boolean;
-    cpu?: number;
-    ram_used?: number;
-    ram_max?: number;
-    active_connections?: Array<string> | null;
-}
-
-export type MachineAll = MachineData | MachineState;
-
 export type ConnectionStatuses = "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED" | "UNINSTANTIATED";
 
 export type WebSocketCommandMethods = "START" | "STOP" | "SUBSCRIBE" | "UNSUBSCRIBE" | "UPDATE";
@@ -59,21 +39,24 @@ export interface UserInDB {
     email: string;
     name: string;
     surname: string;
+    creation_date: string;
+    last_active: string;
+    disabled: boolean;
 }
 
 export interface GroupInDB {
-    uuid: string
-    name: string
+    uuid: string;
+    name: string;
 }
 
 export interface RoleInDB {
-    uuid: string
-    name: string
-    permissions: number
+    uuid: string;
+    name: string;
+    permissions: number;
 }
 
 export interface Group extends GroupInDB {
-    users: UserInDB[]
+    users: UserInDB[];
 }
 
 export interface User extends UserInDB {
@@ -82,3 +65,25 @@ export interface User extends UserInDB {
     groups?: GroupInDB[];
     permissions: number;
 }
+
+export interface MachineData {
+    uuid: string;
+    group: string;
+    group_member_id: number;
+    owner: UserInDB;
+    assigned_clients: { [uuid: string]: UserInDB };
+    domain: string;
+    port: number;
+}
+
+export interface MachineState {
+    uuid: string;
+    active: boolean;
+    loading: boolean;
+    cpu?: number;
+    ram_used?: number;
+    ram_max?: number;
+    active_connections?: Array<string> | null;
+}
+
+export type MachineAll = MachineData | MachineState;

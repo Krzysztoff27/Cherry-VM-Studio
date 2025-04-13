@@ -1,3 +1,16 @@
+.container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    justify-content: space-between;
+}
+
+.top {
+    display: flex;
+    min-height: 0;
+    max-height: fit-content;
+}
+
 .table {
     display: flex;
     flex-direction: column;
@@ -24,7 +37,7 @@
 }
 
 .tr:hover:not(:has(.th)):not(.selected) {
-    background-color: var(--mantine-color-dark-6);
+    background-color: color-mix(in srgb, var(--mantine-color-dark-1) 5%, transparent);
 }
 
 .tr.selected {

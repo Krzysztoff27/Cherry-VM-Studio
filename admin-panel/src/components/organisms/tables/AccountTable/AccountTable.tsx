@@ -13,6 +13,7 @@ import TableControls from "../../../molecules/interactive/TableControls/TableCon
 import TablePagination from "../../../molecules/interactive/TablePagination/TablePagination";
 import classes from "./AccountTable.module.css";
 import { getColumns } from "./tableConfig";
+import { IconTrash, IconUserPlus } from "@tabler/icons-react";
 
 const AccountTable = ({ accountType, userData, loading, refresh, error, openAccountModal, openPasswordModal }): React.JSX.Element => {
     const { hasPermissions } = usePermissions();
@@ -74,12 +75,15 @@ const AccountTable = ({ accountType, userData, loading, refresh, error, openAcco
                         translations={{
                             all: tns("all-accounts"),
                             selected: tns("selected-accounts"),
-                            filtered: tns("filtered-results"),
+                            filters: tns("filtered-results"),
                         }}
                     />
                     <TableControls
                         table={table}
                         viewMode={!hasPermissions(accountType === "administrative" ? PERMISSIONS.MANAGE_ADMIN_USERS : PERMISSIONS.MANAGE_CLIENT_USERS)}
+                        icons={{
+                            create: IconUserPlus,
+                        }}
                         modals={{
                             create: {
                                 component: CreateAccountModal,

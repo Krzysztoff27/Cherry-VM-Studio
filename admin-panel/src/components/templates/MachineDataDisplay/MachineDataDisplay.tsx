@@ -8,7 +8,7 @@ import { MachineData } from "../../../types/api.types.ts";
 
 export default function MachineDataDisplay({ currentState, uuid }) {
     const { t } = useTranslation();
-    const { loading, error, data } = useFetch(`/vm/${uuid}/networkdata`);
+    const { loading, error, data } = useFetch(`/machine/${uuid}`);
     const machine = data as MachineData;
 
     if (loading) return <Loading />;
@@ -16,8 +16,15 @@ export default function MachineDataDisplay({ currentState, uuid }) {
 
     return (
         <Stack>
-            <MachineHeading machine={machine} currentState={currentState}/>
-            <MachineDataTable machine={machine} currentState={currentState} t={t} />
+            <MachineHeading
+                machine={machine}
+                currentState={currentState}
+            />
+            <MachineDataTable
+                machine={machine}
+                currentState={currentState}
+                t={t}
+            />
         </Stack>
-    )
+    );
 }

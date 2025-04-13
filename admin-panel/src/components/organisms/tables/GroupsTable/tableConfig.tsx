@@ -14,7 +14,7 @@ export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) =
         maxSize: 50,
     },
     {
-        accessorKey: "name",
+        accessorKey: "details",
         header: t("accounts.table.headers.name", { ns: "pages" }),
         cell: props => <Text>{props.getValue()}</Text>,
         minSize: 160,

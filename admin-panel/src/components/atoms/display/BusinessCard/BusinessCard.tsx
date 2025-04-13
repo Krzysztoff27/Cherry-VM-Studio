@@ -17,8 +17,12 @@ const BusinessCard = ({ imageSrc, alt, name, comment, link, withAvatar = true, s
             <Stack gap="0">
                 <Text size={size}>{name}</Text>
                 <Text
-                    component="a"
-                    href={link}
+                    {...(link
+                        ? {
+                              component: "a",
+                              href: link,
+                          }
+                        : {})}
                     c="dimmed"
                     size={size}
                 >

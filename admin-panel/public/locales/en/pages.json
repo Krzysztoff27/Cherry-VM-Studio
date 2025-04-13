@@ -23,7 +23,27 @@
             }
         }
     },
-    "machine-list": {
+    "machines": {
+        "controls": {
+            "all-machines": "All machines",
+            "your-machines": "Your machines",
+            "filtered-results": "Filtered results",
+            "search": "Search",
+            "filters": "Filters",
+            "import": "Import",
+            "create-machine": "Create machine"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "state": "State",
+                "ram": "RAM",
+                "cpu": "CPU",
+                "assigned-clients": "Assigned Clients",
+                "controls": "Controls",
+                "owner": "Owner"
+            }
+        },
         "panel": {
             "create": "Create machine",
             "create-multiple": "Create multiple machines",

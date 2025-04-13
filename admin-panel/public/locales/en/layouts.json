@@ -14,6 +14,8 @@
         "administrators": "Administrators",
         "users": "Users",
         "clients": "Clients",
-        "groups": "Client groups"
+        "groups": "Client groups",
+        "your-library": "Your library",
+        "all-machines": "All machines"
     }
 }

@@ -1,57 +1,57 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import useFetch from '../hooks/useFetch.ts';
-import Loading from '../components/atoms/feedback/Loading/Loading.tsx';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import useFetch from "../hooks/useFetch.ts";
+import Loading from "../components/atoms/feedback/Loading/Loading.tsx";
 
 /**
  * A wrapper component that protects authentication-restricted routes. It fetches user data
  * and determines if the user is allowed access or should be blocked.
- * 
+ *
  * While user data is being fetched, the <Loading/> component is displayed
- * 
+ *
  * If an error occurs during the data load, the component checks whether the error status code is 401 (Unauthorized).
- * If so, the user is redirected to the login page or home page. 
+ * If so, the user is redirected to the login page or home page.
  * For other types of errors, the component throws the error, leaving it to be handled by the ErrorBoundary component.
- * 
+ *
  * @throws {Response} Throws the error response object if an unexpected error occurs.
- * 
- * If authentication is successful and the user data is successfully retrieved, the component renders 
+ *
+ * If authentication is successful and the user data is successfully retrieved, the component renders
  * the react-router-dom's <Outlet/> component, allowing access to the protected routes.
- * 
+ *
  */
 export const Protected = (): React.JSX.Element => {
     const location = useLocation();
-    const { error, loading, data: user } = useFetch('user');
+    const { error, loading, data: user } = useFetch("user");
 
-    if (loading) return <Loading/>;
+    if (loading) return <Loading />;
     if (!error && user) return <Outlet />;
-    
-    if (error.status === 401) return <Navigate to={location.pathname === '/home' ? '/' : '/login'} />;
+
+    if (error.status === 401) return <Navigate to={location.pathname === "/home" ? "/" : "/login"} />;
     throw error;
-}
+};
 
 /**
  * A wrapper component for the login page, responsible for ensuring that authenticated users don't end up or get stuck on the login page.
  * Similarly to the Protected component, it fetches user data and determines whether user should be redirected or not.
- * 
+ *
  * While user data is being fetched, the <Loading/> component is displayed
- * 
+ *
  * If an error occures, checks if its status code is from the server errors range.
  * If so, the component throws the error, leaving it to be handled by the ErrorBoundary component.
- * 
+ *
  * If authentication is successful and the user data is successfully retrieved, it redirects the user to the panel
- * specifically: /virtual-machines path
- * 
+ * specifically: /machines path
+ *
  * If authentication failed, returns react-router-dom's <Outlet/> component, allowing user to access the login page.
  */
 
 export const ReverseProtected = (): React.JSX.Element => {
-    const { loading, error, data: user } = useFetch('user');
+    const { loading, error, data: user } = useFetch("user");
 
-    if (loading) return <Loading/>;
-    if (error?.status >= 500) throw error; 
-    if (user) return <Navigate to="/virtual-machines"/>
+    if (loading) return <Loading />;
+    if (error?.status >= 500) throw error;
+    if (user) return <Navigate to="/machines" />;
 
-    return <Outlet /> 
-}
+    return <Outlet />;
+};
 
 export default { Protected, ReverseProtected };

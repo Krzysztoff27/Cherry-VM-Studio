@@ -6,15 +6,21 @@ import LogsDisplay from "../../components/molecules/display/LogsDisplay/LogsDisp
 import useMachineState from "../../hooks/useMachineState.ts";
 import { MachineState } from "../../types/api.types.ts";
 import MachineDataDisplay from "../../components/templates/MachineDataDisplay/MachineDataDisplay.jsx";
+import useFetch from "../../hooks/useFetch.ts";
 
-export default function VirtualMachinePage() {
+export default function Machine() {
     const { uuid } = useParams();
+    const { data: machineData } = useFetch(`machines/${uuid}`);
     const { machinesState } = useMachineState(uuid);
     const currentState: MachineState = machinesState[uuid] || {
         uuid: uuid,
         active: false,
         loading: true,
     };
+
+    if (!machineData) {
+        throw { status: 404 };
+    }
 
     return (
         <Grid

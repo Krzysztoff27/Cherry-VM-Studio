@@ -40,7 +40,7 @@ export default function LoginPage() {
 
         setAccessToken(jsonResponse.access_token);
         setRefreshToken(jsonResponse.refresh_token);
-        navigate("/virtual-machines");
+        navigate("/machines");
         notifications.clean();
     }
 
