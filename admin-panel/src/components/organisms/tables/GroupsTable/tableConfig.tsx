@@ -17,6 +17,7 @@ export const getColumns = (refresh: () => void, openGroupModal: (uuid: string) =
         accessorKey: "details",
         header: t("accounts.table.headers.name", { ns: "pages" }),
         cell: props => <Text>{props.getValue()}</Text>,
+        filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId).toLowerCase().startsWith(filterValue.toLowerCase()),
         minSize: 160,
     },
     {

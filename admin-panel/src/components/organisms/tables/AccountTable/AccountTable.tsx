@@ -75,7 +75,7 @@ const AccountTable = ({ accountType, userData, loading, refresh, error, openAcco
                         translations={{
                             all: tns("all-accounts"),
                             selected: tns("selected-accounts"),
-                            filters: tns("filtered-results"),
+                            filtered: tns("filtered-results"),
                         }}
                     />
                     <TableControls

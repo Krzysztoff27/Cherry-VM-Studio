@@ -56,7 +56,7 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                         loading={loading}
                         translations={{
                             all: tns(global ? "all-machines" : "your-machines"),
-                            filters: tns("filtered-results"),
+                            filtered: tns("filtered-results"),
                         }}
                     />
                     <TableControls

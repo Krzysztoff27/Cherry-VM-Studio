@@ -1,15 +1,13 @@
-import React, { useMemo, useState } from "react";
-import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { safeObjectValues } from "../../../utils/misc";
+import React, { useMemo } from "react";
 import BusinessCardCell from "../../atoms/table/BusinessCardCell";
-import { ActionIcon, Box, Button, ScrollArea, Stack } from "@mantine/core";
+import { Box, Button, ScrollArea, Stack } from "@mantine/core";
 import { IconLinkOff } from "@tabler/icons-react";
-import { flexRender, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
-import AddMembersField from "../../molecules/interactive/AddMembersField/AddMembersField";
-import useApi from "../../../hooks/useApi";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("modals", "group");
     const data = useMemo(
         () =>
             usersData.map(({ uuid, name, surname, username, email }) => ({
@@ -36,7 +34,7 @@ const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element =
                     size="sm"
                     onClick={() => removeMember(row.id)}
                 >
-                    Remove user
+                    {tns("remove-user")}
                 </Button>
             ),
         },

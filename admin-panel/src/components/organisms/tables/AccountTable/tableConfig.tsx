@@ -19,8 +19,20 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
         accessorKey: "details",
         header: t("accounts.table.headers.name", { ns: "pages" }),
         cell: BusinessCardCell,
-        sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
-        filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
+        sortingFn: (rowA: any, rowB: any, columndId: string) => {
+            const detailsA = rowA.getValue(columndId);
+            const detailsB = rowB.getValue(columndId);
+
+            const fullNameA = detailsA.name || detailsA.surname ? `${detailsA.name} ${detailsA.surname}` : detailsA.username;
+            const fullNameB = detailsB.name || detailsB.surname ? `${detailsB.name} ${detailsB.surname}` : detailsB.username;
+
+            return fullNameB.localeCompare(fullNameA);
+        },
+        filterFn: (row: any, columnId: string, filterValue: string) => {
+            const details = row.getValue(columnId);
+            const fullName = details.name || details.surname ? `${details.name} ${details.surname}` : details.username;
+            return fullName.toLowerCase().startsWith(filterValue.toLowerCase());
+        },
         minSize: 300,
     },
     {

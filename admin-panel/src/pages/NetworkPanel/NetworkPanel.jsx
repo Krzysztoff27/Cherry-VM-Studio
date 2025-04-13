@@ -301,7 +301,7 @@ function Flow() {
             const center = calcMiddlePosition(...safeObjectValues(positions));
 
             // adding half the node width
-            setCenter(center.x + 50, center.y);
+            if (center) setCenter(center.x + 50, center.y);
             zoomTo(getZoom() - 0.5, { duration: 500 });
 
             setNodes([]);

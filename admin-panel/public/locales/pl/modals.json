@@ -87,7 +87,7 @@
         "client-count_one": "{{count}} klient",
         "client-count_few": "{{count}} klientów",
         "client-count_many": "{{count}} klientów",
-        "remove-user": "Odłącz użytkownika"
+        "remove-user": "Usuń"
     },
     "create-group": {
         "title": "Stwórz Nową Grupę",

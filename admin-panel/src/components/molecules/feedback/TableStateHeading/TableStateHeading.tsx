@@ -13,7 +13,7 @@ const TableStateHeading = ({
     const areRowsSelected = getIsSomeRowsSelected() || getIsAllRowsSelected();
     const areRowsFiltered = getCoreRowModel().rows.length !== getRowCount();
 
-    const heading = areRowsSelected ? translations.selected : areRowsFiltered ? translations.filters : translations.all;
+    const heading = areRowsSelected ? translations.selected : areRowsFiltered ? translations.filtered : translations.all;
     const color = areRowsSelected ? "cherry.2" : "dimmed";
     const amount = areRowsSelected ? getSelectedRowModel().rows.length : getRowCount();
 
