@@ -6,9 +6,6 @@ from application.users.models import ClientInDB, CreatedGroup, Group
 from utils.file import JSONHandler
 from config.files_config import FILES_CONFIG
 
-groups_database = JSONHandler(FILES_CONFIG.groups)
-clients_database = JSONHandler(FILES_CONFIG.clients)
-
 def get_group_by_field(field_name: str, value: str) -> Group | None:
     group = select_schema_one(Group, f"SELECT * FROM groups WHERE {field_name} = %s", (value,))
     

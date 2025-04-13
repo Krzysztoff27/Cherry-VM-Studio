@@ -1,7 +1,8 @@
+from uuid import UUID
 from pydantic import BaseModel
 
-IntnetUuid = str
-MachineUuid = str
+IntnetUuid = UUID
+MachineUuid = UUID
 
 class Coordinates(BaseModel):                   
     x: float = 0
@@ -32,7 +33,7 @@ class SnapshotCreate(NetworkConfiguration):     # * Network config snapshot reci
     name: str = "Unnamed"                       # name of the snapshot set by the user in the frontend
 
 class Snapshot(SnapshotCreate):                 # * Full snapshot model, with all parameters from the Database
-    uuid: str                                   # unique snapshot identifier
+    uuid: UUID                                   # unique snapshot identifier
 
 #-------------------------------#
 #            Presets            #
@@ -53,6 +54,6 @@ class PresetData(BaseModel):                    # * All the algorithmic data, fo
     coreFunctions: PresetCoreFunctions = {}     # required core functions
 
 class Preset(BaseModel):                        # * Full preset model
-    uuid: str                                   # unique preset identifier
+    uuid: UUID                                   # unique preset identifier
     name: str = "Unnamed"                       # name (ideally unique, there are NO checks for duplicates at any point)
     data: PresetData = {}                       # all the required algorithmic data
