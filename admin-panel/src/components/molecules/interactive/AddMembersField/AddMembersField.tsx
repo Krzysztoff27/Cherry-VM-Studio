@@ -6,9 +6,11 @@ import useFetch from "../../../../hooks/useFetch";
 import { safeObjectValues } from "../../../../utils/misc";
 import { IconUserPlus } from "@tabler/icons-react";
 import useApi from "../../../../hooks/useApi";
+import { useTranslation } from "react-i18next";
 
 const AddMembersField = ({ groupUuid, alreadyAddedUsers, refresh }): React.JSX.Element => {
     const { data } = useFetch("users?account_type=client");
+    const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
     const { putRequest } = useApi();
 
@@ -24,8 +26,8 @@ const AddMembersField = ({ groupUuid, alreadyAddedUsers, refresh }): React.JSX.E
     return (
         <Group>
             <UserMultiselect
-                placeholder="Enter users to add"
-                w={"calc(100% - 166px)"}
+                placeholder={selected.length ? "" : t("enter-users-to-add")}
+                w={"calc(100% - 136px)"}
                 users={users}
                 classNames={classes}
                 onChange={val => setSelected(val)}
@@ -33,12 +35,12 @@ const AddMembersField = ({ groupUuid, alreadyAddedUsers, refresh }): React.JSX.E
             />
 
             <Button
-                w={150}
+                w={120}
                 variant="default"
                 leftSection={<IconUserPlus size={20} />}
                 onClick={submit}
             >
-                Add User
+                {t("add")}
             </Button>
         </Group>
     );

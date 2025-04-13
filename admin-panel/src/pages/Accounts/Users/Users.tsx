@@ -3,7 +3,7 @@ import AccountTable from "../../../components/organisms/tables/AccountTable/Acco
 import useFetch from "../../../hooks/useFetch";
 import AccountModal from "../../../modals/account/AccountModal/AccountModal";
 import classes from "./Users.module.css";
-import { Paper, Stack } from "@mantine/core";
+import { Paper, Portal, Stack } from "@mantine/core";
 import { AccountType } from "../../../types/config.types";
 import ChangePasswordModal from "../../../modals/account/ChangePasswordModal/ChangePasswordModal";
 
@@ -35,6 +35,13 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
+                <Portal>
+                    <ChangePasswordModal
+                        uuid={currentUuid}
+                        opened={modalsOpened.password}
+                        onClose={closePasswordModal}
+                    />
+                </Portal>
                 {currentUuid && (
                     <AccountModal
                         mode={accountModalMode}
@@ -45,11 +52,6 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
                         uuid={currentUuid}
                     />
                 )}
-                <ChangePasswordModal
-                    uuid={currentUuid}
-                    opened={modalsOpened.password}
-                    onClose={closePasswordModal}
-                />
                 <AccountTable
                     accountType={accountType}
                     userData={data}

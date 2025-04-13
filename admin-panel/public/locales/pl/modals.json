@@ -83,6 +83,26 @@
             "users-password-client": "Ten użytkownik może ZMIENIAĆ HASŁA kontom klienckim."
         }
     },
+    "group": {
+        "client-count_one": "{{count}} klient",
+        "client-count_few": "{{count}} klientów",
+        "client-count_many": "{{count}} klientów",
+        "remove-user": "Odłącz użytkownika"
+    },
+    "create-group": {
+        "title": "Stwórz Nową Grupę",
+        "description": "Tworzysz publiczną grupę klientów, która będzie widoczna i możliwa do edycji przez wszystkich administratorów.",
+        "name": "Nazwa",
+        "name-note": "Uwaga: nazwa grupy musi być unikalna",
+        "select-clients": "Wybierz klientów",
+        "error-clients": "Wystąpił błąd podczas ładowania klientów :(",
+        "validation": {
+            "name-too-short": "Nazwa grupy musi mieć co najmniej 3 znaki.",
+            "name-too-long": "Długość nazwy nie może przekraczać 50 znaków.",
+            "name-duplicate": "Grupa o tej nazwie już istnieje.",
+            "clients-too-few": "Grupa musi zawierać co najmniej dwóch klientów."
+        }
+    },
     "confirm": {
         "leaving": {
             "title": "Opuszczasz stronę",

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useApi from "./useApi";
 import { useFetchReturn } from "../types/hooks.types";
 
-const useFetch = (path: string, options: object | undefined = undefined): useFetchReturn => {
+const useFetch = (path: string, options: object | undefined = undefined, cleanBeforeRefresh = false): useFetchReturn => {
     const [data, setData] = useState<any | null>(null);
     const [error, setError] = useState<Response | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -16,7 +16,9 @@ const useFetch = (path: string, options: object | undefined = undefined): useFet
 
     useEffect(() => {
         const fetchData = async () => {
-            setData(null);
+            if (cleanBeforeRefresh) {
+                setData(null);
+            }
             setError(null);
             setLoading(true);
 

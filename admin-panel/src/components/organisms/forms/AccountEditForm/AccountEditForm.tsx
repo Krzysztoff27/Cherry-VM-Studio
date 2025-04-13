@@ -3,7 +3,6 @@ import { Stack, Title, Group, TextInput, Button, MultiSelect, Text, Box, ScrollA
 import { IconLabelFilled, IconAt, IconMail, IconEdit } from "@tabler/icons-react";
 import classes from "./AccountEditForm.module.css";
 import { useForm, hasLength, isEmail } from "@mantine/form";
-import { useFetch } from "@mantine/hooks";
 import PERMISSIONS from "../../../../config/permissions.config";
 import useApi from "../../../../hooks/useApi";
 import useErrorHandler from "../../../../hooks/useErrorHandler";
@@ -14,6 +13,7 @@ import { ErrorCallbackFunction } from "../../../../types/hooks.types";
 import { safeObjectValues } from "../../../../utils/misc";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
 import RoleInfoCard from "../../../atoms/display/RoleInfoCard/RoleInfoCard";
+import useFetch from "../../../../hooks/useFetch";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -89,7 +89,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     };
 
     const onFormSubmit = form.onSubmit(async values => {
-        console.log(values);
         const res = await putRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
         if (!res) return;
 

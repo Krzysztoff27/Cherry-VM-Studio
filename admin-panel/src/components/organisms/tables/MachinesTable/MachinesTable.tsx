@@ -2,8 +2,6 @@ import { ActionIcon, Box, Group, ScrollArea, Stack } from "@mantine/core";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { safeObjectValues } from "../../../../utils/misc";
-import TanstackTableBody from "../../../molecules/display/TanstackTableBody/TanstackTableBody";
 import TableStateHeading from "../../../molecules/feedback/TableStateHeading/TableStateHeading";
 import TablePagination from "../../../molecules/interactive/TablePagination/TablePagination";
 import classes from "./MachinesTable.module.css";

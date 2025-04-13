@@ -23,7 +23,27 @@
             }
         }
     },
-    "machine-list": {
+    "machines": {
+        "controls": {
+            "all-machines": "Wszystkie maszyny",
+            "your-machines": "Twoje maszyny",
+            "filtered-results": "Przefiltrowane wyniki",
+            "search": "Wyszukaj",
+            "filters": "Filtruj",
+            "import": "Zaimportuj",
+            "create-machine": "Utwórz maszynę"
+        },
+        "table": {
+            "headers": {
+                "name": "Nazwa",
+                "state": "Status",
+                "ram": "RAM",
+                "cpu": "CPU",
+                "assigned-clients": "Przypisani Klienci",
+                "controls": "Zarządzanie",
+                "owner": "Właściciel"
+            }
+        },
         "panel": {
             "create": "Utwórz maszynę",
             "create-multiple": "Utwórz kilka maszyn",

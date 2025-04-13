@@ -1,16 +1,17 @@
-import PERMISSIONS from "../config/permissions.config";
-import { User } from "../types/api.types";
-import { AccountType } from "../types/config.types";
+import { useCallback, useEffect } from "react";
 import useFetch from "./useFetch";
 
 export default function usePermissions() {
     const { data: loggedInUser } = useFetch("user");
 
-    const hasPermissions = (requiredPermissions: number) =>
-        loggedInUser &&
-        loggedInUser?.account_type === "administrative" &&
-        loggedInUser?.permissions &&
-        (loggedInUser.permissions | requiredPermissions) === loggedInUser.permissions;
+    const hasPermissions = useCallback(
+        (requiredPermissions: number) =>
+            loggedInUser &&
+            loggedInUser?.account_type === "administrative" &&
+            loggedInUser?.permissions &&
+            (loggedInUser.permissions | requiredPermissions) === loggedInUser.permissions,
+        [loggedInUser?.permissions]
+    );
 
     return {
         hasPermissions,

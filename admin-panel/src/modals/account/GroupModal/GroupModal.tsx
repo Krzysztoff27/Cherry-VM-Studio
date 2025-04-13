@@ -1,11 +1,12 @@
 import { Avatar, Group, Modal, Skeleton, Stack, Text, Title } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
-import useErrorHandler from "../../../hooks/useErrorHandler";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
 import classes from "./GroupModal.module.css";
 import AddMembersField from "../../../components/molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
+import { useEffect, useState } from "react";
 
 const Placeholder = () => (
     <Stack className={classes.container}>
@@ -74,6 +75,7 @@ const Placeholder = () => (
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
     const { data: group, loading, refresh } = useFetch(`/group/${uuid}`);
+    const { tns, t } = useNamespaceTranslation("modals", "group");
     const { putRequest } = useApi();
 
     const removeMember = async (member: string) => {
@@ -88,7 +90,7 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
             onClose={onClose}
             size="xl"
         >
-            {!group || loading ? (
+            {!group && loading ? (
                 <Placeholder />
             ) : (
                 <Stack
@@ -101,6 +103,7 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                     <Group
                         w="100%"
                         mb="sm"
+                        h="100"
                     >
                         <Avatar
                             color="cherry"
@@ -108,12 +111,13 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                         >
                             <IconUsersGroup size={48} />
                         </Avatar>
-                        <Stack gap="0">
-                            <Title order={2}>{group.name}</Title>
-                            <Text c="dimmed">{group.users.length} clients</Text>
-                        </Stack>
+                        {group && (
+                            <Stack gap="0">
+                                <Title order={2}>{group?.name}</Title>
+                                <Text c="dimmed">{tns("client-count", { count: group.users.length })}</Text>
+                            </Stack>
+                        )}
                     </Group>
-
                     <Stack
                         w="100%"
                         flex="1"
@@ -121,12 +125,12 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                         mih="0"
                     >
                         <AddMembersField
-                            alreadyAddedUsers={group.users}
+                            alreadyAddedUsers={group?.users || []}
                             groupUuid={uuid}
                             refresh={refresh}
                         />
                         <MembersTable
-                            usersData={group.users}
+                            usersData={group?.users || []}
                             refresh={refresh}
                             removeMember={removeMember}
                         />

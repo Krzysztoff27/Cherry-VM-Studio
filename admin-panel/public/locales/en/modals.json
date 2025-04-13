@@ -83,6 +83,11 @@
             "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS."
         }
     },
+    "group": {
+        "client-count_one": "{{count}} client",
+        "client-count_other": "{{count}} clients",
+        "remove-user": "Remove user"
+    },
     "create-group": {
         "title": "Create New Group",
         "description": "You're creating a public group of clients that will be visible and modifiable by all administrators.",

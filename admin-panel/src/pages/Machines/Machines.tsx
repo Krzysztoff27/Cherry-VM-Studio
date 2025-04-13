@@ -15,14 +15,11 @@ export default function MachinesPage({ global = false }: { global?: boolean }) {
     // merged machine data from network data and state data
     const machines = mergeObjectPropertiesToArray(machinesState, machineData);
 
-    if (loading) return;
     if (error) {
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
         console.error(error);
         return;
     }
-
-    console.log(machines);
 
     return (
         <Stack w="100%">

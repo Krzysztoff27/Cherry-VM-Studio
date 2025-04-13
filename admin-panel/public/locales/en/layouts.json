@@ -7,7 +7,7 @@
     },
     "navbar": {
         "home": "Homepage",
-        "virtual-machines": "Virtual Machines",
+        "machines": "Virtual Machines",
         "desktops": "Desktops",
         "network-panel": "Network Panel",
         "accounts": "Account management",
