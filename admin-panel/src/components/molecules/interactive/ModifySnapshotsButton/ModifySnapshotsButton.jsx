@@ -2,15 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ActionIcon, Button, Group, Modal, rem, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure, useDebouncedValue } from "@mantine/hooks";
-import {
-    IconAlertCircleFilled,
-    IconArrowBackUp,
-    IconCameraPlus,
-    IconDeviceDesktop,
-    IconEdit,
-    IconTopologyStarRing3,
-    IconTrash,
-} from "@tabler/icons-react";
+import { IconAlertCircleFilled, IconArrowBackUp, IconCameraPlus, IconDeviceDesktop, IconEdit, IconTopologyStarRing3, IconTrash } from "@tabler/icons-react";
 import classes from "./ModifySnapshotButton.module.css";
 import { hasMultipleOccurrences, isInRange, safeObjectValues } from "../../../../utils/misc.js";
 import useApi from "../../../../hooks/useApi.ts";
@@ -176,9 +168,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         if (!onlyValidCharacters(val))
             return (
                 <Stack gap="0">
-                    <Text fz="xs">
-                        Snapshot names can only include letters, digits and following special characters:
-                    </Text>
+                    <Text fz="xs">Snapshot names can only include letters, digits and following special characters:</Text>
                     <Text fz="xs">{`! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ ] \ ^ _ \``}</Text>
                 </Stack>
             );
@@ -189,8 +179,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
      * @param {function} callbackFunction function used to determine the values, executed for every snapshot (as their first parameter).
      * @returns {Object} Object where key is snapshot UUID and value is based on the callback function return value for particular snapshot.
      */
-    const createUuidKeyedObject = callbackFunction =>
-        snapshots.reduce((acc, snapshot) => ({ ...acc, [snapshot.uuid]: callbackFunction(snapshot) }), {});
+    const createUuidKeyedObject = callbackFunction => snapshots.reduce((acc, snapshot) => ({ ...acc, [snapshot.uuid]: callbackFunction(snapshot) }), {});
 
     const getFormValidation = useCallback(() => createUuidKeyedObject(_ => validationMethod), [snapshots]);
     const getInitialValues = useCallback(() => createUuidKeyedObject(snapshot => snapshot.name), [snapshots]);
@@ -230,9 +219,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
      */
     const renameSnapshots = async values => {
         const initialValues = getInitialValues();
-        const toBeRenamed = Object.entries(values).filter(
-            ([uuid, name]) => initialValues[uuid] !== name && !toBeDeletedRef.current[uuid]
-        );
+        const toBeRenamed = Object.entries(values).filter(([uuid, name]) => initialValues[uuid] !== name && !toBeDeletedRef.current[uuid]);
         if (!toBeRenamed.length) return;
 
         toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/${uuid}/rename/${name}`, undefined));
@@ -289,6 +276,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
                 mah="60vh"
                 type="always"
                 offsetScrollbars
+                scrollbars="y"
             >
                 <Stack>
                     {snapshots.map((snapshot, i) => (
