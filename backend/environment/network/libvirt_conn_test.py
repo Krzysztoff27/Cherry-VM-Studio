@@ -3,6 +3,7 @@
 import libvirt
 import logging
 from typing import Literal
+import xml.etree.ElementTree as ET
 
 ###############################
 #   connection definition
@@ -51,7 +52,16 @@ class LibvirtConnection():
 
 
 
-with LibvirtConnection("rw") as libvirt_read_write_connection:
-    domains = libvirt_read_write_connection.listAllDomains(0)
-    for domain in domains:
-        print(domain.UUIDString())
+with LibvirtConnection("rw") as libvirt_read_write_connection:     
+    machines = libvirt_read_write_connection.listAllDomains(0)
+    
+    NS = {"vm": "http://example.com/virtualization"} 
+    
+    for machine in machines:
+        group = ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", NS).find("vm:group", NS).text
+        group_member_id = int(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", NS).find("vm:groupMemberId", NS).text) 
+        print(group)
+        print(group_member_id)
+        print(machine.UUIDString())
+        print(machine.getCPUStats(True))
+        

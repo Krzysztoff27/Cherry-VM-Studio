@@ -3,6 +3,10 @@
     <uuid></uuid>
     <memory unit='MiB'>1024</memory>
     <vcpu placement='static'>1</vcpu>
+    <metada>
+      <group></group>
+      <group_member_id></group_member_id>
+    </metada>
     
     <os>
       <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>

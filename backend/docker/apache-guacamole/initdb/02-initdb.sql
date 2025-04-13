@@ -6,10 +6,10 @@ CREATE TABLE administrators (
     password VARCHAR(60),
     name VARCHAR(50),
     surname VARCHAR(50),
-    email VARCHAR(255) UNIQUE
+    email VARCHAR(255) UNIQUE,
     creation_date DATE NOT NULL DEFAULT current_date,
     last_active TIMESTAMP,
-    disabled BOOLEAN DEFAULT 0
+    disabled BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE clients (
@@ -21,7 +21,7 @@ CREATE TABLE clients (
     email VARCHAR(255) UNIQUE,
     creation_date DATE NOT NULL DEFAULT current_date,
     last_active TIMESTAMP,
-    disabled BOOLEAN DEFAULT 0
+    disabled BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE roles (
@@ -61,7 +61,6 @@ CREATE TABLE deployed_machines_clients (
     machine_uuid UUID,
     client_uuid UUID,
     PRIMARY KEY(machine_uuid, client_uuid),
-    FOREIGN KEY(machine_uuid) REFERENCES deployed_machines(uuid) ON DELETE CASCADE,
     FOREIGN KEY(client_uuid) REFERENCES clients(uuid) ON DELETE CASCADE
 );
 
@@ -71,7 +70,7 @@ CREATE INDEX roles_idx ON roles (uuid);
 CREATE INDEX groups_idx ON groups (uuid);
 CREATE INDEX administrators_roles_idx ON administrators_roles (administrator_uuid, role_uuid);
 CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
-CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owner(machine_uuid, owner_uuid);
+CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owners(machine_uuid, owner_uuid);
 CREATE INDEX deployed_machines_clients_idx ON deployed_machines_clients(machine_uuid, client_uuid);
 
 -- Insert roles
