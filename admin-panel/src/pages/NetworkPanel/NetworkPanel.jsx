@@ -112,6 +112,7 @@ const createIntnetNode = (intnet, position) => ({
     type: "intnet",
     intnet: intnet.uuid,
     position: position,
+    number: intnet.number,
     data: {
         label: `Intnet ${intnet.number ?? intnet.uuid.substring(0, 4)}`,
     },
@@ -146,7 +147,7 @@ function Flow() {
      */
     const [isDirty, setIsDirty] = useState(null);
 
-    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch("/vm/all/networkdata");
+    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch("/machines");
 
     /**
      * Adds new nodes to the flow.
@@ -158,7 +159,10 @@ function Flow() {
      * Adds an edge between nodes in the flow.
      * @param {Object} edge - The edge to be added
      */
-    const addEdgeToFlow = edge => setEdges(eds => addEdge(edge, eds));
+    const addEdgeToFlow = edge => {
+        setEdges(eds => addEdge(edge, eds));
+        setIsDirty(true);
+    };
 
     // NODES AND EDGES
 
@@ -178,7 +182,7 @@ function Flow() {
      * allowing for future intnets to use its number.
      * @param {Array} deletedNodes - The nodes that were deleted
      */
-    const onNodesDelete = useCallback(deletedNodes => deletedNodes.forEach(node => intnetAllocator.remove(node?.intnet)), []);
+    const onNodesDelete = useCallback(deletedNodes => deletedNodes.forEach(node => intnetAllocator.remove(node?.number)), []);
 
     /**
      * Handles changes to edges in the flow.
@@ -268,17 +272,17 @@ function Flow() {
     // INTNET CONFIG
 
     const getIntnetConfig = () =>
-        getEdges().reduce((acc, { source, target }) => {
-            const [intnetUuid, machineUuid] = [sliceNodeIdToId(target), sliceNodeIdToId(source)];
+        getEdges().reduce((acc, { source: machineId, target: intnetId }) => {
+            const [intnetUuid, machineUuid] = [sliceNodeIdToId(intnetId), sliceNodeIdToId(machineId)];
 
             if (intnetUuid !== null && machineUuid !== null) {
-                if (!acc[intnetUuid]) acc[intnetUuid] = { uuid: intnetUuid, machines: [] };
+                if (!acc[intnetUuid]) {
+                    acc[intnetUuid] = { uuid: intnetUuid, number: getNode(intnetId).number, machines: [] };
+                }
                 acc[intnetUuid].machines.push(machineUuid);
             }
-
             return acc;
         }, {});
-
     // FLOW
 
     /**
@@ -291,6 +295,8 @@ function Flow() {
         new Promise(async (resolve, reject) => {
             if (!flow || !intnets) return reject("Either flow or intnets is undefined.");
 
+            intnets = safeObjectValues(intnets).filter(intnet => intnet.machines.length > 1);
+
             const positions = extractPositionsFromNodes(flow?.nodes);
             const center = calcMiddlePosition(...safeObjectValues(positions));
 
@@ -301,9 +307,9 @@ function Flow() {
             setNodes([]);
             setEdges([]);
             createMachineNodes(positions);
-            createFlowNodes(NODE_TYPES.intnet, safeObjectValues(intnets), positions);
+            createFlowNodes(NODE_TYPES.intnet, intnets, positions);
             createIntnetEdges(intnets);
-            intnetAllocator.setCurrent(Math.max(...safeObjectValues(intnets).map(e => e.number), 0));
+            intnetAllocator.setCurrent(Math.max(...intnets.map(e => e.number), 0));
             newPositionsAllocator.setCurrent(0);
             resolve();
         });
@@ -360,14 +366,14 @@ function Flow() {
     const createIntnetEdges = intnets => {
         if (!intnets) return;
 
-        safeObjectValues(intnets).forEach(({ uuid, machines }) =>
+        intnets.forEach(({ uuid, machines }) =>
             machines
-                ? machines.forEach(machineUuid =>
+                ? machines.forEach(machineUuid => {
                       addEdgeToFlow({
                           source: getNodeId(NODE_TYPES.machine, machineUuid),
                           target: getNodeId(NODE_TYPES.intnet, uuid),
-                      })
-                  )
+                      });
+                  })
                 : null
         );
     };
