@@ -10,7 +10,7 @@ import useFetch from "../../hooks/useFetch.ts";
 
 export default function Machine() {
     const { uuid } = useParams();
-    const { data: machineData, loading, error } = useFetch(`machines/${uuid}`);
+    const { data, loading, error } = useFetch(`machine/${uuid}`);
     const { machinesState } = useMachineState(uuid);
     const currentState: MachineState = machinesState[uuid] || {
         uuid: uuid,
@@ -25,7 +25,7 @@ export default function Machine() {
             display="flex"
             p="md"
         >
-            {!loading && (
+            {data && (
                 <>
                     <StretchingColumn
                         span={6}
