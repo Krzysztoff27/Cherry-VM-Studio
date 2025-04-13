@@ -9,17 +9,23 @@ class LibvirtConnection():
     hypervisor_uri = 'qemu+tls://10.10.10.254/system'
     
     def __init__(self, type: Literal["ro", "rw"]):
-        match type:
+        self.type = type
+        self.connection = None
+        
+        match self.type:
             case "ro":
-                self.open_readonly
+                self.open_readonly()
             case "rw":
-                self.open_read_write
+                self.open_read_write()
+            case _:
+                logging.error("Connection type must be either 'rw' or 'ro'")
     
     def __enter__(self):
         return self.connection
 
-    def __exit__(self):
-        self.connection.close();
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.connection:
+            self.connection.close();
     
     def open_readonly(self):
         try:

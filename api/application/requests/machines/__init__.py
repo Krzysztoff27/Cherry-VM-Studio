@@ -15,7 +15,7 @@ async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UU
 @app.get("/machines", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     # should return current_user's machines
-    return get_user_machines()
+    return get_user_machines(current_user.uuid)
 
 @app.get("/machine/{uuid}", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:  

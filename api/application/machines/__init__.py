@@ -29,8 +29,8 @@ def get_machine_data(machine) -> MachineData:
                 uuid=UUID(machine.UUIDString()), 
                 group=(ET.fromstring(machine.XMLDesc()).find("metadata/group") or {}).get("text", None),
                 group_member_id=int((ET.fromstring(machine.XMLDesc()).find("metadata/group_member_id") or {}).get("text", None)),
-                owner=,
-                assigned_clients=,
+                owner=get_machines_owner(UUID(machine.UUIDString())),
+                assigned_clients=get_clients_assigned_to_machine(UUID(machine.UUIDString())),
                 port=int(ET.fromstring(machine.XMLDesc()).find("devices/graphics[@type='vnc']").get("port")),
                 domain=str("") #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
             )
@@ -41,10 +41,8 @@ def get_all_machines() -> dict[UUID, MachineData]:
         machines = libvirt_readonly_connection.listAllDomains(0)
         return {UUID(machine.UUIDString()): get_machine_data(machine) for machine in machines}
             
-def get_user_machines() -> dict[UUID, MachineData]:
-    with LibvirtConnection("ro") as libvirt_readonly_connection:
-        #Implement machine fetching assigned to a certain user
-        return{}
+def get_user_machines(owner_uuid: UUID) -> dict[UUID, MachineData]:
+    return{UUID(machine_uuid): get_machine(machine_uuid) for machine_uuid in get_user_machine_uuids(owner_uuid)}
         
 def get_machine(uuid: UUID) -> MachineData:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
