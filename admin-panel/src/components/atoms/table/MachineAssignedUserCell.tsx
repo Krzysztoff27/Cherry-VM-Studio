@@ -4,7 +4,7 @@ import { Stack } from "@mantine/core";
 import AvatarsCell from "./AvatarsCell";
 
 const MachineAssignedUserCell = ({ getValue }): React.JSX.Element => {
-    const users = getValue();
+    const users = getValue().filter(e => e);
 
     if (!users?.length) return <></>;
     if (users.length === 1)
