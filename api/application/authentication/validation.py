@@ -1,3 +1,5 @@
+from typing import Annotated
+from fastapi import Depends
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from application.exceptions import CredentialsException
@@ -6,7 +8,7 @@ from application import SECRET_KEY, ALGORITHM
 from .models import Token, TokenTypes
 from .tokens import is_token_of_type
 from .passwords import verify_password
-from application.users import get_user_by_username
+from application.users.users import get_user_by_username
 from application.users.models import AnyUser
 
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser | None:
@@ -37,3 +39,5 @@ def get_authenticated_user(token: Token) -> AnyUser | None:
 def get_user_from_refresh_token(token: Token) -> AnyUser | None:
     return validate_user_token(token, 'refresh')
 
+DependsOnAuthentication = Annotated[AnyUser, Depends(get_authenticated_user)]
+DependsOnRefreshToken = Annotated[AnyUser, Depends(get_user_from_refresh_token)]

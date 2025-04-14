@@ -1,11 +1,14 @@
 from uuid import UUID
+
 from fastapi import HTTPException
 from application import app
 from application.machines import get_all_machines, get_user_machines, get_machine, check_machine_ownership
 from application.machines.models import MachineData
-from application.authentication import DependsOnAuthentication
+from application.authentication.validation import DependsOnAuthentication
 from application.users.permissions import verify_permissions, has_permissions
 from config.permissions_config import PERMISSIONS
+
+# REQUESTS
 
 @app.get("/machines/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:

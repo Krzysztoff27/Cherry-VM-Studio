@@ -1,7 +1,7 @@
 from starlette.websockets import WebSocket, WebSocketState
 from pydantic import BaseModel
 from application.exceptions import RaisedException
-from ..models import CommandData, AcknowledgeResponse, RejectResponse
+from .models import CommandData, AcknowledgeResponse, RejectResponse
 
 class WebSocketHandler(BaseModel):
     websocket: WebSocket

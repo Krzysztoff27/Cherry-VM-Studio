@@ -1,6 +1,6 @@
 from typing import Literal
 from pydantic import BaseModel
-import uuid
+from uuid import UUID, uuid4
     
 ###############################
 # Websocket messages
@@ -9,15 +9,15 @@ import uuid
 class Command(BaseModel, extra='allow'):
     method: Literal["START","STOP","UPDATE","SUBSCRIBE","UNSUBSCRIBE"]
     access_token: str = ""
-    uuid: str = str(uuid.uuid4())
+    uuid: UUID = uuid4()
     
 class CommandData(BaseModel):
     method: str = "undefined"
-    uuid: str = "undefined"
+    uuid: UUID = uuid4()
 
 class Response(BaseModel):
     method: Literal["ACKNOWLEDGE","REJECT","LOADING_FIN","LOADING_START","DATA"]
-    uuid: str = str(uuid.uuid4())
+    uuid: UUID = uuid4()
 
 class AcknowledgeResponse(Response):
     method: str = "ACKNOWLEDGE"
