@@ -231,30 +231,26 @@ function Flow() {
         sendNotification("network-panel.preset-loaded", { color: "" });
     };
 
-    // SNAPSHOTS
-
-    /**
-     * Returns the current snapshot data of the flow.
-     * @returns {Flow} Snapshot data
-     */
-    const getSnapshotData = useCallback(() => {
-        const { edges: _, viewport: __, ...snapshotData } = rfInstance.toObject();
-        return snapshotData;
-    }, [rfInstance]);
+    const getNodePositions = useCallback(() => rfInstance.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}), [rfInstance]);
 
     /**
      * Takes a snapshot of the current flow and assigns it a name.
      * @param {string} name - The name of the snapshot
      * @returns {Object} The snapshot object
      */
-    const takeSnapshot = name => ({ ...getSnapshotData(), name: name, intnets: getIntnetConfig() });
+    const takeSnapshot = name => {
+        const obj = { name: name, intnets: getIntnetConfig(), positions: getNodePositions() };
+
+        console.log(obj);
+        return obj;
+    };
 
     /**
      * Sends a POST request to save the current snapshot of the flow.
      * @param {string} name - The name of the snapshot
      * @param {Flow} snapshotData - The snapshot data
      */
-    const postSnapshot = (name, errorCallback = undefined) => postRequest("/network/snapshot", JSON.stringify(takeSnapshot(name)), errorCallback);
+    const postSnapshot = (name, errorCallback = undefined) => postRequest("/network/snapshot", JSON.stringify(takeSnapshot(name)), undefined, errorCallback);
 
     /**
      * Loads a flow snapshot by its uuid.
@@ -264,8 +260,8 @@ function Flow() {
         const data = await getRequest(`/network/snapshot/${uuid}`);
         if (!data) return;
 
-        const { name, intnets, ...flow } = data;
-        loadFlowWithIntnets(flow, intnets).then(() => setIsDirty(true));
+        const { name, intnets, positions } = data;
+        loadFlowWithIntnets(positions, intnets).then(() => setIsDirty(true));
         sendNotification("network-panel.snapshot-loaded", { color: "" });
     };
 
@@ -285,20 +281,14 @@ function Flow() {
         }, {});
     // FLOW
 
-    /**
-     * Loads the flow and internal networks into the React Flow panel.
-     * @param {Flow} flow - The flow data
-     * @param {Intnets} intnets - The internal networks (intnets) data
-     * @returns {Promise} - Resolves once the flow and intnets are loaded
-     */
-    const loadFlowWithIntnets = async (flow, intnets) =>
+    const loadFlowWithIntnets = async (positions, intnets) =>
         new Promise(async (resolve, reject) => {
-            if (!flow || !intnets) return reject("Either flow or intnets is undefined.");
+            if (!positions || !intnets) return reject("Either positions or intnets is undefined.");
 
             intnets = safeObjectValues(intnets).filter(intnet => intnet.machines.length > 1);
 
-            const positions = extractPositionsFromNodes(flow?.nodes);
             const center = calcMiddlePosition(...safeObjectValues(positions));
+            console.log(center, positions);
 
             // adding half the node width
             if (center) setCenter(center.x + 50, center.y);
@@ -319,8 +309,8 @@ function Flow() {
      * @returns {Promise} - Resolves once the flow is reset
      */
     const resetFlow = async () => {
-        const { intnets, ...flow } = await getRequest("/network/configuration");
-        return loadFlowWithIntnets(flow, intnets);
+        const { intnets, positions } = await getRequest("/network/configuration");
+        return loadFlowWithIntnets(positions, intnets);
     };
 
     /**
@@ -382,7 +372,7 @@ function Flow() {
      * Saves the current flow state and internal network (Intnet) configuration.
      */
     const applyNetworkConfig = _ => {
-        const stateResponse = putFlowState();
+        const stateResponse = putNodePositions();
         const networkConfigResponse = putIntnetConfiguration();
 
         if (stateResponse) sendNotification("network-panel.state-saved");
@@ -397,7 +387,7 @@ function Flow() {
      * Sends a PUT request to save the current flow panel state.
      * @returns {Object} - JSON data of the response
      */
-    const putFlowState = () => putRequest("/network/configuration/panelstate", JSON.stringify(getSnapshotData()));
+    const putNodePositions = () => putRequest("/network/configuration/positions", JSON.stringify(getNodePositions()));
 
     /**
      * Sends a PUT request to save the internal network (Intnet) configuration.

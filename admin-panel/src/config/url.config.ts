@@ -8,8 +8,10 @@ const config: UrlConfig = {
         traefik: `http://traefik.${window.location.hostname}/dashboard`,
     },
     development: {
-        api_requests: `http://lenovo.lab/api`,
-        api_websockets: `ws://lenovo.lab/api`,
+        api_requests: `http://127.0.0.1:8000`,
+        api_websockets: `ws://127.0.0.1:8000`,
+        // api_requests: `http://lenovo.lab/api`,
+        // api_websockets: `ws://lenovo.lab/api`,
     },
 };
 

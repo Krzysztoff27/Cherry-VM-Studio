@@ -57,11 +57,11 @@ function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDat
     const { getRequest } = useApi();
     const [snapshots, setSnapshots] = useState([]);
     // prevents the modal changing to the "no snapshots to edit" state during fade out transitions (in cases where all snapshots get deleted):
-    const [debouncedLength] = useDebouncedValue(snapshots.length, 100);
+    const [debouncedLength] = useDebouncedValue(snapshots?.length, 100);
 
     useEffect(() => {
         const getSnapshots = async () => {
-            await setSnapshots(await getRequest("network/snapshot/all"));
+            await setSnapshots(await getRequest("network/snapshots"));
         };
         getSnapshots();
     }, [opened, forceSnapshotDataUpdate]); // refresh every time the modal is opened
@@ -222,7 +222,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         const toBeRenamed = Object.entries(values).filter(([uuid, name]) => initialValues[uuid] !== name && !toBeDeletedRef.current[uuid]);
         if (!toBeRenamed.length) return;
 
-        toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/${uuid}/rename/${name}`, undefined));
+        toBeRenamed.forEach(([uuid, name]) => postRequest(`network/snapshot/rename/${uuid}?name=${name}`, undefined));
         sendNotification("network-panel.snapshot-modify", {}, { count: toBeRenamed.length });
 
         renamingForm.reset();

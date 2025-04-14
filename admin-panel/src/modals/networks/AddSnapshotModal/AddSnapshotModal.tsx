@@ -6,14 +6,14 @@ import TextFieldModal from "../../base/TextFieldModal/TextFieldModal.tsx";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.ts";
 
 const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpdate }) => {
-    const { tns } = useNamespaceTranslation("modals");
+    const { tns } = useNamespaceTranslation("modals", "new-snapshot");
     const { sendNotification } = useMantineNotifications();
     const { parseAndHandleError } = useErrorHandler();
     const [error, setError] = useState<string>("");
 
     const validate = (value: string) => {
-        if (!value || value?.length < 3) return tns("new-snapshot.error-too-short");
-        if (value.length > 24) return tns("new-snapshot.error-too-long");
+        if (!value || value?.length < 3) return tns("error-too-short");
+        if (value.length > 24) return tns("error-too-long");
         if (!/^[!-z]{3,32}$/.test(value))
             return (
                 <>
@@ -21,7 +21,7 @@ const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpd
                         component="span"
                         fz="xs"
                     >
-                        {tns("new-snapshot.error-bad-characters")}
+                        {tns("error-bad-characters")}
                     </Text>
                     <br />
                     <Text
@@ -36,8 +36,10 @@ const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpd
     };
 
     const onConfirm = async (name: string) => {
-        const errorCallback = (res: Response, body: object) =>
-            res?.status === 409 ? setError("Snapshot with this name already exists.") : parseAndHandleError(res, body);
+        const errorCallback = (res: Response, body: object) => {
+            console.log("a", res);
+            res?.status === 409 ? setError(tns("error-duplicate")) : parseAndHandleError(res, body);
+        };
         const response = await postSnapshot(name, errorCallback);
         if (!response) return;
 
@@ -49,11 +51,11 @@ const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpd
     return (
         <TextFieldModal
             opened={opened}
-            title={tns("new-snapshot.title")}
+            title={tns("title")}
             inputProps={{
                 withAsterisk: true,
-                placeholder: tns("new-snapshot.placeholder"),
-                description: tns("new-snapshot.note"),
+                placeholder: tns("placeholder"),
+                description: tns("note"),
             }}
             error={error}
             onValidate={validate}
@@ -61,11 +63,11 @@ const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpd
             onConfirm={onConfirm}
         >
             <Stack gap="xs">
-                <Text size="sm">{tns("new-snapshot.description")}</Text>
+                <Text size="sm">{tns("description")}</Text>
                 <List size="sm">
-                    <List.Item>{tns("new-snapshot.bullet-point1")}</List.Item>
-                    <List.Item>{tns("new-snapshot.bullet-point2")}</List.Item>
-                    <List.Item>{tns("new-snapshot.bullet-point3")}</List.Item>
+                    <List.Item>{tns("bullet-point1")}</List.Item>
+                    <List.Item>{tns("bullet-point2")}</List.Item>
+                    <List.Item>{tns("bullet-point3")}</List.Item>
                 </List>
             </Stack>
         </TextFieldModal>
