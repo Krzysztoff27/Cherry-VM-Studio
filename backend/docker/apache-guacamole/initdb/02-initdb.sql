@@ -65,6 +65,21 @@ CREATE TABLE deployed_machines_clients (
     FOREIGN KEY(client_uuid) REFERENCES clients(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE network_panel_states (
+	owner_uuid UUID PRIMARY KEY,
+	positions JSONB NOT NULL,
+	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE network_snapshots (
+	uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	owner_uuid UUID,
+	name VARCHAR(24) UNIQUE NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	positions JSONB NOT NULL,
+	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+);
+
 CREATE INDEX administrators_idx ON administrators (uuid, username, email);
 CREATE INDEX clients_idx ON clients (uuid, username, email);
 CREATE INDEX roles_idx ON roles (uuid);
@@ -73,6 +88,8 @@ CREATE INDEX administrators_roles_idx ON administrators_roles (administrator_uui
 CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
 CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owner(machine_uuid, owner_uuid);
 CREATE INDEX deployed_machines_clients_idx ON deployed_machines_clients(machine_uuid, client_uuid);
+CREATE INDEX network_panel_states_idx ON network_panel_states(owner_uuid);
+CREATE INDEX network_snapshots_idx ON network_snapshots(uuid, owner_uuid);
 
 -- Insert roles
 INSERT INTO roles (name, permissions)
