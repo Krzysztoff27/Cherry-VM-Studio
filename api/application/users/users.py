@@ -191,7 +191,7 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     return get_user_by_uuid(user_data.uuid)
     
 
-def modify_user(user_uuid, modification_data: ModifyUserForm) -> AnyUser:
+def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: ModifyUserForm) -> AnyUser:
     user = get_user_by_uuid(user_uuid)
     
     if not user:
@@ -212,7 +212,7 @@ def modify_user(user_uuid, modification_data: ModifyUserForm) -> AnyUser:
                     cursor.execute(f"UPDATE administrators SET {set_statement} WHERE uuid = %(uuid)s", params)
                 
                 if modification_data.roles is not None:                    
-                    update_user_roles(user_uuid, set(role.uuid for role in user.roles), set(modification_data.roles))
+                    update_user_roles(logged_in_user, user_uuid, set(role.uuid for role in user.roles), set(modification_data.roles))
                 
             elif is_client(user):
                 if len(set_statement):

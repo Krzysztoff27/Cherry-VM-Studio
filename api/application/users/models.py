@@ -87,14 +87,14 @@ class CreateAdministratorForm(Administrator):
     roles: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = Field(default_factory=uuid4) # generate random uuid on creation
+        self.uuid = uuid4() # generate random uuid on creation
         
 class CreateClientForm(Client):
     uuid: UUID | None = None
     groups: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = Field(default_factory=uuid4) # generate random uuid on creation
+        self.uuid = uuid4() # generate random uuid on creation
 
 CreateUserForm = Union[CreateAdministratorForm, CreateClientForm] # represents any valid create user form
 

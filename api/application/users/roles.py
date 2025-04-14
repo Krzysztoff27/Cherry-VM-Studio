@@ -3,9 +3,9 @@ from uuid import UUID
 from fastapi import HTTPException
 from psycopg import Cursor
 from utils.uuid import is_valid_uuid
-from application.users.permissions import verify_permission_integrity
+from application.users.permissions import has_permissions, verify_permission_integrity
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
-from application.users.models import AdministratorInDB, Role, RoleInDB
+from application.users.models import AdministratorInDB, AnyUser, Role, RoleInDB
 
 def get_role_by_field(field_name: str, value: str) -> Role | None:
     role = select_schema_one(Role, f"SELECT * FROM roles WHERE {field_name} = %s", (value,))
@@ -49,7 +49,7 @@ def verify_role_integrity(cursor: Cursor):
     return verify_permission_integrity(assigned_roles)
 
 
-def update_user_roles(user_uuid: UUID, old_roles: set[UUID] | list[UUID], new_roles: set[UUID] | list[UUID]):
+def update_user_roles(logged_in_user: AnyUser, user_uuid: UUID, old_roles: set[UUID] | list[UUID], new_roles: set[UUID] | list[UUID]):
     old_roles = set(old_roles)
     new_roles = set(new_roles)
     
@@ -58,17 +58,20 @@ def update_user_roles(user_uuid: UUID, old_roles: set[UUID] | list[UUID], new_ro
     
     for role in to_leave:
         if is_valid_uuid(role):
-            revoke_role_from_user(role, user_uuid)
+            revoke_role_from_user(logged_in_user, role, user_uuid)
     for role in to_join:
         if is_valid_uuid(role):
-            grant_role_to_user(role, user_uuid)
+            grant_role_to_user(logged_in_user, role, user_uuid)
         
 
-def grant_role_to_user(role_uuid: UUID, user_uuid: UUID):
+def grant_role_to_user(logged_in_user: AnyUser, role_uuid: UUID, user_uuid: UUID):
     administrator = select_schema_one(AdministratorInDB, "SELECT * FROM administrators WHERE uuid = %s", (user_uuid,))
+    role = get_role_by_uuid(role_uuid)
     
-    if not get_role_by_uuid(role_uuid):
+    if not role:
         raise HTTPException(400, f"Role with UUID={role_uuid} does not exist.")
+    if not has_permissions(logged_in_user, role.permissions):
+        raise HTTPException(403, f"You do not have the necessary permissions to grant role with UUID={role_uuid}")
     if not administrator:
         raise HTTPException(400, f"Administrator with UUID={user_uuid} does not exist.")
     
@@ -78,12 +81,14 @@ def grant_role_to_user(role_uuid: UUID, user_uuid: UUID):
             connection.commit()
 
             
-def revoke_role_from_user(role_uuid, administrator_uuid) -> None:
+def revoke_role_from_user(logged_in_user: AnyUser, role_uuid: UUID, administrator_uuid: UUID) -> None:
     role = get_role_by_uuid(role_uuid)
     administrator = select_schema_one(AdministratorInDB, "SELECT * FROM administrators WHERE uuid = %s", (administrator_uuid,))
     
     if not role:
         raise HTTPException(400, f"Group with UUID={role_uuid} does not exist.")
+    if not has_permissions(logged_in_user, role.permissions):
+        raise HTTPException(403, f"You do not have the necessary permissions to grant role with UUID={role_uuid}")
     if not administrator:
         raise HTTPException(400, f"Client with UUID={administrator_uuid} does not exist.")
     
