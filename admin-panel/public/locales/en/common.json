@@ -49,5 +49,7 @@
     "view-&-edit": "View & Edit",
     "running-for": "Running for",
     "enter-users-to-add": "Enter users to add",
-    "add": "Add"
+    "add": "Add",
+    "roles": "Roles",
+    "groups": "Groups"
 }

@@ -9,7 +9,8 @@
         "placeholder": "Enter the snapshot's name",
         "error-too-short": "Snapshot name must be at least 3 characters long.",
         "error-too-long": "Snapshot name must not be longer than 24 characters.",
-        "error-bad-characters": "Snapshot names can only include letters, digits and following special characters:"
+        "error-bad-characters": "Snapshot names can only include letters, digits and following special characters:",
+        "error-duplicate": "Snapshot with this name already exists."
     },
     "modify-snapshots": {
         "title": "Modify and delete snapshots",

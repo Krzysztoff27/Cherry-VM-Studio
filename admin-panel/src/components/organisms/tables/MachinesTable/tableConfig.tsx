@@ -47,8 +47,8 @@ export const getColumns = (refresh: () => void, global: boolean, viewMode: boole
             maxSize: 230,
         },
         !global && {
-            accessorKey: "cpu",
-            header: t("machines.table.headers.cpu", { ns: "pages" }),
+            accessorKey: "ram",
+            header: t("machines.table.headers.ram", { ns: "pages" }),
             cell: ({ getValue }) => (
                 <ProgressWithPercentage
                     value={getValue()}

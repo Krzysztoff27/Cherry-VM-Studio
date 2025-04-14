@@ -49,5 +49,7 @@
     "view-&-edit": "Podgląd/Edycja",
     "running-for": "Czas działania:",
     "enter-users-to-add": "Wybierz użytkowników do dodania",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "roles": "Role",
+    "groups": "Grupy"
 }

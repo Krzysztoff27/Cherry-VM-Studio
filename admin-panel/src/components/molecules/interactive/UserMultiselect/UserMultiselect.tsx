@@ -10,6 +10,7 @@ import { useElementSize } from "@mantine/hooks";
 
 const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserMultiselectProps): React.JSX.Element => {
     const { ref } = useElementSize();
+    const { t } = useTranslation();
 
     const options = users.map(({ uuid, name, surname, username }) => ({
         value: uuid,
@@ -38,6 +39,7 @@ const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserM
             rightSectionWidth={16}
             rightSection={<></>}
             value={value}
+            nothingFoundMessage={t("nothing-found")}
             onChange={onInputChange}
             classNames={{
                 ...classNames,

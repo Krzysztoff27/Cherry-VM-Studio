@@ -20,8 +20,8 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
 
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
-    const columns = useMemo(() => getColumns(refresh, global, viewMode), [global]);
-    const data = useMemo(() => parseData(machines), [machines]);
+    const columns = useMemo(() => getColumns(refresh, global, viewMode), [global, viewMode]);
+    const data = useMemo(() => parseData(machines), [machines, viewMode]);
 
     const table = useReactTable({
         data,
@@ -73,7 +73,11 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                 </Group>
             </Stack>
             {/* here we dont use <TanstackTableBody> cause we need to modify the rows for them to be links ;-; */}
-            <Box className={classes.table}>
+            <ScrollArea
+                className={classes.table}
+                scrollbars="x"
+                offsetScrollbars
+            >
                 {table.getHeaderGroups().map(headerGroup => (
                     <Box
                         className={classes.tr}
@@ -143,7 +147,7 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                         ))}
                     </ScrollArea>
                 )}
-            </Box>
+            </ScrollArea>
             <TablePagination
                 pagination={pagination}
                 setPagination={setPagination}

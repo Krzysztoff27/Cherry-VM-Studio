@@ -11,6 +11,8 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import useFetch from "../../../hooks/useFetch";
 import { safeObjectValues } from "../../../utils/misc";
 import RoleInfoCard from "../../../components/atoms/display/RoleInfoCard/RoleInfoCard";
+import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
+import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
@@ -18,8 +20,6 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     const { postRequest } = useApi();
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
-    const { data: groups } = useFetch("groups");
-    const { data: roles } = useFetch("roles");
 
     const form = useForm({
         initialValues: {
@@ -94,21 +94,6 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         onSubmit?.();
     });
 
-    const sortByLabel = (a, b) => a.label.localeCompare(b.label);
-
-    const getLabels = (list: { name: string; uuid: string }[]) =>
-        list
-            .map(group => ({
-                label: group.name,
-                value: group.uuid,
-            }))
-            .sort(sortByLabel);
-
-    const groupOptions = getLabels(safeObjectValues(groups));
-    const roleOptions = getLabels(safeObjectValues(roles));
-
-    const renderOptions = ({ option, checked }) => <RoleInfoCard role={roles[option.value]} />;
-
     return (
         <Modal
             opened={opened}
@@ -181,29 +166,19 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         autoFocus={false}
                     />
                     {accountType === "administrative" ? (
-                        <MultiSelect
+                        <RoleMultiselect
                             clearable
-                            checkIconPosition="left"
-                            label={tns("roles")}
-                            data={roleOptions}
                             classNames={{ input: "borderless" }}
-                            hidePickedOptions={true}
                             placeholder={tns("select-roles")}
-                            renderOption={renderOptions}
                             key={form.key("roles")}
                             {...form.getInputProps("roles")}
                             autoFocus
                         />
                     ) : (
-                        <MultiSelect
+                        <GroupMultiselect
                             clearable
-                            checkIconPosition="left"
-                            label={tns("groups")}
-                            data={groupOptions}
                             classNames={{ input: "borderless" }}
-                            hidePickedOptions={true}
                             placeholder={tns("select-groups")}
-                            renderOption={renderOptions}
                             key={form.key("groups")}
                             {...form.getInputProps("groups")}
                             autoFocus

@@ -30,7 +30,8 @@ const MachineStateCell = ({ getValue }): React.JSX.Element => {
             c="dimmed"
             size="md"
         >
-            {active ? `${t("running-for")} ${timeSince(new Date(deployed_at))}` : t("offline")}
+            {t(active ? "online" : "offline")}
+            {/* {active ? `${t("running-for")} ${timeSince(new Date(deployed_at))}` : t("offline")} */}
         </Text>
     );
 };

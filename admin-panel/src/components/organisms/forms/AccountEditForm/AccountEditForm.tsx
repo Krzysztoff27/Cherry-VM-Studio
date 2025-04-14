@@ -14,6 +14,8 @@ import { safeObjectValues } from "../../../../utils/misc";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
 import RoleInfoCard from "../../../atoms/display/RoleInfoCard/RoleInfoCard";
 import useFetch from "../../../../hooks/useFetch";
+import RoleMultiselect from "../../../atoms/interactive/RoleMultiselect/RoleMultiselect";
+import GroupMultiselect from "../../../atoms/interactive/GroupMultiselect/GroupMultiselect";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -21,8 +23,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { parseAndHandleError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { hasPermissions } = usePermissions();
-    const { data: groups } = useFetch("groups");
-    const { data: roles } = useFetch("roles");
 
     const canChangePassword = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
@@ -69,6 +69,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
 
     useEffect(() => {
         resetValues();
+        console.log(form.getValues());
     }, [JSON.stringify(user)]);
 
     const onPostError: ErrorCallbackFunction = (response, json) => {
@@ -76,7 +77,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
             if (/permission unassigned/.test(json?.detail)) {
                 const match = json.detail.match(/UUID=([a-f0-9-]+)/i);
                 const roleUuid = match ? match[1] : null;
-                const roleName = roles[roleUuid].name;
+                const roleName = user.roles[roleUuid].name;
                 form.setFieldValue("roles", user?.roles?.map(role => role.uuid) ?? []);
                 return form.setFieldError("roles", tns("validation.cannot-revoke-role", { name: roleName }));
             }
@@ -95,21 +96,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         sendNotification("account.modified", undefined, { username: res.username });
         onSubmit?.();
     });
-
-    const sortByLabel = (a, b) => a.label.localeCompare(b.label);
-
-    const getLabels = (list: { name: string; uuid: string }[]) =>
-        list
-            .map(group => ({
-                label: group.name,
-                value: group.uuid,
-            }))
-            .sort(sortByLabel);
-
-    const groupOptions = getLabels(safeObjectValues(groups));
-    const roleOptions = getLabels(safeObjectValues(roles));
-
-    const renderOptions = ({ option, checked }) => <RoleInfoCard role={roles[option.value]} />;
 
     return (
         <form
@@ -192,11 +178,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 >
                                     {tns("roles-and-permissions")}
                                 </Title>
-                                <MultiSelect
-                                    placeholder={tns("roles")}
-                                    data={roleOptions}
-                                    renderOption={renderOptions}
-                                    hidePickedOptions={true}
+                                <RoleMultiselect
                                     className={classes.input}
                                     comboboxProps={{ position: "top" }}
                                     key={form.key("roles")}
@@ -211,11 +193,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 >
                                     {tns("groups")}
                                 </Title>
-                                <MultiSelect
-                                    placeholder={tns("groups")}
-                                    data={groupOptions}
-                                    renderOption={renderOptions}
-                                    hidePickedOptions={true}
+                                <GroupMultiselect
                                     className={classes.input}
                                     comboboxProps={{ position: "top" }}
                                     key={form.key("groups")}

@@ -10,10 +10,7 @@ import MachinesTable from "../../components/organisms/tables/MachinesTable/Machi
 export default function MachinesPage({ global = false }: { global?: boolean }) {
     const { sendErrorNotification } = useMantineNotifications();
     const { loading, error, data: machineData, refresh } = useFetch(global ? "machines/global" : "machines");
-    const { machinesState } = useMachineState(safeObjectKeys(machineData));
-
-    // merged machine data from network data and state data
-    const machines = mergeObjectPropertiesToArray(machinesState, machineData);
+    const { machinesState: machines } = useMachineState(safeObjectKeys(machineData));
 
     if (error) {
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);

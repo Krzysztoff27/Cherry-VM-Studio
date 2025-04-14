@@ -6,7 +6,11 @@ import classes from "./TanstackTableBody.module.css";
 
 const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
     return (
-        <Box className={classes.table}>
+        <ScrollArea
+            className={classes.table}
+            scrollbars="x"
+            offsetScrollbars
+        >
             {table.getHeaderGroups().map(headerGroup => (
                 <Box
                     className={classes.tr}
@@ -75,7 +79,7 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                     ))}
                 </ScrollArea>
             )}
-        </Box>
+        </ScrollArea>
     );
 };
 

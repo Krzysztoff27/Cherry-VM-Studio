@@ -9,7 +9,8 @@
         "placeholder": "Wpisz nazwę migawki",
         "error-too-short": "Nazwa migawki musi składać się z przynajmniej 3 znaków",
         "error-too-long": "Nazwa migawki nie może być dłuższa niż 24 znaków",
-        "error-bad-characters": "Nazwa migawki może składać się jedynie z liter alfabetu angielskiego, cyfr i poniższych znaków:"
+        "error-bad-characters": "Nazwa migawki może składać się jedynie z liter alfabetu angielskiego, cyfr i poniższych znaków:",
+        "error-duplicate": "Migawka o podanej nazwie już istnieje."
     },
     "modify-snapshots": {
         "title": "Edytuj i usuwaj migawki",

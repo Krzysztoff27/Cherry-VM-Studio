@@ -13,6 +13,7 @@ import {
     IconUsersGroup,
 } from "@tabler/icons-react";
 import { Page } from "../types/config.types";
+import PERMISSIONS from "./permissions.config";
 
 const PAGES: Page[] = [
     {
@@ -34,6 +35,7 @@ const PAGES: Page[] = [
                 key: "all-machines",
                 path: "/machines/all",
                 icon: IconDatabase,
+                permissions: PERMISSIONS.VIEW_ALL_VMS,
             },
         ],
     },

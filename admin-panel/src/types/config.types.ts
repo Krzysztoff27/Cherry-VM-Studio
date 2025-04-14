@@ -32,6 +32,7 @@ export interface Page {
     path: string;
     icon: TablerIcon;
     subpages?: Page[];
+    permissions?: number;
 }
 
 export type AccountType = "administrative" | "client";

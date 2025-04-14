@@ -3,7 +3,7 @@ import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTra
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const MachineControlsCell = ({ state, disabled = true }): React.JSX.Element => {
+const MachineControlsCell = ({ state, disabled = false }): React.JSX.Element => {
     const { t } = useTranslation();
 
     const preventEvent = e => e.preventDefault();

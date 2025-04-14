@@ -1,8 +1,9 @@
 import { Group, MantineStyleProp, ScrollArea, Stack, Table, Text } from "@mantine/core";
-import React from "react";
 import { arrayIntoChunks } from "../../../utils/misc";
+import { useTranslation } from "react-i18next";
 
-function MachineDataTable({ machine, currentState, t }) {
+function MachineDataTable({ machine, currentState }) {
+    const { t } = useTranslation();
     const keyTdStyle: MantineStyleProp = { textAlign: "right", fontWeight: 500, width: "25%" };
 
     const activeConnectionsArray =
@@ -24,7 +25,7 @@ function MachineDataTable({ machine, currentState, t }) {
                   {...elements}
               </Stack>
           ))
-        : "None";
+        : t("none");
 
     return (
         <ScrollArea>

@@ -1,5 +1,4 @@
 import { Stack } from "@mantine/core";
-import { useTranslation } from "react-i18next";
 import Loading from "../../atoms/feedback/Loading/Loading.tsx";
 import useFetch from "../../../hooks/useFetch.ts";
 import MachineHeading from "../../organisms/MachineHeading/MachineHeading.tsx";
@@ -7,7 +6,6 @@ import MachineDataTable from "../../organisms/MachineDataTable/MachineDataTable.
 import { MachineData } from "../../../types/api.types.ts";
 
 export default function MachineDataDisplay({ currentState, uuid }) {
-    const { t } = useTranslation();
     const { loading, error, data } = useFetch(`/machine/${uuid}`);
     const machine = data as MachineData;
 
@@ -23,7 +21,6 @@ export default function MachineDataDisplay({ currentState, uuid }) {
             <MachineDataTable
                 machine={machine}
                 currentState={currentState}
-                t={t}
             />
         </Stack>
     );

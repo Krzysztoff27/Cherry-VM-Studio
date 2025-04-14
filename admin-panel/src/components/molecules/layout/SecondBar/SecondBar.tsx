@@ -1,4 +1,4 @@
-import { Divider, NavLink, Stack, Text, Title } from "@mantine/core";
+import { Button, Divider, NavLink, Stack, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../../../hooks/useAuth.ts";
@@ -6,12 +6,15 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.t
 import classes from "./SecondBar.module.css";
 import PAGES from "../../../../config/pages.config.ts";
 import { Page } from "../../../../types/config.types.ts";
+import usePermissions from "../../../../hooks/usePermissions.ts";
 
 export default function SecondBar(): React.ReactElement {
-    const { t, tns } = useNamespaceTranslation("layouts");
+    const { tns } = useNamespaceTranslation("layouts");
+    const { hasPermissions } = usePermissions();
     const location = useLocation();
     const [page, setPage] = useState<Page>();
     const [active, setActive] = useState<number>();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const page = PAGES.find(p => location.pathname.startsWith(p.path));
@@ -27,17 +30,18 @@ export default function SecondBar(): React.ReactElement {
                 w="90%"
                 mb="0.5rem"
             />
-            {page?.subpages?.map((subpage, i) => (
-                <NavLink
-                    component={Link}
-                    to={subpage.path}
-                    leftSection={<subpage.icon />}
-                    label={tns(`navbar.${subpage.key}`)}
+            {page?.subpages.map((subpage, i) => (
+                <Button
+                    onClick={() => navigate(subpage.path)}
+                    justify="left"
                     key={i}
-                    className={classes.navLink}
-                    active={active === i}
                     variant="subtle"
-                />
+                    className={`${classes.navButton} ${active === i ? classes.active : ""}`}
+                    leftSection={<subpage.icon />}
+                    disabled={!hasPermissions(subpage?.permissions || 0)}
+                >
+                    {tns(`navbar.${subpage.key}`)}
+                </Button>
             ))}
         </Stack>
     );
