@@ -1,5 +1,4 @@
 import datetime
-from typing import Literal
 from uuid import UUID
 from pydantic import BaseModel
 from application.users.models import ClientInDB, AdministratorInDB
@@ -8,7 +7,7 @@ class MachineData(BaseModel):                       # * parent class with proper
     uuid: UUID                                      # unique ID for each machine
     group: str | None = None                        # string of a corresponding machine group e.g.: "desktop" or "server"
     group_member_id: int | None = None              # unique ID for each machine in the scope of a group
-    owner: AdministratorInDB | None = None                        # 
+    owner: AdministratorInDB | None = None          # 
     assigned_clients: dict[UUID, ClientInDB] = {}   # clients assigned to the machine
     port: int | None = None                         # transport layer port used by the VM
     domain: str | None = None                       # proxy domain for the VM Apache Guacamole site
@@ -20,4 +19,4 @@ class MachineState(MachineData):                    # * when displaying a page r
     cpu: int = 0                                    # ∈ <0,100> % of CPU usage
     ram_max: int | None = None                      # RAM assigned to the VM in MB
     ram_used: int | None = None                     # RAM used by the VM in MB
-    deployed_at: datetime.datetime | None = None    # datetime of machine deployment
+    uptime: int | None = None                       # Machine uptime
