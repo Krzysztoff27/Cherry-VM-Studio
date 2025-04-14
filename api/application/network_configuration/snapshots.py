@@ -1,64 +1,50 @@
-from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 import re
-from uuid import uuid4
-
-from config import FILES_CONFIG
-from utils.file import JSONHandler
+from fastapi import HTTPException
+from uuid import UUID
+from fastapi.encoders import jsonable_encoder
+from psycopg.types.json import Jsonb
+from application.postgresql import select_schema, select_schema_one, pool
 from application.exceptions import HTTPNotFoundException
-from .models import Snapshot, SnapshotCreate
+from .models import Snapshot
 
-snapshots_database = JSONHandler(FILES_CONFIG.network_config_snapshots)
 
-def get_snapshots() -> list[Snapshot]:
-    snapshots = snapshots_database.read()
-    if not isinstance(snapshots, list): 
-        snapshots = []
-    return snapshots
+def get_snapshot_by_uuid(uuid: UUID) -> Snapshot | None:
+    return select_schema_one(Snapshot, "SELECT * FROM network_snapshots WHERE uuid = %s", [uuid])
+
+def get_snapshot_by_name(name: str) -> Snapshot | None:
+    return select_schema_one(Snapshot, "SELECT * FROM network_snapshots WHERE name = %s", [name])
+
+def get_user_snapshots(owner_uuid: UUID) -> list[Snapshot]:
+    return select_schema(Snapshot, "SELECT * FROM network_snapshots WHERE owner_uuid = %s", [owner_uuid])
 
 def validate_snapshot_name(snapshot_name: str):
-    snapshots = get_snapshots()
-    
+    if get_snapshot_by_name(snapshot_name):
+        raise HTTPException(status_code=409, detail="Snapshot with this name already exists.")
     if not re.match(r'^[!-z]{3,24}$', snapshot_name):
         raise HTTPException(status_code=400, detail="Invalid characters in the snapshot name.")
-    if any(s['name'] == snapshot_name for s in snapshots):
-        raise HTTPException(status_code=409, detail="Snapshot with this name already exists.")
-    
-    return True
 
-def create_snapshot(snapshot: SnapshotCreate):
-    snapshots = get_snapshots()
-    snapshot = jsonable_encoder({**jsonable_encoder(snapshot), 'uuid': str(uuid4())})
-    snapshots.append(snapshot)
-    snapshots_database.write(snapshots)
-    return Snapshot(**snapshot)
-    
-def get_snapshot(uuid):
-    snapshots = get_snapshots()
-    
-    for snapshot in snapshots:
-        if snapshot['uuid'] == uuid: 
-            return snapshot        
-    raise HTTPNotFoundException('Snapshot not found')
+def create_snapshot(owner_uuid: UUID, snapshot_data: Snapshot):
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO network_snapshots (uuid, owner_uuid, name, intnets, positions) VALUES (%s, %s, %s, %s, %s)",
+                [snapshot_data.uuid, owner_uuid, snapshot_data.name, Jsonb(jsonable_encoder(snapshot_data.intnets)), Jsonb(jsonable_encoder(snapshot_data.positions))]
+            )        
+            connection.commit()
+    return select_schema_one(Snapshot, "SELECT * FROM network_snapshots WHERE uuid = %s", [snapshot_data.uuid])
 
-def get_snapshot_index(uuid):
-    snapshots = get_snapshots()
-    
-    for i, snapshot in enumerate(snapshots):
-        if snapshot['uuid'] == uuid: 
-            return i
-    raise HTTPNotFoundException('Snapshot not found')
-
-def modify_snapshot(uuid, data: dict):
-    snapshots = get_snapshots()
-    index = get_snapshot_index(uuid)
-    
-    snapshots[index] = jsonable_encoder(Snapshot(**{**snapshots[index], **data}))
-    snapshots_database.write(snapshots)
+def rename_snapshot(uuid: UUID, new_name: str):
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE network_snapshots SET name = %s WHERE uuid = %s", [new_name, uuid])
+            connection.commit()
     
 def delete_snapshot(uuid):
-    snapshots = get_snapshots()
-    index = get_snapshot_index(uuid)
-    snapshots.pop(index)
-    snapshots_database.write(snapshots)
+    if get_snapshot_by_uuid(uuid) is None:
+        raise HTTPNotFoundException(f"Snapshot with UUID={uuid} not found.")
+        
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM network_snapshots WHERE uuid = %s", [uuid])
+            connection.commit()
     

@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
     
 ###############################
@@ -9,15 +9,15 @@ from uuid import UUID, uuid4
 class Command(BaseModel, extra='allow'):
     method: Literal["START","STOP","UPDATE","SUBSCRIBE","UNSUBSCRIBE"]
     access_token: str = ""
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
     
 class CommandData(BaseModel):
     method: str = "undefined"
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
 
 class Response(BaseModel):
     method: Literal["ACKNOWLEDGE","REJECT","LOADING_FIN","LOADING_START","DATA"]
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
 
 class AcknowledgeResponse(Response):
     method: str = "ACKNOWLEDGE"

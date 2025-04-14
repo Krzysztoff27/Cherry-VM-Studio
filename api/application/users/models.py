@@ -1,6 +1,6 @@
 import datetime as dt
 from uuid import UUID, uuid4
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal, Union
 
 AccountTypes = Literal["administrative", "client"]
@@ -87,14 +87,14 @@ class CreateAdministratorForm(Administrator):
     roles: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = uuid4() # generate random uuid on creation
+        self.uuid = Field(default_factory=uuid4) # generate random uuid on creation
         
 class CreateClientForm(Client):
     uuid: UUID | None = None
     groups: list[UUID]
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.uuid = uuid4() # generate random uuid on creation
+        self.uuid = Field(default_factory=uuid4) # generate random uuid on creation
 
 CreateUserForm = Union[CreateAdministratorForm, CreateClientForm] # represents any valid create user form
 

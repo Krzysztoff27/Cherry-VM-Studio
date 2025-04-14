@@ -1,8 +1,8 @@
-from uuid import UUID
-from pydantic import BaseModel
+from uuid import UUID, uuid4
+from pydantic import BaseModel, Field
 
-IntnetUuid = UUID
-MachineUuid = UUID
+IntnetUuid = UUID 
+MachineUuid = str # ! MUST BE STRING
 
 class Coordinates(BaseModel):                   
     x: float = 0
@@ -19,21 +19,19 @@ class Intnet(BaseModel):                        # * Contains all necessary intne
 
 IntnetConfiguration = dict[IntnetUuid, Intnet]  # * Form of the intnet data required by the frontend
     
-class FlowState(BaseModel):                     # * Current state of the display "flow" board in the frontend
-    nodes: list = []                            # list of frontend generated nodes
+Positions = dict[MachineUuid, Coordinates]
 
-class NetworkConfiguration(FlowState):          # * Model containing both IntnetConfiguration and FlowState data
-    intnets: IntnetConfiguration | None = None  # 
+class NetworkConfiguration(BaseModel):         
+    intnets: IntnetConfiguration | None = None   
+    positions: Positions | None = None
 
 #-------------------------------#
 #           Snapshots           #
 #-------------------------------#
 
-class SnapshotCreate(NetworkConfiguration):     # * Network config snapshot recieved from the frontend, doesn't yet have an UUID
-    name: str = "Unnamed"                       # name of the snapshot set by the user in the frontend
-
-class Snapshot(SnapshotCreate):                 # * Full snapshot model, with all parameters from the Database
-    uuid: UUID                                   # unique snapshot identifier
+class Snapshot(NetworkConfiguration):     
+    name: str = "Unnamed" 
+    uuid: UUID = Field(default_factory=uuid4)                     
 
 #-------------------------------#
 #            Presets            #
