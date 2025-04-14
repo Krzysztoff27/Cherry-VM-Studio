@@ -3,3 +3,4 @@ from .files_config import FILES_CONFIG
 from .regex_config import REGEX_CONFIG
 from .database_config import DATABASE_CONFIG
 from .permissions_config import PERMISSIONS
+from .machines_config import MACHINES_CONFIG
