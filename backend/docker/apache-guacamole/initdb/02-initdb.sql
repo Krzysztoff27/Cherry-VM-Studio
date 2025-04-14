@@ -75,6 +75,7 @@ CREATE TABLE network_snapshots (
 	owner_uuid UUID,
 	name VARCHAR(24) UNIQUE NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    intnets JSONB NOT NULL,
 	positions JSONB NOT NULL,
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
