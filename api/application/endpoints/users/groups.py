@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from application import app
 from application.users.models import CreatedGroup, Group
 from application.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid, join_user_to_group, remove_user_from_group
-from application.authentication import DependsOnAuthentication
+from application.authentication.validation import DependsOnAuthentication
 
 @app.get("/group/{uuid}", response_model=Group, tags=['Client Groups'])
 async def __read_group__(uuid: UUID, current_user: DependsOnAuthentication) -> Group:

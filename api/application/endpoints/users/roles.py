@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException
-from application.authentication import DependsOnAuthentication
+from application.authentication.validation import DependsOnAuthentication
 from application.users.models import Role
 from application.users.roles import get_all_roles, get_role_by_uuid, grant_role_to_user, revoke_role_from_user
 from application import app

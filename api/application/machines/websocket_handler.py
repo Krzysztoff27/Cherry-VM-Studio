@@ -1,12 +1,12 @@
-from starlette.websockets import WebSocket, WebSocketDisconnect
+from starlette.websockets import WebSocketDisconnect
 from fastapi import status, HTTPException
 from json import JSONDecodeError
 from pydantic import ValidationError
+from application.websockets.subscription_manager import SubscriptionManager
+from application.websockets.websocket_handler import WebSocketHandler
+from application.websockets.models import Command
 from application.exceptions import RaisedException
 from application.authentication.validation import get_authenticated_user
-from ...handlers.websocket_handler import WebSocketHandler
-from ...handlers.subscription_manager import SubscriptionManager
-from ...models import Command
 
 class MachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager | None = None
@@ -35,7 +35,10 @@ class MachinesWebsocketHandler(WebSocketHandler):
             return command 
         except ValidationError:
             # Validation error occurs when command structure is invalid
-            raise RaisedException("Command validation error. Ensure that sent messages follow the expected structure:\nhttps://krzysztof27.notion.site/Cherry-API-7923eecc00564cb38c4d01d6696d201f")
+            raise RaisedException("""
+                Command validation error. Ensure that sent messages follow the expected structure:\n
+                https://krzysztof27.notion.site/Cherry-API-7923eecc00564cb38c4d01d6696d201f
+            """)
         except HTTPException as e:
             # HTTPException is raised by get_authenticated_user when token is invalid or user has missing permissions
             if(e.status_code == status.HTTP_403_FORBIDDEN): 
@@ -47,12 +50,14 @@ class MachinesWebsocketHandler(WebSocketHandler):
         try:
             command = await self.validate_command(json)
             
+            if not hasattr(command, 'target') or not command.target: 
+                raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
+            
+            
             match command.method:
                 case "SUBSCRIBE": 
-                    if not hasattr(command, 'target') or not command.target: raise RaisedException("No target attribute given.")
                     self.subscription_manager.subscribe(command.target, self.websocket)
                 case "UNSUBSCRIBE": 
-                    if not hasattr(command, 'target') or not command.target: raise RaisedException("No target attribute given.")
                     self.subscription_manager.unsubscribe(command.target, self.websocket)
                 case "START": pass
                 case "STOP": pass

@@ -1,11 +1,11 @@
 import asyncio
 from application import app
-from starlette.websockets import WebSocket
-from .handler import MachinesWebsocketHandler
-from .broadcasts import broadcast_current_data
-from ...handlers.subscription_manager import SubscriptionManager
+from fastapi import WebSocket
+from application.machines.websocket_broadcaster import broadcast_machine_state
+from application.machines.websocket_handler import MachinesWebsocketHandler
+from application.websockets.subscription_manager import SubscriptionManager
 
-machine_broadcast_manager = SubscriptionManager(broadcast_data=broadcast_current_data)
+machine_broadcast_manager = SubscriptionManager(broadcast_data=broadcast_machine_state)
 asyncio.create_task(machine_broadcast_manager.run_continuous_broadcast(1))
 
 @app.websocket('/ws/vm')

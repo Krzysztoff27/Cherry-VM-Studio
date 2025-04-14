@@ -8,7 +8,7 @@ from application.users.users import change_user_password, create_user, get_user_
 from application.users.permissions import verify_can_change_password, verify_can_manage_user
 from application.users.models import AnyUser, CreateUserForm, Filters, AccountTypes, Administrator, Client, ModifyUserForm
 from application.users.validation import validate_creation_details, validate_modification_details
-from application.authentication import DependsOnAuthentication
+from application.authentication.validation import DependsOnAuthentication
 
 @app.get("/user", response_model=Administrator | Client, tags=['Users'])
 async def __read_logged_in_user__(current_user: DependsOnAuthentication) -> AnyUser:
