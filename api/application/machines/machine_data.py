@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from fastapi import HTTPException
 from uuid import UUID
 from application.machines.models import MachineData
 from application.libvirt import LibvirtConnection
@@ -49,6 +50,7 @@ def get_all_machines() -> dict[UUID, MachineData]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machines = libvirt_readonly_connection.listAllDomains(0)
         return {UUID(machine.UUIDString()): get_machine_data(machine) for machine in machines}
+    raise HTTPException(status_code=503, detail="API could not connect to the VM service.")
             
 def get_user_machines(owner_uuid: UUID) -> dict[UUID, MachineData]:
     return {machine_uuid: get_machine(machine_uuid) for machine_uuid in get_user_machine_uuids(owner_uuid)}
@@ -59,3 +61,4 @@ def get_machine(uuid: UUID) -> MachineData | None:
         if not machine:
             return None
         return get_machine_data(machine)
+    raise HTTPException(status_code=503, detail="API could not connect to the VM service.")

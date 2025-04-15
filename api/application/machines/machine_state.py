@@ -5,6 +5,7 @@ from uuid import UUID
 from application.machines.models import MachineState
 from application.libvirt import LibvirtConnection
 from config import MACHINES_CONFIG
+from application.machines.machine_data import get_machine_data
 
 ###############################
 #       VM state tasks
@@ -74,15 +75,22 @@ def is_vm_loading(uuid: UUID) -> bool:
 #       MachineState
 ###############################
 def get_machine_state(machine) -> MachineState:
-    return MachineState (
-        active=False if not machine.state() == libvirt.VIR_DOMAIN_RUNNING else True,
-        loading=False if not is_vm_loading(machine.UUID()) else True,
-        active_connections=[],
-        ram_max=(machine.info()[2]/1024),
-        ram_used=(machine.info()[1]/1024),
-        uptime=int(machine.getGuestInfo(libvirt.VIR_DOMAIN_GUEST_INFO_OS_UPTIME))
-    )
+    is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
+    
+    return MachineState.model_validate ({
+        **get_machine_data(machine).model_dump(),
+        'active': machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING,
+        'loading': is_vm_loading(machine.UUID()),
+        'active_connections': [],
+        'ram_max': (machine.info()[2]/1024),
+        'ram_used': (machine.info()[1]/1024) if is_active else 0,
+        'uptime': 0
+        })
     
 def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None}
+    
+def check_machine_existence(uuid: UUID) -> bool:  
+    with LibvirtConnection("ro") as libvirt_readonly_connection:
+        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None  

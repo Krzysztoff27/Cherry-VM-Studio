@@ -2,11 +2,13 @@ from starlette.websockets import WebSocketDisconnect
 from fastapi import status, HTTPException
 from json import JSONDecodeError
 from pydantic import ValidationError
+from uuid import UUID
 from application.websockets.subscription_manager import SubscriptionManager
 from application.websockets.websocket_handler import WebSocketHandler
 from application.websockets.models import Command
 from application.exceptions import RaisedException
 from application.authentication.validation import get_authenticated_user
+from application.machines.machine_state import check_machine_existence
 
 class MachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager | None = None
@@ -52,7 +54,8 @@ class MachinesWebsocketHandler(WebSocketHandler):
             
             if not hasattr(command, 'target') or not command.target: 
                 raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
-            
+            if not check_machine_existence(UUID(command.target)):
+                raise RaisedException(f"Machine of such UUID={command.target} does not exist.")
             
             match command.method:
                 case "SUBSCRIBE": 

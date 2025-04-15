@@ -1,6 +1,7 @@
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
+from application.machines.machine_state import fetch_machine_state
 
 from application.websockets.models import DataResponse
 from utils.dict import push_to_dict
@@ -19,7 +20,6 @@ async def broadcast_machine_state(subscriptions: dict[str, list[WebSocket]]):
     
     # # prepare and send data for each websocket
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
-        body = {} 
-        # body = get_machine_states(machine_uuids)
+        body = fetch_machine_state(machine_uuids)
         
         await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
