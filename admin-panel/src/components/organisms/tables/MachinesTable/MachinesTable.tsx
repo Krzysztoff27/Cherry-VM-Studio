@@ -21,7 +21,7 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
     const columns = useMemo(() => getColumns(refresh, global, viewMode), [global, viewMode]);
-    const data = parseData(machines);
+    const data = useMemo(() => parseData(machines), [global, machines, viewMode]);
 
     const table = useReactTable({
         data,
