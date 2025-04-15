@@ -1,19 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import useApiWebSocket from "./useApiWebSocket.ts";
 import { WebSocketResponse } from "../types/api.types";
 
 const useMachineState = (uuids: string[] | string) => {
     const { lastJsonMessage, sendCommand } = useApiWebSocket("/ws/vm");
     const [machinesState, setMachinesState] = useState({});
+    const prevUuidsRef = useRef<string[]>([]);
     let dataMsg = <WebSocketResponse>lastJsonMessage;
 
     useEffect(() => {
-        // subscribe to every machine
-        [uuids].flat().forEach(uuid => sendCommand("SUBSCRIBE", { target: uuid }));
-        // set timeout as the state cooldown,
-        // if 2 pass without receiving data (otherwise the entire component would reload),
-        // change dataMsg to message with empty body
-        setTimeout(() => (dataMsg = { method: "DATA", uuid: null, body: {} }), 2000);
+        const flatUuids = [uuids].flat();
+
+        // Unsubscribe from previous UUIDs
+        prevUuidsRef.current.forEach(uuid => sendCommand("UNSUBSCRIBE", { target: uuid }));
+
+        // Subscribe to new UUIDs
+        flatUuids.forEach(uuid => sendCommand("SUBSCRIBE", { target: uuid }));
+
+        // Update ref for next effect run
+        prevUuidsRef.current = flatUuids;
+
+        // Cleanup on unmount — unsubscribe from current uuids
+        return () => {
+            flatUuids.forEach(uuid => sendCommand("UNSUBSCRIBE", { target: uuid }));
+        };
     }, [JSON.stringify(uuids)]);
 
     useEffect(() => {
