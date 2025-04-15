@@ -54,7 +54,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             
             if not hasattr(command, 'target') or not command.target: 
                 raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
-            if commant.target != "ALL" and not check_machine_existence(UUID(command.target)):
+            if command.target != "ALL" and not check_machine_existence(UUID(command.target)):
                 raise RaisedException(f"Machine of such UUID={command.target} does not exist.")
             
             match command.method:
