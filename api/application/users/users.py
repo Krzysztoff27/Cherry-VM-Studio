@@ -198,10 +198,10 @@ def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: Mod
         return
     
     set_statement = ""
-    if modification_data.username   is not None and modification_data.username != user.username:    set_statement += "username = %(username)s"
-    if modification_data.email      is not None and modification_data.email != user.email:          set_statement += "email = %(email)s"
-    if modification_data.name       is not None and modification_data.name != user.name:            set_statement += "name = %(name)s"
-    if modification_data.surname    is not None and modification_data.surname != user.surname:      set_statement += "surname = %(surname)s"
+    if modification_data.username   is not None and modification_data.username != user.username:    set_statement += "username = %(username)s "
+    if modification_data.email      is not None and modification_data.email != user.email:          set_statement += "email = %(email)s "
+    if modification_data.name       is not None and modification_data.name != user.name:            set_statement += "name = %(name)s "
+    if modification_data.surname    is not None and modification_data.surname != user.surname:      set_statement += "surname = %(surname)s "
             
     params = {**modification_data.model_dump(), "uuid": user_uuid}
             
