@@ -1,4 +1,3 @@
-import logging
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
@@ -21,8 +20,6 @@ async def broadcast_machine_state(subscriptions: dict[str, list[WebSocket]]):
     
     # # prepare and send data for each websocket
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
-        try:
-            body = fetch_machine_state(machine_uuids)
-            await websocket.send_json(jsonable_encoder(DataResponse(body = jsonable_encoder(body))))  
-        except RuntimeError as e:
-            logging.error(e)
+        body = fetch_machine_state(machine_uuids)
+        
+        await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
