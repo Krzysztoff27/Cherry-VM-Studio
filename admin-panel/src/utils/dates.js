@@ -8,7 +8,7 @@ export const timePassedRounded = pastDate => {
     });
 
     const now = new Date();
-    let diff = Math.floor((now.getTime() - pastDate.getTime()) / 1000);
+    let diff = Math.max(Math.floor((now.getTime() - pastDate.getTime()) / 1000), 0);
 
     for (const [unit, threshold] of thresholds) {
         if (diff < threshold) return [diff, unit];

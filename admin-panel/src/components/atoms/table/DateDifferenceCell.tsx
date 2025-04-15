@@ -3,14 +3,14 @@ import React from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { timePassedRounded } from "../../../utils/dates.js";
 
-const DateDifferenceCell = ({getValue} : {getValue: () => Date | null}) : React.JSX.Element => {
-    const {tns} = useNamespaceTranslation('pages');
-    
+const DateDifferenceCell = ({ getValue }: { getValue: () => string | null }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages");
+
     const val = getValue();
-    const [count, unit] = timePassedRounded(new Date(val));
-    
-    if(!val) return <Text>-</Text>
-    return <Text>{tns(`accounts.table.cells.last-active.${unit}`, {count})}</Text>
-}
+    const [count, unit] = timePassedRounded(new Date(`${val}Z`));
+
+    if (!val) return <Text>-</Text>;
+    return <Text>{tns(`accounts.table.cells.last-active.${unit}`, { count })}</Text>;
+};
 
 export default DateDifferenceCell;
