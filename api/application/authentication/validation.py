@@ -9,7 +9,7 @@ from application import SECRET_KEY, ALGORITHM
 from .models import Token, TokenTypes
 from .tokens import is_token_of_type
 from .passwords import verify_password
-from application.users.users import get_user_by_username
+from application.users.users import get_user_by_username, update_user_last_active
 from application.users.models import Administrator, AnyUser
 
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser | None:
@@ -22,8 +22,11 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser | None:
 
     username: str = payload.get("sub")
     user = get_user_by_username(username)
+    
     if user is None: 
         raise CredentialsException()
+    
+    update_user_last_active(user)
     return user
 
 def authenticate_user(username: str, password: str):
@@ -42,7 +45,6 @@ def get_authenticated_administrator(token: Token) -> Administrator | None:
     if not is_admin(user):
         raise HTTPException(status_code=403, detail="You do not have the necessary permissions to access this resource.")    
     return user
-    
 
 def get_user_from_refresh_token(token: Token) -> AnyUser | None:
     return validate_user_token(token, 'refresh')

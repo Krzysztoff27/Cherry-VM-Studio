@@ -243,3 +243,9 @@ def change_user_password(uuid, new_password):
             cursor.execute(f"UPDATE {table} SET password = %s WHERE uuid = %s", (hashed_password, uuid,))
             connection.commit()
     
+def update_user_last_active(user: AnyUser):
+    table = get_parent_table(user)
+    
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(f"UPDATE {table} SET last_active = CURRENT_TIMESTAMP WHERE uuid = %s", [user.uuid])
