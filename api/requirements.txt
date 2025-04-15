@@ -7,6 +7,6 @@ pydantic>=2.7.4,<=2.9.0
 python-dotenv==1.0.1
 python-pam==2.0.2
 six>=1.16.0
-libvirt-python==11.0.0
+libvirt-python>=11.0.0
 psycopg[binary]
 psycopg[pool]
