@@ -63,7 +63,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
                         self.subscription_manager.subscribe(command.target, self.websocket)
                 case "UNSUBSCRIBE": 
                     if command.target == "ALL":
-                        self.subscriptions_manager.unsubscribe_from_all(self.websocket)
+                        self.subscription_manager.unsubscribe_from_all(self.websocket)
                     else:
                         self.subscription_manager.unsubscribe(command.target, self.websocket)
                 case "START": pass
