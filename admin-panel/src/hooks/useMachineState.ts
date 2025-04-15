@@ -8,6 +8,7 @@ const useMachineState = (uuids: string[] | string) => {
     let dataMsg = <WebSocketResponse>lastJsonMessage;
 
     useEffect(() => {
+        sendCommand("UNSUBSCRIBE", { target: "ALL" });
         // subscribe to every machine
         [uuids].flat().forEach(uuid => sendCommand("SUBSCRIBE", { target: uuid }));
         // set timeout as the state cooldown,
