@@ -1,5 +1,6 @@
 from starlette.websockets import WebSocket, WebSocketState
 from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
 from application.exceptions import RaisedException
 from .models import CommandData, AcknowledgeResponse, RejectResponse
 
@@ -21,9 +22,9 @@ class WebSocketHandler(BaseModel):
     async def acknowledge(self, command):
         if not command: command = {}
         acknowledge = AcknowledgeResponse(command = CommandData(**command))
-        await self.websocket.send_json(acknowledge.model_dump())
+        await self.websocket.send_json(jsonable_encoder(acknowledge.model_dump()))
 
     async def reject(self, command, reason: Exception | RaisedException | str | None = None):     
         if not command: command = {}   
         reject = RejectResponse(command = CommandData(**command), reason = str(reason))
-        await self.websocket.send_json(reject.model_dump())
+        await self.websocket.send_json(jsonable_encoder(reject.model_dump()))
