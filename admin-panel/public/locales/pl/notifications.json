@@ -8,6 +8,10 @@
             "title": "Nieprawidłowe zapytanie",
             "message": "Twoje żądanie nie mogło zostać przetworzone z powodu błędu. Sprawdź poprawność przesłanych danych."
         },
+        "400-CANNOT-REMOVE-USER": {
+            "title": "Nie można usunąć użytkownika",
+            "message": "Nie można usunąć użytkownika, ponieważ pozostawiłoby to uprawnienie bez przypisanego właściciela. Przypisz uprawnienia innemu użytkownikowi przed usunięciem."
+        },
         "401": {
             "title": "Nieautoryzowany dostęp",
             "message": "Aby uzyskać dostęp do żądanego zasobu, musisz się zalogować."
@@ -28,6 +32,10 @@
             "title": "Nie znaleziono {{resource, capitalize}}",
             "message": "Szukany {{resource, lowercase}} nie został odnaleziony."
         },
+        "404-NO-LONGER": {
+            "title": "Nie znaleziono {{resource, capitalize}}",
+            "message": "Szukany {{resource, lowercase}} już nie istnieje."
+        },
         "404-PAGE": {
             "title": "Nie znaleziono strony",
             "message": "Strona, której szukasz, nie istnieje. Upewnij się, że wprowadziłeś poprawny adres URL."
@@ -47,6 +55,10 @@
         "409": {
             "title": "Konflikt",
             "message": "Zasób o podanej nazwie już istnieje."
+        },
+        "410": {
+            "title": "Zasób usunięty",
+            "message": "Szukany zasób nie jest już dostępny. Skontaktuj się z zespołem deweloperów w celu uzyskania pomocy."
         },
         "418": {
             "title": "Jestem czajnikiem",
@@ -70,7 +82,7 @@
         },
         "601": {
             "title": "Nieprawidłowa konfiguracja panelu",
-            "message": ""
+            "message": "W konfiguracji panelu wykryto nieprawidłowe ustawienia. Skontaktuj się z zespołem deweloperów."
         },
         "650": {
             "title": "Nie udało się załadować konfiguracji sieci",

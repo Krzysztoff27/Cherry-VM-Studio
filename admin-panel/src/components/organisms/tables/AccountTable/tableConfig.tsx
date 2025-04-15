@@ -33,7 +33,7 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
             const fullName = details.name || details.surname ? `${details.name} ${details.surname}` : details.username;
             return fullName.toLowerCase().startsWith(filterValue.toLowerCase());
         },
-        minSize: 300,
+        minSize: 130,
     },
     {
         administrative: {
@@ -41,21 +41,21 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
             header: t("accounts.table.headers.roles", { ns: "pages" }),
             enableSorting: false,
             cell: BadgesCell,
-            minSize: 400,
+            minSize: 200,
         },
         client: {
             accessorKey: "groups",
             header: t("accounts.table.headers.groups", { ns: "pages" }),
             enableSorting: false,
             cell: BadgesCell,
-            minSize: 400,
+            minSize: 200,
         },
     }[accountType],
     {
         accessorKey: "lastActive",
         header: t("accounts.table.headers.last-active", { ns: "pages" }),
         cell: DateDifferenceCell,
-        minSize: 100,
+        minSize: 80,
     },
     {
         accessorKey: "options",

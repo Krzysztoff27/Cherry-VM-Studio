@@ -3,7 +3,7 @@ import AccountTable from "../../../components/organisms/tables/AccountTable/Acco
 import useFetch from "../../../hooks/useFetch";
 import AccountModal from "../../../modals/account/AccountModal/AccountModal";
 import classes from "./Users.module.css";
-import { Paper, Portal, Stack } from "@mantine/core";
+import { Paper, Portal, ScrollArea, Stack } from "@mantine/core";
 import { AccountType } from "../../../types/config.types";
 import ChangePasswordModal from "../../../modals/account/ChangePasswordModal/ChangePasswordModal";
 

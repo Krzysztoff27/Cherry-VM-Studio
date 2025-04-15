@@ -21,7 +21,6 @@ const GroupMultiselect = (props: MultiSelectProps): React.JSX.Element => {
 
     return (
         <MultiSelect
-            dropdownOpened={true}
             placeholder={t("groups")}
             data={groupOptions}
             hidePickedOptions={true}

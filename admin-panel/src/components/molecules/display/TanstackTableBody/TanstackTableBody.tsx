@@ -6,11 +6,7 @@ import classes from "./TanstackTableBody.module.css";
 
 const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
     return (
-        <ScrollArea
-            className={classes.table}
-            scrollbars="x"
-            offsetScrollbars
-        >
+        <Box className={classes.table}>
             {table.getHeaderGroups().map(headerGroup => (
                 <Box
                     className={classes.tr}
@@ -54,6 +50,7 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                 <ScrollArea
                     scrollbars="y"
                     offsetScrollbars
+                    style={{ flex: 1 }} // makes it take available height in .bodyWrapper
                 >
                     {table.getRowModel().rows.map(row => (
                         <Box
@@ -79,7 +76,7 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                     ))}
                 </ScrollArea>
             )}
-        </ScrollArea>
+        </Box>
     );
 };
 

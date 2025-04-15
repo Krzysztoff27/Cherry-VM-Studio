@@ -49,6 +49,11 @@
         "title": "Something bad has happened",
         "message": "API service encountered an issue and couldn't complete your request. Please try refreshing the page."
     },
+    "502": {
+        "code": 502,
+        "title": "Bad Gateway",
+        "message": "The server received an invalid response from an upstream server while processing your request. Please try again later or contact the development team if the issue persists."
+    },
     "503": {
         "code": 503,
         "title": "Service unavailable",
