@@ -1,0 +1,13 @@
+services:
+  guacd:
+    container_name: cherry-guacd
+    restart: always
+    image: guacamole/guacd
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    
+networks:
+  cherry-internal:
+    name: cherry-internal
+    external: true

@@ -1,0 +1,13 @@
+[Unit]
+Description=Cherry VM Studio Container Control - %i
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=CherryWorker
+Type=oneshot
+ExecStart=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-containers-start.sh %i
+ExecStop=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-containers-stop.sh %i
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal

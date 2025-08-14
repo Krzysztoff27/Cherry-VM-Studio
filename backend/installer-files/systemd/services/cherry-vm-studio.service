@@ -1,0 +1,16 @@
+[Unit]
+Description=Cherry VM Studio Stack Initializer
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+User=CherryWorker
+Type=oneshot
+ExecStart=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-vm-studio-start.sh
+ExecStop=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-vm-studio-stop.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

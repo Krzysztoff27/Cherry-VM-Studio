@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policyconfig>
+    <action id="com.cvms.stack">
+        <description>Manage Cherry VM Studio stack</description>
+        <message>Authentication is required to manage Cherry VM Studio stack</message>
+        <annotate key="org.freedesktop.policykit.exec.path">/opt/cherry-vm-studio/systemd/cherry-vm-studio-start.sh</annotate>
+        <annotate key="org.freedesktop.policykit.exec.path">/opt/cherry-vm-studio/systemd/cherry-vm-studio-stop.sh</annotate>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>auth_admin</allow_active>
+        </defaults>
+    </action>
+</policyconfig>
