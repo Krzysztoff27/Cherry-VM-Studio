@@ -63,16 +63,16 @@ start_container_cherry_guacd(){
     log info 'Started Cherry-Guacd container.'
 
     sleep 2
-    PID_GUACD=$(docker inspect -f '{{.State.Pid}}' "${CONTAINER_GUACD}")
+    PID_GUACD=$(docker inspect -f '{{.State.Pid}}' "$CONTAINER_GUACD")
     log_runner 'Cherry-Guacd:' ln -sf /proc/"${PID_GUACD}"/ns/net "/var/run/netns/${CONTAINER_GUACD}" 
     log info 'Created netns symlink for Cherry-Guacd container.'
 
     log info 'Attaching Cherry-Guacd container to NS_RASBUS namespace.'
-    log_runner 'Cherry-Guacd:' ip link set "${VETH_GUACD_RASBUS}" netns "${CONTAINER_GUACD}"
-    log_runner 'Cherry-Guacd:' ip netns exec "${CONTAINER_GUACD}" ip link set dev "${VETH_GUACD_RASBUS}" up
+    log_runner 'Cherry-Guacd:' ip link set "$VETH_GUACD_RASBUS" netns "$CONTAINER_GUACD"
+    log_runner 'Cherry-Guacd:' ip netns exec "$CONTAINER_GUACD" ip link set dev "$VETH_GUACD_RASBUS" up
     log info 'Cherry-Guacd container attached to NS_RASBUS namespace.'
     log info 'Addressing Cherry-Guacd NS_RASBUS connector.'
-    log_runner 'Cherry-Guacd:' ip netns exec "${CONTAINER_GUACD}" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_GUACD_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_GUACD_RASBUS}"
+    log_runner 'Cherry-Guacd:' ip netns exec "$CONTAINER_GUACD" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_GUACD_RASBUS}/${NETWORK_RAS_NETMASK}" dev "$VETH_GUACD_RASBUS"
 }
 
 start_container_cherry_api(){
@@ -80,16 +80,16 @@ start_container_cherry_api(){
     log info 'Started Cherry-API container.'
     sleep 2
 
-    PID_API=$(docker inspect -f '{{.State.Pid}}' "${CONTAINER_API}")
+    PID_API=$(docker inspect -f '{{.State.Pid}}' "$CONTAINER_API")
     log_runner 'Cherry-API:' ln -sf /proc/"${PID_API}"/ns/net "/var/run/netns/${CONTAINER_API}" 
     log info 'Created netns symlink for Cherry-API container.'
 
     log info 'Attaching Cherry-API container to NS_RASBUS namespace.'
-    log_runner 'Cherry-API:' ip link set "${VETH_API_RASBUS}" netns "${CONTAINER_API}"
-    log_runner 'Cherry-API:' ip netns exec "${CONTAINER_API}" ip link set dev "${VETH_API_RASBUS}" up
+    log_runner 'Cherry-API:' ip link set "$VETH_API_RASBUS" netns "$CONTAINER_API"
+    log_runner 'Cherry-API:' ip netns exec "$CONTAINER_API" ip link set dev "$VETH_API_RASBUS" up
     log info 'Cherry-API container attached to NS_RASBUS namespace.'
     log info 'Addressing Cherry-API NS_RASBUS connector.'
-    log_runner 'Cherry-API:' ip netns exec "${CONTAINER_API}" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_LIBVIRT_API_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_API_RASBUS}"
+    log_runner 'Cherry-API:' ip netns exec "$CONTAINER_API" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_API_RASBUS}/${NETWORK_RAS_NETMASK}" dev "$VETH_API_RASBUS"
 }
 
 start_container_cherry_admin_panel(){

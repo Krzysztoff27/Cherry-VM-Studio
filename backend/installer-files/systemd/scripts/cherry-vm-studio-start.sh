@@ -45,8 +45,8 @@ trap error_handler ERR
 ###############################
 create_netns_rasbus(){
     log info 'Creating RASBUS network namespace.'
-    log_runner 'NETNS_RASBUS' ip netns add "${NS_RASBUS}"
-    log_runner 'NETNS_RASBUS' ip netns exec "${NS_RASBUS}" ip link set dev lo up #set lo interface up in order to bind the ns to the process
+    log_runner 'NETNS_RASBUS' ip netns add "$NS_RASBUS"
+    log_runner 'NETNS_RASBUS' ip netns exec "$NS_RASBUS" ip link set dev lo up #set lo interface up in order to bind the ns to the process
     log info 'Created RASBUS network namespace.'
 }
 
@@ -67,21 +67,21 @@ create_veth_pairs(){
 create_bridge_rasbr(){
     #network bridge for inter cherry-rasBus communication - bridges containers and cherry-vmBr
     log info 'Creating internal cherry-rasBus bridge.'
-    log_runner 'BR_RASBR' ip netns exec "${NS_RASBUS}" ip link add "${BR_RASBR}" type bridge
-    log_runner 'BR_RASBR' ip netns exec "${NS_RASBUS}" ip link set dev "${BR_RASBR}" up
+    log_runner 'BR_RASBR' ip netns exec "$NS_RASBUS" ip link add "$BR_RASBR" type bridge
+    log_runner 'BR_RASBR' ip netns exec "$NS_RASBUS" ip link set dev "$BR_RASBR" up
     log info 'Created internal cherry-rasBus bridge.'
 }
 
 attach_veths_rasbus(){
     log info 'Attaching VETHs inside NS_RASBUS NETNS to the BR_RASBR.'
     #attach VETHs inside the NS_RASBUS namespace to the BR_RASBR bridge
-    log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_API}" master "${BR_RASBR}"
-    log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_GUACD}" master "${BR_RASBR}"
+    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_API" master "$BR_RASBR"
+    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_GUACD" master "$BR_RASBR"
     #VETH pair for VM guests external connectivity
-    log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_EXT}" master "${BR_RASBR}"
+    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" master "$BR_RASBR"
     #VETH pair for Cherry-API - libvirt daemon communication
-    log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_LIBVIRT}" master "${BR_RASBR}"
-    log info 'Attached VETHs inside NS_RASBUS NETNS to the BR_RASBR.'
+    #log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_LIBVIRT}" master "${BR_RASBR}"
+    #log info 'Attached VETHs inside NS_RASBUS NETNS to the BR_RASBR.'
 }
 
 ###############################
@@ -90,10 +90,10 @@ attach_veths_rasbus(){
 create_bridge_vm(){
     log info 'Creating bridge for libvirt VM guests - Internet access.'
     #network bridge for libvirt VM guests - Internet access
-    log_runner 'BR_VMBR' ip link add "${BR_VMBR}" type bridge
-    log_runner 'BR_VMBR' ip link set dev "${BR_VMBR}" up
+    log_runner 'BR_VMBR' ip link add "$BR_VMBR" type bridge
+    log_runner 'BR_VMBR' ip link set dev "$BR_VMBR" up
     #attach VETH_VMBR_RASBUS end to the BR_VMBR on the host network namespace
-    log_runner 'BR_VMBR' ip link set dev "${VETH_VMBR_RASBUS}" master "${BR_VMBR}"
+    log_runner 'BR_VMBR' ip link set dev "$VETH_VMBR_RASBUS" master "$BR_VMBR"
 }
 
 ###############################
@@ -102,23 +102,24 @@ create_bridge_vm(){
 address_ns_host(){
     log info 'Addressing infrastructure inside the host namespace.'
     #external connectivity VETH end on the host namespace
-    log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_EXT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_EXT_RASBUS}"
+    log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_EXT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "$VETH_EXT_RASBUS"
     #dedicated link for Cherry-API - libvirt daemon TLS socket (listens on *.254:16514)
-    log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_LIBVIRT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_LIBVIRT_RASBUS}"
-    log info 'Addressed infrastructure inside the host namespace.'
+    #log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_LIBVIRT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_LIBVIRT_RASBUS}"
+    #log info 'Addressed infrastructure inside the host namespace.'
 }
 
 address_ns_rasbus(){
     #BR_RASBR inside the NS_RASBUS namespace
     log info 'Addressing infrastructure inside NS_RASBUS namespace.'
-    log_runner 'NS_RASBUS:' runuser -u CherryWorker -- sudo ip netns exec "${NS_RASBUS}" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_BR_RASBR}/${NETWORK_RAS_NETMASK}" dev "${BR_RASBR}" 
+    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_BR_RASBR}/${NETWORK_RAS_NETMASK}" dev "${BR_RASBR}" 
     log info 'Addressed infrastructue inside NS_RASBUS namespace.'
 }
 
 configure_firewall(){
+    log info 'Configuring kernel options for NS_RASBUS namespace.'
+    log_runner 'NS_RASBUS:' "$(ip netns exec "$NS_RASBUS" /bin/bash && sysctl -w net.ipv4.ip_forward=1)"
     log info 'Creating firewall rules inside NS_RASBUS namespace.'
     # TODO - Add actual rules - retrieve current config from lenovo.lab
-    log info 'Created firewall rules inside NS_RASBUS namespace.'
 }
 
 ###############################

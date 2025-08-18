@@ -47,7 +47,7 @@ cleanup_ns_rasbus(){
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_API" down
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_GUACD" down
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" down
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_LIBVIRT" down
+    #log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_LIBVIRT" down
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_VMBR" down
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$BR_RASBR" down
     log info 'Set all of the devices inside NS_RASBUS network namespace down.'
@@ -62,7 +62,7 @@ cleanup_host_os(){
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_GUACD"
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_API"
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_EXT"
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_LIBVIRT"
+    #log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_LIBVIRT"
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_VMBR"
     #Bridge inside NS_RASBUS
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$BR_RASBR"
