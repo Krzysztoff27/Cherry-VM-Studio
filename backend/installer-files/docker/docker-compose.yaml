@@ -1,0 +1,88 @@
+services:
+  admin-panel:
+    container_name: cherry-admin-panel
+    restart: always
+    image: "ghcr.io/krzysztoff27/cherry-admin-panel:latest"
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+  api:
+    container_name: cherry-api
+    restart: always
+    image: "ghcr.io/krzysztoff27/cherry-api:latest"
+    secrets:
+      - jwt_secret
+    volumes:
+      - "/var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock:rw"
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+  database:
+    container_name: cherry-db
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_DB=${POSTGRESQL_DATABSE}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    volumes:
+      - ./db:/var/lib/postgresql/data:rw
+      - ./initdb:/docker-entrypoint-initdb.d/:ro
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+  guacamole:
+    container_name: cherry-guacamole
+    restart: always
+    image: guacamole/guacamole
+    environment:
+      - GUACD_HOSTNAME=${GUACD_HOSTNAME}
+      - POSTGRESQL_HOSTNAME=${POSTGRESQL_HOSTNAME}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABSE}
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+  guacd:
+    container_name: cherry-guacd
+    restart: always
+    image: guacamole/guacd
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+  traefik:
+    container_name: cherry-proxy
+    restart: always
+    image: traefik
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    command:
+     #DELETE BEFORE RELEASING
+     - "--log.level=DEBUG"
+     #DELETE BEFORE RELEASING
+     - "--api.dashboard=true"
+     - "--providers.file.directory=/dynamic-configuration"
+     - "--providers.file.watch=true"
+     - "--entrypoints.web.address=:80"
+     - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./dynamic-configuration:/dynamic-configuration"
+    networks:
+      cherry-external:
+      cherry-internal:
+        aliases:
+          - ${DOMAIN_NAME}
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+
+networks:
+  cherry-external:
+    name: cherry-external
+    external: false
+  cherry-internal:
+    name: cherry-internal
+    external: true

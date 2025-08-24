@@ -40,6 +40,8 @@ readonly DIR_DOCKER_HOST_CHERRY_GUACD="${DIR_DOCKER_HOST}/cherry-guacd"; export 
 readonly DIR_DOCKER_HOST_CHERRY_API="${DIR_DOCKER_HOST}/cherry-api"; export DIR_DOCKER_HOST_CHERRY_API
 readonly DIR_DOCKER_HOST_CHERRY_ADMIN_PANEL="${DIR_DOCKER_HOST}/cherry-admin-panel"; export DIR_DOCKER_HOST_CHERRY_ADMIN_PANEL
 
+readonly DIR_DOCKER_HOST_INITDB="${DIR_DOCKER_HOST}/initdb"; export DIR_DOCKER_INITDB
+
 readonly CONTAINER_DIRECTORIES_HOST=(
     "$DIR_DOCKER_HOST_CHERRY_PROXY"
     "$DIR_DOCKER_HOST_CHERRY_DB"
@@ -184,3 +186,18 @@ readonly VETH_PAIRS=(
 #       system worker
 ###############################
 readonly SYSTEM_WORKER_USERNAME='CherryWorker'; export SYSTEM_WORKER_USERNAME
+
+###############################
+#    watched containers
+###############################
+readonly WATCHED_CONTAINERS=(
+    "$CONTAINER_API"
+    "$CONTAINER_GUACD"
+); export WATCHED_CONTAINERS
+
+###############################
+#    guacamole db user
+###############################
+readonly POSTGRESQL_DATABASE='guacamole'; export POSTGRESQL_DATABASE
+readonly POSTGRESQL_USER='guacadmin'; export POSTGRESQL_USER
+readonly POSTGRESQL_PASSWORD='guacadmin'; export POSTGRESQL_PASSWORD

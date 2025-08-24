@@ -318,25 +318,36 @@ configure_daemon_docker(){
     systemctl -q enable docker.service >/dev/null 2>>"$ERR_LOG"
     printf 'Starting docker daemon.\n '
     systemctl -q start docker.service >/dev/null 2>>"$ERR_LOG" 
-    printf 'Creating containers .env files.\n'
-    # Prepare containers to run as SYSTEM_WORKER user and avoid usage of default system root account
+    printf 'Switching Docker daemon to swarm mode.\n'
+    docker swarm init >/dev/null 2>>"$ERR_LOG" 
+
+    printf 'Creating containers secrets and .env files.\n'
     {
         SYSTEM_WORKER_UID=$(id -u -r "$SYSTEM_WORKER_USERNAME")
         SYSTEM_WORKER_GID=$(id -g -r "$SYSTEM_WORKER_USERNAME")
 
-        for CONTAINER_DIRECTORY in "${CONTAINER_DIRECTORIES_HOST[@]}"; do
-            printf 'SYSTEM_WORKER_UID=%s\n' "$SYSTEM_WORKER_UID" >> "$CONTAINER_DIRECTORY/.env"
-            printf 'SYSTEM_WORKER_GID=%s\n' "$SYSTEM_WORKER_GID" >> "$CONTAINER_DIRECTORY/.env"
-        done
+        JWT_SECRET=$(openssl rand -hex 32)
 
-        printf 'DOMAIN_NAME=%s/n' "$domain_name" >> "${DIR_DOCKER_HOST_CHERRY_PROXY}/.env"
+        {
+            printf 'JWT_SECRET=%s' "$JWT_SECRET" | docker secret create jwt_secret -
+
+            printf 'SYSTEM_WORKER_UID=%s\n' "$SYSTEM_WORKER_UID"
+            printf 'SYSTEM_WORKER_GID=%s\n' "$SYSTEM_WORKER_GID"
+
+            printf 'DOMAIN_NAME=%s/n' "$domain_name"
+
+            printf 'GUACD_HOSTNAME=%s\n' "$CONTAINER_GUACD"
+            printf 'POSTGRESQL_HOSTNAME=%s\n' "$CONTAINER_DB"
+            printf 'POSTRGESQL_DATABASE=%s\n' "$POSTGRESQL_DATABASE"
+            printf 'POSTGRESQL_USER=%s\n' "$POSTGRESQL_USER"
+            printf 'POSTGRESQL_PASSWORD=%s\n' "$POSTGRESQL_PASSWORD"
+
+        } >> "$CONTAINER_DIRECTORY/.env"
+
     } 2>>"$ERR_LOG"
 
     printf 'Creating initial SQL file for Apache Guacamole DB.\n'
-    if [ ! -f "$DIR_DOCKER_HOST_CHERRY_DB_DATABASE" ]; then
-        mkdir -p "$DIR_DOCKER_HOST_CHERRY_DB_DATABASE" >/dev/null 2>>"$ERR_LOG"
-    fi
-    docker run -q --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > "${DIR_DOCKER_HOST_CHERRY_DB_DATABASE}/01-initdb.sql" 2>>"$ERR_LOG"
+    docker run -q --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > "${DIR_DOCKER_HOST_INITDB}/01-initdb.sql" 2>>"$ERR_LOG"
 }
 
 configure_daemon_libvirt(){
