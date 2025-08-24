@@ -1,0 +1,5 @@
+polkit.addRule(function(action, subject){
+    if ((action.id == "com.cvms.watchdog") && ((subject.isInGroup == "CherryWorker") && (subject.user == "CherryWorker"))){
+        return polkit.Result.YES;
+    }
+});

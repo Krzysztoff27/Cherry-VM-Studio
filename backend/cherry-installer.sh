@@ -248,13 +248,13 @@ generate_subnet() {
 
     case "$IP_SUBNET_RANGE" in
         10)
-        printf '%s' "10.$(rand_between 0 255).$(rand_between 0 255).0"
+        printf '%s' "10.$(rand_between 0 255).$(rand_between 0 255)"
         ;;
         172)
-        printf '%s' "172.$(rand_between 16 31).$(rand_between 0 255).0"
+        printf '%s' "172.$(rand_between 16 31).$(rand_between 0 255)"
         ;;
         192)
-        printf '%s' "192.168.$(rand_between 0 255).0"
+        printf '%s' "192.168.$(rand_between 0 255)"
         ;;
         *)
         printf '%s' "Invalid IP subnet range: $IP_RANGE" 2>>"$ERR_LOG"
@@ -363,11 +363,13 @@ configure_daemon_libvirt(){
 
 create_docker_networks(){
     printf 'Creating internal Docker network.\n'
+
+
     docker network create \
-     -o "com.docker.network.bridge.enable_icc"="true" \
-     -o "com.docker.network.bridge.name"="$NETWORK_DOCKER_INTERNAL_NAME" \
-     --driver=bridge \
-     --internal "$NETWORK_DOCKER_INTERNAL_NAME" >/dev/null 2>>"$ERR_LOG"
+    -o "com.docker.network.bridge.enable_icc"="true" \
+    -o "com.docker.network.bridge.name"="$NETWORK_DOCKER_INTERNAL_NAME" \
+    --driver=bridge \
+    --internal "$NETWORK_DOCKER_INTERNAL_NAME" >/dev/null 2>>"$ERR_LOG"
 
     NETWORK_DOCKER_INTERNAL_SUBNET=$(docker network inspect -f '{{ (index .IPAM.Config 0).Subnet }}' "$NETWORK_DOCKER_INTERNAL_NAME")
     NETWORK_DOCKER_INTERNAL_GATEWAY=$(docker network inspect -f '{{ (index .IPAM.Config 0).Gateway }}' "$NETWORK_DOCKER_INTERNAL_NAME")

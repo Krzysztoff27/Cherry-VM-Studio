@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policyconfig>
+    <action id="com.cvms.watchdog">
+        <description>Manage Cherry VM Studio Watchdog service</description>
+        <message>Authentication is required to manage Cherry VM Studio Watchdog service</message>
+        <annotate key="org.freedesktop.policykit.exec.path">/opt/cherry-vm-studio/systemd/cherry-watchdog.sh</annotate>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>auth_admin</allow_active>
+        </defaults>
+    </action>
+</policyconfig>
