@@ -47,7 +47,6 @@ create_netns_rasbus(){
     log info 'Creating RASBUS network namespace.'
     log_runner 'NETNS_RASBUS' ip netns add "$NS_RASBUS"
     log_runner 'NETNS_RASBUS' ip netns exec "$NS_RASBUS" ip link set dev lo up #set lo interface up in order to bind the ns to the process
-    log info 'Created RASBUS network namespace.'
 }
 
 create_veth_pairs(){
@@ -61,15 +60,13 @@ create_veth_pairs(){
         log_runner "$pair" ip link set "${!veth2}" netns "${NS_RASBUS}"
         log_runner "$pair" ip netns exec "${NS_RASBUS}" ip link set dev "${!veth2}" up
     done
-    log info 'Created all veth pairs.'
 }
 
 create_bridge_rasbr(){
     #network bridge for inter cherry-rasBus communication - bridges containers and cherry-vmBr
-    log info 'Creating internal cherry-rasBus bridge.'
+    log info 'Creating cherry-rasBus bridge.'
     log_runner 'BR_RASBR' ip netns exec "$NS_RASBUS" ip link add "$BR_RASBR" type bridge
     log_runner 'BR_RASBR' ip netns exec "$NS_RASBUS" ip link set dev "$BR_RASBR" up
-    log info 'Created internal cherry-rasBus bridge.'
 }
 
 attach_veths_rasbus(){
@@ -79,9 +76,6 @@ attach_veths_rasbus(){
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_GUACD" master "$BR_RASBR"
     #VETH pair for VM guests external connectivity
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" master "$BR_RASBR"
-    #VETH pair for Cherry-API - libvirt daemon communication
-    #log_runner 'NS_RASBUS:' ip netns exec "${NS_RASBUS}" ip link set dev "${VETH_RASBUS_LIBVIRT}" master "${BR_RASBR}"
-    #log info 'Attached VETHs inside NS_RASBUS NETNS to the BR_RASBR.'
 }
 
 ###############################
@@ -103,16 +97,12 @@ address_ns_host(){
     log info 'Addressing infrastructure inside the host namespace.'
     #external connectivity VETH end on the host namespace
     log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_EXT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "$VETH_EXT_RASBUS"
-    #dedicated link for Cherry-API - libvirt daemon TLS socket (listens on *.254:16514)
-    #log_runner 'VETH HOST:' ip addr add "${NETWORK_RAS%.*}.${SUFFIX_VETH_LIBVIRT_RASBUS}/${NETWORK_RAS_NETMASK}" dev "${VETH_LIBVIRT_RASBUS}"
-    #log info 'Addressed infrastructure inside the host namespace.'
 }
 
 address_ns_rasbus(){
     #BR_RASBR inside the NS_RASBUS namespace
     log info 'Addressing infrastructure inside NS_RASBUS namespace.'
     log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip addr add "${NETWORK_RAS%.*}.${SUFFIX_BR_RASBR}/${NETWORK_RAS_NETMASK}" dev "${BR_RASBR}" 
-    log info 'Addressed infrastructue inside NS_RASBUS namespace.'
 }
 
 configure_firewall(){
@@ -159,7 +149,7 @@ log info 'Initializing Cherry VM Studio Stack...'
 log info 'Creating service lock.'
 log_runner 'CVMS_SERVICE_LOCK' touch "$CVMS_SERVICE_LOCK"
 
-log_runner 'Starting containers.' systemctl -q start cherry-containers@all
+log_runner 'Starting containers.' #Replace with Docker swarm stack initializer
 
 create_netns_rasbus
 create_veth_pairs

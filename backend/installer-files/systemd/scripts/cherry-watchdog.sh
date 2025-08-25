@@ -59,6 +59,13 @@ attach_container(){
     log_runner "$container:" ip netns exec "$container" ip addr add "${NETWORK_RAS%.*}.${ip_suffix}/${NETWORK_RAS_NETMASK}" dev "$veth_connector"
 }
 
+detach_container(){
+    local container="$1"
+
+    log info "Removing $container namespace."
+    log_runner "$container:" rm -f "/var/run/netns/${container}"    
+}
+
 start_container(){
     local container="$1"
 
@@ -68,8 +75,8 @@ start_container(){
         "$CONTAINER_GUACD")
             attach_container "$CONTAINER_API" "$VETH_GUACD_RASBUS" "$SUFFIX_VETH_GUACD_RASBUS" ;;
         *)
-        log error "Attempting to initialize unrecognized container: $container."
-        exit 1
+            log error "Attempting to initialize unrecognized container: $container."
+            exit 1
     esac
 }
 
@@ -78,12 +85,12 @@ stop_container(){
 
     case "$container" in
         "$CONTAINER_API")
-            
+            detach_container "$CONTAINER_API" ;;
         "$CONTAINER_GUACD")
-
+            detach_container "$CONTAINER_GUACD" ;;
         *)
-        log error "Attempting to uninitialize unrecognized container: $container."
-        exit 1
+            log error "Attempting to uninitialize unrecognized container: $container."
+            exit 1
     esac
 }
 
@@ -96,7 +103,7 @@ if [ -z "${PKEXEC_UID:-}" ]; then
 fi
 
 if [ ! -f "$CVMS_STACK_LOCK" ]; then
-    log error 'Cannot use systemctl cherry-vm-studio without having installed Cherry VM Studio first!'
+    log error 'Cannot use systemctl cherry-watchdog without having installed Cherry VM Studio first!'
     exit 1
 fi
 
@@ -107,8 +114,8 @@ else
     log_runner 'Reading NETWORK_RAS settings:' NETWORK_RAS="$(yq eval ".networks.${NETWORK_RAS_NAME}.network" "$SETTINGS_FILE")"
 fi
 
-if [ ! -f "$ENV_FILE" ]; then
-    log error 'env.sh file not found in the installer files. Check files integrity and try again.'
+if [ ! -r "$ENV_FILE" ]; then
+    log error 'Cannot read env.sh file.'
     exit 1
 else
     log_runner 'Sourcing environmental variables:' source "$ENV_FILE"
@@ -123,9 +130,9 @@ docker events --format '{{.Status}} {{.Actor.Attributes.name}}' \
 while read -r status name; do
     if [[ " ${WATCHED_CONTAINERS[*]} " =~ " ${name} " ]]; then
         if [[ $status == "start" ]]; then
-            log_runner "Container $name started." start_container "$name"
+            log_runner "Container $name started. Attaching." start_container "$name"
         elif [[ $status == "die" ]]; then
-            log_runner "Container $name died." stop_container "$name"
+            log_runner "Container $name died. Detaching." stop_container "$name"
         fi
     fi
 done

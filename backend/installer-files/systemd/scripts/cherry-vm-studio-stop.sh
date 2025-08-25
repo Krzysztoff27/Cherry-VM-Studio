@@ -111,7 +111,7 @@ fi
 
 log info 'Stopping Cherry VM Studio Stack...'
 
-log_runner 'Stopping all containers.' systemctl -q stop cherry-containers@all
+log_runner 'Stopping all containers.' #Replace with Docker swarm stack initializer
 
 cleanup_ns_rasbus
 cleanup_host_os
