@@ -13,7 +13,7 @@ set -euo pipefail
 log(){
     local priority=$1
     shift
-    logger -t "$CVMS_SERVICE_LOG_TAG" -p "user.${priority}" "$@"
+    logger -t "$CVMS_WATCHDOG_LOG_TAG" -p "user.${priority}" "$@"
 }
 
 log_prefix() {
@@ -63,7 +63,7 @@ detach_container(){
     local container="$1"
 
     log info "Removing $container namespace."
-    log_runner "$container:" rm -f "/var/run/netns/${container}"    
+    log_runner "$container:" rm --interactive=never -f "/var/run/netns/${container}"    
 }
 
 start_container(){

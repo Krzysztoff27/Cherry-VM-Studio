@@ -87,12 +87,14 @@ filesystem_cleanup(){
         rm --interactive=never -r -f "${DIR_POLKIT_ACTIONS}/com.cvms.container.policy"
         rm --interactive=never -r -f "${DIR_POLKIT_ACTIONS}/com.cvms.stack.policy"
         rm --interactive=never -r -f "${DIR_POLKIT_RULES}/49-cherryworker-container.rules"
+        rm --interactive=never -r -f "${DIR_POLKIT_RULES}/49-cherryworker-watchdog.rules"
         rm --interactive=never -r -f "${DIR_POLKIT_RULES}/50-cherryworker-stack.rules"
 
         # Systemd services
         rm --interactive=never -r -f "${DIR_SYSTEMD_SERVICES}/cherry-containers.service"
         rm --interactive=never -r -f "${DIR_SYSTEMD_SERVICES}/cherry-containers@.service"
         rm --interactive=never -r -f "${DIR_SYSTEMD_SERVICES}/cherry-vm-studio.service"
+        rm --interactive=never -r -f "${DIR_SYSTEMD_SERVICES}/cherry-watchdog.service"
 
         systemctl -q --now daemon-reload
 
