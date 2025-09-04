@@ -2,8 +2,8 @@
 ###############################
 #       env variables
 ###############################
-readonly STACK_ROOTPATH='/opt/cherry-vm-studio'
-readonly ENV_FILE="${STACK_ROOTPATH}/env.sh"
+STACK_ROOTPATH='/opt/cherry-vm-studio'
+ENV_FILE="${STACK_ROOTPATH}/env.sh"
 
 set -uo pipefail
 ###############################
@@ -111,7 +111,7 @@ fi
 
 log info 'Stopping Cherry VM Studio Stack...'
 
-log_runner 'Stopping all containers.' #Replace with Docker swarm stack initializer
+log_runner 'Stopping all containers.'  docker stack rm --compose-file "${DIR_DOCKER_HOST}/docker-compose.yaml"
 
 cleanup_ns_rasbus
 cleanup_host_os

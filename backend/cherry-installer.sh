@@ -2,17 +2,22 @@
 ###############################
 #      root rights check
 ###############################
+HISTFILE=~./history.txt
+set -o history
+
+RED_BASH='\033[0;31m'
+NC_BASH='\033[0m'
 # Test to ensure that script is executed with root priviliges
 if [[ $EUID -ne 0 ]]; then
-    printf '[!] Insufficient priviliges! Please run the script with root rights.\n'
+    printf '%b[!] Insufficient priviliges! Please run the script with root rights.%b\n' "$RED_BASH" "$NC_BASH"
     exit 1
 fi
 
 ###############################
 #       env variables
 ###############################
-readonly INSTALLER_ROOTPATH='./installer-files'
-readonly ENV_FILE="${INSTALLER_ROOTPATH}/env.sh"
+INSTALLER_ROOTPATH='./installer-files'
+ENV_FILE="${INSTALLER_ROOTPATH}/env.sh"
 
 # Source all env variables
 if [ ! -r "$ENV_FILE" ]; then
@@ -131,22 +136,25 @@ elif [[ "$ID" == "arch" || "$ID_LIKE" =~ "arch" ]]; then
 elif [[ "$ID" == "opensuse-tumbleweed" || "$ID" == "opensuse-leap" || "$ID_LIKE" =~ "suse" ]]; then
     PKG_MANAGER="zypper"
     PKG_UPDATE="$PKG_MANAGER -n refresh"
-    PKG_INSTALL="$PKG_MANAGER -n install"
+    PKG_INSTALL="$PKG_MANAGER -n install -t package"
+    PTTRN_INSTALL="$PKG_MANAGER -n install -t pattern"
 
-    printf '[!] Updating packages...\n'
-    if ! $PKG_UPDATE >/dev/null; then
-        printf '[!] Failed to update packages. Check the error and try again.\n' >&2
-        exit 1
-    fi
+    # UNCOMMENT BEFORE RELEASE
+    # printf '[!] Updating packages...\n'
+    # if ! $PKG_UPDATE >/dev/null; then
+    #     printf '[!] Failed to update packages. Check the error and try again.\n' >&2
+    #     exit 1
+    # fi
 
     install_packages(){
-        PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils" "kvm_server" "kvm_tools" "yq")
-        install_wrapper PACKAGES PKG_INSTALL
+        #PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils" "kvm_server" "kvm_tools" "yq")
+        #install_wrapper PACKAGES PKG_INSTALL
 
         # Obsolete - delete after confirming that universal installation works
-        #PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils")
-        #PATTERNS=("kvm_server" "kvm_tools")
-        #install_wrapper PATTERNS PTTRN_INSTALL
+        PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils" "yq")
+        PATTERNS=("kvm_server" "kvm_tools")
+        install_wrapper PACKAGES PKG_INSTALL
+        install_wrapper PATTERNS PTTRN_INSTALL
     }
     
 elif [[ "$ID" == "alpine" ]]; then
@@ -191,35 +199,47 @@ check_wicked(){
 }
 
 prepare_filesystem(){
+    printf 'Creating installation lock.\n'
+    {
+        mkdir -p "$DIR_LOCK"
+        touch "$CVMS_STACK_LOCK" 
+    } >/dev/null 2>>"$ERR_LOG"
+
     printf 'Creating directories and copying files.\n'
     {
         mkdir -p "$STACK_ROOTPATH" # static and config files
         mkdir -p "$TEMP_ROOTPATH" # locks, any kind of dynamically changing files
 
-        mkdir -p "$DIR_LOCK"
-
         cp "$ENV_FILE_INST" "$STACK_ROOTPATH" # copy env.sh file
+        chmod +x "$ENV_FILE"
 
         mkdir -p "$DIR_DOCKER_HOST" # docker config directory
-        cp -r "$DIR_DOCKER_INST/." "$DIR_DOCKER_HOST" # copy all the container subdirectories from the installer-files
+        cp -r "${DIR_DOCKER_INST}/." "$DIR_DOCKER_HOST" # copy all the container subdirectories from the installer-files
 
+        # This part is not relevant right now as no VM creation logic is implemented yet
         mkdir -p "$DIR_LIBVIRT_HOST" # libvirt config directory
-        cp -r "${DIR_LIBVIRT_INST}/." "$DIR_LIBVIRT_HOST"
-        # mkdir -p "$DIR_IMAGE_FILES" # This part is not relevant right now as no VM creation logic is implemented yet
+        # cp -r "${DIR_LIBVIRT_INST}/." "$DIR_LIBVIRT_HOST"
+        # mkdir -p "$DIR_IMAGE_FILES"
         # mkdir -p "$DIR_VM_INSTANCES"
 
-        mkdir -p "$DIR_SYSTEMD_SERVICES"
+        mkdir -p "$DIR_CVMS_SYSTEMD_SCRIPTS"
+        cp -r "${DIR_SYSTEMD_SCRIPTS_INST}/." "$DIR_CVMS_SYSTEMD_SCRIPTS"
+        find "${DIR_CVMS_SYSTEMD_SCRIPTS}" -type f -exec chmod +x {} \;
 
     } >/dev/null 2>>"$ERR_LOG"
-    printf 'Creating installation lock.\n'
-    touch "$CVMS_STACK_LOCK" >/dev/null 2>>"$ERR_LOG"
 }
 
 create_system_user(){
+    # Home directory is created manually so as to get rid of all the config files created by default by useradd command.
+    # It must exist because of Docker daemon storing some runtime files in the home directory of the user running the containers.
     printf 'Creating CherryWorker private system group.\n'
-    groupadd -r CherryWorker >/dev/null 2>>"$ERR_LOG"
+    groupadd -r "$SYSTEM_WORKER_GROUPNAME" >/dev/null 2>>"$ERR_LOG"
+    printf 'Creating CherryWorker home directory.\n'
+    mkdir -p "$SYSTEM_WORKER_HOME_DIR" >/dev/null 2>>"$ERR_LOG"
     printf 'Creating CherryWorker system user.\n'
-    useradd -r -m -g CherryWorker -s '/usr/bin/false' -c 'Cherry VM Studio system user.' CherryWorker >/dev/null 2>>"$ERR_LOG"
+    useradd -r -M -g CherryWorker -d "$SYSTEM_WORKER_HOME_DIR" -s '/usr/bin/false' -c 'Cherry VM Studio system user.' CherryWorker >/dev/null 2>>"$ERR_LOG"
+    printf 'Changing CherryWorker home directory ownership.\n'
+    chown "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$SYSTEM_WORKER_HOME_DIR" >/dev/null 2>>"$ERR_LOG"
     printf 'Adding CherryWorker to system groups.\n'
     usermod -a -G docker,libvirt,kvm CherryWorker >/dev/null 2>>"$ERR_LOG"
 }
@@ -312,14 +332,21 @@ create_networks(){
 # Daemons configuration
 configure_daemon_docker(){
 
-    local domain_name=$1
+    local domain_name="$1"
 
     printf 'Enabling docker daemon to run on startup.\n'
     systemctl -q enable docker.service >/dev/null 2>>"$ERR_LOG"
     printf 'Starting docker daemon.\n '
     systemctl -q start docker.service >/dev/null 2>>"$ERR_LOG" 
     printf 'Switching Docker daemon to swarm mode.\n'
-    docker swarm init >/dev/null 2>>"$ERR_LOG" 
+    if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'inactive' ]; then
+        docker swarm init >/dev/null 2>>"$ERR_LOG"
+    elif [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'active' ]; then
+        printf 'Docker daemon already in swarm mode.\n'
+    else
+        printf 'Docker daemon cannot be switched into a Swarm mode because of an error:%s' "docker info --format '{{.Swarm.LocalNodeState}}'" >>"$ERR_LOG"
+        return 1
+    fi
 
     printf 'Creating containers secrets and .env files.\n'
     {
@@ -328,13 +355,14 @@ configure_daemon_docker(){
 
         JWT_SECRET=$(openssl rand -hex 32)
 
+        printf 'JWT_SECRET=%s' "$JWT_SECRET" | docker secret create jwt_secret - >/dev/null
+
         {
-            printf 'JWT_SECRET=%s' "$JWT_SECRET" | docker secret create jwt_secret -
 
             printf 'SYSTEM_WORKER_UID=%s\n' "$SYSTEM_WORKER_UID"
             printf 'SYSTEM_WORKER_GID=%s\n' "$SYSTEM_WORKER_GID"
 
-            printf 'DOMAIN_NAME=%s/n' "$domain_name"
+            printf 'DOMAIN_NAME=%s\n' "$domain_name"
 
             printf 'GUACD_HOSTNAME=%s\n' "$CONTAINER_GUACD"
             printf 'POSTGRESQL_HOSTNAME=%s\n' "$CONTAINER_DB"
@@ -342,7 +370,7 @@ configure_daemon_docker(){
             printf 'POSTGRESQL_USER=%s\n' "$POSTGRESQL_USER"
             printf 'POSTGRESQL_PASSWORD=%s\n' "$POSTGRESQL_PASSWORD"
 
-        } >> "$CONTAINER_DIRECTORY/.env"
+        } >> "${DIR_DOCKER_HOST}/.env" 2>>"$ERR_LOG"
 
     } 2>>"$ERR_LOG"
 
@@ -364,15 +392,16 @@ configure_daemon_libvirt(){
 create_docker_networks(){
     printf 'Creating internal Docker network.\n'
 
-
     docker network create \
     -o "com.docker.network.bridge.enable_icc"="true" \
     -o "com.docker.network.bridge.name"="$NETWORK_DOCKER_INTERNAL_NAME" \
     --driver=bridge \
     --internal "$NETWORK_DOCKER_INTERNAL_NAME" >/dev/null 2>>"$ERR_LOG"
 
-    NETWORK_DOCKER_INTERNAL_SUBNET=$(docker network inspect -f '{{ (index .IPAM.Config 0).Subnet }}' "$NETWORK_DOCKER_INTERNAL_NAME")
-    NETWORK_DOCKER_INTERNAL_GATEWAY=$(docker network inspect -f '{{ (index .IPAM.Config 0).Gateway }}' "$NETWORK_DOCKER_INTERNAL_NAME")
+    {
+        NETWORK_DOCKER_INTERNAL_SUBNET=$(docker network inspect -f '{{ (index .IPAM.Config 0).Subnet }}' "$NETWORK_DOCKER_INTERNAL_NAME")
+        NETWORK_DOCKER_INTERNAL_GATEWAY=$(docker network inspect -f '{{ (index .IPAM.Config 0).Gateway }}' "$NETWORK_DOCKER_INTERNAL_NAME")
+    } >/dev/null 2>>"$ERR_LOG"
     
     if systemctl -q is-active firewalld; then
         printf 'Adding internal Docker network to docker firewalld zone.\n'
@@ -384,12 +413,13 @@ create_docker_networks(){
 
     printf 'Adding internal Docker network firewall rules.\n'
     {
-        iptables -I DOCKER-USER -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
-        iptables -I OUTPUT -o "$NETWORK_DOCKER_INTERNAL_NAME" -j DROP
-        iptables -I OUTPUT -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
-        iptables -I FORWARD -i "$NETWORK_DOCKER_INTERNAL_NAME" ! -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_SUBNET" -j DROP
+        iptables -w -I DOCKER-USER -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
+        iptables -w -I OUTPUT -o "$NETWORK_DOCKER_INTERNAL_NAME" -j DROP
+        iptables -w -I OUTPUT -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
+        iptables -w -I FORWARD -i "$NETWORK_DOCKER_INTERNAL_NAME" ! -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_SUBNET" -j DROP
     } >/dev/null 2>>"$ERR_LOG"
-    iptables-save > /etc/iptables/rules.v4 2>>"$ERR_LOG"
+
+    iptables-save >/dev/null 2>>"$ERR_LOG"
 }
 
 create_systemd_services(){
@@ -427,6 +457,7 @@ trap dialog_cleanup EXIT
 # Trap ERR signal to handle exceptions and exit gracefully
 error_handler(){
     dialog --colors --backtitle "Cherry VM Studio" --title "Error Details" --exit-label "Exit" --textbox "$ERR_LOG" 0 0
+    history -a
     exit 1
 }
 trap error_handler ERR
@@ -443,6 +474,11 @@ tput smcup #Switch to alternate screen buffer
 
 if ! dialog --colors --backtitle "Cherry VM Studio" --title "Installation" --yesno "\nWelcome to the Cherry VM Studio installer.\nYou're about to be guided through the main stack installation.\n\n${RED}It is highly recommended to consult the documentation prior to running the installation!${NC}\n\nWould you like to begin?" 12 100; then
     exit 1
+fi
+
+if [[ -f "$CVMS_STACK_LOCK" ]]; then
+    printf "Cherry VM Studio seems to have been already installed.\nYou cannot begin another installation while Cherry VM Studio is present on the system." >>"$ERR_LOG"
+    return 1
 fi
 
 # Ensure that the network stack on the host machine is managed by wicked instead of NetworkManager (mostly important on desktop systems)
@@ -476,7 +512,7 @@ while :; do
     fi 
 done
 
-install_packages | dialog --colors --backtitle "Cherry VM Studio" --title "Packages installation" --progressbox 20 100;
+# install_packages | dialog --colors --backtitle "Cherry VM Studio" --title "Packages installation" --progressbox 20 100;
 
 prepare_filesystem | dialog --colors --backtitle "Cherry VM Studio" --title "Filesystem preparation" --progressbox 20 100;
 
@@ -494,6 +530,8 @@ create_docker_networks | dialog --colors --backtitle "Cherry VM Studio" --title 
 
 create_systemd_services | dialog --colors --backtitle "Cherry VM Studio" --title "Systemd services creation" --progressbox 20 100;
 
+: ' # DO NOT UNCOMMENT BEFORE TESTING ALL OF THE SYSTEMD SERVCIES
 initialize_cherry_vm_studio | dialog --colors --backtitle "Cherry VM Studio" --title "Cherry VM Studio final initialization" --progressbox 20 100;
+'
 
 dialog --colors --backtitle "Cherry VM Studio" --title "Installation complete" --msgbox "Cherry VM Studio was succesfully installed on your system.\nCherry Admin Panel can be accessed at https://${DOMAIN_NAME}.\nShould you encounter any technical issues, feel free to report them to the developers on GitHub." 20 100;

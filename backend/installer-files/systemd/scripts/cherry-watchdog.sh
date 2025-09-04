@@ -2,8 +2,8 @@
 ###############################
 #       env variables
 ###############################
-readonly STACK_ROOTPATH='/opt/cherry-vm-studio'
-readonly ENV_FILE="${STACK_ROOTPATH}/env.sh"
+STACK_ROOTPATH='/opt/cherry-vm-studio'
+ENV_FILE="${STACK_ROOTPATH}/env.sh"
 
 set -euo pipefail
 ###############################
@@ -76,7 +76,7 @@ start_container(){
             attach_container "$CONTAINER_API" "$VETH_GUACD_RASBUS" "$SUFFIX_VETH_GUACD_RASBUS" ;;
         *)
             log error "Attempting to initialize unrecognized container: $container."
-            exit 1
+            exit 1 ;;
     esac
 }
 
@@ -90,7 +90,7 @@ stop_container(){
             detach_container "$CONTAINER_GUACD" ;;
         *)
             log error "Attempting to uninitialize unrecognized container: $container."
-            exit 1
+            exit 1 ;;
     esac
 }
 

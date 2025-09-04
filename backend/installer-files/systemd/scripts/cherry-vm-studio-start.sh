@@ -2,8 +2,8 @@
 ###############################
 #       env variables
 ###############################
-readonly STACK_ROOTPATH='/opt/cherry-vm-studio'
-readonly ENV_FILE="${STACK_ROOTPATH}/env.sh"
+STACK_ROOTPATH='/opt/cherry-vm-studio'
+ENV_FILE="${STACK_ROOTPATH}/env.sh"
 
 set -euo pipefail
 ###############################
@@ -149,7 +149,7 @@ log info 'Initializing Cherry VM Studio Stack...'
 log info 'Creating service lock.'
 log_runner 'CVMS_SERVICE_LOCK' touch "$CVMS_SERVICE_LOCK"
 
-log_runner 'Starting containers.' #Replace with Docker swarm stack initializer
+log_runner 'Starting containers.' docker stack deploy -d --compose-file "${DIR_DOCKER_HOST}/docker-compose.yaml"
 
 create_netns_rasbus
 create_veth_pairs

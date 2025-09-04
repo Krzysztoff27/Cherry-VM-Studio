@@ -2,9 +2,11 @@
 ###############################
 #      root rights check
 ###############################
+RED_BASH='\033[0;31m'
+NC_BASH='\033[0m'
 # Test to ensure that script is executed with root priviliges
 if [[ $EUID -ne 0 ]]; then
-    printf '[!] Insufficient priviliges! Please run the script with root rights.\n'
+    printf '%b[!] Insufficient priviliges! Please run the script with root rights.%b\n' "$RED_BASH" "$NC_BASH"
     exit 1
 fi
 
@@ -70,6 +72,35 @@ configure_daemon_docker(){
     systemctl -q stop docker.service >/dev/null 2>>"$ERR_LOG" 
 }
 
+remove_docker_networks(){
+    
+    {
+        NETWORK_DOCKER_INTERNAL_SUBNET=$(docker network inspect -f '{{ (index .IPAM.Config 0).Subnet }}' "$NETWORK_DOCKER_INTERNAL_NAME")
+        NETWORK_DOCKER_INTERNAL_GATEWAY=$(docker network inspect -f '{{ (index .IPAM.Config 0).Gateway }}' "$NETWORK_DOCKER_INTERNAL_NAME")
+    } >/dev/null 2>>"$ERR_LOG"
+
+    if systemctl -q is-active firewalld; then
+        printf 'Removing internal Docker network from firewalld zone.\n'
+        {
+            firewall-cmd --remove-interface="$NETWORK_DOCKER_INTERNAL_NAME" --zone=docker --permanent
+            firewall-cmd --reload
+        } >/dev/null 2>>"$ERR_LOG"
+    fi
+
+    printf 'Removing internal Docker network from firewall rules.\n'
+    {
+        iptables -w -D DOCKER-USER -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
+        iptables -w -D OUTPUT -o "$NETWORK_DOCKER_INTERNAL_NAME" -j DROP
+        iptables -w -D OUTPUT -d "$NETWORK_DOCKER_INTERNAL_GATEWAY" -j DROP
+        iptables -w -D FORWARD -i "$NETWORK_DOCKER_INTERNAL_NAME" ! -s "$NETWORK_DOCKER_INTERNAL_SUBNET" -d "$NETWORK_DOCKER_INTERNAL_SUBNET" -j DROP
+    } >/dev/null 2>>"$ERR_LOG"
+
+    iptables-save >/dev/null 2>>"$ERR_LOG"
+
+    printf 'Removing internal Docker network.\n'
+    docker network rm "$NETWORK_DOCKER_INTERNAL_NAME" >/dev/null 2>>"$ERR_LOG"
+}
+
 remove_user(){
     printf 'Removing CherryWorker system user.\n'
     {
@@ -102,12 +133,15 @@ filesystem_cleanup(){
         # rm --interactive=never -r -f "$DIR_VM_INSTANCES"
 
         rm --interactive=never -r -f "$STACK_ROOTPATH" # static and config files
+
+        docker secret rm jwt_secret
+
     } >/dev/null 2>>"$ERR_LOG"
 
     printf 'Removing installation lock.\n'
     {
         rm --interactive=never -r -f "$CVMS_STACK_LOCK"
-        rmdir "$DIR_LOCK"
+        # rmdir "$DIR_LOCK"
     } >/dev/null 2>>"$ERR_LOG"
 }
 ###############################
@@ -130,7 +164,6 @@ trap dialog_cleanup EXIT
 # Trap ERR signal to handle exceptions and exit gracefully
 error_handler(){
     dialog --colors --backtitle "Cherry VM Studio" --title "Error Details" --exit-label "Exit" --textbox "$ERR_LOG" 0 0
-    exit 1
 }
 trap error_handler ERR
 # Trap SIGINT signal to handle forced exits gracefully
@@ -150,13 +183,15 @@ fi
 
 if [[ ! -f "$CVMS_STACK_LOCK" ]]; then
     printf "Cherry VM Studio doesn't seem to be installed.\nYou cannot start uninstallation without having installed Cherry VM Studio first." >>"$ERR_LOG"
-    exit 1
+    error_handler
 fi
 
-remove_cvms_stack | dialog --color --backtitle "Cherry VM Studio" --title "Stopping Cherry VM Studio stack" --programbox 20 100;
+# remove_cvms_stack | dialog --colors --backtitle "Cherry VM Studio" --title "Stopping Cherry VM Studio stack" --programbox 20 100;
 
-remove_user | dialog --color --backtitle "Cherry VM Studio" --title "Removing system user" --programbox 20 100;
+remove_docker_networks | dialog --colors --backtitle "Cherry VM Studio" --title "Removing docker networks" --programbox 20 100;
 
-filesystem_cleanup | dialog --color --backtitle "Cherry VM Studio" --title "Cleaning up filesystem" --programbox 20 100;
+remove_user | dialog --colors --backtitle "Cherry VM Studio" --title "Removing system user" --programbox 20 100;
+
+filesystem_cleanup | dialog --colors --backtitle "Cherry VM Studio" --title "Cleaning up filesystem" --programbox 20 100;
 
 dialog --colors --backtitle "Cherry VM Studio" --title "Uninstallation complete" --msgbox "Cherry VM Studio was succesfully uninstalled from your system.\nYou may now manually delete the remaining installation files." 20 100;

@@ -3,7 +3,7 @@
 #    installer directories
 ###############################
 # Installer files and directories - relative paths
-readonly INSTALLER_ROOTPATH='./installer-files'
+INSTALLER_ROOTPATH='./installer-files'
 
 readonly SETTINGS_FILE_INST="${INSTALLER_ROOTPATH}/settings.yaml"; export SETTINGS_FILE_INST
 readonly ENV_FILE_INST="${INSTALLER_ROOTPATH}/env.sh"; export ENV_FILE_INST
@@ -27,7 +27,7 @@ readonly TEMP_ROOTPATH='/var/opt/cherry-vm-studio'; export TEMP_ROOTPATH
 
 # Settings and env files
 readonly SETTINGS_FILE="${STACK_ROOTPATH}/settings.yaml"; export SETTINGS_FILE
-readonly ENV_FILE="${STACK_ROOTPATH}/env.sh"; export ENV_FILE
+ENV_FILE="${STACK_ROOTPATH}/env.sh"; export ENV_FILE
 
 # Docker directories
 readonly DIR_DOCKER_HOST="${STACK_ROOTPATH}/docker"
@@ -86,6 +86,8 @@ readonly CONTAINER_NAMES=(
 #       system worker
 ###############################
 readonly SYSTEM_WORKER_USERNAME='CherryWorker'; export SYSTEM_WORKER_USERNAME
+readonly SYSTEM_WORKER_GROUPNAME='CherryWorker'; export SYSTEM_WORKER_GROUPNAME
+readonly SYSTEM_WORKER_HOME_DIR="${STACK_ROOTPATH}/${SYSTEM_WORKER_USERNAME}"; export SYSTEM_WORKER_HOME_DIR
 
 ###############################
 #     watched containers 
