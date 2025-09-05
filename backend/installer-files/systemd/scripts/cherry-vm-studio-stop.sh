@@ -5,7 +5,15 @@
 STACK_ROOTPATH='/opt/cherry-vm-studio'
 ENV_FILE="${STACK_ROOTPATH}/env.sh"
 
-set -uo pipefail
+# Initial source with manual logging - custom logger and the rest of the script is unable to run without this prerequisite
+if [ ! -f "$ENV_FILE" ]; then
+    logger -p 'user.error' "cherry-vm-studio-stop.sh could not run because it is unable to find ${ENV_FILE}! Check the files integrity and try again."
+    exit 1
+else
+    logger -p 'user.info' "cherry-vm-studio-start.sh is sourcing environmental variables from ${ENV_FILE}"
+    source "$ENV_FILE"
+fi
+
 ###############################
 #       logging logic
 ###############################
@@ -79,42 +87,34 @@ cleanup_host_os(){
 ###############################
 #    system configuration
 ###############################
-if [ -z "${PKEXEC_UID:-}" ]; then
-    log error 'This script must be run via pkexec with action com.cvms.stack.\n'
-    exit 1
-fi
+set -uo pipefail
 
-if [ ! -f "$CVMS_STACK_LOCK" ]; then
-    log error 'Cannot use systemctl cherry-vm-studio without having installed Cherry VM Studio first!'
+if [ ! -f "$CVMS_INSTALLATION_LOCK" ]; then
+    log error 'Cannot use systemctl stop cherry-vm-studio without having installed Cherry VM Studio first!'
     exit 1
 fi
 
 # Check if the infrastructure is running
 if [ ! -f "$CVMS_SERVICE_LOCK" ]; then
-    log error 'Cherry VM Studio stack is not running.'
+    log error 'Cherry VM Studio stack is not running!'
     exit 1
 fi
 
-if [ ! -r "$SETTINGS_FILE" ]; then
-    log error 'Cannot read settings.yaml file.'
-    exit 1
-else   
-    log_runner 'Reading NETWORK_RAS settings:' NETWORK_RAS="$(yq eval ".networks.${NETWORK_RAS_NAME}.network" "$SETTINGS_FILE")"
-fi
-
-if [ ! -f "$ENV_FILE" ]; then
-    log error 'env.sh file not found in the installer files. Check files integrity and try again.'
-    exit 1
-else
-    log_runner 'Sourcing environmental variables:' source "$ENV_FILE"
-fi
+# if [ ! -r "$SETTINGS_FILE" ]; then
+#     log error 'Cannot read settings.yaml file.'
+#     exit 1
+# else   
+#     log_runner 'Reading NETWORK_RAS settings:' NETWORK_RAS="$(yq eval ".networks.${NETWORK_RAS_NAME}.network" "$SETTINGS_FILE")"
+# fi
 
 log info 'Stopping Cherry VM Studio Stack...'
 
-log_runner 'Stopping all containers.'  docker stack rm --compose-file "${DIR_DOCKER_HOST}/docker-compose.yaml"
+# log_runner 'Stopping all containers.'  docker stack rm --compose-file "${DIR_DOCKER_HOST}/docker-compose.yaml"
 
-cleanup_ns_rasbus
-cleanup_host_os
+log_runner 'Stopping all containers.' docker compose -p cherry-vm-studio down
+
+# cleanup_ns_rasbus
+# cleanup_host_os
 
 log info 'Removing service lock.'
 log_runner 'CVMS_SERVICE_LOCK' rm -f "$CVMS_SERVICE_LOCK"

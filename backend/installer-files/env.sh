@@ -52,7 +52,7 @@ readonly DIR_CVMS_SYSTEMD_SCRIPTS="${STACK_ROOTPATH}/systemd"; export DIR_CVMS_S
 readonly DIR_LOCK="${TEMP_ROOTPATH}/locks"; export DIR_LOCK
 
 # Locks the existence of the Cherry VM Studio stack - created during the installation. Is present on the system regardless of the systemd services status.
-readonly CVMS_STACK_LOCK="${DIR_LOCK}/cherry-vm-studio.lock"; export CVMS_STACK_LOCK
+readonly CVMS_INSTALLATION_LOCK="${DIR_LOCK}/cherry-vm-studio.lock"; export CVMS_INSTALLATION_LOCK
 
 # Signifies that systemd cherry-vm-studio service (the stack) is running.
 readonly CVMS_SERVICE_LOCK="${DIR_LOCK}/cherry-vm-studio.service.lock"; export CVMS_SERVICE_LOCK
@@ -60,7 +60,7 @@ readonly CVMS_SERVICE_LOCK="${DIR_LOCK}/cherry-vm-studio.service.lock"; export C
 ###############################
 #     logger constants
 ###############################
-readonly CVMS_SERVICE_LOG_TAG='cherry-vm-studio'; export CVMS_SERVICE_LOG_TAG
+readonly CVMS_SERVICE_LOG_TAG='Cherry-VM-Studio'; export CVMS_SERVICE_LOG_TAG
 readonly CVMS_WATCHDOG_LOG_TAG='cherry-watchdog'; export CVMS_WATCHDOG_LOG_TAG
 
 ###############################

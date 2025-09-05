@@ -140,7 +140,7 @@ filesystem_cleanup(){
 
     printf 'Removing installation lock.\n'
     {
-        rm --interactive=never -r -f "$CVMS_STACK_LOCK"
+        rm --interactive=never -r -f "$CVMS_INSTALLATION_LOCK"
         # rmdir "$DIR_LOCK"
     } >/dev/null 2>>"$ERR_LOG"
 }
@@ -181,7 +181,7 @@ if ! dialog --colors --backtitle "Cherry VM Studio" --title "Uninstallation" --y
     exit 1
 fi
 
-if [[ ! -f "$CVMS_STACK_LOCK" ]]; then
+if [[ ! -f "$CVMS_INSTALLATION_LOCK" ]]; then
     printf "Cherry VM Studio doesn't seem to be installed.\nYou cannot start uninstallation without having installed Cherry VM Studio first." >>"$ERR_LOG"
     error_handler
 fi

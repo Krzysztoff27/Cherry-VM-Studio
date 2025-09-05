@@ -5,7 +5,7 @@ services:
     image: "ghcr.io/krzysztoff27/cherry-admin-panel:latest"
     networks:
       cherry-internal:
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
   api:
     container_name: cherry-api
     restart: always
@@ -16,21 +16,21 @@ services:
       - "/var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock:rw"
     networks:
       cherry-internal:
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
   database:
     container_name: cherry-db
     restart: always
     image: postgres
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
-      - POSTGRES_DB=${POSTGRESQL_DATABSE}
+      - POSTGRES_DB=${POSTGRESQL_DATABASE}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     volumes:
       - ./db:/var/lib/postgresql/data:rw
       - ./initdb:/docker-entrypoint-initdb.d/:ro
     networks:
       cherry-internal:
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
   guacamole:
     container_name: cherry-guacamole
     restart: always
@@ -38,19 +38,19 @@ services:
     environment:
       - GUACD_HOSTNAME=${GUACD_HOSTNAME}
       - POSTGRESQL_HOSTNAME=${POSTGRESQL_HOSTNAME}
-      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABSE}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
       - POSTGRESQL_USER=${POSTGRESQL_USER}
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
     networks:
       cherry-internal:
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
   guacd:
     container_name: cherry-guacd
     restart: always
     image: guacamole/guacd
     networks:
       cherry-internal:
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
   traefik:
     container_name: cherry-proxy
     restart: always
@@ -77,7 +77,7 @@ services:
       cherry-internal:
         aliases:
           - ${DOMAIN_NAME}
-    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_UID:?error}"
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
 
 networks:
   cherry-external:
@@ -86,3 +86,7 @@ networks:
   cherry-internal:
     name: cherry-internal
     external: true
+
+secrets:
+  jwt_secret:
+    file: jwt_secret.txt

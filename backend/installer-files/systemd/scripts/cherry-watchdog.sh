@@ -102,7 +102,7 @@ if [ -z "${PKEXEC_UID:-}" ]; then
     exit 1
 fi
 
-if [ ! -f "$CVMS_STACK_LOCK" ]; then
+if [ ! -f "$CVMS_INSTALLATION_LOCK" ]; then
     log error 'Cannot use systemctl cherry-watchdog without having installed Cherry VM Studio first!'
     exit 1
 fi

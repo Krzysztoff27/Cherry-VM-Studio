@@ -2,9 +2,6 @@
 ###############################
 #      root rights check
 ###############################
-HISTFILE=~./history.txt
-set -o history
-
 RED_BASH='\033[0;31m'
 NC_BASH='\033[0m'
 # Test to ensure that script is executed with root priviliges
@@ -202,7 +199,7 @@ prepare_filesystem(){
     printf 'Creating installation lock.\n'
     {
         mkdir -p "$DIR_LOCK"
-        touch "$CVMS_STACK_LOCK" 
+        touch "$CVMS_INSTALLATION_LOCK" 
     } >/dev/null 2>>"$ERR_LOG"
 
     printf 'Creating directories and copying files.\n'
@@ -217,7 +214,7 @@ prepare_filesystem(){
         cp -r "${DIR_DOCKER_INST}/." "$DIR_DOCKER_HOST" # copy all the container subdirectories from the installer-files
 
         # This part is not relevant right now as no VM creation logic is implemented yet
-        mkdir -p "$DIR_LIBVIRT_HOST" # libvirt config directory
+        # mkdir -p "$DIR_LIBVIRT_HOST" # libvirt config directory
         # cp -r "${DIR_LIBVIRT_INST}/." "$DIR_LIBVIRT_HOST"
         # mkdir -p "$DIR_IMAGE_FILES"
         # mkdir -p "$DIR_VM_INSTANCES"
@@ -225,6 +222,8 @@ prepare_filesystem(){
         mkdir -p "$DIR_CVMS_SYSTEMD_SCRIPTS"
         cp -r "${DIR_SYSTEMD_SCRIPTS_INST}/." "$DIR_CVMS_SYSTEMD_SCRIPTS"
         find "${DIR_CVMS_SYSTEMD_SCRIPTS}" -type f -exec chmod +x {} \;
+
+        chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$TEMP_ROOTPATH"
 
     } >/dev/null 2>>"$ERR_LOG"
 }
@@ -338,24 +337,30 @@ configure_daemon_docker(){
     systemctl -q enable docker.service >/dev/null 2>>"$ERR_LOG"
     printf 'Starting docker daemon.\n '
     systemctl -q start docker.service >/dev/null 2>>"$ERR_LOG" 
-    printf 'Switching Docker daemon to swarm mode.\n'
-    if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'inactive' ]; then
-        docker swarm init >/dev/null 2>>"$ERR_LOG"
-    elif [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'active' ]; then
-        printf 'Docker daemon already in swarm mode.\n'
-    else
-        printf 'Docker daemon cannot be switched into a Swarm mode because of an error:%s' "docker info --format '{{.Swarm.LocalNodeState}}'" >>"$ERR_LOG"
-        return 1
-    fi
+    # printf 'Switching Docker daemon to swarm mode.\n'
+    # if [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'inactive' ]; then
+    #     docker swarm init >/dev/null 2>>"$ERR_LOG"
+    # elif [ "$(docker info --format '{{.Swarm.LocalNodeState}}' 2>/dev/null)" == 'active' ]; then
+    #     printf 'Docker daemon already in swarm mode.\n'
+    # else
+    #     printf 'Docker daemon cannot be switched into a Swarm mode because of an error:%s' "docker info --format '{{.Swarm.LocalNodeState}}'" >>"$ERR_LOG"
+    #     return 1
+    # fi
 
-    printf 'Creating containers secrets and .env files.\n'
+    printf 'Creating containers, secrets, and .env files.\n'
     {
         SYSTEM_WORKER_UID=$(id -u -r "$SYSTEM_WORKER_USERNAME")
         SYSTEM_WORKER_GID=$(id -g -r "$SYSTEM_WORKER_USERNAME")
 
+        # Opting out of using docker swarm
+        # JWT_SECRET=$(openssl rand -hex 32)
+        # printf 'JWT_SECRET=%s' "$JWT_SECRET" | docker secret create jwt_secret - >/dev/null
+
         JWT_SECRET=$(openssl rand -hex 32)
 
-        printf 'JWT_SECRET=%s' "$JWT_SECRET" | docker secret create jwt_secret - >/dev/null
+        printf 'JWT_SECRET=%s' "$JWT_SECRET" > "${DIR_DOCKER_HOST}/jwt_secret.txt"
+        chmod 600 "${DIR_DOCKER_HOST}/jwt_secret.txt"
+
 
         {
 
@@ -366,7 +371,7 @@ configure_daemon_docker(){
 
             printf 'GUACD_HOSTNAME=%s\n' "$CONTAINER_GUACD"
             printf 'POSTGRESQL_HOSTNAME=%s\n' "$CONTAINER_DB"
-            printf 'POSTRGESQL_DATABASE=%s\n' "$POSTGRESQL_DATABASE"
+            printf 'POSTGRESQL_DATABASE=%s\n' "$POSTGRESQL_DATABASE"
             printf 'POSTGRESQL_USER=%s\n' "$POSTGRESQL_USER"
             printf 'POSTGRESQL_PASSWORD=%s\n' "$POSTGRESQL_PASSWORD"
 
@@ -376,6 +381,8 @@ configure_daemon_docker(){
 
     printf 'Creating initial SQL file for Apache Guacamole DB.\n'
     docker run -q --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > "${DIR_DOCKER_HOST_INITDB}/01-initdb.sql" 2>>"$ERR_LOG"
+
+    chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$DIR_DOCKER_HOST"
 }
 
 configure_daemon_libvirt(){
@@ -457,7 +464,6 @@ trap dialog_cleanup EXIT
 # Trap ERR signal to handle exceptions and exit gracefully
 error_handler(){
     dialog --colors --backtitle "Cherry VM Studio" --title "Error Details" --exit-label "Exit" --textbox "$ERR_LOG" 0 0
-    history -a
     exit 1
 }
 trap error_handler ERR
@@ -476,7 +482,7 @@ if ! dialog --colors --backtitle "Cherry VM Studio" --title "Installation" --yes
     exit 1
 fi
 
-if [[ -f "$CVMS_STACK_LOCK" ]]; then
+if [[ -f "$CVMS_INSTALLATION_LOCK" ]]; then
     printf "Cherry VM Studio seems to have been already installed.\nYou cannot begin another installation while Cherry VM Studio is present on the system." >>"$ERR_LOG"
     return 1
 fi

@@ -6,11 +6,16 @@ Wants=docker.service
 [Service]
 User=CherryWorker
 Type=oneshot
-ExecStart=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-vm-studio-start.sh
-ExecStop=/usr/bin/pkexec --disable-internal-agent /opt/cherry-vm-studio/systemd/cherry-vm-studio-stop.sh
+ExecStart=/opt/cherry-vm-studio/systemd/cherry-vm-studio-start.sh
+ExecStop=/opt/cherry-vm-studio/systemd/cherry-vm-studio-stop.sh
 RemainAfterExit=yes
 StandardOutput=journal
 StandardError=journal
+
+AmbientCapabilities=CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN
+NoNewPrivileges=true
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
