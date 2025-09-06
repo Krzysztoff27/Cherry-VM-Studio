@@ -120,3 +120,5 @@ node_modules
 
 .env
 todo.txt
+backend/installer-files/docker/compose.dev.yaml
+backend/installer-files/settings.yaml
