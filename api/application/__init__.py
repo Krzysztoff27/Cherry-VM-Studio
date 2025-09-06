@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from datetime import timedelta
-from os import getenv
 import os.path
 
 from config import AUTHENTICATION_CONFIG
