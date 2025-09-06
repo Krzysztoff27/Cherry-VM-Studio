@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from os import getenv
 
 def get_env(name: str) -> str:
-    value = os.getenv(name)
+    value = getenv(name)
     if not value:
         raise ValueError(f"Environmental variable {name} is either not set or empty!")
     return value
