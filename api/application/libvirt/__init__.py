@@ -6,7 +6,7 @@ from typing import Literal
 #   connection definition
 ###############################
 class LibvirtConnection():
-    hypervisor_uri = 'qemu+tls://10.10.10.254/system'
+    hypervisor_uri = "qemu:///system"
     
     def __init__(self, type: Literal["ro", "rw"]):
         self.type = type
