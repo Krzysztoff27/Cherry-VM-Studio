@@ -122,3 +122,4 @@ node_modules
 todo.txt
 backend/installer-files/docker/compose.dev.yaml
 backend/installer-files/settings.yaml
+backend/installer-files/settings.yaml
