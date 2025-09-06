@@ -134,8 +134,6 @@ filesystem_cleanup(){
 
         rm --interactive=never -r -f "$STACK_ROOTPATH" # static and config files
 
-        docker secret rm jwt_secret
-
     } >/dev/null 2>>"$ERR_LOG"
 
     printf 'Removing installation lock.\n'

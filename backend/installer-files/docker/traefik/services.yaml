@@ -1,13 +1,13 @@
 http:
   routers:
-    cvmm-traefik-router:
+    cherry-traefik-router:
       rule: Host(`{{ printf "traefik.%s" (env "DOMAIN_NAME") }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       service: api@internal
       entryPoints: web
       middlewares: auth
-    cvmm-guacamole-guacamole-router:
+    cherry-guacamole-router:
       rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/guacamole`)
-      service: cvmm-guacamole-guacamole-service
+      service: cherry-guacamole-service
       entryPoints: web
     cherry-api-router:
       rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/api`)
@@ -30,10 +30,10 @@ http:
             - "/api"
 
   services:
-    cvmm-guacamole-guacamole-service:
+    cherry-guacamole-service:
       loadBalancer:
         servers:
-          - url: "http://cvmm-guacamole-guacamole:8080/guacamole"
+          - url: "http://cherry-guacamole:8080/guacamole"
     cherry-api-service:
       loadBalancer:
         servers:

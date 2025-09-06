@@ -9,6 +9,7 @@ readonly SETTINGS_FILE_INST="${INSTALLER_ROOTPATH}/settings.yaml"; export SETTIN
 readonly ENV_FILE_INST="${INSTALLER_ROOTPATH}/env.sh"; export ENV_FILE_INST
 
 readonly DIR_DOCKER_INST="${INSTALLER_ROOTPATH}/docker"; export DIR_DOCKER_INST
+readonly DIR_DOCKER_INST_TRAEFIK_CONFIG="${DIR_DOCKER_INST}/traefik"; export DIR_DOCKER_INST_TRAEFIK_CONFIG
 readonly DIR_LIBVIRT_INST="${INSTALLER_ROOTPATH}/libvirt"; export DIR_LIBVIRT_INST
 
 readonly DIR_SYSTEMD_INST="${INSTALLER_ROOTPATH}/systemd"; export DIR_SYSTEMD_INST
@@ -32,6 +33,9 @@ ENV_FILE="${STACK_ROOTPATH}/env.sh"; export ENV_FILE
 # Docker directories
 readonly DIR_DOCKER_HOST="${STACK_ROOTPATH}/docker"
 readonly DIR_DOCKER_HOST_INITDB="${DIR_DOCKER_HOST}/initdb"; export DIR_DOCKER_HOST_INITDB
+readonly DIR_DOCKER_HOST_DB="${TEMP_ROOTPATH}/database"; export DIR_DOCKER_HOST_DB
+readonly DIR_DOCKER_SECRETS="${DIR_DOCKER_HOST}/secrets"; export DIR_DOCKER_SECRETS
+readonly DIR_DOCKER_HOST_TRAEFIK_CONFIG="${TEMP_ROOTPATH}/traefik"; export DIR_DOCKER_HOST_TRAEFIK_CONFIG
 
 # Libvirt and VM directories
 readonly DIR_LIBVIRT_HOST="${STACK_ROOTPATH}/libvirt"; export DIR_LIBVIRT_HOST
@@ -104,6 +108,11 @@ readonly WATCHED_CONTAINERS=(
 readonly POSTGRESQL_DATABASE='guacamole'; export POSTGRESQL_DATABASE
 readonly POSTGRESQL_USER='guacadmin'; export POSTGRESQL_USER
 readonly POSTGRESQL_PASSWORD='guacadmin'; export POSTGRESQL_PASSWORD
+
+###############################
+#       Docker volumes
+###############################
+readonly VOLUME_DB='cherry_db'; export VOLUME_DB
 
 ###############################
 #virtual network infrastructure

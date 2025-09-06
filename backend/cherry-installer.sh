@@ -213,6 +213,12 @@ prepare_filesystem(){
         mkdir -p "$DIR_DOCKER_HOST" # docker config directory
         cp -r "${DIR_DOCKER_INST}/." "$DIR_DOCKER_HOST" # copy all the container subdirectories from the installer-files
 
+        mkdir -p "$DIR_DOCKER_SECRETS"
+        mkdir -p "$DIR_DOCKER_HOST_DB"
+
+        mkdir -p "$DIR_DOCKER_HOST_TRAEFIK_CONFIG"
+        cp -r "${DIR_DOCKER_INST_TRAEFIK_CONFIG}/." "$DIR_DOCKER_HOST_TRAEFIK_CONFIG"
+
         # This part is not relevant right now as no VM creation logic is implemented yet
         # mkdir -p "$DIR_LIBVIRT_HOST" # libvirt config directory
         # cp -r "${DIR_LIBVIRT_INST}/." "$DIR_LIBVIRT_HOST"
@@ -351,6 +357,7 @@ configure_daemon_docker(){
     {
         SYSTEM_WORKER_UID=$(id -u -r "$SYSTEM_WORKER_USERNAME")
         SYSTEM_WORKER_GID=$(id -g -r "$SYSTEM_WORKER_USERNAME")
+        HOST_LIBVIRT_GID=$(getent group libvirt | cut -d: -f3)
 
         # Opting out of using docker swarm
         # JWT_SECRET=$(openssl rand -hex 32)
@@ -358,14 +365,14 @@ configure_daemon_docker(){
 
         JWT_SECRET=$(openssl rand -hex 32)
 
-        printf 'JWT_SECRET=%s' "$JWT_SECRET" > "${DIR_DOCKER_HOST}/jwt_secret.txt"
-        chmod 600 "${DIR_DOCKER_HOST}/jwt_secret.txt"
+        printf 'JWT_SECRET=%s' "$JWT_SECRET" > "${DIR_DOCKER_SECRETS}/jwt_secret.txt"
+        chmod 600 "${DIR_DOCKER_SECRETS}/jwt_secret.txt"
 
 
         {
-
             printf 'SYSTEM_WORKER_UID=%s\n' "$SYSTEM_WORKER_UID"
             printf 'SYSTEM_WORKER_GID=%s\n' "$SYSTEM_WORKER_GID"
+            printf 'HOST_LIBVIRT_GROUP_GID=%s\n' "$HOST_LIBVIRT_GID"
 
             printf 'DOMAIN_NAME=%s\n' "$domain_name"
 
@@ -374,6 +381,9 @@ configure_daemon_docker(){
             printf 'POSTGRESQL_DATABASE=%s\n' "$POSTGRESQL_DATABASE"
             printf 'POSTGRESQL_USER=%s\n' "$POSTGRESQL_USER"
             printf 'POSTGRESQL_PASSWORD=%s\n' "$POSTGRESQL_PASSWORD"
+
+            printf 'DIR_DB=%s\n' "$DIR_DOCKER_HOST_DB"
+            printf 'DIR_TRAEFIK=%s\n' "$DIR_DOCKER_HOST_TRAEFIK_CONFIG"
 
         } >> "${DIR_DOCKER_HOST}/.env" 2>>"$ERR_LOG"
 
