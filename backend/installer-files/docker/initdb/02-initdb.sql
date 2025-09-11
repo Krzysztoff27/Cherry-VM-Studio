@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE administrators (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(24) UNIQUE NOT NULL,
-    password VARCHAR(60),
+    password VARCHAR(60) NOT NULL,
     name VARCHAR(50),
     surname VARCHAR(50),
     email VARCHAR(255) UNIQUE,
@@ -15,7 +15,7 @@ CREATE TABLE administrators (
 CREATE TABLE clients (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(24) UNIQUE NOT NULL,
-    password VARCHAR(60),
+    password VARCHAR(60) NOT NULL,
     name VARCHAR(50),
     surname VARCHAR(50),
     email VARCHAR(255) UNIQUE,
@@ -80,6 +80,23 @@ CREATE TABLE network_snapshots (
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE machine_snapshots (
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_uuid UUID,
+    name VARCHAR(24) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    size BIGINT DEFAULT 0,
+    FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+)
+
+CREATE TABLE machine_snapshots_shares (
+    snapshot_uuid UUID,
+    recipient_uuid UUID,
+    PRIMARY KEY(snapshot_uuid, recipient_uuid),
+    FOREIGN KEY(snapshot_uuid) REFERENCES machine_snapshots(uuid) ON DELETE CASCADE
+    FOREIGN KEY(recipient_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+)
+
 CREATE INDEX administrators_idx ON administrators (uuid, username, email);
 CREATE INDEX clients_idx ON clients (uuid, username, email);
 CREATE INDEX roles_idx ON roles (uuid);
@@ -90,6 +107,8 @@ CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owners(machine_uui
 CREATE INDEX deployed_machines_clients_idx ON deployed_machines_clients(machine_uuid, client_uuid);
 CREATE INDEX network_panel_states_idx ON network_panel_states(owner_uuid);
 CREATE INDEX network_snapshots_idx ON network_snapshots(uuid, owner_uuid);
+CREATE INDEX machine_snapshots_idx ON machine_snapshots(uuid, owner_uuid);
+CREATE INDEX machine_snapshots_shares_idx ON machine_snapshots_shares(snapshot_uuid, recipient_uuid);
 
 -- Insert roles
 INSERT INTO roles (name, permissions)
