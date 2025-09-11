@@ -50,6 +50,13 @@ readonly DIR_POLKIT_RULES='/etc/polkit-1/rules.d'; export DIR_POLKIT_RULES
 readonly DIR_SYSTEMD_SERVICES='/etc/systemd/system'; export DIR_SYSTEMD_SERVICES
 readonly DIR_CVMS_SYSTEMD_SCRIPTS="${STACK_ROOTPATH}/systemd"; export DIR_CVMS_SYSTEMD_SCRIPTS
 
+# Custom netns directory
+#network namespace name for the Cherry Remote Access Services Bus
+# readonly NS_RASBUS='cherry-rasBus'; export NS_RASBUS
+readonly DIR_NETNS='/var/run/netns'; export DIR_NETNS
+# readonly DIR_NS_RASBUS="${DIR_NETNS}/${NS_RASBUS}"; export DIR_NS_RASBUS
+
+
 ###############################
 #           locks
 ###############################
@@ -156,8 +163,7 @@ readonly VETH_LIBVIRT_RASBUS='libvirt-rasBus'; export VETH_LIBVIRT_RASBUS
 readonly VETH_RASBUS_LIBVIRT='rasBus-libvirt'; export VETH_RASBUS_LIBVIRT
 
 # Network namespaces
-#network namespace name for the Cherry Remote Access Services Bus
-readonly NS_RASBUS='cherry-rasBus'; export NS_RASBUS
+
 
 # Network bridges
 #bridge that connects all of the VM guests to the rest of the remote access infrastructure as well as the Internet

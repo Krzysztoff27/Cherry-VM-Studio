@@ -5,6 +5,7 @@ Wants=docker.service
 
 [Service]
 User=CherryWorker
+Group=CherryWorker
 Type=oneshot
 ExecStart=/opt/cherry-vm-studio/systemd/cherry-vm-studio-start.sh
 ExecStop=/opt/cherry-vm-studio/systemd/cherry-vm-studio-stop.sh
@@ -12,8 +13,9 @@ RemainAfterExit=yes
 StandardOutput=journal
 StandardError=journal
 
-AmbientCapabilities=CAP_NET_ADMIN
-CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN CAP_SYS_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_SYS_ADMIN
+
 NoNewPrivileges=true
 PrivateTmp=true
 

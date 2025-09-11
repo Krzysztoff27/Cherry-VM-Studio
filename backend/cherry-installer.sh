@@ -212,6 +212,7 @@ prepare_filesystem(){
 
         mkdir -p "$DIR_DOCKER_HOST" # docker config directory
         cp -r "${DIR_DOCKER_INST}/." "$DIR_DOCKER_HOST" # copy all the container subdirectories from the installer-files
+        rm -r "${DIR_DOCKER_HOST}/traefik" # Should probably be changed in the future - the traefik config directory is in the same place as other docker files in the installer-files but is placed in /var/opt instead of /opt on the host
 
         mkdir -p "$DIR_DOCKER_SECRETS"
         mkdir -p "$DIR_DOCKER_HOST_DB"
@@ -273,13 +274,13 @@ generate_subnet() {
 
     case "$IP_SUBNET_RANGE" in
         10)
-        printf '%s' "10.$(rand_between 0 255).$(rand_between 0 255)"
+        printf '%s' "10.$(rand_between 0 255).$(rand_between 0 255).0"
         ;;
         172)
-        printf '%s' "172.$(rand_between 16 31).$(rand_between 0 255)"
+        printf '%s' "172.$(rand_between 16 31).$(rand_between 0 255).0"
         ;;
         192)
-        printf '%s' "192.168.$(rand_between 0 255)"
+        printf '%s' "192.168.$(rand_between 0 255).0"
         ;;
         *)
         printf '%s' "Invalid IP subnet range: $IP_RANGE" 2>>"$ERR_LOG"
@@ -323,6 +324,7 @@ generate_network(){
             \"network\": \"$NET_IP\",
             \"netmask\": $NET_MASK
         }" "$SETTINGS_FILE"
+        chown "$SYSTEM_USER_USERNAME":"$SYSTEM_USER_GROUPNAME" "$SETTINGS_FILE"
     fi
 }
 

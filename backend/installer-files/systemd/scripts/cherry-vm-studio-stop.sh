@@ -6,7 +6,7 @@ STACK_ROOTPATH='/opt/cherry-vm-studio'
 ENV_FILE="${STACK_ROOTPATH}/env.sh"
 
 # Initial source with manual logging - custom logger and the rest of the script is unable to run without this prerequisite
-if [ ! -f "$ENV_FILE" ]; then
+if [ ! -r "$ENV_FILE" ]; then
     logger -p 'user.error' "cherry-vm-studio-stop.sh could not run because it is unable to find ${ENV_FILE}! Check the files integrity and try again."
     exit 1
 else
@@ -51,14 +51,20 @@ trap error_handler ERR
 ###############################
 cleanup_ns_rasbus(){
     #Set all of the devices inside the NS_RASBUS namespace down
-    log info 'Setting all of the devices inside NS_RASBUS network namespace down.'
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_API" down
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_GUACD" down
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" down
-    #log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_LIBVIRT" down
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_VMBR" down
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$BR_RASBR" down
-    log info 'Set all of the devices inside NS_RASBUS network namespace down.'
+    # log info 'Setting all of the devices inside NS_RASBUS network namespace down.'
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_API" down
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_GUACD" down
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" down
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_VMBR" down
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link set dev "$BR_RASBR" down
+    # log info 'Set all of the devices inside NS_RASBUS network namespace down.'
+
+    log info 'Setting all of the network devices down.'
+    log_runner 'NS_RASBUS:' ip link set dev "$VETH_RASBUS_API" down
+    log_runner 'NS_RASBUS:' ip link set dev "$VETH_RASBUS_GUACD" down
+    log_runner 'NS_RASBUS:' ip link set dev "$VETH_RASBUS_EXT" down
+    log_runner 'NS_RASBUS:' ip link set dev "$VETH_RASBUS_VMBR" down
+    log_runner 'NS_RASBUS:' ip link set dev "$BR_RASBR" down
 }
 
 cleanup_host_os(){
@@ -66,20 +72,25 @@ cleanup_host_os(){
     #Set all of the devices inside the host network namespace down
     log_runner 'BR_VMBR:' ip link set dev "$BR_VMBR" down
 
-    #Delete all of the devices inside the NS_RASBUS namespace - attached ends of the VETH pairs
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_GUACD"
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_API"
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_EXT"
-    #log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_LIBVIRT"
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_VMBR"
-    #Bridge inside NS_RASBUS
-    log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$BR_RASBR"
+    # #Delete all of the devices inside the NS_RASBUS namespace - attached ends of the VETH pairs
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_GUACD"
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_API"
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_EXT"
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$VETH_RASBUS_VMBR"
+    # #Bridge inside NS_RASBUS
+    # log_runner 'NS_RASBUS:' ip netns exec "$NS_RASBUS" ip link del dev "$BR_RASBR"
+
+    log_runner 'NS_RASBUS:' ip link del dev "$VETH_RASBUS_GUACD"
+    log_runner 'NS_RASBUS:' ip link del dev "$VETH_RASBUS_API"
+    log_runner 'NS_RASBUS:' ip link del dev "$VETH_RASBUS_EXT"
+    log_runner 'NS_RASBUS:' ip link del dev "$VETH_RASBUS_VMBR"
+    log_runner 'NS_RASBUS:' ip link del dev "$BR_RASBR"
 
     #Delete all of the devices inside the host network namespace
     log_runner 'BR_VMBR:' ip link del dev "$BR_VMBR"
 
     #Delete NS_RASBUS network namespace
-    log_runner 'NS_RASBUS:' ip netns del "$NS_RASBUS"
+    # log_runner 'NS_RASBUS:' ip netns del "$NS_RASBUS"
 
     log info 'Set all of the devices inside host network namespace down.'
 }
@@ -100,21 +111,12 @@ if [ ! -f "$CVMS_SERVICE_LOCK" ]; then
     exit 1
 fi
 
-# if [ ! -r "$SETTINGS_FILE" ]; then
-#     log error 'Cannot read settings.yaml file.'
-#     exit 1
-# else   
-#     log_runner 'Reading NETWORK_RAS settings:' NETWORK_RAS="$(yq eval ".networks.${NETWORK_RAS_NAME}.network" "$SETTINGS_FILE")"
-# fi
-
 log info 'Stopping Cherry VM Studio Stack...'
 
-# log_runner 'Stopping all containers.'  docker stack rm --compose-file "${DIR_DOCKER_HOST}/docker-compose.yaml"
+log_runner 'Stopping all containers.' docker compose -p cherry-vm-studio -f "${DIR_DOCKER_HOST}/docker-compose.yaml" down
 
-log_runner 'Stopping all containers.' docker compose -p cherry-vm-studio down
-
-# cleanup_ns_rasbus
-# cleanup_host_os
+cleanup_ns_rasbus
+cleanup_host_os
 
 log info 'Removing service lock.'
 log_runner 'CVMS_SERVICE_LOCK' rm -f "$CVMS_SERVICE_LOCK"

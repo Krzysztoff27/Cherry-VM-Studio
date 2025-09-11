@@ -1,4 +1,0 @@
-networks:
-  cherry-ras-network:
-    network: 10.87.220
-    netmask: 28
