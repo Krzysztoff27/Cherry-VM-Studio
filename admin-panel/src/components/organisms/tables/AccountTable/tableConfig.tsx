@@ -2,7 +2,7 @@ import { t } from "i18next";
 import { AccountType } from "../../../../types/config.types";
 import AccountOptionsCell from "../../../atoms/table/AccountOptionsCell";
 import BadgesCell from "../../../atoms/table/BadgesCell";
-import BusinessCardCell from "../../../atoms/table/BusinessCardCell";
+import BusinessCardCell, { filterFunction, sortingFunction } from "../../../atoms/table/BusinessCardCell";
 import CheckboxCell from "../../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../../atoms/table/DateDifferenceCell";
@@ -19,20 +19,8 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
         accessorKey: "details",
         header: t("accounts.table.headers.name", { ns: "pages" }),
         cell: BusinessCardCell,
-        sortingFn: (rowA: any, rowB: any, columndId: string) => {
-            const detailsA = rowA.getValue(columndId);
-            const detailsB = rowB.getValue(columndId);
-
-            const fullNameA = detailsA.name || detailsA.surname ? `${detailsA.name} ${detailsA.surname}` : detailsA.username;
-            const fullNameB = detailsB.name || detailsB.surname ? `${detailsB.name} ${detailsB.surname}` : detailsB.username;
-
-            return fullNameB.localeCompare(fullNameA);
-        },
-        filterFn: (row: any, columnId: string, filterValue: string) => {
-            const details = row.getValue(columnId);
-            const fullName = details.name || details.surname ? `${details.name} ${details.surname}` : details.username;
-            return fullName.toLowerCase().startsWith(filterValue.toLowerCase());
-        },
+        sortingFn: sortingFunction,
+        filterFn: filterFunction,
         minSize: 130,
     },
     {
@@ -61,7 +49,7 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
         accessorKey: "options",
         header: "",
         enableSorting: false,
-        cell: props => (
+        cell: (props) => (
             <AccountOptionsCell
                 {...props}
                 openAccountModal={openAccountModal}

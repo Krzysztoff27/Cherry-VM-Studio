@@ -153,5 +153,30 @@
             "modify-administrators-credentials": "modify administrative accounts' credentials",
             "modify-credentials": "modify all accounts' credentials"
         }
+    },
+    "snapshots": {
+        "controls": {
+            "all-snapshots": "All snapshots",
+            "selected-snapshots": "Selected snapshots",
+            "filtered-results": "Filtered results",
+            "search": "Search",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "creation-date": "Created",
+                "owner": "Owner",
+                "shared-with": "Shared with",
+                "size": "Size"
+            },
+            "cells": {
+                "shared-with": "Shared with",
+                "shared-by": "Shared by"
+            }
+        }
     }
 }

@@ -165,6 +165,7 @@ export interface BusinessCardProps {
     link?: string;
     withAvatar?: boolean;
     size?: string;
+    gap?: string | number;
 }
 
 export interface CellProps {
@@ -246,7 +247,10 @@ export interface TableControlsProps {
     viewMode?: boolean;
     withImports?: boolean;
     withFilters?: boolean;
+    withCreation?: boolean;
+    withDeletion?: boolean;
     icons?: TableControlsIcons;
+    searchColumnKey?: string;
     onFilteringChange?: (callback: (prev: any) => any) => void;
 }
 

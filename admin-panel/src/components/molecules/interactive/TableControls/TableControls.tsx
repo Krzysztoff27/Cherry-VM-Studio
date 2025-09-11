@@ -15,8 +15,11 @@ const TableControls = ({
     translations,
     withImports = true,
     withFilters = true,
+    withCreation = true,
+    withDeletion = true,
     viewMode = false,
     onFilteringChange,
+    searchColumnKey = "details",
 }: TableControlsProps): React.JSX.Element => {
     const isXl = useMediaQuery("(min-width: 96em)");
     const isLg = useMediaQuery("(min-width: 84em)");
@@ -70,78 +73,83 @@ const TableControls = ({
                   }
         );
 
-    buttons.push(
-        isLg
-            ? {
-                  name: "create",
-                  component: Button,
-                  props: {
-                      w: 180,
-                      color: "black",
-                      variant: "white",
-                      disabled: viewMode,
-                      leftSection: (
+    if (withCreation)
+        buttons.push(
+            isLg
+                ? {
+                      name: "create",
+                      component: Button,
+                      props: {
+                          w: 180,
+                          color: "black",
+                          variant: "white",
+                          disabled: viewMode,
+                          leftSection: (
+                              <icons.create
+                                  size={16}
+                                  stroke={3}
+                              />
+                          ),
+                      },
+                      children: translations.create,
+                  }
+                : {
+                      name: "create",
+                      component: ActionIcon,
+                      props: { size: 36, color: "black", variant: "white", disabled: viewMode },
+                      children: (
                           <icons.create
-                              size={16}
+                              size={20}
                               stroke={3}
                           />
                       ),
-                  },
-                  children: translations.create,
-              }
-            : {
-                  name: "create",
-                  component: ActionIcon,
-                  props: { size: 36, color: "black", variant: "white", disabled: viewMode },
-                  children: (
-                      <icons.create
-                          size={20}
-                          stroke={3}
-                      />
-                  ),
-              },
-        isLg
-            ? {
-                  name: "delete",
-                  component: ExpandingButton,
-                  props: {
-                      ButtonComponent: Button,
-                      mounted: anyRowsSelected(),
-                      w: 180,
-                      parentGap: "1rem",
-                      variant: "filled",
-                      color: "cherry.9",
-                      leftSection: (
+                  }
+        );
+
+    if (withDeletion)
+        buttons.push(
+            isLg
+                ? {
+                      name: "delete",
+                      component: ExpandingButton,
+                      props: {
+                          ButtonComponent: Button,
+                          mounted: anyRowsSelected(),
+                          w: 180,
+                          parentGap: "1rem",
+                          variant: "filled",
+                          color: "cherry.9",
+                          leftSection: (
+                              <icons.delete
+                                  size={16}
+                                  stroke={3}
+                              />
+                          ),
+                          disabled: viewMode,
+                      },
+                      children: translations.delete,
+                  }
+                : {
+                      name: "delete",
+                      component: ExpandingButton,
+                      props: {
+                          ButtonComponent: ActionIcon,
+                          mounted: anyRowsSelected(),
+                          w: 36,
+                          h: 36,
+                          parentGap: "1rem",
+                          variant: "filled",
+                          color: "cherry.9",
+                          disabled: viewMode,
+                      },
+                      children: (
                           <icons.delete
-                              size={16}
+                              size={20}
                               stroke={3}
                           />
                       ),
-                      disabled: viewMode,
-                  },
-                  children: translations.delete,
-              }
-            : {
-                  name: "delete",
-                  component: ExpandingButton,
-                  props: {
-                      ButtonComponent: ActionIcon,
-                      mounted: anyRowsSelected(),
-                      w: 36,
-                      h: 36,
-                      parentGap: "1rem",
-                      variant: "filled",
-                      color: "cherry.9",
-                      disabled: viewMode,
-                  },
-                  children: (
-                      <icons.delete
-                          size={20}
-                          stroke={3}
-                      />
-                  ),
-              }
-    );
+                  }
+        );
 
     const insertAtPos = (button: TableControlsButton) => buttons.splice(isNaN(button.position) ? buttons.length : button.position, 0, button);
     const hasModal = useCallback((buttonName: string) => !!modals[buttonName], [modals]);
@@ -153,7 +161,7 @@ const TableControls = ({
             flex="1"
         >
             <TableSearch
-                id="details"
+                id={searchColumnKey}
                 setFilters={onFilteringChange}
                 toggleAllRowsSelected={table.toggleAllRowsSelected}
                 maw="300"

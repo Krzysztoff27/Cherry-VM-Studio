@@ -1,9 +1,12 @@
 import React from "react";
 import { Avatar } from "@mantine/core";
 import { User } from "../../../../types/api.types";
+import { isEmpty } from "lodash";
 
 const AccountAvatarGroup = ({ users, max = 5 }: { users: User[]; max?: number }): React.JSX.Element => {
     const getFullName = (user: User) => (user.name || user.surname ? `${user.name} ${user.surname}` : user.username);
+
+    if (isEmpty(users)) return;
 
     return (
         <Avatar.Group>

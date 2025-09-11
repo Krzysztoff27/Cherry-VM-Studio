@@ -16,6 +16,7 @@
         "clients": "Clients",
         "groups": "Client groups",
         "your-library": "Your library",
-        "all-machines": "All machines"
+        "all-machines": "All machines",
+        "snapshots": "Snapshot Library"
     }
 }

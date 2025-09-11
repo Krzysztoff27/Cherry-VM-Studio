@@ -1,9 +1,9 @@
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom";
+import { Protected, ReverseProtected } from "./wrappers/Protected";
 import ErrorBoundary from "./components/organisms/display/ErrorBoundary/ErrorBoundary.jsx";
 import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
 import Home from "./pages/Home/Home";
-import { Protected, ReverseProtected } from "./wrappers/Protected";
 import Credits from "./pages/Credits/Credits.tsx";
 import Copyright from "./pages/Copyright/Copyright";
 import NetworkPanel from "./pages/NetworkPanel/NetworkPanel";
@@ -13,6 +13,7 @@ import Dobre from "./pages/Dobre/Dobre";
 import Groups from "./pages/Accounts/Groups/Groups";
 import Users from "./pages/Accounts/Users/Users";
 import Machine from "./pages/Machine/Machine.tsx";
+import Snapshots from "./pages/Snapshots/Snapshots.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
                     <Route path='/network-panel'            element={<NetworkPanel/>}/>    
                 </Route>
                 <Route element={<PanelLayout doubleNavbar/>}>
+                    <Route path='/machines/snapshots'       element={<Snapshots/>}/>
                     <Route path='/machines/all'             element={<MachinesPage global={true}/>}/>
                     <Route path='/machines/'                element={<MachinesPage/>}/>
                     <Route path='/machines/:uuid'           element={<Machine/>}/>
