@@ -7,10 +7,20 @@ const useMachineState = (uuids: string[] | string) => {
     const [machinesState, setMachinesState] = useState({});
     let dataMsg = <WebSocketResponse>lastJsonMessage;
 
-    useEffect(() => {
+    const reset = () => {
         sendCommand("UNSUBSCRIBE", { target: "ALL" });
-        // subscribe to every machine
-        [uuids].flat().forEach(uuid => sendCommand("SUBSCRIBE", { target: uuid }));
+        setMachinesState({});
+    };
+
+    const subscribeToSelected = () => {
+        [uuids].flat().forEach((uuid) => sendCommand("SUBSCRIBE", { target: uuid }));
+    };
+
+    // on selected machines change
+    useEffect(() => {
+        reset();
+        subscribeToSelected();
+
         // set timeout as the state cooldown,
         // if 2 pass without receiving data (otherwise the entire component would reload),
         // change dataMsg to message with empty body
