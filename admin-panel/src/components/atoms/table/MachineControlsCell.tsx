@@ -15,7 +15,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Eleme
         sendCommand("START", { uuid });
     };
 
-    const startMachine = (e) => {
+    const stopMachine = (e) => {
         preventEvent(e);
         sendCommand("STOP", { uuid });
     };
