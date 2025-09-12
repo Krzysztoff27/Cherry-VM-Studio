@@ -29,7 +29,6 @@ const useMachineState = (uuids: string[] | string) => {
     useEffect(() => reset, []);
 
     useEffect(() => {
-        console.log(dataMsg);
         if (dataMsg?.method === "DATA") setMachinesState(dataMsg?.body);
     }, [dataMsg]);
 

@@ -1,24 +1,28 @@
 import { ActionIcon, Button, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTrashXFilled } from "@tabler/icons-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import useApiWebSocket from "../../../hooks/useApiWebSocket";
 
 const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Element => {
     const { t } = useTranslation();
-    const { sendCommand } = useApiWebSocket("/ws/vm");
+    const { sendCommand, lastJsonMessage } = useApiWebSocket("/ws/vm");
 
     const preventEvent = (e) => e.preventDefault();
 
     const startMachine = (e) => {
         preventEvent(e);
-        sendCommand("START", { uuid });
+        sendCommand("START", { target: uuid });
     };
 
     const stopMachine = (e) => {
         preventEvent(e);
-        sendCommand("STOP", { uuid });
+        sendCommand("STOP", { target: uuid });
     };
+
+    useEffect(() => {
+        console.log(lastJsonMessage);
+    }, [lastJsonMessage]);
 
     return (
         <Group
