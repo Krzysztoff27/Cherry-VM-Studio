@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Group, ScrollArea, Stack } from "@mantine/core";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import TableStateHeading from "../../../molecules/feedback/TableStateHeading/TableStateHeading";
 import TablePagination from "../../../molecules/interactive/TablePagination/TablePagination";
@@ -39,7 +39,7 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
 
     const onFilteringChange = (callback: (prev: any) => any) => {
         setColumnsFilters(callback);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     };
 
     const onDelete = () => {
@@ -78,12 +78,12 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                 scrollbars="x"
                 offsetScrollbars
             >
-                {table.getHeaderGroups().map(headerGroup => (
+                {table.getHeaderGroups().map((headerGroup) => (
                     <Box
                         className={classes.tr}
                         key={headerGroup.id}
                     >
-                        {headerGroup.headers.map(header => (
+                        {headerGroup.headers.map((header) => (
                             <Box
                                 className={classes.th}
                                 key={header.id}
@@ -122,13 +122,13 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                         scrollbars="y"
                         offsetScrollbars
                     >
-                        {table.getRowModel().rows.map(row => (
+                        {table.getRowModel().rows.map((row) => (
                             <Link
                                 to={`/machines/${row.id}`}
                                 key={row.id}
                                 className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
                             >
-                                {row.getVisibleCells().map(cell => (
+                                {row.getVisibleCells().map((cell) => (
                                     <Box
                                         className={classes.td}
                                         key={cell.id}

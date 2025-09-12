@@ -14,12 +14,12 @@ export const parseData = (machines) =>
         return {
             uuid: machine.uuid,
             details: { name, state },
-            state: { state, uuid: machine.uuid },
+            state: state,
             cpu: machine.cpu,
             ram: Math.round((machine.ram_used / machine.ram_max) * 100),
             owner: [machine.owner],
             clients: safeObjectValues(machine.assigned_clients),
-            options: state,
+            options: { state, uuid: machine.uuid },
         };
     });
 

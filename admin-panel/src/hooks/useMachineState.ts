@@ -18,7 +18,6 @@ const useMachineState = (uuids: string[] | string) => {
 
     // on selected machines change
     useEffect(() => {
-        reset();
         subscribeToSelected();
 
         // set timeout as the state cooldown,
@@ -26,6 +25,8 @@ const useMachineState = (uuids: string[] | string) => {
         // change dataMsg to message with empty body
         setTimeout(() => (dataMsg = { method: "DATA", uuid: null, body: {} }), 2000);
     }, [JSON.stringify(uuids)]);
+
+    useEffect(() => reset, []);
 
     useEffect(() => {
         if (dataMsg?.method === "DATA") setMachinesState(dataMsg?.body);
