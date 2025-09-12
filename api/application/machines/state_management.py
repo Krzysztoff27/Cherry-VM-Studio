@@ -49,6 +49,7 @@ async def start_machine_async(uuid: UUID):
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
             machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid))
+            logging.info(f"Trying to start {machine}")
             machine.create()
             result = await wait_for_machine_state(machine)
             return result
@@ -95,6 +96,7 @@ async def stop_machine_async(uuid: UUID):
             
             for FLAG in SHUTDOWN_FLAGS:
                 try:
+                    logging.info(f"Trying to stop {machine} with {FLAG}")
                     machine.shutdownFlags(FLAG)
                     result = await wait_for_machine_state(machine)
                     
