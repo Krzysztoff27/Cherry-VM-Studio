@@ -10,12 +10,15 @@ from .roles import update_user_roles, verify_role_integrity
 from .permissions import is_admin, is_client
 from .models import *
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_parent_table
 def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_admin(user):
         return 'administrators'
     if is_client(user):
         return 'clients'
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_administrators
 def get_administrators() -> dict[UUID, Administrator]:
     administrators = select_schema_dict(Administrator, "uuid", "SELECT * FROM administrators")
     administrator_roles = select_schema(AdministratorsRoles, "SELECT * FROM administrators_roles")
@@ -26,7 +29,9 @@ def get_administrators() -> dict[UUID, Administrator]:
         administrators[link.administrator_uuid].permissions |= roles[link.role_uuid].permissions
         
     return administrators
+  
     
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_clients   
 def get_clients() -> dict[UUID, Client]:
     clients = select_schema_dict(Client, "uuid", "SELECT * FROM clients")
     client_roles = select_schema(ClientsGroups, "SELECT * FROM clients_groups")
@@ -37,9 +42,13 @@ def get_clients() -> dict[UUID, Client]:
         
     return clients   
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_all_users
 def get_all_users() -> dict[UUID, Administrator | Client]:
     return get_administrators() | get_clients()
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_administrator_by_field
 def get_administrator_by_field(field_name: str, value: str) -> Administrator | None:
     administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE administrators.{field_name} = (%s)", (value,))
     
@@ -58,6 +67,8 @@ def get_administrator_by_field(field_name: str, value: str) -> Administrator | N
         
     return administrator
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_client_by_field
 def get_client_by_field(field_name: str, value: str) -> Client | None:
     client = select_schema_one(Client, f"SELECT * FROM clients WHERE clients.{field_name} = (%s)", (value,))
     
@@ -73,18 +84,26 @@ def get_client_by_field(field_name: str, value: str) -> Client | None:
     
     return client
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_field
 def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
     administrator = get_administrator_by_field(field_name, value)
     if administrator:
         return administrator
     return get_client_by_field(field_name, value)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_username
 def get_user_by_username(username: str) -> AnyUser | None:
     return get_user_by_field("username", username)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_email
 def get_user_by_email(email: str) -> AnyUser | None:
     return get_user_by_field("email", email)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_uuid
 def get_user_by_uuid(uuid: UUID) -> AnyUser | None:
     return get_user_by_field("uuid", uuid)
 
@@ -145,6 +164,8 @@ def get_filtered_users(filters: Filters):
     
     return users
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#delete_user_by_uuid
 def delete_user_by_uuid(uuid: str):
     user = get_user_by_uuid(uuid)
     table = get_parent_table(user)
@@ -157,7 +178,8 @@ def delete_user_by_uuid(uuid: str):
                 raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
             connection.commit()
     
-        
+     
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_user
 def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     user_data.username = user_data.username.lower()
     user_data.password = hash_password(user_data.password)
@@ -191,6 +213,7 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
     return get_user_by_uuid(user_data.uuid)
     
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#modify_user
 def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: ModifyUserForm) -> AnyUser:
     user = get_user_by_uuid(user_uuid)
     
@@ -225,7 +248,8 @@ def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: Mod
             
     return get_user_by_uuid(user_uuid)
     
-        
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#change_user_password
 def change_user_password(uuid, new_password):
     user = get_user_by_uuid(uuid)
     
@@ -242,7 +266,9 @@ def change_user_password(uuid, new_password):
         with connection.cursor() as cursor:
             cursor.execute(f"UPDATE {table} SET password = %s WHERE uuid = %s", (hashed_password, uuid,))
             connection.commit()
-    
+ 
+ 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#update_user_last_active
 def update_user_last_active(user: AnyUser):
     table = get_parent_table(user)
     

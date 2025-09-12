@@ -12,6 +12,7 @@ from .passwords import verify_password
 from application.users.users import get_user_by_username, update_user_last_active
 from application.users.models import Administrator, AnyUser
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#validate_user_token
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -29,6 +30,8 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:
     update_user_last_active(user)
     return user
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#authenticate_user
 def authenticate_user(username: str, password: str):
     user = get_user_by_username(username)
     if not user:
@@ -37,18 +40,29 @@ def authenticate_user(username: str, password: str):
         return False
     return user
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_authenticated_user
 def get_authenticated_user(token: Token) -> AnyUser: 
     return validate_user_token(token, 'access')
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_authenticated_administrator
 def get_authenticated_administrator(token: Token) -> Administrator:
     user = validate_user_token(token, 'access')
     if not is_admin(user):
         raise HTTPException(status_code=403, detail="You do not have the necessary permissions to access this resource.")    
     return user
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_from_refresh_token
 def get_user_from_refresh_token(token: Token) -> AnyUser:
     return validate_user_token(token, 'refresh')
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonadministrativeauthentication
 DependsOnAdministrativeAuthentication = Annotated[Administrator, Depends(get_authenticated_administrator)]
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonauthentication
 DependsOnAuthentication = Annotated[AnyUser, Depends(get_authenticated_user)]
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonrefreshtoken
 DependsOnRefreshToken = Annotated[AnyUser, Depends(get_user_from_refresh_token)]

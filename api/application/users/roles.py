@@ -7,6 +7,8 @@ from application.users.permissions import has_permissions, verify_permission_int
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
 from application.users.models import AdministratorInDB, AnyUser, Role, RoleInDB
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_role_by_field
 def get_role_by_field(field_name: str, value: str) -> Role | None:
     role = select_schema_one(Role, f"SELECT * FROM roles WHERE {field_name} = %s", (value,))
     
@@ -20,12 +22,18 @@ def get_role_by_field(field_name: str, value: str) -> Role | None:
         
     return role
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_role_by_name
 def get_role_by_name(name: str) -> Role | None:
     return get_role_by_field("name", name)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_role_by_uuid
 def get_role_by_uuid(uuid: str) -> Role | None:
     return get_role_by_field("uuid", uuid)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_all_roles
 def get_all_roles() -> dict[UUID, Role]:
     roles = select_schema_dict(Role, "uuid", "SELECT * FROM roles")
     
@@ -38,7 +46,9 @@ def get_all_roles() -> dict[UUID, Role]:
         roles[link_data["role_uuid"]].users.append(AdministratorInDB.model_validate(link_data))
     
     return roles
-# wrapper to verify_permission_integrity
+
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#verify_role_integrity
 def verify_role_integrity(cursor: Cursor):
     cursor.execute("""
         SELECT DISTINCT roles.* FROM administrators_roles
@@ -49,6 +59,7 @@ def verify_role_integrity(cursor: Cursor):
     return verify_permission_integrity(assigned_roles)
 
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#update_user_roles
 def update_user_roles(logged_in_user: AnyUser, user_uuid: UUID, old_roles: set[UUID] | list[UUID], new_roles: set[UUID] | list[UUID]):
     old_roles = set(old_roles)
     new_roles = set(new_roles)
@@ -64,6 +75,7 @@ def update_user_roles(logged_in_user: AnyUser, user_uuid: UUID, old_roles: set[U
             grant_role_to_user(logged_in_user, role, user_uuid)
         
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#grant_role_to_user
 def grant_role_to_user(logged_in_user: AnyUser, role_uuid: UUID, user_uuid: UUID):
     administrator = select_schema_one(AdministratorInDB, "SELECT * FROM administrators WHERE uuid = %s", (user_uuid,))
     role = get_role_by_uuid(role_uuid)
@@ -80,7 +92,8 @@ def grant_role_to_user(logged_in_user: AnyUser, role_uuid: UUID, user_uuid: UUID
             cursor.execute("INSERT INTO administrators_roles (administrator_uuid, role_uuid) VALUES (%s, %s) ON CONFLICT DO NOTHING", (user_uuid, role_uuid))
             connection.commit()
 
-            
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#revoke_role_from_user
 def revoke_role_from_user(logged_in_user: AnyUser, role_uuid: UUID, administrator_uuid: UUID) -> None:
     role = get_role_by_uuid(role_uuid)
     administrator = select_schema_one(AdministratorInDB, "SELECT * FROM administrators WHERE uuid = %s", (administrator_uuid,))
