@@ -74,9 +74,9 @@ class MachinesWebsocketHandler(WebSocketHandler):
                     else:
                         self.subscription_manager.unsubscribe(UUID(command.target), self.websocket)
                 case "START":
-                    start_machine(UUID(command.target))
+                    await start_machine(UUID(command.target))
                 case "STOP": 
-                    stop_machine(UUID(command.target))
+                    await stop_machine(UUID(command.target))
                 case "UPDATE": pass
 
             # if no errors occured, send acknowledgements

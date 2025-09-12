@@ -5,6 +5,8 @@ from uuid import UUID
 from application.libvirt_socket import LibvirtConnection
 from config import MACHINES_CONFIG
 
+logger = logging.getLogger(__name__)
+
 ###############################
 #       VM state tasks
 ###############################
@@ -48,13 +50,13 @@ async def start_machine_async(uuid: UUID):
     """
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
-            machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid))
-            logging.info(f"Trying to start {machine}")
+            machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid)) #type:ignore
+            logging.debug(f"Trying to start {machine}")
             machine.create()
             result = await wait_for_machine_state(machine)
             return result
         except libvirt.libvirtError as e:
-            if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
+            # if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
             logging.error(f"Failed to start VM: {e}")
 
     
@@ -92,11 +94,11 @@ async def stop_machine_async(uuid: UUID):
 
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
-            machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid))
+            machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid)) #type:ignore
             
             for FLAG in SHUTDOWN_FLAGS:
                 try:
-                    logging.info(f"Trying to stop {machine} with {FLAG}")
+                    logging.debug(f"Trying to stop {machine} with {FLAG}")
                     machine.shutdownFlags(FLAG)
                     result = await wait_for_machine_state(machine)
                     
@@ -115,7 +117,7 @@ async def stop_machine_async(uuid: UUID):
             return result
              
         except libvirt.libvirtError as e:
-            if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
+            # if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
             logging.error(f"Failed to stop VM: {e}")
 
 async def stop_machine(uuid: UUID):

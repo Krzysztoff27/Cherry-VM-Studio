@@ -1,5 +1,6 @@
 from uuid import UUID
 from pydantic import BaseModel
+from typing import Optional, Literal
 from application.users.models import ClientInDB, AdministratorInDB
 
 class MachineData(BaseModel):                       # * parent class with properties needed in every request
@@ -19,3 +20,30 @@ class MachineState(MachineData):                    # * when displaying a page r
     ram_max: int | None = None                      # RAM assigned to the VM in MB
     ram_used: int | None = None                     # RAM used by the VM in MB
     uptime: int | None = None                       # Machine uptime
+    
+class MachineMetadata(BaseModel):
+    tag: str
+    value: str
+
+class MachineDisk(BaseModel):
+    name: str                                                                           # name of the disk
+    filepath: str                                                                       # filepath of the disk
+    size: int                                                                           # disk size in MiB
+    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]  # type of the disk
+
+class MachineNetworkInterfaces(BaseModel):
+    name: str                                           # network interface name
+    
+class MachineParameters(BaseModel):                     # parent class with parameters required for machine creation
+    name: str                                           # machine name, unique within a signle host; first part of UUID + machine title
+    title: str                                          # short machine description; no newlines!
+    description: Optional[str] = None                   # optional, longer description of a machine
+    metadata: list[MachineMetadata] = []                # list of machine metadata tag + value entries
+    ram: int                                            # amount RAM assigned to the VM in MiB
+    vcpu: int                                           # number of vCPUs assigned to the VM
+    os_type: str                                        # type of OS supplied in some way
+    disks: list[MachineDisk]                            # list of disks assigned to the VM
+    username: str                                       # priviliged user username
+    password: str                                       # hash of a password of a priviliged user
+    network_interfaces: list[MachineNetworkInterfaces]  # list of network inrerfaces assigned to the VM
+    

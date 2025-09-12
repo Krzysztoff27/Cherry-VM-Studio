@@ -17,8 +17,8 @@ def get_machine_owner(machine_uuid: UUID) -> AdministratorInDB | None:
         RIGHT JOIN deployed_machines_owners ON administrators.uuid = deployed_machines_owners.owner_uuid
         WHERE deployed_machines_owners.machine_uuid = %s
     """, (machine_uuid,))
-    
-    
+
+
 def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, ClientInDB]:
     return select_schema_dict(ClientInDB, "uuid", """
         SELECT clients.* FROM clients

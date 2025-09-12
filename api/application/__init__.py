@@ -8,9 +8,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from datetime import timedelta
+from config import LOGGER_CONFIG
 import os.path
 
 from config import AUTHENTICATION_CONFIG
+from utils.get_env import get_env
 
 ###############################
 #      FastAPI instance
@@ -45,6 +47,11 @@ else:
 ALGORITHM = AUTHENTICATION_CONFIG.algorithm   
 ACCESS_TOKEN_EXPIRE_DELTA = timedelta(minutes = AUTHENTICATION_CONFIG.access_token_expire_minutes)
 REFRESH_TOKEN_EXPIRE_DELTA = timedelta(minutes = AUTHENTICATION_CONFIG.refresh_token_expire_minutes)
+
+###############################
+#      Logging config
+###############################
+LOGGER_CONFIG.setup()
 
 ###############################
 #   Submodules
