@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from starlette.websockets import WebSocket
 from application.exceptions import RaisedException
@@ -22,7 +23,7 @@ class SubscriptionManager(BaseModel):
         else: 
             raise RaisedException(f"Already subscribed to \"{key}\"")
         
-        print("Subscriptions: ", self.subscriptions)
+        logging.info("Subscriptions: ", self.subscriptions)
 
     def unsubscribe(self, key, websocket):
         """ remove websocket subscription from the key """
@@ -30,13 +31,14 @@ class SubscriptionManager(BaseModel):
             raise RaisedException(f"Already unsubscribed from \"{key}\".")
         self.remove_subscription(key, websocket)
         
-        print("Subscriptions: ", self.subscriptions)
+        logging.info("Subscriptions: ", self.subscriptions)
 
     def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
         for key in list(self.subscriptions): # snapshot for removing data while iterating
             if websocket in self.subscriptions[key]: 
                 self.remove_subscription(key, websocket)
+        logging.info("Subscriptions: ", self.subscriptions)
 
     def remove_key(self, key):
         del self.subscriptions[key]
@@ -51,7 +53,7 @@ class SubscriptionManager(BaseModel):
         if self.broadcasting: return # if already broadcasting no need to double it
         self.broadcasting = True
         while self.broadcasting and self.broadcast_data:
-            print("broadcasting")
+            logging.info("broadcasting")
             await self.broadcast_data(self.subscriptions)
             await asyncio.sleep(intervalInSeconds)
             

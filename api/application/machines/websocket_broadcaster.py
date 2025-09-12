@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
@@ -19,13 +20,13 @@ async def broadcast_machine_state(subscriptions: dict[UUID, list[WebSocket]]):
             if websocket.application_state == WebSocketState.CONNECTED: 
                 push_to_dict(subscriptions_by_websocket, websocket, uuid)
                 
-    print("Subscriptions: ", subscriptions)
-    print("subscriptions_by_websocket: ", subscriptions_by_websocket)
+    logging.info("Subscriptions: ", subscriptions)
+    logging.info("subscriptions_by_websocket: ", subscriptions_by_websocket)
     
     # # prepare and send data for each websocket
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
         body = fetch_machine_state(machine_uuids)
         
-        print("data: ", body)
+        logging.info("data: ", body)
         
         await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
