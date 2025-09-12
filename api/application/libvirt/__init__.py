@@ -1,6 +1,7 @@
 import libvirt
 import logging
 from typing import Literal
+from exceptions.models import RaisedException
 
 ###############################
 #   connection definition
@@ -20,7 +21,7 @@ class LibvirtConnection():
             case _:
                 logging.error("Connection type must be either 'rw' or 'ro'")
     
-    def __enter__(self):
+    def __enter__(self) -> libvirt.virConnect | None:
         return self.connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -31,18 +32,18 @@ class LibvirtConnection():
         try:
             self.connection = libvirt.openReadOnly(self.hypervisor_uri)
         except libvirt.libvirtError as e:
-            logging.error(f"Failed to open readonly libvirt connection to {self.hypervisor_uri}")
             logging.error(repr(e))
+            raise RaisedException(f"Failed to open readonly libvirt connection to {self.hypervisor_uri}")
         except Exception as e:
-            logging.error("Unknown error occured.")
             logging.error(repr(e))
+            raise RaisedException(f"Failed to open readonly libvirt connection to {self.hypervisor_uri}")
 
     def open_read_write(self):
         try:
             self.connection = libvirt.open(self.hypervisor_uri)
         except libvirt.libvirtError as e:
-            logging.error(f"Failed to open read-write libvirt connection to {self.hypervisor_uri}")
             logging.error(repr(e))
+            raise RaisedException(f"Failed to open read-write libvirt connection to {self.hypervisor_uri}")
         except Exception as e:
-            logging.error("Unknown error occured.")
             logging.error(repr(e))
+            raise RaisedException(f"Failed to open read-write libvirt connection to {self.hypervisor_uri}")

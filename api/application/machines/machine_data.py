@@ -35,16 +35,16 @@ def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID):
 #       MachineData
 ###############################
 def get_machine_data(machine) -> MachineData:
-    NS = {"vm": "http://example.com/virtualization"} 
+    xmlNameScheme = {"vm": "http://example.com/virtualization"} 
     return MachineData (
-                uuid=UUID(machine.UUIDString()), 
-                group=(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", NS).find("vm:group", NS).text),
-                group_member_id=int(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", NS).find("vm:groupMemberId", NS).text), 
-                owner=get_machine_owner(UUID(machine.UUIDString())),
-                assigned_clients=get_clients_assigned_to_machine(UUID(machine.UUIDString())),
-                port=int(ET.fromstring(machine.XMLDesc()).find("devices/graphics[@type='vnc']").get("port")),
-                domain=str("") #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
-        )
+        uuid=UUID(machine.UUIDString()), 
+        group=(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", xmlNameScheme).find("vm:group", xmlNameScheme).text),
+        group_member_id=int(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", xmlNameScheme).find("vm:groupMemberId", xmlNameScheme).text), 
+        owner=get_machine_owner(UUID(machine.UUIDString())),
+        assigned_clients=get_clients_assigned_to_machine(UUID(machine.UUIDString())),
+        port=int(ET.fromstring(machine.XMLDesc()).find("devices/graphics[@type='vnc']").get("port")),
+        domain=str("") #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
+    )
 
 def get_all_machines() -> dict[UUID, MachineData]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:

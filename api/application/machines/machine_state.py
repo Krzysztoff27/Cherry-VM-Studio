@@ -39,22 +39,29 @@ async def wait_for_vm_state(machine):
         return await asyncio.wait_for(poll_state(), MACHINES_CONFIG.vm_state_wait_timeout)
     except asyncio.TimeoutError:
         return 'unknown'
-                 
+    
+    
+###############################
+#          VM Start
+###############################             
 async def start_vm_async(uuid: UUID):
     """
     Final async wrapper - starting VM and waiting for state feedback
     """
-    try:
-        with LibvirtConnection("rw") as libvirt_read_write_connection:
+    with LibvirtConnection("rw") as libvirt_read_write_connection:
+        try:
             machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid))
             machine.create()
-    except libvirt.libvirtError as e:
+            result = await wait_for_vm_state(machine)
+            return result
+        except libvirt.libvirtError as e:
             if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
-            logging.error("Failed to start VM: {e}")
+            logging.error(f"Failed to start VM: {e}")
+
     
-    result = await wait_for_vm_state(machine)
-    if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
-    return result
+    # result = await wait_for_vm_state(machine)
+    # if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
+    # return result
 
 async def start_vm_tracking(uuid: UUID):
     if vm_tasks.get(uuid) and not vm_tasks[uuid].done():
@@ -66,6 +73,39 @@ async def start_vm_tracking(uuid: UUID):
     
     result = await task
     vm_tasks.pop(uuid, None)
+
+###############################
+#          VM Stop
+############################### 
+async def stop_vm_async(uuid: UUID):
+    """
+     Final async wrapper - stopping VM and waiting for state feedback
+    """
+
+    with LibvirtConnection("rw") as libvirt_read_write_connection:
+        try:
+            machine = libvirt_read_write_connection.lookupByUUIDString(str(uuid))
+            machine.shutdown()
+            result = await wait_for_vm_state(machine)
+            return result
+        except libvirt.libvirtError as e:
+            if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
+            logging.error(f"Failed to stop VM: {e}")
+
+    
+    # if libvirt_read_write_connection.isAlive(): libvirt_read_write_connection.close()
+
+async def stop_vm_tracking(uuid: UUID):
+    if vm_tasks.get(uuid) and not vm_tasks[uuid].done():
+        logging.error("Machine is already stopping!")
+        return False
+
+    task = asyncio.create_task(stop_vm_async(uuid))
+    vm_tasks[uuid] = task
+    
+    result = await task
+    vm_tasks.pop(uuid, None)
+    
 
 def is_vm_loading(uuid: UUID) -> bool:
     task = vm_tasks.get(uuid)
@@ -89,8 +129,8 @@ def get_machine_state(machine) -> MachineState:
     
 def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None}
+        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} #type:ignore
     
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None  
+        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None #type:ignore
