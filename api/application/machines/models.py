@@ -1,4 +1,3 @@
-import datetime
 from uuid import UUID
 from pydantic import BaseModel
 from application.users.models import ClientInDB, AdministratorInDB

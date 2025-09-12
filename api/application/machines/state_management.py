@@ -2,10 +2,8 @@ import logging
 import libvirt
 import asyncio
 from uuid import UUID
-from application.machines.models import MachineState
 from application.libvirt import LibvirtConnection
 from config import MACHINES_CONFIG
-from api.application.machines.data_retrieval import get_machine_data
 
 ###############################
 #       VM state tasks

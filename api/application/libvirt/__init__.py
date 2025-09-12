@@ -1,7 +1,7 @@
 import libvirt
 import logging
 from typing import Literal
-from exceptions.models import RaisedException
+from application.exceptions.models import RaisedException
 
 ###############################
 #   connection definition
