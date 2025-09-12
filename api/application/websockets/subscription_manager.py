@@ -51,6 +51,7 @@ class SubscriptionManager(BaseModel):
         if self.broadcasting: return # if already broadcasting no need to double it
         self.broadcasting = True
         while self.broadcasting and self.broadcast_data:
+            print("broadcasting")
             await self.broadcast_data(self.subscriptions)
             await asyncio.sleep(intervalInSeconds)
             
