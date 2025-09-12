@@ -1,7 +1,7 @@
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
-from api.application.machines.data_retrieval import fetch_machine_state
+from application.machines.data_retrieval import fetch_machine_state
 
 from application.websockets.models import DataResponse
 from utils.dict import push_to_dict

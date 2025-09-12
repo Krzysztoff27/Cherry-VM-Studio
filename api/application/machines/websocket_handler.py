@@ -8,7 +8,8 @@ from application.websockets.websocket_handler import WebSocketHandler
 from application.websockets.models import Command
 from application.exceptions import RaisedException
 from application.authentication.validation import get_authenticated_user
-from application.machines.state_management import check_machine_existence, start_machine, stop_machine
+from application.machines.state_management import start_machine, stop_machine
+from application.machines.data_retrieval import check_machine_existence
 
 class MachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager | None = None
