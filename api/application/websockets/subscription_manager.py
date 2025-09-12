@@ -1,3 +1,4 @@
+from uuid import UUID
 from starlette.websockets import WebSocket
 from application.exceptions import RaisedException
 from pydantic import BaseModel
@@ -5,8 +6,8 @@ from typing import Callable, Any
 import asyncio
 
 class SubscriptionManager(BaseModel):
-    subscriptions: dict[str, list[WebSocket]] = {}
-    broadcast_data: Callable[[dict[str, list[WebSocket]]], Any] | None = None
+    subscriptions: dict[UUID, list[WebSocket]] = {}
+    broadcast_data: Callable[[dict[UUID, list[WebSocket]]], Any] | None = None
     broadcasting: bool = False
 
     class Config:

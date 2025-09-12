@@ -8,7 +8,7 @@ from application.websockets.websocket_handler import WebSocketHandler
 from application.websockets.models import Command
 from application.exceptions import RaisedException
 from application.authentication.validation import get_authenticated_user
-from application.machines.machine_state import check_machine_existence
+from application.machines.state_management import check_machine_existence, start_machine, stop_machine
 
 class MachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager | None = None
@@ -56,30 +56,34 @@ class MachinesWebsocketHandler(WebSocketHandler):
                 raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
             
             if command.target != "ALL" and not check_machine_existence(UUID(command.target)):
-                raise RaisedException(f"Machine of such UUID={command.target} does not exist.")
+                raise RaisedException(f"Machine of such UUID={command.target} does not exist.")    
             
             if command.target == "ALL" and command.method != "UNSUBSCRIBE":
-                raise RaisedException(f"Using target=ALL in the {command.method} command is forbidden.")
+                raise RaisedException(f"Using target=ALL in the {command.method} command is forbidden.")    
             
             match command.method:
                 case "SUBSCRIBE": 
-                    self.subscription_manager.subscribe(command.target, self.websocket)
+                    self.subscription_manager.subscribe(UUID(command.target), self.websocket)
                 case "UNSUBSCRIBE": 
                     if command.target == "ALL":
                         self.subscription_manager.unsubscribe_from_all(self.websocket)
                     else:
-                        self.subscription_manager.unsubscribe(command.target, self.websocket)
-                case "START": pass
-                case "STOP": pass
+                        self.subscription_manager.unsubscribe(UUID(command.target), self.websocket)
+                case "START":
+                    start_machine(UUID(command.target))
+                case "STOP": 
+                    stop_machine(UUID(command.target))
                 case "UPDATE": pass
 
             # if no errors occured, send acknowledgements
             await self.acknowledge(json)
         except RaisedException as reason:
             await self.reject(json, reason)
+        except ValueError:
+            await self.reject(json, "Invalid UUID.")
         except Exception as e:
             await self.reject(json)
-            raise e;
+            raise e
 
     
         
