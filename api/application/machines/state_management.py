@@ -2,7 +2,7 @@ import logging
 import libvirt
 import asyncio
 from uuid import UUID
-from application.libvirt import LibvirtConnection
+from application.libvirt_socket import LibvirtConnection
 from config import MACHINES_CONFIG
 
 ###############################

@@ -1,10 +1,10 @@
 import xml.etree.ElementTree as ET
+import libvirt
 from fastapi import HTTPException
 from uuid import UUID
-from application import libvirt
 from application.machines.state_management import is_vm_loading
 from application.machines.models import MachineData, MachineState
-from application.libvirt import LibvirtConnection
+from application.libvirt_socket import LibvirtConnection
 from application.users.models import AdministratorInDB, ClientInDB
 from application.postgresql import select_schema_dict, select_schema_one, select_single_field
 
