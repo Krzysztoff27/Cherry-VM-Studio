@@ -54,13 +54,16 @@ class MachinesWebsocketHandler(WebSocketHandler):
             
             if not hasattr(command, 'target') or not command.target: 
                 raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
+            
             if command.target != "ALL" and not check_machine_existence(UUID(command.target)):
                 raise RaisedException(f"Machine of such UUID={command.target} does not exist.")
             
+            if command.target == "ALL" and command.method != "UNSUBSCRIBE":
+                raise RaisedException(f"Using target=ALL in the {command.method} command is forbidden.")
+            
             match command.method:
                 case "SUBSCRIBE": 
-                    if command.target != "ALL": 
-                        self.subscription_manager.subscribe(command.target, self.websocket)
+                    self.subscription_manager.subscribe(command.target, self.websocket)
                 case "UNSUBSCRIBE": 
                     if command.target == "ALL":
                         self.subscription_manager.unsubscribe_from_all(self.websocket)
