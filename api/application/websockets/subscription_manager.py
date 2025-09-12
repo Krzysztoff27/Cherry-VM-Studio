@@ -21,12 +21,16 @@ class SubscriptionManager(BaseModel):
             self.subscriptions[key].append(websocket)
         else: 
             raise RaisedException(f"Already subscribed to \"{key}\"")
+        
+        print("Subscriptions: ", self.subscriptions)
 
     def unsubscribe(self, key, websocket):
         """ remove websocket subscription from the key """
         if not key in self.subscriptions or websocket not in self.subscriptions[key]:
             raise RaisedException(f"Already unsubscribed from \"{key}\".")
         self.remove_subscription(key, websocket)
+        
+        print("Subscriptions: ", self.subscriptions)
 
     def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
