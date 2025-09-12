@@ -53,6 +53,8 @@ class MachinesWebsocketHandler(WebSocketHandler):
         try:
             command = await self.validate_command(json)
             
+            print("Command: ", command)
+            
             if not hasattr(command, 'target') or not command.target: 
                 raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
             
