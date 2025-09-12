@@ -14,7 +14,7 @@ export const parseData = (machines) =>
         return {
             uuid: machine.uuid,
             details: { name, state },
-            state: { state, uuid },
+            state: { state, uuid: machine.uuid },
             cpu: machine.cpu,
             ram: Math.round((machine.ram_used / machine.ram_max) * 100),
             owner: [machine.owner],
