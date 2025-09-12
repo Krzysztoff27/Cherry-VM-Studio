@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
@@ -6,7 +7,7 @@ from api.application.machines.data_retrieval import fetch_machine_state
 from application.websockets.models import DataResponse
 from utils.dict import push_to_dict
 
-async def broadcast_machine_state(subscriptions: dict[str, list[WebSocket]]):
+async def broadcast_machine_state(subscriptions: dict[UUID, list[WebSocket]]):
     subscriptions_by_websocket = {} # key - websocket, value - list of uuids of subscribed machines
 
     for uuid, subscribed in list(subscriptions.items()):
