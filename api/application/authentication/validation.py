@@ -12,7 +12,7 @@ from .passwords import verify_password
 from application.users.users import get_user_by_username, update_user_last_active
 from application.users.models import Administrator, AnyUser
 
-def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser | None:
+def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if not is_token_of_type(payload, token_type): raise InvalidTokenError
@@ -37,16 +37,16 @@ def authenticate_user(username: str, password: str):
         return False
     return user
 
-def get_authenticated_user(token: Token) -> AnyUser | None: 
+def get_authenticated_user(token: Token) -> AnyUser: 
     return validate_user_token(token, 'access')
 
-def get_authenticated_administrator(token: Token) -> Administrator | None:
+def get_authenticated_administrator(token: Token) -> Administrator:
     user = validate_user_token(token, 'access')
     if not is_admin(user):
         raise HTTPException(status_code=403, detail="You do not have the necessary permissions to access this resource.")    
     return user
 
-def get_user_from_refresh_token(token: Token) -> AnyUser | None:
+def get_user_from_refresh_token(token: Token) -> AnyUser:
     return validate_user_token(token, 'refresh')
 
 DependsOnAdministrativeAuthentication = Annotated[Administrator, Depends(get_authenticated_administrator)]
