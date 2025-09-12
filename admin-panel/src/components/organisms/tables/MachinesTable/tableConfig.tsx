@@ -6,18 +6,15 @@ import MachineControlsCell from "../../../atoms/table/MachineControlsCell";
 import MachineAssignedUserCell from "../../../atoms/table/MachineAssignedUserCell";
 import { safeObjectValues } from "../../../../utils/misc";
 
-export const parseData = machines =>
-    safeObjectValues(machines).map(machine => {
+export const parseData = (machines) =>
+    safeObjectValues(machines).map((machine) => {
         const name = `${machine.group} ${machine.group_member_id}`;
         const state = { fetching: machine.active === undefined, loading: machine.loading, active: machine.active };
 
         return {
             uuid: machine.uuid,
-            details: {
-                name: name,
-                state: state,
-            },
-            state: state,
+            details: { name, state },
+            state: { state, uuid },
             cpu: machine.cpu,
             ram: Math.round((machine.ram_used / machine.ram_max) * 100),
             owner: [machine.owner],
@@ -81,11 +78,11 @@ export const getColumns = (refresh: () => void, global: boolean, viewMode: boole
             enableSorting: false,
             cell: ({ getValue }) => (
                 <MachineControlsCell
-                    state={getValue()}
                     disabled={viewMode}
+                    {...getValue()}
                 />
             ),
             minSize: 350,
             maxSize: 350,
         },
-    ].filter(e => e);
+    ].filter((e) => e);

@@ -2,11 +2,23 @@ import { ActionIcon, Button, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTrashXFilled } from "@tabler/icons-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import useApiWebSocket from "../../../hooks/useApiWebSocket";
 
-const MachineControlsCell = ({ state, disabled = false }): React.JSX.Element => {
+const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Element => {
     const { t } = useTranslation();
+    const { sendCommand } = useApiWebSocket("/ws/vm");
 
-    const preventEvent = e => e.preventDefault();
+    const preventEvent = (e) => e.preventDefault();
+
+    const startMachine = (e) => {
+        preventEvent(e);
+        sendCommand("START", { uuid });
+    };
+
+    const startMachine = (e) => {
+        preventEvent(e);
+        sendCommand("STOP", { uuid });
+    };
 
     return (
         <Group
@@ -28,7 +40,7 @@ const MachineControlsCell = ({ state, disabled = false }): React.JSX.Element => 
                 size="md"
                 color="suse-green.9"
                 disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={preventEvent}
+                onClick={startMachine}
             >
                 <IconPlayerPlayFilled size={"28"} />
             </ActionIcon>
@@ -37,7 +49,7 @@ const MachineControlsCell = ({ state, disabled = false }): React.JSX.Element => 
                 size="md"
                 color="red.9"
                 disabled={disabled || state.fetching || state?.loading || !state?.active}
-                onClick={preventEvent}
+                onClick={stopMachine}
             >
                 <IconPlayerStopFilled size={"28"} />
             </ActionIcon>
