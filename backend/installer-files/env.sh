@@ -42,20 +42,11 @@ readonly DIR_LIBVIRT_HOST="${STACK_ROOTPATH}/libvirt"; export DIR_LIBVIRT_HOST
 readonly DIR_IMAGE_FILES="${STACK_ROOTPATH}/image-files"; export DIR_IMAGE_FILES
 readonly DIR_VM_INSTANCES="${TEMP_ROOTPATH}/virtual-machines"; export DIR_VM_INSTANCES
 
-# Polkit directories
-readonly DIR_POLKIT_ACTIONS='/usr/share/polkit-1/actions'; export DIR_POLKIT_ACTIONS
-readonly DIR_POLKIT_RULES='/etc/polkit-1/rules.d'; export DIR_POLKIT_RULES
-
 # Systemd directories
 readonly DIR_SYSTEMD_SERVICES='/etc/systemd/system'; export DIR_SYSTEMD_SERVICES
 readonly DIR_CVMS_SYSTEMD_SCRIPTS="${STACK_ROOTPATH}/systemd"; export DIR_CVMS_SYSTEMD_SCRIPTS
 
-# Custom netns directory
-#network namespace name for the Cherry Remote Access Services Bus
-# readonly NS_RASBUS='cherry-rasBus'; export NS_RASBUS
 readonly DIR_NETNS='/var/run/netns'; export DIR_NETNS
-# readonly DIR_NS_RASBUS="${DIR_NETNS}/${NS_RASBUS}"; export DIR_NS_RASBUS
-
 
 ###############################
 #           locks
@@ -117,11 +108,6 @@ readonly POSTGRESQL_USER='guacadmin'; export POSTGRESQL_USER
 readonly POSTGRESQL_PASSWORD='guacadmin'; export POSTGRESQL_PASSWORD
 
 ###############################
-#       Docker volumes
-###############################
-readonly VOLUME_DB='cherry_db'; export VOLUME_DB
-
-###############################
 #virtual network infrastructure
 ###############################
 # Networks
@@ -161,9 +147,6 @@ readonly VETH_RASBUS_EXT='rasBus-ext'; export VETH_RASBUS_EXT
 #dedicated link for TLS socket communication with libvirt daemon
 readonly VETH_LIBVIRT_RASBUS='libvirt-rasBus'; export VETH_LIBVIRT_RASBUS
 readonly VETH_RASBUS_LIBVIRT='rasBus-libvirt'; export VETH_RASBUS_LIBVIRT
-
-# Network namespaces
-
 
 # Network bridges
 #bridge that connects all of the VM guests to the rest of the remote access infrastructure as well as the Internet
