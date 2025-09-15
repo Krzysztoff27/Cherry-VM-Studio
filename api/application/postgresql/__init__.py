@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 from pydantic import BaseModel
 from .models import Params
 from config import DATABASE_CONFIG
-from typing import Type, TypeVar, Optional
+from typing import Type, TypeVar, Optional, Any
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -24,31 +24,31 @@ pool = psycopg_pool.ConnectionPool(
 
 # sends SELECT query and returns returned rows
 
-def select_one(query: str, params: Params | None = None) -> dict[str, any] | None:
+def select_one(query: str, params: Params | None = None) -> dict[str, Any] | None:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(query=query, params=params)
             row = cursor.fetchone()
     return row
 
-def select_rows(query: str, params: Params | None = None) -> list[dict[str, any]]:
+def select_rows(query: str, params: Params | None = None) -> list[dict[str, Any]]:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(query=query, params=params)
             rows = cursor.fetchall()
     return rows
 
-def select_single_field(key_name: str, query: str, params: Params | None = None) -> list[any]:
+def select_single_field(key_name: str, query: str, params: Params | None = None) -> list[Any]:
     rows = select_rows(query, params)
     return [row[key_name] for row in rows]
 
 # select schema functions fetch data from the select query and validate it using the given pydantic model
 
-def select_schema(model: Type[T], query: str, params: Params | None = None) -> list[any]:
+def select_schema(model: Type[T], query: str, params: Params | None = None) -> list[Any]:
     rows = select_rows(query, params)
     return [model.model_validate(row) for row in rows]
 
-def select_schema_dict(model: Type[T], key_name: str, query: str, params: Params | None = None) -> dict[str, any]:
+def select_schema_dict(model: Type[T], key_name: str, query: str, params: Params | None = None) -> dict[Any, Any]:
     rows = select_rows(query, params)
     return {row[key_name]: model.model_validate(row) for row in rows}
 
