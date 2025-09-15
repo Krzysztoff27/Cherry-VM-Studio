@@ -27,14 +27,14 @@ pool = psycopg_pool.ConnectionPool(
 def select_one(query: str, params: Params | None = None) -> dict[str, Any] | None:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute(query=query, params=params)
+            cursor.execute(query=query, params=params) #type: ignore[arg-type]
             row = cursor.fetchone()
     return row
 
 def select_rows(query: str, params: Params | None = None) -> list[dict[str, Any]]:
     with pool.connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute(query=query, params=params)
+            cursor.execute(query=query, params=params) #type: ignore[arg-type]
             rows = cursor.fetchall()
     return rows
 
