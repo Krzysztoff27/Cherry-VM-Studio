@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
 import libvirt
 from fastapi import HTTPException
 from uuid import UUID
@@ -8,9 +8,12 @@ from application.libvirt_socket import LibvirtConnection
 from application.users.models import AdministratorInDB, ClientInDB
 from application.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
 
+XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
+
 ###############################
-#  DB manipulation functions
+#  DB functions
 ###############################
+
 def get_machine_owner(machine_uuid: UUID) -> AdministratorInDB | None:
     return select_schema_one(AdministratorInDB, """
         SELECT administrators.* FROM administrators
@@ -26,8 +29,10 @@ def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, ClientInDB
         WHERE deployed_machines_clients.machine_uuid = %s
     """, (machine_uuid,))
     
+    
 def get_user_machine_uuids(owner_uuid: UUID) -> list[UUID]:
     return select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE owner_uuid = %s", (owner_uuid,))
+
 
 def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
     machine_owner = get_machine_owner(machine_uuid)
@@ -36,28 +41,41 @@ def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
 ###############################
 #       Machine Data
 ###############################
+
+
+def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> ElementTree.Element[str] | None:
+    root = ElementTree.fromstring(machine.XMLDesc())
+    element = root
+    
+    for tag in tags:
+        element = element.find(tag, XML_NAME_SCHEMA)
+        if element is None:
+            return None
+        
+    return element
+
+def get_element_from_machine_xml_as_text(machine: libvirt.virDomain, *tags: str):
+    element = get_element_from_machine_xml(machine, *tags)
+    return element.text if element is not None else None
+    
+
 def get_machine_data(machine: libvirt.virDomain) -> MachineData:
-    xmlNameScheme = {"vm": "http://example.com/virtualization"} 
+    machine_uuid = UUID(machine.UUIDString())
+    
+    graphics_element = get_element_from_machine_xml(machine, "devices/graphics[@type='vnc']")
+    port = int(graphics_element.get("port", "-1") if graphics_element is not None else -1)
+    
     return MachineData (
-        uuid=UUID(machine.UUIDString()), 
-        group=(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", xmlNameScheme).find("vm:group", xmlNameScheme).text),
-        group_member_id=int(ET.fromstring(machine.XMLDesc()).find("metadata/vm:info", xmlNameScheme).find("vm:groupMemberId", xmlNameScheme).text), 
-        owner=get_machine_owner(UUID(machine.UUIDString())),
-        assigned_clients=get_clients_assigned_to_machine(UUID(machine.UUIDString())),
-        port=int(ET.fromstring(machine.XMLDesc()).find("devices/graphics[@type='vnc']").get("port")),
-        domain=str("") #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
+        uuid = machine_uuid, 
+        owner= get_machine_owner(machine_uuid),
+        group = get_element_from_machine_xml_as_text(machine, "metadata/vm:info", "vm:group"),
+        group_member_id = int(get_element_from_machine_xml_as_text(machine, "metadata/vm:info", "vm:groupMemberId") or 0), 
+        assigned_clients = get_clients_assigned_to_machine(UUID(machine.UUIDString())),
+        port = port,
+        domain = "" #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
     )
 
-def get_all_machines() -> dict[UUID, MachineData]:
-    with LibvirtConnection("ro") as libvirt_readonly_connection:
-        machines = libvirt_readonly_connection.listAllDomains(0)
-        return {UUID(machine.UUIDString()): get_machine_data(machine) for machine in machines}
-    raise HTTPException(status_code=503, detail="API could not connect to the VM service.")
-            
-def get_user_machines(owner_uuid: UUID) -> dict[UUID, MachineData]:
-    return {machine_uuid: get_machine(machine_uuid) for machine_uuid in get_user_machine_uuids(owner_uuid)}
-        
-def get_machine(uuid: UUID) -> MachineData | None:
+def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machine = libvirt_readonly_connection.lookupByUUIDString(str(uuid))
         if not machine:
@@ -65,9 +83,29 @@ def get_machine(uuid: UUID) -> MachineData | None:
         return get_machine_data(machine)
     raise HTTPException(status_code=503, detail="API could not connect to the VM service.")
 
+
+def get_all_machines() -> dict[UUID, MachineData]:
+    with LibvirtConnection("ro") as libvirt_readonly_connection:
+        machines = libvirt_readonly_connection.listAllDomains(0)
+        return {UUID(machine.UUIDString()): get_machine_data(machine) for machine in machines}
+    raise HTTPException(status_code=503, detail="API could not connect to the VM service.")
+
+            
+def get_user_machines(owner_uuid: UUID) -> dict[UUID, MachineData]:
+    user_machines = {}
+    
+    for machine_uuid in get_user_machine_uuids(owner_uuid):
+        machine = get_machine_data_by_uuid(machine_uuid)
+        if machine is not None:
+            user_machines.update({machine_uuid: machine})
+            
+    return user_machines
+        
+
 ###############################
 #       Machine State
 ###############################
+
 def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
