@@ -6,7 +6,7 @@ from application.machines.state_management import is_vm_loading
 from application.machines.models import MachineData, MachineState
 from application.libvirt_socket import LibvirtConnection
 from application.users.models import AdministratorInDB, ClientInDB
-from application.postgresql import select_schema_dict, select_schema_one, select_single_field
+from application.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
 
 ###############################
 #  DB manipulation functions
@@ -29,7 +29,7 @@ def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, ClientInDB
 def get_user_machine_uuids(owner_uuid: UUID) -> list[UUID]:
     return select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE owner_uuid = %s", (owner_uuid,))
 
-def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID):
+def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
     machine_owner = get_machine_owner(machine_uuid)
     return machine_owner is not None and machine_owner.uuid == user_uuid
 

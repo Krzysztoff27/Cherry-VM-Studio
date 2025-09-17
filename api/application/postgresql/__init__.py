@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 from pydantic import BaseModel
 from .models import Params
 from config import DATABASE_CONFIG
-from typing import Type, TypeVar, Optional
+from typing import Type, TypeVar, Optional, Any
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -48,7 +48,7 @@ def select_schema(model: Type[T], query: str, params: Params | None = None) -> l
     rows = select_rows(query, params)
     return [model.model_validate(row) for row in rows]
 
-def select_schema_dict(model: Type[T], key_name: str, query: str, params: Params | None = None) -> dict[str, any]:
+def select_schema_dict(model: Type[T], key_name: str, query: str, params: Params | None = None) -> dict[str, Any]:
     rows = select_rows(query, params)
     return {row[key_name]: model.model_validate(row) for row in rows}
 
