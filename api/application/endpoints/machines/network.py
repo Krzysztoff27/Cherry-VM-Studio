@@ -58,5 +58,4 @@ def __rename_snapshot__(uuid: UUID, name: str, current_user: DependsOnAdministra
 
 @app.delete("/network/snapshot/{uuid}", tags=['Network Configuration Snapshots'])
 def __delete_snapshot__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication):
-    
     delete_snapshot(uuid)
