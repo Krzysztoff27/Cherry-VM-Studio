@@ -73,13 +73,13 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     
     return MachineState.model_validate ({
         **get_machine_data(machine).model_dump(),
-        'active': machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING,
+        'active': is_active,
         'loading': is_vm_loading(machine.UUID()),
         'active_connections': [],
         'ram_max': (machine.info()[2]/1024),
         'ram_used': (machine.info()[1]/1024) if is_active else 0,
         'uptime': 0
-        })
+    })
     
 def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
