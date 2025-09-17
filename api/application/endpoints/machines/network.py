@@ -42,21 +42,21 @@ def __get_user_snapshots__(current_user: DependsOnAdministrativeAuthentication) 
     return get_user_snapshots(current_user.uuid)
 
 @app.get("/network/snapshot/{uuid}", tags=['Network Configuration Snapshots'])
-def __get_snapshot__(uuid: str, current_user: DependsOnAdministrativeAuthentication) -> Snapshot:
+def __get_snapshot__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> Snapshot | None:
     return get_snapshot_by_uuid(uuid)
 
 @app.post("/network/snapshot", status_code=201, tags=['Network Configuration Snapshots'])
-def __create_snapshot__(snapshot: Snapshot, current_user: DependsOnAdministrativeAuthentication) -> Snapshot:
+def __create_snapshot__(snapshot: Snapshot, current_user: DependsOnAdministrativeAuthentication) -> Snapshot | None:
     validate_snapshot_name(snapshot.name)
     return create_snapshot(current_user.uuid, snapshot)
     
 @app.post("/network/snapshot/rename/{uuid}", tags=['Network Configuration Snapshots'])
-def __rename_snapshot__(uuid: str, name: str, current_user: DependsOnAdministrativeAuthentication) -> Snapshot:
+def __rename_snapshot__(uuid: UUID, name: str, current_user: DependsOnAdministrativeAuthentication) -> Snapshot | None:
     validate_snapshot_name(name)
     rename_snapshot(uuid, name)
     return get_snapshot_by_uuid(uuid)
 
 @app.delete("/network/snapshot/{uuid}", tags=['Network Configuration Snapshots'])
-def __delete_snapshot__(uuid: str, current_user: DependsOnAdministrativeAuthentication):
+def __delete_snapshot__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication):
     
     delete_snapshot(uuid)
