@@ -36,7 +36,7 @@ def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
 ###############################
 #       Machine Data
 ###############################
-def get_machine_data(machine) -> MachineData:
+def get_machine_data(machine: libvirt.virDomain) -> MachineData:
     xmlNameScheme = {"vm": "http://example.com/virtualization"} 
     return MachineData (
         uuid=UUID(machine.UUIDString()), 
@@ -68,7 +68,7 @@ def get_machine(uuid: UUID) -> MachineData | None:
 ###############################
 #       Machine State
 ###############################
-def get_machine_state(machine) -> MachineState:
+def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
     return MachineState.model_validate ({
