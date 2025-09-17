@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 from pydantic import BaseModel
 from .models import Params
 from config import DATABASE_CONFIG
-from typing import Type, TypeVar, Optional
+from typing import Type, TypeVar, Optional, Any
 
 T = TypeVar("T", bound=BaseModel)
 
