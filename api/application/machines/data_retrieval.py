@@ -36,7 +36,7 @@ def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
 ###############################
 #       Machine Data
 ###############################
-def get_machine_data(machine) -> MachineData:
+def get_machine_data(machine: libvirt.virDomain) -> MachineData:
     xmlNameScheme = {"vm": "http://example.com/virtualization"} 
     return MachineData (
         uuid=UUID(machine.UUIDString()), 
@@ -68,7 +68,7 @@ def get_machine(uuid: UUID) -> MachineData | None:
 ###############################
 #       Machine State
 ###############################
-def get_machine_state(machine) -> MachineState:
+def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
     return MachineState.model_validate ({
@@ -83,8 +83,8 @@ def get_machine_state(machine) -> MachineState:
     
 def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} #type:ignore
+        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} 
     
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None #type:ignore
+        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None

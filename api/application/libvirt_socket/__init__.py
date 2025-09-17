@@ -20,9 +20,14 @@ class LibvirtConnection():
                 self.open_read_write()
             case _:
                 logging.error("Connection type must be either 'rw' or 'ro'")
+                raise ValueError("Connection type must be either 'rw' or 'ro'")
     
-    def __enter__(self) -> libvirt.virConnect | None:
-        return self.connection
+    def __enter__(self) -> libvirt.virConnect:
+        if self.connection is not None:
+            return self.connection
+        else:
+            logging.error("Failed to create libvirt socket connection.")
+            raise RaisedException(f"Failed to create libvirt socket connection.")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.connection:
