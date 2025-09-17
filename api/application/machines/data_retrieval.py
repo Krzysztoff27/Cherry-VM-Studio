@@ -83,8 +83,8 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     
 def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} #type:ignore
+        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} 
     
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None #type:ignore
+        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None
