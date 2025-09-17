@@ -9,15 +9,21 @@ AccountTypes = Literal["administrative", "client"]
 # database models
 # --------------------------
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#GroupInDB
 class GroupInDB(BaseModel):
     uuid: UUID
     name: str
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#RoleInDB
 class RoleInDB(BaseModel):
     uuid: UUID
     name: str
     permissions: int
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#AdministratorInDB
 class AdministratorInDB(BaseModel):
     uuid: UUID
     password: str
@@ -29,6 +35,8 @@ class AdministratorInDB(BaseModel):
     last_active: dt.datetime | None = None
     disabled: bool = False
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#ClientInDB
 class ClientInDB(BaseModel):
     uuid: UUID
     password: str
@@ -40,64 +48,81 @@ class ClientInDB(BaseModel):
     last_active: dt.datetime | None = None
     disabled: bool = False
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#AdministratorsRoles
 class AdministratorsRoles(BaseModel):
     administrator_uuid: UUID
     role_uuid: UUID
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#ClientsGroups
 class ClientsGroups(BaseModel):
     client_uuid: UUID
     group_uuid: UUID
     
-AnyUserInDB = Union[AdministratorInDB, ClientInDB] # represents any user type in the database
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#AnyUserInDB
+AnyUserInDB = Union[AdministratorInDB, ClientInDB]
     
 # --------------------------
 # API response return models
 # --------------------------
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Group
 class Group(GroupInDB):
     users: list[ClientInDB] = []
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Role
 class Role(RoleInDB):
     users: list[AdministratorInDB] = []
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Administrator
 class Administrator(AdministratorInDB):
     account_type: Literal["administrative"] = "administrative"
     roles: list[RoleInDB] = []
     permissions: int = 0
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Client
 class Client(ClientInDB):
     account_type: Literal["client"] = "client"
     groups: list[GroupInDB] = []
     
-AnyUser = Union[Administrator, Client] # represents any user type
+    
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#AnyUser
+AnyUser = Union[Administrator, Client]
+
 
 # --------------------------
 # API request argument models
 # --------------------------
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreatedGroup
 class CreatedGroup(Group):
-    uuid: UUID | None = None
-    users: list[UUID] = []
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uuid = str(uuid4()) # generate random uuid on creation
+    uuid: UUID = Field(default_factory=uuid4)
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateAdministratorForm
 class CreateAdministratorForm(Administrator):
-    uuid: UUID | None = None
-    roles: list[UUID]
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uuid = uuid4() # generate random uuid on creation
+    uuid: UUID = Field(default_factory=uuid4)
+    roles: list[UUID] # type: ignore[override]
         
+        
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateClientForm
 class CreateClientForm(Client):
-    uuid: UUID | None = None
-    groups: list[UUID]
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.uuid = uuid4() # generate random uuid on creation
+    uuid: UUID = Field(default_factory=uuid4)
+    groups: list[UUID] # type: ignore[override]
 
-CreateUserForm = Union[CreateAdministratorForm, CreateClientForm] # represents any valid create user form
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateUserForm
+CreateUserForm = Union[CreateAdministratorForm, CreateClientForm]
+
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#ModifyUserForm
 class ModifyUserForm(BaseModel):
     username: str | None = None
     email: str | None = None
@@ -106,6 +131,8 @@ class ModifyUserForm(BaseModel):
     roles: list[UUID] | None = None
     groups: list[UUID] | None = None
     
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Filters
 class Filters(BaseModel):
     account_type: AccountTypes | None = None
     group: UUID | None = None

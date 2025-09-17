@@ -3,47 +3,53 @@ from pydantic import BaseModel
 from typing import Optional, Literal
 from application.users.models import ClientInDB, AdministratorInDB
 
-class MachineData(BaseModel):                       # * parent class with properties needed in every request
-    uuid: UUID                                      # unique ID for each machine
-    group: str | None = None                        # string of a corresponding machine group e.g.: "desktop" or "server"
-    group_member_id: int | None = None              # unique ID for each machine in the scope of a group
-    owner: AdministratorInDB | None = None          # 
-    assigned_clients: dict[UUID, ClientInDB] = {}   # clients assigned to the machine
-    port: int | None = None                         # transport layer port used by the VM
-    domain: str | None = None                       # proxy domain for the VM Apache Guacamole site
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
+class MachineData(BaseModel):                       
+    uuid: UUID                                      
+    group: str | None = None                        
+    group_member_id: int | None = None              
+    owner: AdministratorInDB | None = None          
+    assigned_clients: dict[UUID, ClientInDB] = {}   
+    port: int | None = None                         
+    domain: str | None = None                       
 
-class MachineState(MachineData):                    # * when displaying a page requiring this data, it will be requested every 1-3s
-    active: bool = False                            # is the machine online?
-    loading: bool = False                           # is the machine loading (in a state between online and offline)
-    active_connections: list | None = None          # if possible, list of IP addresses 
-    cpu: int = 0                                    # ∈ <0,100> % of CPU usage
-    ram_max: int | None = None                      # RAM assigned to the VM in MB
-    ram_used: int | None = None                     # RAM used by the VM in MB
-    uptime: int | None = None                       # Machine uptime
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
+class MachineState(MachineData):                    
+    active: bool = False                            
+    loading: bool = False                           
+    active_connections: list | None = None          
+    cpu: int = 0                                    
+    ram_max: int | None = None                      
+    ram_used: int | None = None                     
+    uptime: int | None = None                       
     
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
     tag: str
     value: str
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
-    name: str                                                                           # name of the disk
-    filepath: str                                                                       # filepath of the disk
-    size: int                                                                           # disk size in MiB
-    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]  # type of the disk
+    name: str                                                                           
+    filepath: str                                                                       
+    size: int                                                                           
+    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]  
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterfaces
 class MachineNetworkInterfaces(BaseModel):
-    name: str                                           # network interface name
+    name: str                                           
     
-class MachineParameters(BaseModel):                     # parent class with parameters required for machine creation
-    name: str                                           # machine name, unique within a signle host; first part of UUID + machine title
-    title: str                                          # short machine description; no newlines!
-    description: Optional[str] = None                   # optional, longer description of a machine
-    metadata: list[MachineMetadata] = []                # list of machine metadata tag + value entries
-    ram: int                                            # amount RAM assigned to the VM in MiB
-    vcpu: int                                           # number of vCPUs assigned to the VM
-    os_type: str                                        # type of OS supplied in some way
-    disks: list[MachineDisk]                            # list of disks assigned to the VM
-    username: str                                       # priviliged user username
-    password: str                                       # hash of a password of a priviliged user
-    network_interfaces: list[MachineNetworkInterfaces]  # list of network inrerfaces assigned to the VM
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
+class MachineParameters(BaseModel):                     
+    name: str                                           
+    title: str                                          
+    description: Optional[str] = None                   
+    metadata: list[MachineMetadata] = []                
+    ram: int                                            
+    vcpu: int                                           
+    os_type: str                                        
+    disks: list[MachineDisk]                            
+    username: str                                       
+    password: str                                       
+    network_interfaces: list[MachineNetworkInterfaces]  
     
