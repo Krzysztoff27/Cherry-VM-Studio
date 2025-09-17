@@ -19,9 +19,7 @@ async def broadcast_machine_state(subscriptions: dict[UUID, list[WebSocket]]):
         for websocket in subscribed:
             if websocket.application_state == WebSocketState.CONNECTED: 
                 push_to_dict(subscriptions_by_websocket, websocket, uuid)
-                
-    logging.info("Subscriptions: ", subscriptions)
-    logging.info("subscriptions_by_websocket: ", subscriptions_by_websocket)
+
     
     # # prepare and send data for each websocket
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
