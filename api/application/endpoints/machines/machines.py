@@ -36,7 +36,7 @@ async def __start_machine__(uuid: UUID, current_user: DependsOnAdministrativeAut
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
-    if not start_machine(uuid):
+    if not await start_machine(uuid):
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to start.")
 
 @app.post("/machine/stop/{uuid}", response_model=None, tags=['Machine State'])
@@ -46,6 +46,6 @@ async def __stop_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuth
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
-    if not stop_machine(uuid):
+    if not await stop_machine(uuid):
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to stop.")
 
