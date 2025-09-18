@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from application import app
-from application.machines import get_all_machines, get_user_machines, get_machine, check_machine_ownership
+from application.machines import get_all_machines, get_user_machines, get_machine_data_by_uuid, check_machine_ownership
 from application.machines.models import MachineData
 from application.machines.state_management import start_machine, stop_machine
 from application.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
@@ -22,7 +22,7 @@ async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[U
 
 @app.get("/machine/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
 async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:
-    machine = get_machine(uuid)
+    machine = get_machine_data_by_uuid(uuid)
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
@@ -31,7 +31,7 @@ async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> 
 
 @app.post("/machine/start/{uuid}", response_model=None, tags=['Machine State'])
 async def __start_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine(uuid)
+    machine = get_machine_data_by_uuid(uuid)
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
@@ -41,7 +41,7 @@ async def __start_machine__(uuid: UUID, current_user: DependsOnAdministrativeAut
 
 @app.post("/machine/stop/{uuid}", response_model=None, tags=['Machine State'])
 async def __stop_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine(uuid)
+    machine = get_machine_data_by_uuid(uuid)
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
