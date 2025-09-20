@@ -1,3 +1,4 @@
+from typing import Optional
 from xml.etree import ElementTree
 import libvirt
 from fastapi import HTTPException
@@ -41,7 +42,7 @@ def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_element_from_machine_xml
-def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> ElementTree.Element[str] | None:
+def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> Optional[ElementTree.Element]:
     root = ElementTree.fromstring(machine.XMLDesc())
     element = root
     
@@ -54,7 +55,7 @@ def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> Elem
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_element_from_machine_xml_as_text
-def get_element_from_machine_xml_as_text(machine: libvirt.virDomain, *tags: str):
+def get_element_from_machine_xml_as_text(machine: libvirt.virDomain, *tags: str) -> Optional[str]:
     element = get_element_from_machine_xml(machine, *tags)
     return element.text if element is not None else None
     
