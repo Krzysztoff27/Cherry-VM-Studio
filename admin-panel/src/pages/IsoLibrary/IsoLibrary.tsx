@@ -3,7 +3,7 @@ import classes from "./IsoLibrary.module.css";
 import IsoTable from "../../components/organisms/tables/IsoTable/IsoTable";
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import IsoFileModal from "../../modals/iso_file_library/IsoFileModal/IsoFileModal";
+import IsoFileModal from "../../modals/iso-file-library/IsoFileModal/IsoFileModal";
 
 const DUMMY_DATA = {
     "3e0a2af8-6cbe-4a0c-91f6-fc58a0e43811": {
