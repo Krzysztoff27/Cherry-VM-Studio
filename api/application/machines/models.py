@@ -1,6 +1,6 @@
 from uuid import UUID
-from pydantic import BaseModel
-from typing import Optional, Literal
+from pydantic import BaseModel, Field
+from typing import Optional, Literal, Union
 from application.users.models import ClientInDB, AdministratorInDB
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
@@ -27,6 +27,14 @@ class MachineState(MachineData):
 class MachineMetadata(BaseModel):
     tag: str
     value: str
+    
+class GroupMetadata(BaseModel):
+    tag: Literal["group"] = "group"
+    value: str
+    
+class GroupMemberIdMetadata(BaseModel):
+    tag: Literal["groupMemberId"] = "groupMemberId"
+    value: int
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
@@ -43,9 +51,11 @@ class MachineNetworkInterfaces(BaseModel):
 class MachineParameters(BaseModel):                     
     name: str                                           
     title: str                                          
-    description: Optional[str] = None                   
-    metadata: list[MachineMetadata] = []                
-    ram: int                                            
+    description: Optional[str] = None
+    group_metadata: GroupMetadata = Field(..., description="'group' metadata tag is required")
+    group_member_id_metadata: GroupMemberIdMetadata = Field(..., description="'groupMemberId metadata is required'")
+    additional_metadata: Optional[list[MachineMetadata]] = None       
+    ram: int # in MiB                                  
     vcpu: int                                           
     os_type: str                                        
     disks: list[MachineDisk]                            
@@ -53,3 +63,10 @@ class MachineParameters(BaseModel):
     password: str                                       
     network_interfaces: list[MachineNetworkInterfaces]  
     
+    @property
+    def metadata(self) -> list[Union[GroupMetadata, GroupMemberIdMetadata, MachineMetadata]]:
+        base_metadata =  [self.group_metadata, self.group_member_id_metadata]
+        if self.additional_metadata is not None:
+            return base_metadata + self.additional_metadata
+        return base_metadata
+
