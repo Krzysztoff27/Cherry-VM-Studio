@@ -1,5 +1,5 @@
 import { Paper, Stack } from "@mantine/core";
-import classes from "./Snapshots.module.css";
+import classes from "./SnapshotLibrary.module.css";
 import SnapshotsTable from "../../components/organisms/tables/SnapshotsTable/SnapshotsTable";
 
 const DUMMY_DATA = {
@@ -36,12 +36,12 @@ const DUMMY_DATA = {
     },
 };
 
-const Snapshots = (): React.JSX.Element => {
+const SnapshotLibrary = (): React.JSX.Element => {
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
                 <SnapshotsTable
-                    snapshotData={DUMMY_DATA}
+                    data={DUMMY_DATA}
                     loading={false}
                     error={null}
                 />
@@ -50,4 +50,4 @@ const Snapshots = (): React.JSX.Element => {
     );
 };
 
-export default Snapshots;
+export default SnapshotLibrary;

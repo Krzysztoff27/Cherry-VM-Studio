@@ -1,8 +1,8 @@
 import { Button } from "@mantine/core";
 import { Panel } from "@xyflow/react";
-import Select from "../../../molecules/interactive/SnapshotSelect/SnapshotSelect";
 import AddSnapshotButton from "../../../molecules/interactive/AddSnapshotButton/AddSnapshotButton";
 import ModifySnapshotsButton from "../../../molecules/interactive/ModifySnapshotsButton/ModifySnapshotsButton";
+import SnapshotSelect from "../../../molecules/interactive/SnapshotSelect/SnapshotSelect";
 import { useToggle } from "@mantine/hooks";
 import RefreshFlowMachinesButton from "../../../molecules/interactive/RefreshFlowMachinesButton/RefreshFlowMachinesButton";
 import ApplyRestoreButtonPair from "../ApplyRestoreButtonPair/ApplyRestoreButtonPair";
@@ -22,7 +22,7 @@ export default function FlowPanel({ resetFlow, applyNetworkConfig, isDirty, load
                         forceSnapshotDataUpdate={forceSnapshotDataUpdate}
                         initiateSnapshotDataUpdate={initiateSnapshotDataUpdate}
                     />
-                    <Select
+                    <SnapshotSelect
                         loadSnapshot={loadSnapshot}
                         loadPreset={loadPreset}
                         forceSnapshotDataUpdate={forceSnapshotDataUpdate}

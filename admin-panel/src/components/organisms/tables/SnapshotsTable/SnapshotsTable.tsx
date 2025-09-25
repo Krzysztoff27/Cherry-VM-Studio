@@ -11,16 +11,16 @@ import { getColumns } from "./tableConfig";
 import { values } from "lodash";
 import { safeObjectValues } from "../../../../utils/misc";
 
-const SnapshotsTable = ({ snapshotData, loading, error, refresh }): React.JSX.Element => {
+const SnapshotsTable = ({ data, loading, error, refresh }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "snapshots.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
     const columns = useMemo(() => getColumns(), []);
-    const data = useMemo(() => safeObjectValues(snapshotData), [snapshotData]);
+    const tableData = useMemo(() => safeObjectValues(data), [data]);
 
     const table = useReactTable({
-        data,
+        data: tableData,
         columns: columns,
         state: {
             columnFilters,
