@@ -159,7 +159,6 @@
             "all-snapshots": "All snapshots",
             "selected-snapshots": "Selected snapshots",
             "filtered-results": "Filtered results",
-            "search": "Search",
             "filters": "Filters",
             "import": "Import",
             "delete-selected": "Delete selected",
@@ -176,6 +175,28 @@
             "cells": {
                 "shared-with": "Shared with",
                 "shared-by": "Shared by"
+            }
+        }
+    },
+    "isos": {
+        "controls": {
+            "all-files": "All files",
+            "selected-files": "Selected files",
+            "filtered-results": "Filtered results",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete",
+            "add-iso-file": "Add ISO File"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "location": "Location",
+                "size": "Size",
+                "added": "Added",
+                "added-by": "Added by",
+                "last-used": "Last used"
             }
         }
     }

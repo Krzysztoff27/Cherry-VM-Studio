@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { Page } from "../types/config.types";
 import PERMISSIONS from "./permissions.config";
+import IconFileTypeIso from "../components/atoms/icons/IconFileTypeIso/IconFileTypeIso";
 
 const PAGES: Page[] = [
     {
@@ -43,6 +44,11 @@ const PAGES: Page[] = [
                 key: "snapshots",
                 path: "/machines/snapshots",
                 icon: IconLibrary,
+            },
+            {
+                key: "iso",
+                path: "/machines/iso",
+                icon: IconFileTypeIso,
             },
         ],
     },

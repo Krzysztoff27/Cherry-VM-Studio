@@ -1,4 +1,4 @@
-import { TablerIcon } from "@tabler/icons-react";
+import { IconProps, TablerIcon } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 export interface UrlNode {
@@ -30,7 +30,7 @@ export interface Contributor {
 export interface Page {
     key: string;
     path: string;
-    icon: TablerIcon;
+    icon: ComponentType<IconProps>;
     subpages?: Page[];
     permissions?: number;
 }

@@ -13,7 +13,8 @@ import Dobre from "./pages/Dobre/Dobre";
 import Groups from "./pages/Accounts/Groups/Groups";
 import Users from "./pages/Accounts/Users/Users";
 import Machine from "./pages/Machine/Machine.tsx";
-import Snapshots from "./pages/Snapshots/Snapshots.tsx";
+import SnapshotLibrary from "./pages/SnapshotLibrary/SnapshotLibrary.tsx";
+import IsoLibrary from "./pages/IsoLibrary/IsoLibrary.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -30,7 +31,8 @@ const router = createBrowserRouter(
                     <Route path='/network-panel'            element={<NetworkPanel/>}/>    
                 </Route>
                 <Route element={<PanelLayout doubleNavbar/>}>
-                    <Route path='/machines/snapshots'       element={<Snapshots/>}/>
+                    <Route path='/machines/snapshots'       element={<SnapshotLibrary/>}/>
+                    <Route path='/machines/iso'             element={<IsoLibrary/>}/>
                     <Route path='/machines/all'             element={<MachinesPage global={true}/>}/>
                     <Route path='/machines/'                element={<MachinesPage/>}/>
                     <Route path='/machines/:uuid'           element={<Machine/>}/>
