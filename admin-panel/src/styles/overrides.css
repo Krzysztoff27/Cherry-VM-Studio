@@ -3,6 +3,10 @@ a {
     color: white;
 }
 
+button {
+    cursor: pointer;
+}
+
 :root {
     overflow: hidden;
 }
