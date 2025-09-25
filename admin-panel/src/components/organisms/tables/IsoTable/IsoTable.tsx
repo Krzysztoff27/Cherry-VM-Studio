@@ -10,12 +10,12 @@ import classes from "./IsoTable.module.css";
 import { getColumns } from "./tableConfig";
 import { safeObjectValues } from "../../../../utils/misc";
 
-const IsoTable = ({ data, loading, error, refresh }): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("pages", "isos.controls.");
+const IsoTable = ({ data, loading, error, refresh, openIsoFileModal }): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("pages", "iso.controls.");
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-    const columns = useMemo(() => getColumns(), []);
+    const columns = useMemo(() => getColumns(refresh, openIsoFileModal), []);
     const tableData = useMemo(() => safeObjectValues(data), [data]);
 
     const table = useReactTable({

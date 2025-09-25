@@ -133,5 +133,15 @@
             "title": "Confirm machines data refresh",
             "description": "By refreshing the machines you will discard all unsaved changes. Are you sure you want to continue?"
         }
+    },
+    "iso": {
+        "location": "Location",
+        "size": "File size",
+        "last-used": "Last used",
+        "added-on": "Added on",
+        "last-modified-on": "Last modified on",
+        "added-by": "Added by",
+        "last-modified-by": "Last modified by",
+        "metadata": "Entry metadata"
     }
 }

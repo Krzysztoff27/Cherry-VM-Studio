@@ -1,6 +1,9 @@
 import { Paper, Stack } from "@mantine/core";
 import classes from "./IsoLibrary.module.css";
 import IsoTable from "../../components/organisms/tables/IsoTable/IsoTable";
+import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
+import IsoFileModal from "../../modals/iso_file_library/IsoFileModal/IsoFileModal";
 
 const DUMMY_DATA = {
     "3e0a2af8-6cbe-4a0c-91f6-fc58a0e43811": {
@@ -100,13 +103,32 @@ const DUMMY_DATA = {
 };
 
 const IsoLibrary = (): React.JSX.Element => {
+    const [currentUuid, setCurrentUuid] = useState<string>("");
+    const [modalOpened, { open, close }] = useDisclosure(true);
+
+    const refresh = () => {};
+
+    const openIsoFileModal = (uuid: string) => {
+        setCurrentUuid(uuid);
+        open();
+    };
+
     return (
         <Stack w="100%">
+            <IsoFileModal
+                opened={modalOpened}
+                onClose={close}
+                uuid={currentUuid}
+                refreshTable={refresh}
+            />
+
             <Paper className={classes.tablePaper}>
                 <IsoTable
                     data={DUMMY_DATA}
                     loading={false}
                     error={null}
+                    refresh={refresh}
+                    openIsoFileModal={openIsoFileModal}
                 />
             </Paper>
         </Stack>

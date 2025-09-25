@@ -1,11 +1,11 @@
 import { t } from "i18next";
 import { AccountType } from "../../../../types/config.types";
-import AccountOptionsCell from "../../../atoms/table/AccountOptionsCell";
 import BadgesCell from "../../../atoms/table/BadgesCell";
 import BusinessCardCell, { filterFunction, sortingFunction } from "../../../atoms/table/BusinessCardCell";
 import CheckboxCell from "../../../atoms/table/CheckboxCell";
 import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../../atoms/table/DateDifferenceCell";
+import AccountOptionsMenu from "../../../molecules/table/AccountOptionsMenu/AccountOptionsMenu";
 
 export const getColumns = (accountType: AccountType, refresh: () => void, openAccountModal: () => void, openPasswordModal: () => void) => [
     {
@@ -50,7 +50,7 @@ export const getColumns = (accountType: AccountType, refresh: () => void, openAc
         header: "",
         enableSorting: false,
         cell: (props) => (
-            <AccountOptionsCell
+            <AccountOptionsMenu
                 {...props}
                 openAccountModal={openAccountModal}
                 openPasswordModal={openPasswordModal}

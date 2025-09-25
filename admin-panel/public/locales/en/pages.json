@@ -178,7 +178,7 @@
             }
         }
     },
-    "isos": {
+    "iso": {
         "controls": {
             "all-files": "All files",
             "selected-files": "Selected files",
@@ -187,7 +187,8 @@
             "import": "Import",
             "delete-selected": "Delete selected",
             "delete": "Delete",
-            "add-iso-file": "Add ISO File"
+            "add-iso-file": "Add ISO File",
+            "view-and-edit": "View & Edit"
         },
         "table": {
             "headers": {

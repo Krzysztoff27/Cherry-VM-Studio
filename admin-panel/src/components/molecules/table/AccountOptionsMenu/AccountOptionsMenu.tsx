@@ -1,22 +1,20 @@
 import { IconDotsVertical, IconEdit, IconKey, IconPassword, IconTrash, IconUserCircle } from "@tabler/icons-react";
 import { ActionIcon, Button, Menu, Portal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import classes from "./AccountOptionsCell.module.css";
-import DeleteAccountsModal from "../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
-import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import usePermissions from "../../../hooks/usePermissions";
-import PERMISSIONS from "../../../config/permissions.config";
+import classes from "./AccountOptionsMenu.module.css";
+import DeleteAccountsModal from "../../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import usePermissions from "../../../../hooks/usePermissions";
+import PERMISSIONS from "../../../../config/permissions.config";
 
-const AccountOptionsCell = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }): React.JSX.Element => {
+const AccountOptionsMenu = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }): React.JSX.Element => {
     const uuid = row.id;
     const { tns } = useNamespaceTranslation("pages");
     const { hasPermissions } = usePermissions();
     const [menuOpened, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false);
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
-
     const canEdit = hasPermissions(accountType === "administrative" ? PERMISSIONS.MANAGE_ADMIN_USERS : PERMISSIONS.MANAGE_CLIENT_USERS);
     const canChangePassword = hasPermissions(accountType === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
-
     return (
         <>
             <Portal>
@@ -106,4 +104,4 @@ const AccountOptionsCell = ({ row, refreshData, openAccountModal, openPasswordMo
     );
 };
 
-export default AccountOptionsCell;
+export default AccountOptionsMenu;
