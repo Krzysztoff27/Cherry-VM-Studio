@@ -8,8 +8,8 @@ ExecStart=/usr/bin/python3 /opt/cherry-vm-studio/cherry-socket/main.py
 User=CherryWorker
 Group=CherryWorker
 Restart=on-failure
-# RuntimeDirectory=myactions
-# RuntimeDirectoryMode=0755
+RuntimeDirectory=cherry-vm-studio
+RuntimeDirectoryMode=0755
 
 # Capabilities required to use "ip" without root
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW

@@ -3,9 +3,10 @@ import stat
 import signal
 import logging
 import grp
+import threading
+
 from pathlib import Path
 from typing import Optional
-import threading
 
 from server.request_handler import ThreadedUnixServer, RequestHandler
 

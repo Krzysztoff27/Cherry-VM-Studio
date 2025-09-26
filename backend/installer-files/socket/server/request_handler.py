@@ -7,7 +7,7 @@ import socketserver
 
 from typing import Optional, Union
 
-from action_handler import ActionHandler
+from server.action_handler import ActionHandler
 
 logger = logging.getLogger(__name__)
 

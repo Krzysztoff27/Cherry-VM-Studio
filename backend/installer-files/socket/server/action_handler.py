@@ -2,7 +2,6 @@
 import logging
 
 from typing import Any, Dict, Callable
-
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -31,4 +30,4 @@ class ActionHandler:
 @ActionHandler.register("test_conn")
 def _test_conn(params: Dict[str, Any]) -> Dict[str, Any]: 
     return {"message": f"Server sucesfully received and processed the request at {datetime.now()}"}
-    
+
