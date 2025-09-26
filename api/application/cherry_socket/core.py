@@ -7,14 +7,14 @@ from __future__ import annotations
 import socket
 import json
 import uuid
-from typing import Any, Dict, Optional
 import logging
 
-from config.cherry_socket_config import SOCKET_CONFIG
+from typing import Any, Dict, Optional
+from config import SOCKET_CONFIG
 
 logger = logging.getLogger(__name__)
 
-def client_request(request_id: uuid.UUID, action: str, params: Optional[str]) -> dict:
+def client_request(request_id: uuid.UUID, action: str, params: Optional[Dict[str, Any]]) -> dict:
     payload = {
         "id": str(request_id),
         "action": action,
@@ -28,18 +28,18 @@ class CherrySocketClient:
     Keep connection open for multiple calls. It will be closed on context exit.
     """
     
-    def _init_(self, socket_path: str = SOCKET_CONFIG.SOCKET_PATH, timeout: float = SOCKET_CONFIG.REQUEST_TIMEOUT):
+    def __init__(self, socket_path: str = SOCKET_CONFIG.SOCKET_PATH, timeout: float = SOCKET_CONFIG.REQUEST_TIMEOUT):
         self.socket_path = socket_path
         self.timeout = timeout
         self._sock: socket.socket | None = None
         self._file: socket.SocketIO | None = None
         self._lock = None
         
-    def __enter__(self) -> "CherrySocketClient":
+    def __enter__(self) -> CherrySocketClient:
         self._connect()
         return self
-    
-    def __exit__(self, exc_type, exc, tb):
+        
+    def __exit__(self, exc_type, exc, tb) -> None:
         self.close()
     
     def _connect(self) -> None:
@@ -67,7 +67,7 @@ class CherrySocketClient:
         self._file = None
         self._sock = None
     
-    def call(self, action: str, params: Optional[Dict[str, Any]] = None, request_id = uuid.UUID) -> Dict[str, Any]:
+    def call(self, action: str, params: Optional[Dict[str, Any]] = None, request_id: Optional[uuid.UUID] = None) -> Dict[str, Any]:
         """
         Send one request and read (expect) one response line.
         Return parsed JSON response (dict).
@@ -82,7 +82,7 @@ class CherrySocketClient:
         if request_id is None:
             request_id = uuid.uuid4()
        
-        data = (json.dumps(client_request, separators=(",", ":")) + "\n").encode("utf-8")
+        data = (json.dumps(client_request(request_id, action, params), separators=(",", ":")) + "\n").encode("utf-8")
         
         assert self._file is not None
 
