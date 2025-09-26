@@ -8,7 +8,6 @@ import socket
 import json
 import uuid
 from typing import Any, Dict, Optional
-import os
 import logging
 
 from config.cherry_socket_config import SOCKET_CONFIG
@@ -32,8 +31,8 @@ class CherrySocketClient:
     def _init_(self, socket_path: str = SOCKET_CONFIG.SOCKET_PATH, timeout: float = SOCKET_CONFIG.REQUEST_TIMEOUT):
         self.socket_path = socket_path
         self.timeout = timeout
-        self._sock: Optional[socket.socket] = None
-        self._file = None
+        self._sock: socket.socket | None = None
+        self._file: socket.SocketIO | None = None
         self._lock = None
         
     def __enter__(self) -> "CherrySocketClient":
@@ -84,6 +83,8 @@ class CherrySocketClient:
             request_id = uuid.uuid4()
        
         data = (json.dumps(client_request, separators=(",", ":")) + "\n").encode("utf-8")
+        
+        assert self._file is not None
 
         # Try to write data to socket file
         try:
