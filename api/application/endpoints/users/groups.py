@@ -30,6 +30,6 @@ async def __join_user_to_group__(uuid: UUID, users: list[UUID], current_user: De
         join_user_to_group(uuid, user)
     
 @app.put("/group/leave/{uuid}", response_model=None, tags=['Client Groups'])
-async def __join_user_to_group__(uuid: UUID, users: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
+async def __remove_user_from_group__(uuid: UUID, users: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
     for user in users:
         remove_user_from_group(uuid, user)
