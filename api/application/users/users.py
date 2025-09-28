@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import Literal
 from uuid import UUID
 from fastapi import HTTPException
@@ -6,6 +7,7 @@ from config.regex_config import REGEX_CONFIG
 from application.users.groups import update_user_groups
 from application.authentication.passwords import hash_password
 from application.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
+from application.exceptions.models import RaisedException
 from .roles import update_user_roles, verify_role_integrity
 from .permissions import is_admin, is_client
 from .models import *
@@ -14,8 +16,7 @@ from .models import *
 def get_parent_table(user: AnyUser) -> Literal['administrators', 'clients']:
     if is_admin(user):
         return 'administrators'
-    if is_client(user):
-        return 'clients'
+    return 'clients'
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_administrators
@@ -105,7 +106,7 @@ def get_user_by_email(email: str) -> AnyUser | None:
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_uuid
 def get_user_by_uuid(uuid: UUID) -> AnyUser | None:
-    return get_user_by_field("uuid", uuid)
+    return get_user_by_field("uuid", str(uuid))
 
 def get_filtered_users(filters: Filters):
     if not len(filters.model_dump(exclude_none=True).items()):
@@ -166,8 +167,12 @@ def get_filtered_users(filters: Filters):
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#delete_user_by_uuid
-def delete_user_by_uuid(uuid: str):
+def delete_user_by_uuid(uuid: UUID):
     user = get_user_by_uuid(uuid)
+    
+    if not user:
+        return
+    
     table = get_parent_table(user)
     
     with pool.connection() as connection:
@@ -180,7 +185,7 @@ def delete_user_by_uuid(uuid: str):
     
      
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_user
-def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
+def create_user(user_data: CreateUserForm) -> AnyUser:
     user_data.username = user_data.username.lower()
     user_data.password = hash_password(user_data.password)
     
@@ -210,7 +215,13 @@ def create_user(user_data: CreateUserForm) -> AdministratorInDB | ClientInDB:
                             INSERT INTO clients_groups (client_uuid, group_uuid)
                             VALUES (%(client_uuid)s, %(group_uuid)s)               
                         """, {"client_uuid": user_data.uuid, "group_uuid": group_uuid})  
-    return get_user_by_uuid(user_data.uuid)
+                        
+        
+    # we're assuming here that user will exist after being created
+    # surely it won't break :)
+    
+    user = get_user_by_uuid(user_data.uuid)
+    return user # type: ignore
     
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#modify_user
@@ -218,7 +229,7 @@ def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: Mod
     user = get_user_by_uuid(user_uuid)
     
     if not user:
-        return
+        raise RaisedException("User does not exist.")
     
     set_statement = ""
     if modification_data.username   is not None and modification_data.username != user.username:    set_statement += "username = %(username)s "
@@ -246,7 +257,8 @@ def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: Mod
                 
             connection.commit()
             
-    return get_user_by_uuid(user_uuid)
+    # surely user still exists by now :)
+    return get_user_by_uuid(user_uuid) # type: ignore
     
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#change_user_password

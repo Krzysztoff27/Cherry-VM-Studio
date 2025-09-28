@@ -138,3 +138,6 @@ class Filters(BaseModel):
     group: UUID | None = None
     role: UUID | None = None
         
+        
+class ChangePasswordRequest(BaseModel):
+    password: str
