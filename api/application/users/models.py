@@ -109,13 +109,13 @@ class CreatedGroup(Group):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateAdministratorForm
 class CreateAdministratorForm(Administrator):
     uuid: UUID = Field(default_factory=uuid4)
-    roles: list[UUID] # type: ignore[override]
+    roles: list[UUID] = []
         
         
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateClientForm
 class CreateClientForm(Client):
     uuid: UUID = Field(default_factory=uuid4)
-    groups: list[UUID] # type: ignore[override]
+    groups: list[UUID] = []
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateUserForm

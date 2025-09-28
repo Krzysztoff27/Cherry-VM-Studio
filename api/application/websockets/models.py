@@ -1,39 +1,37 @@
+
+
 from typing import Literal
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
-    
-###############################
-# Websocket messages
-###############################
+
 
 class Command(BaseModel, extra='allow'):
-    method: Literal["START","STOP","UPDATE","SUBSCRIBE","UNSUBSCRIBE"]
+    method: str
     access_token: str = ""
     uuid: UUID = Field(default_factory=uuid4)
+
     
 class CommandData(BaseModel):
-    method: str = "undefined"
+    method: str
     uuid: UUID = Field(default_factory=uuid4)
+
 
 class Response(BaseModel):
-    method: Literal["ACKNOWLEDGE","REJECT","LOADING_FIN","LOADING_START","DATA"]
+    method: Literal["ACKNOWLEDGE", "REJECT", "DATA"]
     uuid: UUID = Field(default_factory=uuid4)
 
+
 class AcknowledgeResponse(Response):
-    method: str = "ACKNOWLEDGE"
+    method: Literal["ACKNOWLEDGE"] = "ACKNOWLEDGE"
     command: CommandData
 
+
 class RejectResponse(Response):
-    method: str = "REJECT"
+    method: Literal["REJECT"] = "REJECT"
     reason: str
     command: CommandData
 
-class LoadingStartResponse(Response):
-    method: str = "LOADING_START"
-    
-class LoadingFinResponse(Response):
-    method: str = "LOADING_FIN"
 
 class DataResponse(Response):
-    method: str = "DATA"
+    method: Literal["DATA"] = "DATA"
     body: dict | None = None

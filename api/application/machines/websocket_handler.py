@@ -4,16 +4,19 @@ from fastapi import status, HTTPException
 from json import JSONDecodeError
 from pydantic import ValidationError
 from uuid import UUID
+
+from api.application.websockets import subscription_manager
+from application.exceptions.models import CredentialsException, RaisedException
+from .models import MachineWebsocketCommand
+from .state_management import start_machine, stop_machine
+from .data_retrieval import check_machine_existence
 from application.websockets.subscription_manager import SubscriptionManager
 from application.websockets.websocket_handler import WebSocketHandler
 from application.websockets.models import Command
-from application.exceptions import RaisedException
-from application.authentication.validation import get_authenticated_user
-from application.machines.state_management import start_machine, stop_machine
-from application.machines.data_retrieval import check_machine_existence
+from application.authentication.validation import validate_user_token
 
 class MachinesWebsocketHandler(WebSocketHandler):
-    subscription_manager: SubscriptionManager | None = None
+    subscription_manager: SubscriptionManager
     
     async def listen(self):
         try:
@@ -23,69 +26,42 @@ class MachinesWebsocketHandler(WebSocketHandler):
                     command = await self.websocket.receive_json()
                     await self.handle_command(command)
                 except JSONDecodeError as e:
-                    # if invalid type of message (text or byte) return rejection
                     await self.reject(None, f"Error occured during message decoding. Detail: {e}")
         except WebSocketDisconnect:
             # when websocket disconnects, unsubscribe it for all
             return self.subscription_manager.unsubscribe_from_all(self.websocket)
         except Exception as e:
-            print(f"Unhandled error with websocket {self.websocket}:\n {e}")
+            logging.exception(f"Unhandled expection within websocket {self.websocket}.")
 
-    """ validate recieved command structure """
-    async def validate_command(self, json: dict) -> Command:
-        try:
-            command = Command.model_validate(json) # validate the structure
-            get_authenticated_user(command.access_token) # validate the authorization token
-            return command 
-        except ValidationError:
-            # Validation error occurs when command structure is invalid
-            raise RaisedException("""
-                Command validation error. Ensure that sent messages follow the expected structure:\n
-                https://krzysztof27.notion.site/Cherry-API-7923eecc00564cb38c4d01d6696d201f
-            """)
-        except HTTPException as e:
-            # HTTPException is raised by get_authenticated_user when token is invalid or user has missing permissions
-            if(e.status_code == status.HTTP_403_FORBIDDEN): 
-                raise RaisedException("Authenticated user does not belong to the access group.")
-            raise RaisedException("Authentication failed.")
 
     """ handle recieved command """
     async def handle_command(self, json: dict) -> None:
         try:
-            command = await self.validate_command(json)
+            command = MachineWebsocketCommand.model_validate(json)
+            validate_user_token(command.access_token, 'access')
             
-            if not hasattr(command, 'target') or not command.target: 
-                raise RaisedException("No target attribute given. Target attribute should be an UUID representing the chosen machine for the operation.")
+            self.subscription_manager.unsubscribe_from_all(self.websocket)
+            self.subscription_manager.subscribe(command.target, self.websocket)
             
-            if command.target != "ALL" and not check_machine_existence(UUID(command.target)):
-                raise RaisedException(f"Machine of such UUID={command.target} does not exist.")    
-            
-            if command.target == "ALL" and command.method != "UNSUBSCRIBE":
-                raise RaisedException(f"Using target=ALL in the {command.method} command is forbidden.")    
-            
-            match command.method:
-                case "SUBSCRIBE": 
-                    self.subscription_manager.subscribe(UUID(command.target), self.websocket)
-                case "UNSUBSCRIBE": 
-                    if command.target == "ALL":
-                        self.subscription_manager.unsubscribe_from_all(self.websocket)
-                    else:
-                        self.subscription_manager.unsubscribe(UUID(command.target), self.websocket)
-                case "START":
-                    await start_machine(UUID(command.target))
-                case "STOP": 
-                    await stop_machine(UUID(command.target))
-                case "UPDATE": pass
-
-            # if no errors occured, send acknowledgements
             await self.acknowledge(json)
-        except RaisedException as reason:
-            await self.reject(json, reason)
+            
+        except ValidationError:
+            await self.reject(json, "Command validation error. Ensure that sent commands follow the expected structure.")
+        except CredentialsException:
+            await self.reject(json, "Authentication failed - invalid credentials.")
         except ValueError:
-            await self.reject(json, "Invalid UUID.")
+            await self.reject(json, "Command validation error - invalid UUID.")
         except Exception as e:
             await self.reject(json)
-            raise e
+            logging.error(f"""
+                Unhandled exception within websocket {self.websocket} in handle_command.\n
+                Received json:\n
+                {json}\n
+                Exception:\n
+                {e}\n
+                """,
+                exc_info=True
+            )
 
     
         

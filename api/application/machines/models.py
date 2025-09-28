@@ -1,6 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, Field
 from typing import Optional, Literal, Union
+from application.websockets.models import Command
 from application.users.models import ClientInDB, AdministratorInDB
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
@@ -69,4 +70,10 @@ class MachineParameters(BaseModel):
         if self.additional_metadata is not None:
             return base_metadata + self.additional_metadata
         return base_metadata
+    
+
+class MachineWebsocketCommand(Command):
+    method: Literal["SUBSCRIBE"]
+    target: list[UUID] = []
+    
 
