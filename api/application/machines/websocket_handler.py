@@ -1,18 +1,13 @@
 import logging
 from starlette.websockets import WebSocketDisconnect
-from fastapi import status, HTTPException
 from json import JSONDecodeError
 from pydantic import ValidationError
 from uuid import UUID
 
-from api.application.websockets import subscription_manager
-from application.exceptions.models import CredentialsException, RaisedException
+from application.exceptions.models import CredentialsException
 from .models import MachineWebsocketCommand
-from .state_management import start_machine, stop_machine
-from .data_retrieval import check_machine_existence
 from application.websockets.subscription_manager import SubscriptionManager
 from application.websockets.websocket_handler import WebSocketHandler
-from application.websockets.models import Command
 from application.authentication.validation import validate_user_token
 
 class MachinesWebsocketHandler(WebSocketHandler):
