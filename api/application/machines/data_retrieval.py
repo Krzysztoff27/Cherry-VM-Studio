@@ -123,10 +123,17 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     })
     
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#fetch_machine_state
-def fetch_machine_state(machine_uuids: list[UUID]) -> dict[UUID, MachineState]:
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_states_by_uuids
+def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[UUID, MachineState]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return {machine_uuid: state for machine_uuid in machine_uuids if (state := get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))) is not None} 
+        machine_states = dict()
+        
+        for machine_uuid in machine_uuids:
+            state = get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))
+            if state is not None:
+                machine_states[machine_uuid] = state
+            
+        return machine_states
     
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_existence

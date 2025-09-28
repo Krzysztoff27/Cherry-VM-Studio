@@ -1,61 +1,58 @@
-import logging
 from uuid import UUID
-from starlette.websockets import WebSocket
-from application.exceptions import RaisedException
 from pydantic import BaseModel
 from typing import Callable, Any
+from starlette.websockets import WebSocket
+from application.exceptions import RaisedException
+from .models import Subscription, SubscriptionsDict
 import asyncio
 
 class SubscriptionManager(BaseModel):
-    subscriptions: dict[UUID, list[WebSocket]] = {}
-    broadcast_data: Callable[[dict[UUID, list[WebSocket]]], Any] | None = None
+    subscriptions: SubscriptionsDict = {}
+    broadcast_data: Callable[[SubscriptionsDict], Any] | None = None
     broadcasting: bool = False
 
     class Config:
         arbitrary_types_allowed = True
 
-    def subscribe(self, key, websocket):
-        """ """
-        if not key in self.subscriptions: 
-            self.subscriptions[key] = [websocket]
-        elif websocket not in self.subscriptions[key]:
-            self.subscriptions[key].append(websocket)
-        else: 
-            raise RaisedException(f"Already subscribed to \"{key}\"")
-        
-    def set_subscriptions(self, keys, websocket):
-        self.unsubscribe_from_all(websocket)
-        
-        for key in keys:
-            self.subscribe(key, websocket)
 
-    def unsubscribe(self, key, websocket):
-        """ remove websocket subscription from the key """
-        if not key in self.subscriptions or websocket not in self.subscriptions[key]:
-            raise RaisedException(f"Already unsubscribed from \"{key}\".")
-        self.remove_subscription(key, websocket)
+    def subscribe(self, websocket: WebSocket, resource_uuid: UUID):
+        websocket_id = id(websocket)
+        
+        if websocket_id not in self.subscriptions:
+            self.subscriptions[websocket_id] = Subscription(websocket=websocket, resources=set())
+        self.subscriptions[websocket_id].resources.add(resource_uuid)
+        
+        
+    def unsubscribe(self, websocket: WebSocket, resource_uuid: UUID):
+        websocket_id = id(websocket)
+        
+        if websocket_id in self.subscriptions:
+            self.subscriptions[websocket_id].resources.discard(resource_uuid)
+        
+            if not self.subscriptions[websocket_id].resources:
+                del self.subscriptions[websocket_id]
+        
+        
+    def set_subscriptions(self, websocket: WebSocket, resource_uuids: set[UUID]):
+        websocket_id = id(websocket)
+        self.subscriptions[websocket_id] = Subscription(websocket=websocket, resources=resource_uuids)
+        
 
     def unsubscribe_from_all(self, websocket):
-        """ iterate through every key and remove websocket where present """
-        for key in list(self.subscriptions): # snapshot for removing data while iterating
-            if websocket in self.subscriptions[key]: 
-                self.remove_subscription(key, websocket)
-
-    def remove_key(self, key):
-        del self.subscriptions[key]
+        websocket_id = id(websocket)
         
-    def remove_subscription(self, key, websocket):
-        """ if its the last subscription for the resource, delete the resource uuid from subscriptions """
-        if len(self.subscriptions[key]) == 1: self.remove_key(key)
-        else: self.subscriptions[key].remove(websocket)
+        if websocket_id in self.subscriptions:
+            del self.subscriptions[websocket_id]
+
         
     async def run_continuous_broadcast(self, intervalInSeconds):
         """ start running the broadcast data function for the subscriptions every interval """
         if self.broadcasting: return # if already broadcasting no need to double it
         self.broadcasting = True
-        while self.broadcasting and self.broadcast_data:
+        while self.broadcasting and self.broadcast_data is not None:
             await self.broadcast_data(self.subscriptions)
             await asyncio.sleep(intervalInSeconds)
+            
             
     def stop_continous_broadcast(self):
         self.broadcasting = False

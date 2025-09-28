@@ -1,8 +1,16 @@
 
 
 from typing import Literal
+from starlette.websockets import WebSocket
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
+
+class Subscription(BaseModel):
+    websocket: WebSocket
+    resources: set[UUID]
+
+
+SubscriptionsDict = dict[int, Subscription]
 
 
 class Command(BaseModel, extra='allow'):
