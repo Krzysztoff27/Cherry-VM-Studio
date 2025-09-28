@@ -25,6 +25,4 @@ async def broadcast_machine_state(subscriptions: dict[UUID, list[WebSocket]]):
     for websocket, machine_uuids in list(subscriptions_by_websocket.items()):
         body = fetch_machine_state(machine_uuids)
         
-        logging.info("data: ", body)
-        
         await websocket.send_json(jsonable_encoder(DataResponse(body = body)))    

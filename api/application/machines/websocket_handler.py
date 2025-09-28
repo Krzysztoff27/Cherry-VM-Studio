@@ -35,7 +35,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             command = MachineWebsocketCommand.model_validate(json)
             validate_user_token(command.access_token, 'access')
             
-            self.subscription_manager.set_subscribtions(command.target, self.websocket)
+            self.subscription_manager.set_subscriptions(command.target, self.websocket)
             
             await self.acknowledge(json)
             

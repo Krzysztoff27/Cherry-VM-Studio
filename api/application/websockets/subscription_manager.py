@@ -23,9 +23,7 @@ class SubscriptionManager(BaseModel):
         else: 
             raise RaisedException(f"Already subscribed to \"{key}\"")
         
-        logging.info("Subscriptions: ", self.subscriptions)
-        
-    def set_subscribtions(self, keys, websocket):
+    def set_subscriptions(self, keys, websocket):
         self.unsubscribe_from_all(websocket)
         
         for key in keys:
@@ -36,15 +34,12 @@ class SubscriptionManager(BaseModel):
         if not key in self.subscriptions or websocket not in self.subscriptions[key]:
             raise RaisedException(f"Already unsubscribed from \"{key}\".")
         self.remove_subscription(key, websocket)
-        
-        logging.info("Subscriptions: ", self.subscriptions)
 
     def unsubscribe_from_all(self, websocket):
         """ iterate through every key and remove websocket where present """
         for key in list(self.subscriptions): # snapshot for removing data while iterating
             if websocket in self.subscriptions[key]: 
                 self.remove_subscription(key, websocket)
-        logging.info("Subscriptions: ", self.subscriptions)
 
     def remove_key(self, key):
         del self.subscriptions[key]
@@ -59,7 +54,6 @@ class SubscriptionManager(BaseModel):
         if self.broadcasting: return # if already broadcasting no need to double it
         self.broadcasting = True
         while self.broadcasting and self.broadcast_data:
-            logging.info("broadcasting")
             await self.broadcast_data(self.subscriptions)
             await asyncio.sleep(intervalInSeconds)
             
