@@ -81,7 +81,7 @@ def get_machine_data(machine: libvirt.virDomain) -> MachineData:
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_data_by_uuid
 def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        machine = libvirt_readonly_connection.lookupByUUIDString(str(uuid))
+        machine = libvirt_readonly_connection.lookupByUUID(uuid)
         if not machine:
             return None
         return get_machine_data(machine)
@@ -129,8 +129,9 @@ def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[U
         machine_states = dict()
         
         for machine_uuid in machine_uuids:
-            state = get_machine_state(libvirt_readonly_connection.lookupByUUIDString(str(machine_uuid)))
-            if state is not None:
+            machine = libvirt_readonly_connection.lookupByUUID(machine_uuid)
+            if machine is not None:
+                state = get_machine_state(machine)
                 machine_states[machine_uuid] = state
             
         return machine_states
@@ -139,4 +140,4 @@ def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[U
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_existence
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
-        return libvirt_readonly_connection.lookupByUUIDString(str(uuid)) is not None
+        return libvirt_readonly_connection.lookupByUUID(uuid) is not None
