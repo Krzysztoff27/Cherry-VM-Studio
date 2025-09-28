@@ -22,7 +22,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
         try:
             while self.is_connected():
                 try:
-                    # recieve command and handle it
+                    # receive command and handle it
                     command = await self.websocket.receive_json()
                     await self.handle_command(command)
                 except JSONDecodeError as e:
@@ -34,7 +34,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             logging.exception(f"Unhandled expection within websocket {self.websocket}.")
 
 
-    """ handle recieved command """
+    """ handle received command """
     async def handle_command(self, json: dict) -> None:
         try:
             command = MachineWebsocketCommand.model_validate(json)
