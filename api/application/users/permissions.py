@@ -1,14 +1,15 @@
+from typing import TypeGuard
 from fastapi import HTTPException
 from config.permissions_config import PERMISSIONS
-from application.users.models import AnyUser, RoleInDB
+from application.users.models import Administrator, AnyUser, Client, RoleInDB
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_admin
-def is_admin(user: AnyUser):
+def is_admin(user: AnyUser) -> TypeGuard[Administrator]:
     return user.account_type == 'administrative'
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_client
-def is_client(user: AnyUser):
+def is_client(user: AnyUser) -> TypeGuard[Client]:
     return user.account_type == 'client'
 
 
@@ -42,7 +43,7 @@ def verify_can_change_password(current_user: AnyUser, modified_user: AnyUser):
     
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#verify_permission_integrity
-def verify_permission_integrity(assigned_roles: RoleInDB):
+def verify_permission_integrity(assigned_roles: list[RoleInDB]):
     max_permissions = PERMISSIONS.get_max_permissions()
     permissions = 0
     for role in assigned_roles:
