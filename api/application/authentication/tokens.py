@@ -22,8 +22,8 @@ def create_refresh_token(data: dict, expires_delta: timedelta) -> Token:
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_tokens
 def get_user_tokens(user: AnyUser):
     return Tokens(
-        access_token = create_access_token({"sub": user.username}, ACCESS_TOKEN_EXPIRE_DELTA),
-        refresh_token = create_refresh_token({"sub": user.username}, REFRESH_TOKEN_EXPIRE_DELTA)
+        access_token = create_access_token({"sub": user.uuid}, ACCESS_TOKEN_EXPIRE_DELTA),
+        refresh_token = create_refresh_token({"sub": user.uuid}, REFRESH_TOKEN_EXPIRE_DELTA)
     )
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_token_of_type

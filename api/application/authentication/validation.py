@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 from fastapi import Depends, HTTPException
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
@@ -9,7 +10,7 @@ from application import SECRET_KEY, ALGORITHM
 from .models import Token, TokenTypes
 from .tokens import is_token_of_type
 from .passwords import verify_password
-from application.users.users import get_user_by_username, update_user_last_active
+from application.users.users import get_user_by_username, get_user_by_uuid, update_user_last_active
 from application.users.models import Administrator, AnyUser
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#validate_user_token
@@ -21,8 +22,8 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:
     except InvalidTokenError or ExpiredSignatureError:
         raise CredentialsException()  # Token is invalid
 
-    username: str = payload.get("sub")
-    user = get_user_by_username(username)
+    uuid: UUID = payload.get("sub")
+    user = get_user_by_uuid(uuid)
     
     if user is None: 
         raise CredentialsException()
