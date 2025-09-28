@@ -29,8 +29,8 @@ def get_role_by_name(name: str) -> Role | None:
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_role_by_uuid
-def get_role_by_uuid(uuid: str) -> Role | None:
-    return get_role_by_field("uuid", uuid)
+def get_role_by_uuid(uuid: UUID) -> Role | None:
+    return get_role_by_field("uuid", str(uuid))
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_all_roles

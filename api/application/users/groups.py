@@ -27,7 +27,7 @@ def get_group_by_name(name: str) -> Group | None:
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_group_by_uuid
 def get_group_by_uuid(uuid: UUID) -> Group | None:
     if is_valid_uuid(uuid):
-        return get_group_by_field("uuid", uuid) 
+        return get_group_by_field("uuid", str(uuid)) 
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_all_groups
@@ -72,7 +72,7 @@ def create_group(group_data: CreatedGroup) -> Group:
                     if not row:
                         raise HTTPException(400, f"Client with uuid={user_uuid} does not exist.")
                     cursor.execute("INSERT INTO clients_groups (client_uuid, group_uuid) VALUES (%s, %s) ON CONFLICT DO NOTHING", (user_uuid, group_data.uuid))
-    return get_group_by_uuid(group_data.uuid)            
+    return get_group_by_uuid(group_data.uuid) # type: ignore         
             
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#update_user_groups
