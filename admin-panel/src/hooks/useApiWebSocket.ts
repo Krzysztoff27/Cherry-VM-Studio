@@ -1,13 +1,12 @@
 import { useState } from "react";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { v4 as uuidv4 } from 'uuid';
-import { validPath } from '../utils/misc.js';
+import useWebSocket, { ReadyState } from "react-use-websocket";
+import { v4 as uuidv4 } from "uuid";
+import { validPath } from "../utils/misc.js";
 import useAuth from "./useAuth.ts";
-import { WebSocketCommandMethods } from "../types/api.types.ts";
 import { useApiWebSocketReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
 
-const useApiWebSocket = (path: string) : useApiWebSocketReturn => {
+const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
     const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}`;
 
@@ -18,27 +17,27 @@ const useApiWebSocket = (path: string) : useApiWebSocketReturn => {
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl);
 
     const connectionStatus: string = {
-        [ReadyState.CONNECTING]: 'CONNECTING',
-        [ReadyState.OPEN]: 'OPEN',
-        [ReadyState.CLOSING]: 'CLOSING',
-        [ReadyState.CLOSED]: 'CLOSED',
-        [ReadyState.UNINSTANTIATED]: 'UNINSTANTIATED',
+        [ReadyState.CONNECTING]: "CONNECTING",
+        [ReadyState.OPEN]: "OPEN",
+        [ReadyState.CLOSING]: "CLOSING",
+        [ReadyState.CLOSED]: "CLOSED",
+        [ReadyState.UNINSTANTIATED]: "UNINSTANTIATED",
     }[readyState];
 
-    
-    const sendCommand = (method: WebSocketCommandMethods, data: object) : void => sendJsonMessage({
-        method: method,
-        uuid: uuidv4(),
-        access_token: tokens.access_token,
-        ...data,
-    })
+    const sendCommand = (method: string, data: object): void =>
+        sendJsonMessage({
+            method: method,
+            uuid: uuidv4(),
+            access_token: tokens.access_token,
+            ...data,
+        });
 
     return {
         setUrl,
         lastJsonMessage,
         sendCommand,
-        connectionStatus
-    }
-}
+        connectionStatus,
+    };
+};
 
 export default useApiWebSocket;

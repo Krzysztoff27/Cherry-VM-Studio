@@ -9,11 +9,10 @@ export type MachineStates = "online" | "offline" | "loading" | "fetching";
 
 export type ConnectionStatuses = "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED" | "UNINSTANTIATED";
 
-export type WebSocketCommandMethods = "START" | "STOP" | "SUBSCRIBE" | "UNSUBSCRIBE" | "UPDATE";
 export type WebSocketResponseMethods = "ACKNOWLEDGE" | "REJECT" | "LOADING_START" | "LOADING_FIN" | "DATA";
 
 export interface WebSocketCommand {
-    method: WebSocketCommandMethods;
+    method: string;
     access_token?: string;
     uuid: string | null;
     target?: string;
