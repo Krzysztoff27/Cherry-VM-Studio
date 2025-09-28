@@ -24,6 +24,12 @@ class SubscriptionManager(BaseModel):
             raise RaisedException(f"Already subscribed to \"{key}\"")
         
         logging.info("Subscriptions: ", self.subscriptions)
+        
+    def set_subscribtions(self, keys, websocket):
+        self.unsubscribe_from_all(websocket)
+        
+        for key in keys:
+            self.subscribe(key, websocket)
 
     def unsubscribe(self, key, websocket):
         """ remove websocket subscription from the key """
