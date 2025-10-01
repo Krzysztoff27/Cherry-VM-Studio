@@ -35,7 +35,7 @@ class GroupMetadata(BaseModel):
     
 class GroupMemberIdMetadata(BaseModel):
     tag: Literal["groupMemberId"] = "groupMemberId"
-    value: int
+    value: str
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
@@ -50,11 +50,10 @@ class MachineNetworkInterfaces(BaseModel):
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
 class MachineParameters(BaseModel):                     
-    name: str                                           
-    title: str                                          
+    name: str                                                                                    
     description: Optional[str] = None
-    group_metadata: GroupMetadata = Field(..., description="'group' metadata tag is required")
-    group_member_id_metadata: GroupMemberIdMetadata = Field(..., description="'groupMemberId metadata is required'")
+    group_metadata: GroupMetadata
+    group_member_id_metadata: GroupMemberIdMetadata
     additional_metadata: Optional[list[MachineMetadata]] = None       
     ram: int # in MiB                                  
     vcpu: int                                           

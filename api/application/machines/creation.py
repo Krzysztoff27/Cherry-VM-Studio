@@ -2,6 +2,7 @@ import logging
 import xml.etree.ElementTree as ET
 from application.machines.models import MachineParameters
 from application.libvirt_socket import LibvirtConnection
+from application.cherry_socket import CherrySocketClient
 
 logger = logging.getLogger(__name__)
 
