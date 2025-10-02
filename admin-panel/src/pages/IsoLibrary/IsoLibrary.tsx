@@ -104,7 +104,7 @@ const DUMMY_DATA = {
 
 const IsoLibrary = (): React.JSX.Element => {
     const [currentUuid, setCurrentUuid] = useState<string>("");
-    const [modalOpened, { open, close }] = useDisclosure(true);
+    const [modalOpened, { open, close }] = useDisclosure(false);
 
     const refresh = () => {};
 

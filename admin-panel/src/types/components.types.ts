@@ -280,3 +280,8 @@ export interface TablePaginationProps {
     setPagination: (prev: any) => void;
     getPageCount: () => number | null | undefined;
 }
+
+export interface IsoFileImportModalProps extends ModalProps {
+    opened: boolean;
+    onSubmit: () => void;
+}

@@ -24,8 +24,8 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
         },
 
         validate: {
-            name: val => (val.length < 3 ? tns("validation.name-too-short") : val.length > 50 ? tns("validation.name-too-long") : null),
-            users: val => !val.length && tns("validation.clients-too-few"),
+            name: (val) => (val.length < 3 ? tns("validation.name-too-short") : val.length > 50 ? tns("validation.name-too-long") : null),
+            users: (val) => !val.length && tns("validation.clients-too-few"),
         },
     });
 
@@ -39,7 +39,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
         if (/name/.test(json?.detail)) form.setFieldError("name", tns("validation.name-duplicate"));
     };
 
-    const onFormSubmit = form.onSubmit(async values => {
+    const submitForm = form.onSubmit(async (values) => {
         const res = await postRequest("group/create", JSON.stringify(values), undefined, onPostError);
         if (!res) return;
 
@@ -55,7 +55,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
             title={tns("title")}
             size="480"
         >
-            <form onSubmit={onFormSubmit}>
+            <form onSubmit={submitForm}>
                 <Stack>
                     <Group
                         wrap="nowrap"

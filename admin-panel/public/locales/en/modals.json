@@ -143,5 +143,15 @@
         "added-by": "Added by",
         "last-modified-by": "Last modified by",
         "metadata": "Entry metadata"
+    },
+    "import-iso": {
+        "title": "Import ISO File",
+        "description": "Imported ISO file will be visible by all the administrators and modifiable by ones with proper permissions.",
+        "name-note": "Note: File name must be unique",
+        "name": "Entry name",
+        "import-type-note": "Select the import type",
+        "url-note": "Enter the valid URL to the file",
+        "url": "File URL",
+        "save-locally": "Save as a local copy."
     }
 }

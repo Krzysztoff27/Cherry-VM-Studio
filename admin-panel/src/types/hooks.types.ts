@@ -48,3 +48,5 @@ export interface sendNotificationProps {
     loading?: boolean;
     uniqueId?: boolean;
 }
+
+export type UploadStatus = "idle" | "uploading" | "success" | "error";

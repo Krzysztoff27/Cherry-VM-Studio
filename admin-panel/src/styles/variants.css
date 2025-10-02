@@ -6,11 +6,13 @@
     border: 2px solid var(--mantine-color-dark-5);
 }
 
-.mantine-Button-root[data-variant="default"] {
+.mantine-Button-root[data-variant="default"],
+.mantine-ActionIcon-root[data-variant="default"] {
     border: 2px solid var(--mantine-color-dark-5);
     font-weight: 400;
 }
 
-.mantine-Input-input[data-variant="default"] {
+.mantine-Input-input[data-variant="default"],
+.mantine-Checkbox-input:not(:checked) {
     border: 2px solid var(--mantine-color-dark-5);
 }

@@ -1,7 +1,8 @@
-import { notifications } from "@mantine/notifications";
+import { notifications, NotificationsProps } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { sendNotificationProps } from "../types/hooks.types";
+import { NotificationProps } from "@mantine/core";
 
 export const useMantineNotifications = () => {
     const { t } = useTranslation();
@@ -12,7 +13,7 @@ export const useMantineNotifications = () => {
     // only one of them will be sent as they will have the same id
     const getUniqueId = (id: string | number) => `${id}${new Date().getSeconds()}`;
 
-    const sendNotification = (id: string, options: sendNotificationProps | undefined = {}, interpolatedValues: object | undefined = {}): Function => {
+    const sendNotification = (id: string, options: sendNotificationProps | undefined = {}, interpolatedValues: object | undefined = {}, customProps = {}) => {
         const notificationId = options.uniqueId ? getUniqueId(id) : id;
 
         notifications.show({
@@ -21,6 +22,8 @@ export const useMantineNotifications = () => {
             loading: options.loading || false,
             title: format(`${id}.title`, interpolatedValues),
             message: format(`${id}.message`, interpolatedValues),
+
+            ...customProps,
         });
 
         return () => notifications.hide(notificationId);
@@ -40,11 +43,11 @@ export const useMantineNotifications = () => {
             color: "red",
             icon: <IconX />,
             title: format(
-                keys.map(key => `error.${key}.title`),
+                keys.map((key) => `error.${key}.title`),
                 interpolatedValues
             ),
             message: format(
-                keys.map(key => `error.${key}.message`),
+                keys.map((key) => `error.${key}.message`),
                 interpolatedValues
             ),
         });

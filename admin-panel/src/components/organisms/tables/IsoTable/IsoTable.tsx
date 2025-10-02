@@ -9,6 +9,7 @@ import TablePagination from "../../../molecules/interactive/TablePagination/Tabl
 import classes from "./IsoTable.module.css";
 import { getColumns } from "./tableConfig";
 import { safeObjectValues } from "../../../../utils/misc";
+import IsoFileImportModal from "../../../../modals/iso-file-library/IsoFileImportModal/IsoFileImportModal";
 
 const IsoTable = ({ data, loading, error, refresh, openIsoFileModal }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "iso.controls.");
@@ -59,7 +60,12 @@ const IsoTable = ({ data, loading, error, refresh, openIsoFileModal }): React.JS
                     />
                     <TableControls
                         table={table}
-                        modals={{}}
+                        modals={{
+                            create: {
+                                component: IsoFileImportModal,
+                                props: { onSubmit: refresh },
+                            },
+                        }}
                         translations={{
                             create: tns("add-iso-file"),
                             import: tns("import"),
