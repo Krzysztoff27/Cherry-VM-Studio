@@ -80,6 +80,21 @@ CREATE TABLE network_snapshots (
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE iso_files (
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(24) UNIQUE NOT NULL,
+    file_name TEXT,
+    file_location TEXT,
+    file_size_bytes BIGINT DEFAULT 0,
+    last_used TIMESTAMP,
+    imported_by UUID,
+    imported_at TIMESTAMP,
+    last_modified_by UUID
+    last_modified_at TIMESTAMP,
+    FOREIGN KEY(imported_by) REFERENCES administrators(uuid) ON DELETE CASCADE
+    FOREIGN KEY(last_modified_by) REFERENCES administrators(uuid) ON DELETE CASCADE
+)
+
 CREATE TABLE machine_snapshots (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_uuid UUID,
