@@ -73,6 +73,6 @@ class MachineParameters(BaseModel):
 
 class MachineWebsocketCommand(Command):
     method: Literal["SUBSCRIBE"]
-    target: list[UUID] = []
+    target: set[UUID] = set()
     
 

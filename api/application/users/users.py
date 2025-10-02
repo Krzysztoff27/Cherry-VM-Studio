@@ -232,6 +232,7 @@ def modify_user(logged_in_user: AnyUser, user_uuid: UUID, modification_data: Mod
         raise RaisedException("User does not exist.")
     
     set_statement = ""
+    # if any of these is None, its modification should be omitted
     if modification_data.username   is not None and modification_data.username != user.username:    set_statement += "username = %(username)s "
     if modification_data.email      is not None and modification_data.email != user.email:          set_statement += "email = %(email)s "
     if modification_data.name       is not None and modification_data.name != user.name:            set_statement += "name = %(name)s "
