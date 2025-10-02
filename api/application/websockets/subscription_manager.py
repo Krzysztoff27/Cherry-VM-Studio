@@ -6,6 +6,8 @@ from application.exceptions import RaisedException
 from .models import Subscription, SubscriptionsDict
 import asyncio
 
+
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#SubscriptionManager
 class SubscriptionManager(BaseModel):
     subscriptions: SubscriptionsDict = {}
     broadcast_data: Callable[[SubscriptionsDict], Any] | None = None
