@@ -21,7 +21,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
                     command = await self.websocket.receive_json()
                     await self.handle_command(command)
                 except JSONDecodeError as e:
-                    await self.reject(None, f"Error occured during message decoding. Detail: {e}")
+                    await self.reject({}, f"Error occured during message decoding. Detail: {e}")
         except WebSocketDisconnect:
             # when websocket disconnects, unsubscribe it for all
             return self.subscription_manager.unsubscribe_from_all(self.websocket)
@@ -35,7 +35,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             command = MachineWebsocketCommand.model_validate(json)
             validate_user_token(command.access_token, 'access')
             
-            self.subscription_manager.set_subscriptions(command.target, self.websocket)
+            self.subscription_manager.set_subscriptions(self.websocket, command.target)
             
             await self.acknowledge(json)
             
