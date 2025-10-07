@@ -1,8 +1,12 @@
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, model_validator, ValidationError
 from typing import Optional, Literal, Union
 from application.websockets.models import Command
 from application.users.models import ClientInDB, AdministratorInDB
+
+################################
+# Machine data retrieval models
+################################
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
 class MachineData(BaseModel):                       
@@ -22,46 +26,76 @@ class MachineState(MachineData):
     cpu: int = 0                                    
     ram_max: int | None = None                      
     ram_used: int | None = None                     
-    uptime: int | None = None                       
-    
+    uptime: int | None = None     
+                      
+################################
+#   Machine creation models
+################################
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
     tag: str
     value: str
     
 class GroupMetadata(BaseModel):
-    tag: Literal["group"] = "group"
+    tag = "group"
     value: str
     
 class GroupMemberIdMetadata(BaseModel):
-    tag: Literal["groupMemberId"] = "groupMemberId"
-    value: str
+    tag = "groupMemberId"
+    value: Optional[str]
+
+class StoragePool(BaseModel):
+    pool: str
+    volume: str
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
     name: str                                                                           
-    filepath: str                                                                       
+    source: Union[StoragePool, str]                                                                      
     size: int                                                                           
     type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]  
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterfaces
-class MachineNetworkInterfaces(BaseModel):
-    name: str                                           
+class MachineNetworkInterface(BaseModel):
+    name: str  
+
+class MachineGraphicalFramebuffer(BaseModel):
+    type: Literal["rdp", "vnc"]
+    port: Union[Literal["auto"], str] 
+    listen_type: Literal["network", "address"]
+    listen_network: str | None = None
+    listen_address: str | None = None
+    
+    @model_validator(mode="after")
+    def check_listen_type(self):
+        if self.listen_type == "network" and self.listen_network is None:
+            raise ValueError("listen_network is required when listen_type is 'network'")
+        if self.listen_type == "address" and self.listen_address is None:
+            raise ValueError("listen_address is required when listen_type is 'address'")
+        return self
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
-class MachineParameters(BaseModel):                     
-    name: str                                                                                    
+class MachineParameters(BaseModel):
+    uuid: UUID # Unique identifier                     
+    name: str # Unique - libvirt requirement                                                                               
     description: Optional[str] = None
+    
     group_metadata: GroupMetadata
-    group_member_id_metadata: GroupMemberIdMetadata
-    additional_metadata: Optional[list[MachineMetadata]] = None       
+    group_member_id_metadata: Optional[GroupMemberIdMetadata]
+    additional_metadata: Optional[list[MachineMetadata]] = None 
+          
     ram: int # in MiB                                  
     vcpu: int                                           
-    os_type: str                                        
-    disks: list[MachineDisk]                            
-    username: str                                       
-    password: str                                       
-    network_interfaces: list[MachineNetworkInterfaces]  
+    
+    system_disk: MachineDisk                        
+    additional_disks: Optional[list[MachineDisk]] = None            
+    
+    iso_filepath: Optional[Union[StoragePool, str]] = None
+                                              
+    network_interfaces: Optional[list[MachineNetworkInterface]] = None
+    
+    framebuffer: MachineGraphicalFramebuffer
     
     @property
     def metadata(self) -> list[Union[GroupMetadata, GroupMemberIdMetadata, MachineMetadata]]:
