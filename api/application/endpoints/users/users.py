@@ -2,14 +2,13 @@ from uuid import UUID
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from api.application.exceptions.models import HTTPNotFoundException, RaisedException
-from application import app
-from application.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
-from application.users.permissions import verify_can_change_password, verify_can_manage_user
-from application.users.models import AnyUser, ChangePasswordRequest, CreateUserForm, Filters, AccountTypes, Administrator, Client, ModifyUserForm
-from application.users.validation import validate_creation_details, validate_modification_details
-from application.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
+from application.app import app
+from modules.exceptions.models import RaisedException
+from modules.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
+from modules.users.permissions import verify_can_change_password, verify_can_manage_user
+from modules.users.models import AnyUser, ChangePasswordRequest, CreateUserForm, Filters, AccountTypes, Administrator, Client, ModifyUserForm
+from modules.users.validation import validate_creation_details, validate_modification_details
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
 
 
 @app.get("/user", response_model=Administrator | Client, tags=['Users'])

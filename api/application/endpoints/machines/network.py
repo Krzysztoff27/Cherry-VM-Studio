@@ -1,12 +1,12 @@
 from fastapi.encoders import jsonable_encoder
-from application.users.permissions import verify_permissions
-from application import app
-from application.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
-from application.network_configuration.models import NetworkConfiguration, IntnetConfiguration, Positions, Snapshot
-from application.network_configuration.configuration import get_current_intnet_state, get_flow_node_positions, save_flow_node_positions, set_intnets
-from application.network_configuration.snapshots import *
-from application.network_configuration.models import Preset
-from application.network_configuration.presets import *
+from modules.users.permissions import verify_permissions
+from application.app import app
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
+from modules.network_configuration.models import NetworkConfiguration, IntnetConfiguration, Positions, Snapshot
+from modules.network_configuration.configuration import get_current_intnet_state, get_flow_node_positions, save_flow_node_positions, set_intnets
+from modules.network_configuration.snapshots import *
+from modules.network_configuration.models import Preset
+from modules.network_configuration.presets import *
 
 # configuration
 

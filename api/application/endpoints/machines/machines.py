@@ -1,12 +1,12 @@
 from uuid import UUID
 
 from fastapi import HTTPException
-from application import app
-from application.machines import get_all_machines, get_user_machines, get_machine_data_by_uuid, check_machine_ownership
-from application.machines.models import MachineData
-from application.machines.state_management import start_machine, stop_machine
-from application.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
-from application.users.permissions import verify_permissions, has_permissions
+from application.app import app
+from modules.machines import get_all_machines, get_user_machines, get_machine_data_by_uuid, check_machine_ownership
+from modules.machines.models import MachineData
+from modules.machines.state_management import start_machine, stop_machine
+from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
+from modules.users.permissions import verify_permissions, has_permissions
 from config.permissions_config import PERMISSIONS
 
 # REQUESTS

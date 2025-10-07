@@ -5,10 +5,10 @@ from streaming_form_data.validators import ValidationError
 
 
 from config.files_config import FILES_CONFIG
-from application import app
-from application.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException
-from application.authentication.validation import DependsOnAdministrativeAuthentication
-from application.file.upload_handler import UploadHandler
+from application.app import app
+from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException
+from modules.authentication.validation import DependsOnAdministrativeAuthentication
+from modules.file.upload_handler import UploadHandler
 
 MAX_REQUEST_BODY_SIZE = FILES_CONFIG.upload_iso_max_size + 1024
 

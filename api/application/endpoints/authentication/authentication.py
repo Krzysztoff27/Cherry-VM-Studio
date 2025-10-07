@@ -2,11 +2,11 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 
-from application import app
-from application.authentication.validation import DependsOnRefreshToken, authenticate_user
-from application.authentication.tokens import get_user_tokens
-from application.authentication.models import Tokens
-from application.exceptions import HTTPUnauthorizedException
+from application.app import app
+from modules.authentication.validation import DependsOnRefreshToken, authenticate_user
+from modules.authentication.tokens import get_user_tokens
+from modules.authentication.models import Tokens
+from modules.exceptions import HTTPUnauthorizedException
 
 FormData = Annotated[OAuth2PasswordRequestForm, Depends()]
 
