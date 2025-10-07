@@ -10,3 +10,4 @@ six>=1.16.0
 libvirt-python>=11.0.0
 psycopg[binary]<4.0.0
 psycopg[pool]<4.0.0
+streaming-form-data<2.0.0
