@@ -50,7 +50,11 @@ def get_all_users() -> dict[UUID, Administrator | Client]:
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_administrator_by_field
-def get_administrator_by_field(field_name: str, value: str) -> Administrator | None:
+def get_administrator_by_field(field_name: Literal["uuid", "username", "email"], value: str) -> Administrator | None:
+    
+    if field_name not in {"uuid", "username", "email"}:
+        raise RaisedException("Invalid field_name passed.")
+    
     administrator = select_schema_one(Administrator, f"SELECT * FROM administrators WHERE administrators.{field_name} = (%s)", (value,))
     
     if not administrator:
@@ -70,7 +74,11 @@ def get_administrator_by_field(field_name: str, value: str) -> Administrator | N
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_client_by_field
-def get_client_by_field(field_name: str, value: str) -> Client | None:
+def get_client_by_field(field_name: Literal["uuid", "username", "email"], value: str) -> Client | None:
+    
+    if field_name not in {"uuid", "username", "email"}:
+        raise RaisedException("Invalid field_name passed.")
+    
     client = select_schema_one(Client, f"SELECT * FROM clients WHERE clients.{field_name} = (%s)", (value,))
     
     if not client:
@@ -87,7 +95,7 @@ def get_client_by_field(field_name: str, value: str) -> Client | None:
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_by_field
-def get_user_by_field(field_name: str, value: str) -> AnyUser | None:
+def get_user_by_field(field_name: Literal["uuid", "username", "email"], value: str) -> AnyUser | None:
     administrator = get_administrator_by_field(field_name, value)
     if administrator:
         return administrator

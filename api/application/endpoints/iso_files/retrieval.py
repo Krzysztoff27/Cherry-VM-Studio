@@ -1,0 +1,20 @@
+from uuid import UUID
+
+from fastapi import HTTPException
+from modules.machine_resources.iso_library import get_iso_record_by_uuid, get_iso_records
+from modules.authentication.validation import DependsOnAdministrativeAuthentication
+from modules.machine_resources.models import IsoRecord
+from application import app
+
+
+@app.get("/iso/{uuid}", response_model=IsoRecord, tags=['ISO Library'])
+async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> IsoRecord:
+    record = get_iso_record_by_uuid(uuid)
+    if record is None: 
+        raise HTTPException(400, f"ISO file with UUID={uuid} does not exist.")
+    return record
+
+
+@app.get("/iso/all", response_model=dict[UUID, IsoRecord], tags=['ISO Library'])
+async def __read_all_iso_file_records__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, IsoRecord]:
+    return get_iso_records()

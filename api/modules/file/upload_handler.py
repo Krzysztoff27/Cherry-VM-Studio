@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from streaming_form_data import StreamingFormDataParser
 from streaming_form_data.targets import FileTarget, ValueTarget
 
-from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException
+from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException, UploadedFile
 
 
 class UploadSizeValidator(BaseModel):
@@ -41,7 +41,7 @@ class UploadHandler(BaseModel):
     allowed_file_extensions: set[str]
     save_directory_path: Path
     
-    async def handle(self, request: Request) -> tuple[UUID, str]:
+    async def handle(self, request: Request) -> UploadedFile:
         size_validator = UploadSizeValidator(max_size_bytes=self.max_size_bytes)
         filename_validator = FilenameValidator(allowed_file_extensions=self.allowed_file_extensions)
         
@@ -49,9 +49,9 @@ class UploadHandler(BaseModel):
         filename = filename_validator.validate(filename)
         
         file_uuid = uuid4()
-        filepath = os.path.join(self.save_directory_path, f"{file_uuid}.iso")
+        file_location = os.path.join(self.save_directory_path, f"{file_uuid}.iso")
         
-        file_target = FileTarget(filepath, validator=UploadSizeValidator(max_size_bytes=self.max_size_bytes))
+        file_target = FileTarget(file_location, validator=UploadSizeValidator(max_size_bytes=self.max_size_bytes))
         data_target = ValueTarget()
         
         parser = StreamingFormDataParser(headers=request.headers)
@@ -62,7 +62,12 @@ class UploadHandler(BaseModel):
             size_validator.add(chunk)
             parser.data_received(chunk)
         
-        data = data_target.value.decode()
-        return (file_uuid, data)
+        return UploadedFile(
+            uuid=file_uuid,
+            name=filename,
+            location=file_location,
+            size=size_validator.body_len,
+            form_data=data_target.value.decode(),
+        )
             
         

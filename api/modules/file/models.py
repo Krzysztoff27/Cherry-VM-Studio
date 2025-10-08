@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel
 
 class UploadTooLargeException(Exception, BaseModel):
@@ -9,3 +10,10 @@ class UploadMissingFilenameException(Exception):
 class UploadInvalidExtensionException(Exception, BaseModel):
     extension: str
     pass
+
+class UploadedFile(BaseModel):
+    uuid: UUID
+    name: str
+    location: str
+    size: int
+    form_data: str
