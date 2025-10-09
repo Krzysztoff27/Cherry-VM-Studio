@@ -20,6 +20,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
     const { sendNotification } = useMantineNotifications();
 
     const form = useForm({
+        mode: "uncontrolled",
         initialValues: {
             name: "",
             file: null,
@@ -36,23 +37,19 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
         if (importType === "file") {
             uploadFile(values.file);
             console.log(progress);
+        } else if (importType == "url") {
         }
 
         closeModal();
         onSubmit?.();
     });
 
-    useEffect(() => {
-        if (progress === 0) return;
-        sendNotification(`iso-import${new Date().getSeconds()}`, {}, {}, { message: `${progress}%`, autoClose: 100 });
-    }, [progress]);
-
-    const currentValues = form.getValues();
-
     const clearFile = () => {
         form.setFieldValue("file", null);
         resetRef.current?.();
     };
+
+    const currentValues = form.getValues();
 
     return (
         <Modal

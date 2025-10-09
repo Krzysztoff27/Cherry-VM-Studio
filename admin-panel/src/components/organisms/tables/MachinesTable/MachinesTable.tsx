@@ -11,6 +11,7 @@ import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler
 import TableControls from "../../../molecules/interactive/TableControls/TableControls";
 import usePermissions from "../../../../hooks/usePermissions";
 import PERMISSIONS from "../../../../config/permissions.config";
+import CreateMachineModal from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
 
 const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "machines.controls.");
@@ -61,7 +62,12 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                     />
                     <TableControls
                         table={table}
-                        modals={{}}
+                        modals={{
+                            create: {
+                                component: CreateMachineModal,
+                                props: {},
+                            },
+                        }}
                         translations={{
                             create: tns("create-machine"),
                             filter: tns("filters"),

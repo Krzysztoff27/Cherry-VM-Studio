@@ -9,13 +9,13 @@ const useFileUpload = () => {
     const [progress, setProgress] = useState(0);
     const { tokens } = useAuth();
 
-    const uploadFile = async (file: File | null) => {
-        console.log(file);
+    const uploadFile = async (file: File | null, data: { [key: string]: any } = {}) => {
         if (isNull(file)) return;
 
         setStatus("uploading");
 
         const formData = new FormData();
+        Object.entries(([key, value]) => formData.set(key, value));
         formData.append("file", file);
 
         try {

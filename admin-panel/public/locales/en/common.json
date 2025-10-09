@@ -51,5 +51,7 @@
     "enter-users-to-add": "Enter users to add",
     "add": "Add",
     "roles": "Roles",
-    "groups": "Groups"
+    "groups": "Groups",
+    "next": "Next",
+    "previous": "Previous"
 }

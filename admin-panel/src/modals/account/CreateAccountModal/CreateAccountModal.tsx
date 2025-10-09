@@ -1,16 +1,13 @@
-import { Avatar, Button, Group, Modal, MultiSelect, PasswordInput, Popover, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { Avatar, Button, Group, Modal, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import classes from "./CreateAccountModal.module.css";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import PasswordInputWithStrength from "../../../components/molecules/interactive/PasswordInputWithStrength/PasswordInputWithStrength";
 import useApi from "../../../hooks/useApi";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
-import useFetch from "../../../hooks/useFetch";
-import { safeObjectValues } from "../../../utils/misc";
-import RoleInfoCard from "../../../components/atoms/display/RoleInfoCard/RoleInfoCard";
 import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
 
@@ -36,7 +33,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         validate: {
             name: hasLength({ max: 50 }, tns("validation.name-too-long")),
             surname: hasLength({ max: 50 }, tns("validation.surname-too-long")),
-            username: val =>
+            username: (val) =>
                 /\s/.test(val)
                     ? tns("validation.username-spaces")
                     : !/^[\w.-]+$/.test(val)
@@ -49,7 +46,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                     ? tns("validation.username-too-long")
                     : null,
             email: isEmail(tns("validation.email-invalid")),
-            password: val =>
+            password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")
                     : !/[0-9]/.test(val)
@@ -63,7 +60,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                     : null,
             confirmPassword: matchesField("password", tns("validation.passwords-not-equal")),
         },
-        onValuesChange: values => {
+        onValuesChange: (values) => {
             setFullName(values.name || values.surname ? `${values.name} ${values.surname}` : values.username);
             form.setFieldValue("username", values.username.toLowerCase());
         },
