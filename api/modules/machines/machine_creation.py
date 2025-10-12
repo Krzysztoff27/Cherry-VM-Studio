@@ -5,9 +5,10 @@ import xml.etree.ElementTree as ET
 from typing import Union, Optional, Any
 from uuid import UUID
 
-from modules.machines.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMemberIdMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer
+from modules.machines.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMemberIdMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
 from modules.libvirt_socket import LibvirtConnection
 from modules.postgresql import pool, select_schema
+from modules.cherry_socket import CherrySocketClient
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +19,14 @@ logger = logging.getLogger(__name__)
 #   XML elements creation
 ################################
 
-def create_machine_disk(root_element: ET.Element[str], machine_disk: MachineDisk, system: bool) -> ET.Element[str]:
+def create_machine_disk_xml(root_element: ET.Element[str], machine_disk: MachineDisk, system: bool) -> ET.Element[str]:
     disk = ET.SubElement(root_element, "disk", type="file", device="disk")
+    
     ET.SubElement(disk, "alias", name=machine_disk.name)
     ET.SubElement(disk, "driver", name="qemu", type=machine_disk.type)
-    if isinstance(machine_disk.source, str): 
-        ET.SubElement(disk, "source", file=machine_disk.source)
-    elif isinstance(machine_disk.source, StoragePool):
-        ET.SubElement(disk, "source", pool=machine_disk.source.pool, volume=machine_disk.source.volume)
+    
+    ET.SubElement(disk, "source", pool=machine_disk.source.pool, volume=machine_disk.source.volume)
+        
     if system:
         ET.SubElement(disk, "target", dev="sda", bus="virtio")
         ET.SubElement(disk, "boot", order="1")
@@ -34,14 +35,19 @@ def create_machine_disk(root_element: ET.Element[str], machine_disk: MachineDisk
     return disk
 
 
-def create_machine_network_interface(root_element: ET.Element[str], network_interface: MachineNetworkInterface) -> ET.Element[str]:
-    iface = ET.SubElement(root_element, "interface", type="network")
-    ET.SubElement(iface, "source", network=network_interface.name)
+def create_machine_network_interface_xml(root_element: ET.Element[str], network_interface: MachineNetworkInterface) -> ET.Element[str]:
+    iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
+    
+    ET.SubElement(iface, "alias", name=network_interface.name)
+
+    source_attribute = {network_interface.source.type: network_interface.source.value}
+    ET.SubElement(iface, "source", attrib=source_attribute)
+    
     ET.SubElement(iface, "model", type="virtio")
     return iface
 
 
-def create_machine_graphics(root_element: ET.Element[str], framebuffer: MachineGraphicalFramebuffer) -> ET.Element[str]:
+def create_machine_graphics_xml(root_element: ET.Element[str], framebuffer: MachineGraphicalFramebuffer) -> ET.Element[str]:
     if framebuffer.port == "auto":
         graphics = ET.SubElement(root_element, "graphics", type=framebuffer.type, autoport="yes")
     else:
@@ -113,17 +119,17 @@ def create_machine_xml(machine: MachineParameters) -> str:
     
     devices = ET.SubElement(domain, "devices")
     
-    create_machine_disk(devices, machine.system_disk, True)
+    create_machine_disk_xml(devices, machine.system_disk, True)
     
     cdrom = ET.SubElement(domain, "disk", type="volume", device="cdrom")
     ET.SubElement(cdrom, "alias", name="cd-rom")
     ET.SubElement(cdrom, "driver", name="qemu", type="raw")
     
-    if machine.iso_filepath:
-        if isinstance(machine.iso_filepath, StoragePool):
-            ET.SubElement(cdrom, "source", pool=machine.iso_filepath.pool, volume=machine.iso_filepath.volume)
+    if machine.iso_image:
+        if isinstance(machine.iso_image, StoragePool):
+            ET.SubElement(cdrom, "source", pool=machine.iso_image.pool, volume=machine.iso_image.volume)
         else:
-            ET.SubElement(cdrom, "source", file=machine.iso_filepath)
+            raise ValueError("iso_image must be of type StoragePool")
             
     ET.SubElement(cdrom, "target", dev="sdb", bus="virtio")
     ET.SubElement(cdrom, "readonly")
@@ -132,13 +138,13 @@ def create_machine_xml(machine: MachineParameters) -> str:
     
     if machine.additional_disks:
         for disk in machine.additional_disks:
-            create_machine_disk(devices, disk, False)
+            create_machine_disk_xml(devices, disk, False)
 
     if machine.network_interfaces:
         for nic in machine.network_interfaces:
-            create_machine_network_interface(devices, nic)
+            create_machine_network_interface_xml(devices, nic)
 
-    create_machine_graphics(devices, machine.framebuffer)
+    create_machine_graphics_xml(devices, machine.framebuffer)
 
     video = ET.SubElement(devices, "video")
     model = ET.SubElement(video, "model", type="virtio", heads="1")
@@ -189,29 +195,43 @@ def parse_machine_disk(disk_element: ET.Element[str]) -> MachineDisk:
     """
     Parse <disk> element back into MachineDisk model.
     """
+    # Name
     alias_el = get_required_xml_tag(disk_element, "alias")
     name = get_required_xml_tag_attribute(alias_el, "name")
     
-    # Add retrieval for disk size - depends on whether the disk is a file or a pool volume
-    size = 0
+    # Source
+    allowed_pool_types = ["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+    source_el = get_required_xml_tag(disk_element, "source")
     
+    if "pool" in source_el.attrib and "volume" in source_el.attrib:
+        pool=get_required_xml_tag_attribute(source_el, "pool")
+        
+        if pool not in allowed_pool_types:
+            raise ValueError(f"StoragePool pool cannot be of type: {pool}")
+        else:
+            source = StoragePool(
+                pool=pool, # type: ignore - pool type is checked against allowed pool types after being fetched from the XML string
+                volume=get_required_xml_tag_attribute(source_el, "volume")
+            )
+    else:
+        raise ValueError(f"Disk source not found or is of unsupported type. It must be either file or storage pool.")
+    
+    # Size
+    # Retrieve disk size from CherrySocket - not kept under libvirt XML + disks are dynamic
+    with CherrySocketClient() as cherry_socket:
+        response = cherry_socket.call("get_machine_disk_size", source.model_dump())
+        if response["capacity"] is not None:
+            size = response["capacity"]
+        else:
+            raise ValueError(f"Could not retrieve {source.volume} size")
+    
+    # Type
     allowed_disk_types = ["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"] 
     driver_el = get_required_xml_tag(disk_element, "driver")
     type = get_required_xml_tag_attribute(driver_el, "type")
     
     if type not in allowed_disk_types:
         raise ValueError(f"MachineDisk cannot be of type: {type}")
-
-    source_el = get_required_xml_tag(disk_element, "source")
-    if "file" in source_el.attrib:
-        source = get_required_xml_tag_attribute(source_el, "file")
-    elif "pool" in source_el.attrib and "volume" in source_el.attrib:
-        source = StoragePool(
-            pool=get_required_xml_tag_attribute(source_el, "pool"),
-            volume=get_required_xml_tag_attribute(source_el, "volume")
-            )
-    else:
-        raise ValueError(f"Disk source not found or is of unsupported type. It must be either file or storage pool.")
 
     return MachineDisk(
         name=name,
@@ -225,10 +245,33 @@ def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetwork
     """
     Parse <interface> element back into MachineNetworkInterface model.
     """
-    source_el = iface_element.find("source")
-    name = source_el.get("network") if source_el is not None else None
+    # Name
+    alias_el = get_required_xml_tag(iface_element, "alias")
+    name = get_required_xml_tag_attribute(alias_el, "name")
 
-    return MachineNetworkInterface(name=name) if name is not None else None
+    # Source type and value
+    source_el = get_required_xml_tag(iface_element, "source")
+    source_type = None
+    source_value = None
+    
+    for key, value in source_el.attrib.items():
+        source_type = key
+        source_value = value
+        break
+
+    allowed_source_types = ["network", "bridge"]
+    if source_type not in allowed_source_types:
+        raise ValueError(f"source_type cannot be: {source_type}")
+    
+    if source_value is None:
+        raise ValueError(f"source_value cannot be empty")
+    
+    source = NetworkInterfaceSource(type=source_type, value=source_value) # type: ignore
+
+    return MachineNetworkInterface(
+        name=name,
+        source=source
+    )
 
 
 def parse_machine_graphics(graphics_element: ET.Element) -> MachineGraphicalFramebuffer:
@@ -246,7 +289,6 @@ def parse_machine_graphics(graphics_element: ET.Element) -> MachineGraphicalFram
         port = "auto"
     else:
         port = autoport
-
 
     listen_network = None
     listen_address = None
@@ -301,18 +343,25 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         additional_disks = []
 
         # Disks
+        
+        iso_image = None
+        
         for disk_element in devices_el.findall("disk"):
             device_type = get_required_xml_tag_attribute(disk_element, "device")
             
             if device_type == "cdrom":
                 source_element = get_required_xml_tag(disk_element, "source")
-                if "file" in source_element.attrib:
-                    iso_filepath = get_required_xml_tag_attribute(source_element, "file")
-                elif "pool" in source_element.attrib and "volume" in source_element.attrib:
-                    iso_filepath = StoragePool(
-                        pool = get_required_xml_tag_attribute(source_element, "pool"),
+                if "pool" in source_element.attrib and "volume" in source_element.attrib:
+                    allowed_pool_types = ["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+                    pool = get_required_xml_tag_attribute(source_element, "pool")
+                    if pool not in allowed_pool_types:
+                        raise ValueError(f"pool cannot be {pool}")
+                    
+                    iso_image = StoragePool(
+                        pool = get_required_xml_tag_attribute(source_element, "pool"), # type: ignore
                         volume = get_required_xml_tag_attribute(source_element, "volume")
                     )
+                    
 
             boot_element = get_required_xml_tag(disk_element, "boot")
             if get_required_xml_tag_attribute(boot_element, "order") == "1":
@@ -322,9 +371,6 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         
         if system_disk is None:
             raise ValueError("No system disk found in domain XML (missing <boot order='1'>).")
-
-       
-
 
         # Network interfaces
         network_interfaces = []
@@ -346,7 +392,7 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
             vcpu=vcpu,
             system_disk=system_disk,
             additional_disks=additional_disks if additional_disks else None,
-            iso_filepath=None,  # not stored in XML yet
+            iso_image=iso_image,  # not stored in XML yet
             network_interfaces=network_interfaces if network_interfaces else None,
             framebuffer=framebuffer,
         )
@@ -354,6 +400,14 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
     except ValueError as e:
         raise ValueError(f"Failed to parse machine XML: {e}")
         
+################################
+# Machine components creation
+################################
+def create_machine_disk(machine_disk: MachineDisk) -> dict:
+    with CherrySocketClient() as cherry_socket:
+        response = cherry_socket.call("create_machine_disk", machine_disk.model_dump())
+        return response
+
 
 ################################
 #  Machine creation actions
@@ -376,6 +430,10 @@ def create_machine(machine: Union[str, MachineParameters]) -> None:
         logger.debug(f"Defined machine {machine_xml}")
     
     
+def create_machine_snapshot(machine: Union[str, MachineParameters]) -> None:
+    pass
+
+# Experimental functions - to be implemented in the future
 def create_machine_template(machine: Union[str, MachineParameters]) -> None:
     """
     Create machine template (database record) without creating the machine itself.
@@ -389,8 +447,8 @@ def create_machine_template(machine: Union[str, MachineParameters]) -> None:
                             INSERT INTO machine_templates (uuid, name, description, group_metadata, group_member_id_metadata, additional_metadata, ram, vcpu, os_type, disks, username, password, network_interfaces)
                             VALUES (%(uuid)s, %(name)s, %(description)s, %(group_metadata)s, %(group_member_id_metadata)s, %(additional_metadata)s, %(ram)s, %(vcpu)s, %(os_type)s, %(disks)s, %(username)s, %(password)s, %(network_interfaces)s)
                             """, machine.model_dump())
- 
-                
+
+
 def create_machine_from_template(template_uuid: UUID) -> None:
     """
     Creates machine based on configuration template from database.

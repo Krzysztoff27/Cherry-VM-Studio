@@ -79,11 +79,16 @@ class MachineDisk(BaseModel):
             volume=f"{name}.{disk_type}"
         )
                 
+class NetworkInterfaceSource(BaseModel):
+    type: Literal["network", "bridge"]
+    value: str
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterfaces
 class MachineNetworkInterface(BaseModel):
     name: str  
-
+    source: NetworkInterfaceSource
+    
+    
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
     port: Union[Literal["auto"], str] 
@@ -116,7 +121,7 @@ class MachineParameters(BaseModel):
     system_disk: MachineDisk                        
     additional_disks: Optional[list[MachineDisk]] = None            
     
-    iso_filepath: Optional[StoragePool] = None
+    iso_image: Optional[StoragePool] = None
                                               
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
     
