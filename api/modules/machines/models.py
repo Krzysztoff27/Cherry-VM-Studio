@@ -1,5 +1,5 @@
-from uuid import UUID
-from pydantic import BaseModel, model_validator, ValidationError, field_validator
+from uuid import UUID, uuid4
+from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from typing import Optional, Literal, Union
 from modules.websockets.models import Command
 from modules.users.models import ClientInDB, AdministratorInDB
@@ -51,12 +51,15 @@ class StoragePool(BaseModel):
     # Volume is basically disk name + disk type eg. "disk.qcow2"
     volume: str
 
+
+DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
     name: str                                                                                                                                           
     size: int # in MiB 
                                                                           
-    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
+    type: DiskType
     pool_type: Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
     
     source: StoragePool | None = None
@@ -134,6 +137,31 @@ class MachineParameters(BaseModel):
         if self.additional_metadata is not None:
             return base_metadata + self.additional_metadata
         return base_metadata
+    
+      
+class CreateMachineFormDisk(BaseModel):
+    is_system_disk: bool
+    name: str
+    size_bytes: int
+    disk_type: DiskType
+    
+      
+class CreateMachineFormConfig(BaseModel):
+    ram: int
+    vcpu: int
+      
+    
+class CreateMachineForm(BaseModel):
+    uuid: UUID = Field(default_factory=uuid4)
+    name: str
+    group: str
+    tags: set[str]
+    assigned_clients: set[UUID]
+    source_type: Literal["iso", "snapshot"]
+    source_uuid: UUID
+    config: CreateMachineFormConfig
+    disks: list[CreateMachineFormDisk]
+    
     
 
 class MachineWebsocketCommand(Command):
