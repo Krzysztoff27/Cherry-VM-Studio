@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, model_validator, ValidationError
+from pydantic import BaseModel, model_validator, ValidationError, field_validator
 from typing import Optional, Literal, Union
 from modules.websockets.models import Command
 from modules.users.models import ClientInDB, AdministratorInDB
@@ -46,15 +46,39 @@ class GroupMemberIdMetadata(BaseModel):
     value: Optional[str]
 
 class StoragePool(BaseModel):
-    pool: str
+    # For now the StoragePool selection is limited to predefined pools on local filesystem
+    pool: Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+    # Volume is basically disk name + disk type eg. "disk.qcow2"
     volume: str
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
-    name: str                                                                           
-    source: Union[StoragePool, str]                                                                      
-    size: int                                                                           
-    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]  
+    name: str                                                                                                                                           
+    size: int # in MiB 
+                                                                          
+    type: Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
+    pool_type: Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+    
+    source: StoragePool | None = None
+    
+    @field_validator("source", mode="before")
+    def set_source(cls, v, info):
+        if isinstance(v, StoragePool):
+            return v
+        
+        values = info.data
+        pool_type = values.get("pool_type", "cvms-disk-images")
+        name = values.get("name")
+        disk_type = values.get("type")
+
+        if not name or not disk_type:
+            raise ValueError("Missing 'name' or 'type' for automatic StoragePool creation")
+
+        return StoragePool(
+            pool=pool_type,
+            volume=f"{name}.{disk_type}"
+        )
+                
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterfaces
 class MachineNetworkInterface(BaseModel):
@@ -82,7 +106,8 @@ class MachineParameters(BaseModel):
     description: Optional[str] = None
     
     group_metadata: GroupMetadata
-    group_member_id_metadata: Optional[GroupMemberIdMetadata]
+    # group_member_id_metadata is an ordinal number assigned during machine runtime to be displayed for informative reasons in admin-panel, therefore can be empty during MachineParameters definition
+    group_member_id_metadata: Optional[GroupMemberIdMetadata] = None
     additional_metadata: Optional[list[MachineMetadata]] = None 
           
     ram: int # in MiB                                  
@@ -91,10 +116,11 @@ class MachineParameters(BaseModel):
     system_disk: MachineDisk                        
     additional_disks: Optional[list[MachineDisk]] = None            
     
-    iso_filepath: Optional[Union[StoragePool, str]] = None
+    iso_filepath: Optional[StoragePool] = None
                                               
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
     
+    # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer
     
     @property
