@@ -80,6 +80,21 @@ CREATE TABLE network_snapshots (
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE iso_files (
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(24) UNIQUE NOT NULL,
+    file_name TEXT,
+    file_location TEXT,
+    file_size_bytes BIGINT DEFAULT 0,
+    last_used TIMESTAMP,
+    imported_by UUID,
+    imported_at TIMESTAMP,
+    last_modified_by UUID
+    last_modified_at TIMESTAMP,
+    FOREIGN KEY(imported_by) REFERENCES administrators(uuid) ON DELETE CASCADE
+    FOREIGN KEY(last_modified_by) REFERENCES administrators(uuid) ON DELETE CASCADE
+);
+
 CREATE TABLE machine_snapshots (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_uuid UUID,
@@ -195,6 +210,8 @@ CREATE INDEX machine_templates_name_idx ON machine_templates (name);
 CREATE INDEX machine_templates_group_value_idx ON machine_templates ((group_metadata).value);
 CREATE INDEX machine_templates_group_member_id_idx ON machine_templates ((group_member_id_metadata).value);
 CREATE INDEX machine_templates_additional_metadata_idx ON machine_templates USING GIN (additional_metadata);
+CREATE INDEX iso_files_idx ON iso_files (uuid, name);
+
 
 -- Insert roles
 INSERT INTO roles (name, permissions)
