@@ -41,6 +41,15 @@ readonly DIR_DOCKER_HOST_TRAEFIK_CONFIG="${TEMP_ROOTPATH}/traefik"; export DIR_D
 readonly DIR_LIBVIRT_HOST="${STACK_ROOTPATH}/libvirt"; export DIR_LIBVIRT_HOST
 readonly DIR_IMAGE_FILES="${STACK_ROOTPATH}/image-files"; export DIR_IMAGE_FILES
 readonly DIR_VM_INSTANCES="${TEMP_ROOTPATH}/virtual-machines"; export DIR_VM_INSTANCES
+# Storage pools for libvirt files - replacing plain directories from above
+readonly POOL_LIBVIRT_ROOT="${TEMP_ROOTPATH}/libvirt"; export POOL_LIBVIRT_ROOT
+readonly POOL_LIBVIRT_DISK_IMAGES_NAME="cvms-disk-images"; export POOL_LIBVIRT_DISK_IMAGES_NAME
+readonly POOL_LIBVIRT_DISK_IMAGES="${POOL_LIBVIRT_ROOT}/disk-images"; export POOL_LIBVIRT_DISK_IMAGES
+readonly POOL_LIBVIRT_ISO_IMAGES_NAME="cvms-iso-images"; export POOL_LIBVIRT_ISO_IMAGES_NAME
+readonly POOL_LIBVIRT_ISO_IMAGES="${POOL_LIBVIRT_ROOT}/iso-images"; export POOL_LIBVIRT_ISO_IMAGES
+readonly POOL_LIBVIRT_NFS_NAME="cvms-network-filesystems"; export POOL_LIBVIRT_NFS_NAME
+readonly POOL_LIBVIRT_NFS="${POOL_LIBVIRT_ROOT}/network-filesystems"; export POOL_LIBVIRT_NFS
+
 
 # Systemd directories
 readonly DIR_SYSTEMD_SERVICES='/etc/systemd/system'; export DIR_SYSTEMD_SERVICES

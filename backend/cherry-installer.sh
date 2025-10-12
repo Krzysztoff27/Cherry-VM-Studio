@@ -387,6 +387,8 @@ configure_daemon_docker(){
             printf 'DIR_DB=%s\n' "$DIR_DOCKER_HOST_DB"
             printf 'DIR_TRAEFIK=%s\n' "$DIR_DOCKER_HOST_TRAEFIK_CONFIG"
 
+            printf 'POOL_LIBVIRT_ISO_IMAGES=%\n' "$POOL_LIBVIRT_ISO_IMAGES"
+
         } >> "${DIR_DOCKER_HOST}/.env" 2>>"$ERR_LOG"
 
     } 2>>"$ERR_LOG"
@@ -406,6 +408,26 @@ configure_daemon_libvirt(){
     systemctl -q start libvirtd.service >/dev/null 2>>"$ERR_LOG"
     printf 'Starting libvirt UNIX socket.\n'
     systemctl -q start libvirtd-admin.socket >/dev/null 2>>"$ERR_LOG"
+    printf 'Creating default storage pools.\n'
+    {
+        virsh pool-define-as "$POOL_LIBVIRT_DISK_IMAGES_NAME" dir --target "$POOL_LIBVIRT_DISK_IMAGES"
+        virsh pool-build "$POOL_LIBVIRT_DISK_IMAGES_NAME"
+        virsh pool-start "$POOL_LIBVIRT_DISK_IMAGES_NAME"
+        virsh pool-autostart "$POOL_LIBVIRT_DISK_IMAGES_NAME"
+        chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$POOL_LIBVIRT_DISK_IMAGES_NAME"
+
+        virsh pool-define-as "$POOL_LIBVIRT_ISO_IMAGES_NAME" dir --target "$POOL_LIBVIRT_ISO_IMAGES"
+        virsh pool-build "$POOL_LIBVIRT_ISO_IMAGES_NAME"
+        virsh pool-start "$POOL_LIBVIRT_ISO_IMAGES_NAME"
+        virsh pool-autostart "$POOL_LIBVIRT_ISO_IMAGES_NAME"
+        chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$POOL_LIBVIRT_ISO_IMAGES"
+
+        virsh pool-define-as "$POOL_LIBVIRT_NFS_NAME" dir --target "$POOL_LIBVIRT_NFS"
+        virsh pool-build "$POOL_LIBVIRT_NFS_NAME"
+        virsh pool-start "$POOL_LIBVIRT_NFS_NAME"
+        virsh pool-autostart "$POOL_LIBVIRT_NFS_NAME"
+        chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$POOL_LIBVIRT_NFS"
+    } >/dev/null 2>>"$ERR_LOG"
 }
 
 create_docker_networks(){

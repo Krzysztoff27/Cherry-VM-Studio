@@ -76,7 +76,7 @@ class RequestHandler(socketserver.StreamRequestHandler):
             except ValueError as e:
                 self._write(server_error(request_id, "500", f"ValidationError: {str(e)}"))
             except Exception as e:
-                logger.exception("Unhandled error while executing action")
+                logger.exception("Internal error while executing action")
                 self._write(server_error(request_id, "500", f"InternalError: f{str(e)}"))
             
         
