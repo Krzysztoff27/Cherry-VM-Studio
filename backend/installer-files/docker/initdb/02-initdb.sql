@@ -83,6 +83,7 @@ CREATE TABLE network_snapshots (
 CREATE TABLE iso_files (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(24) UNIQUE NOT NULL,
+    remote BOOLEAN,
     file_name TEXT,
     file_location TEXT,
     file_size_bytes BIGINT DEFAULT 0,
