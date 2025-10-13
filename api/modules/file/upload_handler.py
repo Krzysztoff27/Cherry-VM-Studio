@@ -14,7 +14,7 @@ class UploadSizeValidator(BaseModel):
     body_len: int = 0
     max_size_bytes: int
     
-    def add(self, chunk: bytes):
+    def __call__(self, chunk: bytes):
         self.body_len += len(chunk)
         if self.body_len > self.max_size_bytes:
             raise UploadTooLargeException(body_len=self.body_len)
@@ -64,7 +64,7 @@ class UploadHandler(BaseModel):
         parser.register('data', data_target)
         
         async for chunk in request.stream():
-            size_validator.add(chunk)
+            size_validator(chunk)
             parser.data_received(chunk)
         
         return UploadedFile(
