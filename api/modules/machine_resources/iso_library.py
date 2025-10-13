@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from api.modules.exceptions.models import RaisedException
+from modules.exceptions.models import RaisedException
 
 from .models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord, IsoRecordInDB
 from modules.postgresql import select_schema_dict, select_schema_one, pool

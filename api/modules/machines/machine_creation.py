@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import libvirt
 import xml.etree.ElementTree as ET
@@ -48,7 +50,7 @@ logger = logging.getLogger(__name__)
 %#######%@@@@@@@@@@@@@@@@@@%%%%@@%%%@@%%#####%@@@@@@%%#%%###+=%%%%%%%++++
 """
 
-def create_machine_disk_xml(root_element: ET.Element[str], machine_disk: MachineDisk, system: bool) -> ET.Element[str]:
+def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk, system: bool) -> ET.Element:
     disk = ET.SubElement(root_element, "disk", type="file", device="disk")
     
     ET.SubElement(disk, "alias", name=machine_disk.name)
@@ -64,7 +66,7 @@ def create_machine_disk_xml(root_element: ET.Element[str], machine_disk: Machine
     return disk
 
 
-def create_machine_network_interface_xml(root_element: ET.Element[str], network_interface: MachineNetworkInterface) -> ET.Element[str]:
+def create_machine_network_interface_xml(root_element: ET.Element, network_interface: MachineNetworkInterface) -> ET.Element:
     iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
     
     ET.SubElement(iface, "alias", name=network_interface.name)
@@ -76,7 +78,7 @@ def create_machine_network_interface_xml(root_element: ET.Element[str], network_
     return iface
 
 
-def create_machine_graphics_xml(root_element: ET.Element[str], framebuffer: MachineGraphicalFramebuffer) -> ET.Element[str]:
+def create_machine_graphics_xml(root_element: ET.Element, framebuffer: MachineGraphicalFramebuffer) -> ET.Element:
     if framebuffer.port == "auto":
         graphics = ET.SubElement(root_element, "graphics", type=framebuffer.type, autoport="yes")
     else:
@@ -187,7 +189,7 @@ def create_machine_xml(machine: MachineParameters) -> str:
 #   XML elements parsing
 ################################
 
-def get_required_xml_tag(root_element: ET.Element[str], path: str, namespaces: Optional[dict[str, str]] = None) -> ET.Element[str]:
+def get_required_xml_tag(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> ET.Element:
     """
     Finds XML tag. Raises error if tag is missing.
     """
@@ -198,7 +200,7 @@ def get_required_xml_tag(root_element: ET.Element[str], path: str, namespaces: O
     return tag
 
 
-def get_required_xml_tag_text(root_element: ET.Element[str], path: str, namespaces: Optional[dict[str, str]] = None) -> str:
+def get_required_xml_tag_text(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> str:
     """
     Finds XML tag text property. Raises error if tag is missing.
     """ 
@@ -209,7 +211,7 @@ def get_required_xml_tag_text(root_element: ET.Element[str], path: str, namespac
     return text
 
 
-def get_required_xml_tag_attribute(root_element: ET.Element[str], key: str, default: Optional[Any] = None):
+def get_required_xml_tag_attribute(root_element: ET.Element, key: str, default: Optional[Any] = None):
     """
     Finds XML tag attribute. Raises error if tag is missing.
     """ 
@@ -220,7 +222,7 @@ def get_required_xml_tag_attribute(root_element: ET.Element[str], key: str, defa
     return text
 
 
-def parse_machine_disk(disk_element: ET.Element[str]) -> MachineDisk:
+def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
     """
     Parse <disk> element back into MachineDisk model.
     """
@@ -492,7 +494,7 @@ def create_template_from_machine(machine_uuid: UUID) -> None:
     """
     with LibvirtConnection("ro") as libvirt_connection:
         try:
-            machine = libvirt_connection.virDomainLookupByUUID(machine_uuid)
+            machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
             raw_machine_xml = machine.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE)
             create_machine_template(raw_machine_xml)
         except libvirt.libvirtError as e:

@@ -31,28 +31,32 @@ class MachineState(MachineData):
 ################################
 #   Machine creation models
 ################################
+DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
+StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
     tag: str
     value: str
     
+    
 class GroupMetadata(BaseModel):
     tag: ClassVar[str] = "group"
     value: str
+    
     
 class GroupMemberIdMetadata(BaseModel):
     tag: ClassVar[str] = "groupMemberId"
     value: Optional[str] = None
 
+
 class StoragePool(BaseModel):
     # For now the StoragePool selection is limited to predefined pools on local filesystem
-    pool: Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+    pool: StoragePools
     # Volume is basically disk name + disk type eg. "disk.qcow2"
     volume: str
 
-
-DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
@@ -60,7 +64,7 @@ class MachineDisk(BaseModel):
     size: int # in MiB 
                                                                           
     type: DiskType
-    pool_type: Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+    pool_type: StoragePools
     
     source: StoragePool | None = None
     
@@ -81,6 +85,7 @@ class MachineDisk(BaseModel):
             pool=pool_type,
             volume=f"{name}.{disk_type}"
         )
+    
                 
 class NetworkInterfaceSource(BaseModel):
     type: Literal["network", "bridge"]
