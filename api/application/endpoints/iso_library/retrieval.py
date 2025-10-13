@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from modules.machine_resources.iso_library import get_iso_record_by_uuid, get_iso_records
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.machine_resources.models import IsoRecord
-from application import app
+from application.app import app
 
 
 @app.get("/iso/{uuid}", response_model=IsoRecord, tags=['ISO Library'])
