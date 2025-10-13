@@ -13,6 +13,8 @@ from modules.machine_resources.iso_library import create_iso_record
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.file.upload_handler import UploadHandler
 
+logger = logging.getLogger(__name__)
+
 MAX_REQUEST_BODY_SIZE = FILES_CONFIG.upload_iso_max_size + 1024
 
 upload_handler = UploadHandler(
@@ -26,11 +28,14 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
     
     try:
         uploaded_file = await upload_handler.handle(request)
+        logging.debug(uploaded_file)
         form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
+        logging.debug(form_data)
         
         creation_args = CreateIsoRecordArgs(
             **form_data.model_dump(), 
             uuid=uploaded_file.uuid,
+            file_name=uploaded_file.name,
             file_location=uploaded_file.location,
             file_size_bytes=uploaded_file.size,
             imported_by=current_user.uuid,
