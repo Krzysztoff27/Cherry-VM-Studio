@@ -56,8 +56,8 @@ class UploadHandler(BaseModel):
         
         content_type = request.headers.get("content-type")
         
-        if content_type != "multipart/form-data":
-            UploadHeadersError('Content-Type must be set to "multipart/form-data"')
+        if not content_type or not content_type.startswith("multipart/form-data"):
+            raise UploadHeadersError('Content-Type must be set to "multipart/form-data"')
         
         parser = StreamingFormDataParser(headers=request.headers)
         parser.register('file', file_target)
