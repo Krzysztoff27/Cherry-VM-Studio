@@ -492,7 +492,7 @@ def create_template_from_machine(machine_uuid: UUID) -> None:
     """
     with LibvirtConnection("ro") as libvirt_connection:
         try:
-            machine = libvirt_connection.lookupByUUID(machine_uuid)
+            machine = libvirt_connection.virDomainLookupByUUID(machine_uuid)
             raw_machine_xml = machine.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE)
             create_machine_template(raw_machine_xml)
         except libvirt.libvirtError as e:

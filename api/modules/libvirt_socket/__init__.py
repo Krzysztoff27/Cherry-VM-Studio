@@ -53,8 +53,3 @@ class LibvirtConnection():
         except Exception as e:
             logging.error(repr(e))
             raise RaisedException(f"Failed to open read-write libvirt connection to {self.hypervisor_uri}")
-        
-    def lookupByUUID(self, uuid: UUID) -> libvirt.virDomain | None:
-        if self.connection is None:
-            return None
-        return self.connection.lookupByUUIDString(str(uuid))
