@@ -7,7 +7,7 @@ from utils.file import JSONHandler
 from .models import IntnetConfiguration, Positions
 from modules.postgresql import pool, select_one
 
-intnets_file = JSONHandler(FILES_CONFIG.network_config_intnets)
+intnets_file = JSONHandler(FILES_CONFIG.network_config_presets)
 
 # intnets
 
