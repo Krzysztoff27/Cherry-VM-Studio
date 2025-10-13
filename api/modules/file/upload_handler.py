@@ -11,7 +11,7 @@ from modules.file.models import UploadInvalidExtensionException, UploadMissingFi
 
 
 class UploadSizeValidator(BaseModel):
-    body_len = 0
+    body_len: int = 0
     max_size_bytes: int
     
     def add(self, chunk: bytes):
