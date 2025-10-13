@@ -1,5 +1,5 @@
 from starlette.websockets import WebSocket, WebSocketState
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.encoders import jsonable_encoder
 from modules.exceptions import RaisedException
 from .models import CommandData, AcknowledgeResponse, RejectResponse
@@ -9,8 +9,7 @@ from .models import CommandData, AcknowledgeResponse, RejectResponse
 class WebSocketHandler(BaseModel):
     websocket: WebSocket
     
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def accept(self) -> None:
         await self.websocket.accept()

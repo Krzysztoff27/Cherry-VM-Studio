@@ -23,8 +23,8 @@ def create_refresh_token(data: dict, expires_delta: timedelta) -> Token:
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_tokens
 def get_user_tokens(user: AnyUser):
     return Tokens(
-        access_token = create_access_token({"sub": user.uuid}, AUTHENTICATION_CONFIG.access_token_lifetime),
-        refresh_token = create_refresh_token({"sub": user.uuid}, AUTHENTICATION_CONFIG.refresh_token_lifetime)
+        access_token = create_access_token({"sub": str(user.uuid)}, AUTHENTICATION_CONFIG.access_token_lifetime),
+        refresh_token = create_refresh_token({"sub": str(user.uuid)}, AUTHENTICATION_CONFIG.refresh_token_lifetime)
     )
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_token_of_type

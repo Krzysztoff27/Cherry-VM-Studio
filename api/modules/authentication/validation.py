@@ -18,19 +18,22 @@ from modules.users.models import Administrator, AnyUser
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTHENTICATION_CONFIG.algorithm])
-        if not is_token_of_type(payload, token_type): raise InvalidTokenError
-        
-    except InvalidTokenError or ExpiredSignatureError:
-        raise CredentialsException()  # Token is invalid
 
-    uuid: UUID = payload.get("sub")
-    user = get_user_by_uuid(uuid)
-    
-    if user is None: 
+        if not is_token_of_type(payload, token_type):
+            raise InvalidTokenError()
+
+        sub = payload.get("sub")
+        uuid = UUID(sub)
+        user = get_user_by_uuid(uuid)
+        
+        if user is None:
+            raise CredentialsException()
+
+        update_user_last_active(user)
+        return user
+
+    except (InvalidTokenError, ExpiredSignatureError, ValueError):
         raise CredentialsException()
-    
-    update_user_last_active(user)
-    return user
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#authenticate_user
