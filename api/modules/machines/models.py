@@ -1,6 +1,6 @@
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
-from typing import Optional, Literal, Union
+from typing import Optional, Literal, Union, ClassVar
 from modules.websockets.models import Command
 from modules.users.models import ClientInDB, AdministratorInDB
 
@@ -38,12 +38,12 @@ class MachineMetadata(BaseModel):
     value: str
     
 class GroupMetadata(BaseModel):
-    tag = "group"
+    tag: ClassVar[str] = "group"
     value: str
     
 class GroupMemberIdMetadata(BaseModel):
-    tag = "groupMemberId"
-    value: Optional[str]
+    tag: ClassVar[str] = "groupMemberId"
+    value: Optional[str] = None
 
 class StoragePool(BaseModel):
     # For now the StoragePool selection is limited to predefined pools on local filesystem
