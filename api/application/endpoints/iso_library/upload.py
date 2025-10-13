@@ -1,12 +1,10 @@
 import datetime as dt
 import logging
-import os
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
 from pydantic import ValidationError as PydanticValidationError
 
-from api.modules.exceptions.models import RaisedException
 from application.app import app
 from config.files_config import FILES_CONFIG
 from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException
