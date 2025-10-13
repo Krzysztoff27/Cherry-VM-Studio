@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from streaming_form_data import StreamingFormDataParser
 from streaming_form_data.targets import FileTarget, ValueTarget
 
-from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException, UploadedFile
+from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException, UploadedFile
 
 
 class UploadSizeValidator(BaseModel):
@@ -25,7 +25,7 @@ class FilenameValidator(BaseModel):
     
     def validate(self, filename: str | None) -> str:
         if not filename:
-            raise UploadMissingFilenameException()
+            raise UploadHeadersError('Filename header is missing')
         
         filename = unquote(filename)
         file_extension = os.path.splitext(filename)[1]
@@ -53,6 +53,11 @@ class UploadHandler(BaseModel):
         
         file_target = FileTarget(file_location, validator=UploadSizeValidator(max_size_bytes=self.max_size_bytes))
         data_target = ValueTarget()
+        
+        content_type = request.headers.get("content-type")
+        
+        if content_type != "multipart/form-data":
+            UploadHeadersError('Content-Type must be set to "multipart/form-data"')
         
         parser = StreamingFormDataParser(headers=request.headers)
         parser.register('file', file_target)

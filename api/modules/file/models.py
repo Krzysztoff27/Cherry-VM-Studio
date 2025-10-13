@@ -7,9 +7,8 @@ class UploadTooLargeException(Exception):
         super().__init__(f"Upload too large: {body_len} bytes")
 
 
-class UploadMissingFilenameException(Exception):
-    def __init__(self):
-        super().__init__("Missing filename in upload")
+class UploadHeadersError(Exception):
+    pass
 
 
 class UploadInvalidExtensionException(Exception):

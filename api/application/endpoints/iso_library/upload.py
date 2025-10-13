@@ -1,5 +1,6 @@
 import datetime as dt
 import logging
+import os
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
@@ -7,9 +8,9 @@ from pydantic import ValidationError as PydanticValidationError
 
 from application.app import app
 from config.files_config import FILES_CONFIG
-from modules.file.models import UploadInvalidExtensionException, UploadMissingFilenameException, UploadTooLargeException
+from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException
 from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord
-from modules.machine_resources.iso_library import create_iso_record
+from modules.machine_resources.iso_library import create_iso_record, get_iso_record_by_name
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.file.upload_handler import UploadHandler
 
@@ -28,9 +29,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
     
     try:
         uploaded_file = await upload_handler.handle(request)
-        logging.debug(uploaded_file)
         form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
-        logging.debug(form_data)
         
         creation_args = CreateIsoRecordArgs(
             **form_data.model_dump(), 
@@ -42,6 +41,15 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             imported_at=dt.datetime.now(),
         )
         
+        duplicate = get_iso_record_by_name(creation_args.name)
+    
+        if duplicate is not None:
+            os.remove(creation_args.file_location)
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f'ISO file record with name={creation_args.name} already exists.'
+            )
+        
         return create_iso_record(creation_args)
         
     except ClientDisconnect:
@@ -51,10 +59,10 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail='Invalid JSON form structure'
         )
-    except UploadMissingFilenameException:
+    except UploadHeadersError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
-            detail='Filename header is missing'
+            detail=f"Invalid headers: {e}"
         )
     except UploadTooLargeException as e:
         raise HTTPException(

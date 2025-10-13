@@ -1,4 +1,5 @@
 import logging
+from typing import Literal
 from uuid import UUID
 
 from modules.exceptions.models import RaisedException
@@ -7,9 +8,12 @@ from .models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord, IsoReco
 from modules.postgresql import select_schema_dict, select_schema_one, pool
 from modules.users.users import get_administrator_by_field, get_administrators
 
-
-def get_iso_record_by_uuid(uuid: UUID) -> IsoRecord | None:
-    database_record = select_schema_one(IsoRecordInDB, "SELECT * FROM iso_files WHERE iso_files.uuid = (%s)", (uuid, ))
+def get_iso_record_by_field(field_name: Literal["uuid", "name"], value: str) -> IsoRecord | None:
+    
+    if field_name not in {"uuid", "name"}:
+        raise RaisedException("Invalid field_name passed.")
+    
+    database_record = select_schema_one(IsoRecordInDB, f"SELECT * FROM iso_files WHERE iso_files.{field_name} = (%s)", (value, ))
     
     if database_record is None:
         return None
@@ -22,6 +26,12 @@ def get_iso_record_by_uuid(uuid: UUID) -> IsoRecord | None:
         imported_by=imported_by,
         last_modified_by=last_modified_by,
     )
+
+def get_iso_record_by_uuid(uuid: UUID) -> IsoRecord | None:
+    return get_iso_record_by_field("uuid", str(uuid))
+
+def get_iso_record_by_name(name: str) -> IsoRecord | None:
+    return get_iso_record_by_field("name", name)
     
     
 def get_iso_records() -> dict[UUID, IsoRecord]:
