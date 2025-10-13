@@ -35,7 +35,7 @@ def get_iso_record_by_name(name: str) -> IsoRecord | None:
     
     
 def get_iso_records() -> dict[UUID, IsoRecord]:
-    records = select_schema_dict(IsoRecord, "uuid", "SELECT * FROM iso_files")
+    records = select_schema_dict(IsoRecordInDB, "uuid", "SELECT * FROM iso_files")
     administrators = get_administrators()
     
     for uuid, record in records.items():

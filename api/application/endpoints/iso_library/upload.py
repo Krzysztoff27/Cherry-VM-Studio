@@ -32,6 +32,8 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
     try:
         try:
             uploaded_file = await upload_handler.handle(request)
+            logging.info(f"Saved ISO file {uploaded_file.uuid}.iso at location {uploaded_file.location}")
+            
             form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
             
             creation_args = CreateIsoRecordArgs(
@@ -56,8 +58,8 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
         
         except Exception as e:
             if uploaded_file is not None and os.path.exists(uploaded_file.location):
-                logging.error(f"Removing ISO file {uploaded_file.uuid}.iso due to errors that occured during import.")
                 os.remove(uploaded_file.location)
+                logging.error(f"Removed ISO file {uploaded_file.uuid}.iso due to errors that occured during import.")
             raise e
         
     except ClientDisconnect:
