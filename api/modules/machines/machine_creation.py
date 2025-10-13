@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from typing import Union, Optional, Any
 from uuid import UUID
 
-from modules.machines.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMemberIdMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
+from modules.machines.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
 from modules.libvirt_socket import LibvirtConnection
 from modules.postgresql import pool, select_schema
 from modules.cherry_socket import CherrySocketClient
@@ -56,6 +56,8 @@ def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk,
     ET.SubElement(disk, "alias", name=machine_disk.name)
     ET.SubElement(disk, "driver", name="qemu", type=machine_disk.type)
     
+    # Verified by MachineDisk model validator
+    assert machine_disk.source is not None
     ET.SubElement(disk, "source", pool=machine_disk.source.pool, volume=machine_disk.source.volume)
         
     if system:

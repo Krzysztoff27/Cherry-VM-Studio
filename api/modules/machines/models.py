@@ -1,5 +1,5 @@
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Literal, Union, ClassVar
 from modules.websockets.models import Command
 from modules.users.models import ClientInDB, AdministratorInDB
@@ -67,24 +67,18 @@ class MachineDisk(BaseModel):
     pool_type: StoragePools
     
     source: StoragePool | None = None
-    
-    @field_validator("source", mode="before")
-    def set_source(cls, v, info):
-        if isinstance(v, StoragePool):
-            return v
         
-        values = info.data
-        pool_type = values.get("pool_type", "cvms-disk-images")
-        name = values.get("name")
-        disk_type = values.get("type")
+    @model_validator(mode="after")
+    def auto_create_source(self) -> "MachineDisk":
+        if self.source is None:
+            if not self.name or not self.type:
+                raise ValueError("Missing 'name' or 'type' for automatic StoragePool creation")
 
-        if not name or not disk_type:
-            raise ValueError("Missing 'name' or 'type' for automatic StoragePool creation")
-
-        return StoragePool(
-            pool=pool_type,
-            volume=f"{name}.{disk_type}"
-        )
+            self.source = StoragePool(
+                pool=self.pool_type,
+                volume=f"{self.name}.{self.type}"
+            )
+        return self
     
                 
 class NetworkInterfaceSource(BaseModel):
