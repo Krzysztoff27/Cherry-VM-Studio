@@ -3,7 +3,6 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import {
     ActionIcon,
     Autocomplete,
-    Box,
     Button,
     Divider,
     Flex,
@@ -14,15 +13,13 @@ import {
     Radio,
     ScrollArea,
     Select,
-    Slider,
     Stack,
     TagsInput,
     Text,
     TextInput,
-    Title,
     useModalsStack,
 } from "@mantine/core";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
 import { UserInDB } from "../../../types/api.types";
 import useFetch from "../../../hooks/useFetch";
@@ -30,8 +27,7 @@ import { safeObjectValues } from "../../../utils/misc";
 import classes from "./CreateMachineModal.module.css";
 import { isNull } from "lodash";
 import EnhancedSlider from "../../../components/atoms/interactive/EnhancedSlider/EnhancedSlider";
-import { IconBox, IconChartDonut3, IconChartDonutFilled, IconCheckbox, IconCircle, IconCircleCheckFilled, IconMinus, IconPlus } from "@tabler/icons-react";
-import { useDebouncedCallback } from "@mantine/hooks";
+import { IconCircle, IconCircleCheckFilled, IconMinus, IconPlus } from "@tabler/icons-react";
 
 const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element => {
     const { data: users, error: usersError, loading: usersLoading } = useFetch("/users?account_type=client");

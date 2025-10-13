@@ -53,5 +53,7 @@
     "roles": "Roles",
     "groups": "Groups",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "file": "File",
+    "progress": "Progress"
 }

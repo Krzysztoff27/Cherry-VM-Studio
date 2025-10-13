@@ -170,5 +170,17 @@
             "title": "Preset Loaded",
             "message": "Successfully generated appropriate network configuration."
         }
+    },
+    "file": {
+        "uploading": {
+            "title": "Uploading File"
+        },
+        "upload-success": {
+            "title": "File Uploaded Successfully"
+        },
+        "upload-error": {
+            "title": "File Upload Error",
+            "message": "Could not upload file \"{{name}}\""
+        }
     }
 }

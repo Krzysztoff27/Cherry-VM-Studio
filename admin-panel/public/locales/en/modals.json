@@ -152,7 +152,16 @@
         "import-type-note": "Select the import type",
         "url-note": "Enter the valid URL to the file",
         "url": "File URL",
-        "save-locally": "Save as a local copy."
+        "save-locally": "Save as a local copy.",
+        "validation": {
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-short": "Name must be at least 3 characters long.",
+            "name-invalid-first": "Name must start with a letter.",
+            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+            "name-duplicate": "Record with this name already exists.",
+            "file-invalid-extension": "Selected file must have an .iso extension.",
+            "file-too-large": "Cannot upload file over 10GB."
+        }
     },
     "create-machine": {
         "title": "Create New Machine",

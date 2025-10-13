@@ -1,23 +1,22 @@
-import { ActionIcon, Avatar, Button, Checkbox, FileButton, Group, Modal, Progress, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Avatar, Button, Checkbox, FileButton, Group, Input, Modal, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { IsoFileImportModalProps } from "../../../types/components.types";
 import { useForm } from "@mantine/form";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import { IconDisc, IconFile, IconUpload, IconX } from "@tabler/icons-react";
-import { isNull } from "lodash";
+import { isEmpty, isNull } from "lodash";
 import classes from "./IsoFileImportModal.module.css";
 import useFileUpload from "../../../hooks/useFileUpload";
 
 type ImportTypes = "file" | "url";
 
 const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
-    const [importType, setImportType] = useState<ImportTypes>("file");
-    const { uploadFile, progress, status } = useFileUpload();
-    const resetRef = useRef<() => void>(null);
-
     const { tns, t } = useNamespaceTranslation("modals", "import-iso");
-    const { sendNotification } = useMantineNotifications();
+    const { uploadFile } = useFileUpload("/iso/upload");
+
+    const [importType, setImportType] = useState<ImportTypes>("file");
+
+    const resetRef = useRef<() => void>(null);
 
     const form = useForm({
         mode: "uncontrolled",
@@ -25,6 +24,24 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
             name: "",
             file: null,
             url: "",
+        },
+        validate: {
+            name: (val) =>
+                !/^[\w\s.-]+$/.test(val)
+                    ? tns("validation.name-invalid-characters")
+                    : !/[a-zA-Z]/.test(val[0])
+                    ? tns("validation.name-invalid-first")
+                    : val.length < 3
+                    ? tns("validation.name-too-short")
+                    : val.length > 24
+                    ? tns("validation.name-too-long")
+                    : null,
+            file: (val: File | null) =>
+                !val.name.endsWith(".iso")
+                    ? tns("validation.file-invalid-extension")
+                    : val.size > 10 * 1024 * 1024 * 1024
+                    ? tns("validation.file-too-large")
+                    : null,
         },
     });
 
@@ -35,8 +52,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
 
     const submitForm = form.onSubmit(async (values) => {
         if (importType === "file") {
-            uploadFile(values.file);
-            console.log(progress);
+            uploadFile(values.file, { name: values.name });
         } else if (importType == "url") {
         }
 
@@ -86,15 +102,17 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                             {...form.getInputProps("name")}
                         />
                         {importType === "file" ? (
-                            <Stack gap="sm">
+                            <Stack gap="xs">
                                 <Group
                                     align="end"
                                     gap="0"
                                 >
                                     <FileButton
                                         resetRef={resetRef}
-                                        key={form.key("file")}
                                         onChange={(file) => form.setFieldValue("file", file)}
+                                        accept=".iso"
+                                        key={form.key("file")}
+                                        {...form.getInputProps("file")}
                                     >
                                         {(props) => (
                                             <Button
@@ -103,6 +121,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                                 variant="default"
                                                 className={classes.fileButton}
                                                 aria-selected={!isNull(currentValues.file)}
+                                                aria-error={!isEmpty(form.errors.file)}
                                                 leftSection={isNull(currentValues.file) ? <IconUpload size={18} /> : <IconFile size={18} />}
                                             >
                                                 {currentValues.file?.name || "Upload file"}
@@ -113,12 +132,14 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                         <ActionIcon
                                             variant="default"
                                             onClick={clearFile}
+                                            c={isEmpty(form.errors.file) ? undefined : "red.7"}
                                             className={classes.resetFileButton}
                                         >
                                             <IconX />
                                         </ActionIcon>
                                     )}
                                 </Group>
+                                {form.errors.file && <Input.Error>{form.errors.file}</Input.Error>}
                             </Stack>
                         ) : (
                             <>
