@@ -32,6 +32,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
     try:
         try:
             uploaded_file = await upload_handler.handle(request)
+            logging.debug("ISO upload form: ", uploaded_file.form_data)
             form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
             
             creation_args = CreateIsoRecordArgs(
