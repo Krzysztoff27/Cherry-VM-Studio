@@ -56,6 +56,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
         
         except Exception as e:
             if uploaded_file is not None and os.path.exists(uploaded_file.location):
+                logging.error(f"Removing ISO file {uploaded_file.uuid}.iso due to errors that occured during import.")
                 os.remove(uploaded_file.location)
             raise e
         

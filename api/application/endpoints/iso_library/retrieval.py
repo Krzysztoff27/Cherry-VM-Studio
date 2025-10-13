@@ -6,15 +6,14 @@ from modules.authentication.validation import DependsOnAdministrativeAuthenticat
 from modules.machine_resources.models import IsoRecord
 from application.app import app
 
+@app.get("/iso", response_model=dict[UUID, IsoRecord], tags=['ISO Library'])
+async def __read_all_iso_file_records__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, IsoRecord]:
+    return get_iso_records()
 
 @app.get("/iso/{uuid}", response_model=IsoRecord, tags=['ISO Library'])
 async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> IsoRecord:
     record = get_iso_record_by_uuid(uuid)
     if record is None: 
-        raise HTTPException(400, f"ISO file with UUID={uuid} does not exist.")
+        raise HTTPException(status_code=404, detail=f"ISO file with UUID={uuid} does not exist.")
     return record
 
-
-@app.get("/iso/all", response_model=dict[UUID, IsoRecord], tags=['ISO Library'])
-async def __read_all_iso_file_records__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, IsoRecord]:
-    return get_iso_records()
