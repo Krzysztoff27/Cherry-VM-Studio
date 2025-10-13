@@ -20,7 +20,7 @@ MAX_REQUEST_BODY_SIZE = FILES_CONFIG.upload_iso_max_size + 1024
 upload_handler = UploadHandler(
     max_size_bytes=MAX_REQUEST_BODY_SIZE,
     save_directory_path=FILES_CONFIG.upload_iso_directory,
-    allowed_file_extensions={"iso"}
+    allowed_file_extensions=set({".iso"})
 )
 
 @app.post("/iso/upload", response_model=IsoRecord, tags=["ISO Library"])
