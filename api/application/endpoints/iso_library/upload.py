@@ -27,33 +27,42 @@ upload_handler = UploadHandler(
 @app.post("/iso/upload", response_model=IsoRecord, tags=["ISO Library"])
 async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
     
-    try:
-        uploaded_file = await upload_handler.handle(request)
-        form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
-        
-        creation_args = CreateIsoRecordArgs(
-            **form_data.model_dump(), 
-            uuid=uploaded_file.uuid,
-            file_name=uploaded_file.name,
-            file_location=uploaded_file.location,
-            file_size_bytes=uploaded_file.size,
-            imported_by=current_user.uuid,
-            imported_at=dt.datetime.now(),
-        )
-        
-        duplicate = get_iso_record_by_name(creation_args.name)
+    uploaded_file = None # important
     
-        if duplicate is not None:
-            os.remove(creation_args.file_location)
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f'ISO file record with name={creation_args.name} already exists.'
+    try:
+        try:
+            uploaded_file = await upload_handler.handle(request)
+            form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
+            
+            creation_args = CreateIsoRecordArgs(
+                **form_data.model_dump(), 
+                uuid=uploaded_file.uuid,
+                file_name=uploaded_file.name,
+                file_location=uploaded_file.location,
+                file_size_bytes=uploaded_file.size,
+                imported_by=current_user.uuid,
+                imported_at=dt.datetime.now(),
             )
+            
+            duplicate = get_iso_record_by_name(creation_args.name)
         
-        return create_iso_record(creation_args)
+            if duplicate is not None:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f'ISO file record with name={creation_args.name} already exists.'
+                )
+            
+            return create_iso_record(creation_args)
+        
+        except Exception as e:
+            if uploaded_file is not None and os.path.exists(uploaded_file.location):
+                os.remove(uploaded_file.location)
+            raise e
         
     except ClientDisconnect:
         pass
+    except HTTPException as e:
+        raise e
     except PydanticValidationError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
@@ -63,6 +72,11 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
             detail=f"Invalid headers: {e}"
+        )
+    except UploadInvalidExtensionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
+            detail=f'File extension {e.extension} is not allowed.'
         )
     except UploadTooLargeException as e:
         raise HTTPException(
@@ -74,12 +88,6 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, 
             detail=f'Maximum request body size limit ({MAX_REQUEST_BODY_SIZE} bytes) exceeded.'
         )
-    except UploadInvalidExtensionException as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
-            detail=f'File extension {e.extension} is not allowed.'
-        )
-        
     except Exception:
         logging.exception("There was an error during file upload through the /iso/upload endpoint.\n")
         raise HTTPException(

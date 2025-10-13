@@ -57,7 +57,7 @@ def create_iso_record(form: CreateIsoRecordArgs) -> IsoRecord:
             with connection.transaction():
                 cursor.execute("""
                     INSERT INTO iso_files (uuid, name, file_name, file_location, file_size_bytes, imported_by, imported_at)            
-                    VALUES (%(uuid)s, %(name)s, %(file_name)s, %(file_location)s, %(file_size_bytes)s, %(imported_by)s, %(imported_at))
+                    VALUES (%(uuid)s, %(name)s, %(file_name)s, %(file_location)s, %(file_size_bytes)s, %(imported_by)s, %(imported_at)s)
                 """, form.model_dump())
                 
     iso_record = get_iso_record_by_uuid(form.uuid)
