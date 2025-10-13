@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Callable, Any
 from starlette.websockets import WebSocket
 from modules.exceptions import RaisedException
@@ -13,9 +13,7 @@ class SubscriptionManager(BaseModel):
     broadcast_data: Callable[[SubscriptionsDict], Any] | None = None
     broadcasting: bool = False
 
-    class Config:
-        arbitrary_types_allowed = True
-
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def subscribe(self, websocket: WebSocket, resource_uuid: UUID):
         websocket_id = id(websocket)

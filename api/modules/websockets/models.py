@@ -2,7 +2,7 @@
 
 from typing import Literal
 from starlette.websockets import WebSocket
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID, uuid4
 
 
@@ -52,6 +52,9 @@ class DataResponse(Response):
 class Subscription(BaseModel):
     websocket: WebSocket
     resources: set[UUID]
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#SubscriptionsDict
