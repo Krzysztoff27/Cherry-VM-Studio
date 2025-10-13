@@ -90,9 +90,9 @@ CREATE TABLE iso_files (
     last_used TIMESTAMP,
     imported_by UUID,
     imported_at TIMESTAMP,
-    last_modified_by UUID
+    last_modified_by UUID,
     last_modified_at TIMESTAMP,
-    FOREIGN KEY(imported_by) REFERENCES administrators(uuid) ON DELETE CASCADE
+    FOREIGN KEY(imported_by) REFERENCES administrators(uuid) ON DELETE CASCADE,
     FOREIGN KEY(last_modified_by) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
@@ -109,7 +109,7 @@ CREATE TABLE machine_snapshots_shares (
     snapshot_uuid UUID,
     recipient_uuid UUID,
     PRIMARY KEY(snapshot_uuid, recipient_uuid),
-    FOREIGN KEY(snapshot_uuid) REFERENCES machine_snapshots(uuid) ON DELETE CASCADE
+    FOREIGN KEY(snapshot_uuid) REFERENCES machine_snapshots(uuid) ON DELETE CASCADE,
     FOREIGN KEY(recipient_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
