@@ -13,16 +13,16 @@ def get_iso_record_by_field(field_name: Literal["uuid", "name"], value: str) -> 
     if field_name not in {"uuid", "name"}:
         raise RaisedException("Invalid field_name passed.")
     
-    database_record = select_schema_one(IsoRecordInDB, f"SELECT * FROM iso_files WHERE iso_files.{field_name} = (%s)", (value, ))
+    record = select_schema_one(IsoRecordInDB, f"SELECT * FROM iso_files WHERE iso_files.{field_name} = (%s)", (value, ))
     
-    if database_record is None:
+    if record is None:
         return None
     
-    imported_by = get_administrator_by_field("uuid", str(database_record.imported_by))
-    last_modified_by = get_administrator_by_field("uuid", str(database_record.last_modified_by))
+    imported_by = get_administrator_by_field("uuid", str(record.imported_by)) if record.imported_by is not None else None
+    last_modified_by = get_administrator_by_field("uuid", str(record.last_modified_by)) if record.last_modified_by is not None else None
     
     return IsoRecord(
-        **database_record.model_dump(exclude={"imported_by","last_modified_by"}),
+        **record.model_dump(exclude={"imported_by","last_modified_by"}),
         imported_by=imported_by,
         last_modified_by=last_modified_by,
     )
