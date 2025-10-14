@@ -89,17 +89,15 @@ async def __get_machine_disk_size___(disk_uuid: UUID, storage_pool: str, current
 
 @app.post("/machine/create", response_model=UUID, tags=['Machine Creation'])
 async def __create_machine__(machine_parameters: MachineParameters, current_user: DependsOnAdministrativeAuthentication) -> UUID:
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
-        raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_xml = create_machine(machine_parameters)
     return machine_xml
 
-@app.delete("/machine/delete/{uuid}", response_model=bool, tags=['Machine Creation'])
+@app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
 async def __delete_machine__(machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     machine = get_machine_data_by_uuid(machine_uuid)
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={machine_uuid} could not be found.")
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
+    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(machine_uuid, current_user.uuid):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     if not await delete_machine(machine_uuid):
         raise HTTPException(500, f"Failed to delete machine of UUID={machine_uuid}.")
