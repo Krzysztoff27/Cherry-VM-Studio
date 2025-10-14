@@ -8,6 +8,20 @@ from .models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord, IsoReco
 from modules.postgresql import select_schema_dict, select_schema_one, pool
 from modules.users.users import get_administrator_by_field, get_administrators
 
+
+def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
+    imported_by = get_administrator_by_field("uuid", str(record.imported_by)) if record.imported_by is not None else None
+    last_modified_by = get_administrator_by_field("uuid", str(record.last_modified_by)) if record.last_modified_by is not None else None
+    file_location = record.file_location if record.remote else None
+    
+    return IsoRecord(
+        **record.model_dump(exclude={"imported_by","last_modified_by"}),
+        imported_by=imported_by,
+        last_modified_by=last_modified_by,
+        file_location=file_location
+    )
+
+
 def get_iso_record_by_field(field_name: Literal["uuid", "name"], value: str) -> IsoRecord | None:
     
     if field_name not in {"uuid", "name"}:
@@ -15,17 +29,8 @@ def get_iso_record_by_field(field_name: Literal["uuid", "name"], value: str) -> 
     
     record = select_schema_one(IsoRecordInDB, f"SELECT * FROM iso_files WHERE iso_files.{field_name} = (%s)", (value, ))
     
-    if record is None:
-        return None
+    return prepare_from_database_record(record) if record is not None else None
     
-    imported_by = get_administrator_by_field("uuid", str(record.imported_by)) if record.imported_by is not None else None
-    last_modified_by = get_administrator_by_field("uuid", str(record.last_modified_by)) if record.last_modified_by is not None else None
-    
-    return IsoRecord(
-        **record.model_dump(exclude={"imported_by","last_modified_by"}),
-        imported_by=imported_by,
-        last_modified_by=last_modified_by,
-    )
 
 def get_iso_record_by_uuid(uuid: UUID) -> IsoRecord | None:
     return get_iso_record_by_field("uuid", str(uuid))
@@ -36,17 +41,9 @@ def get_iso_record_by_name(name: str) -> IsoRecord | None:
     
 def get_iso_records() -> dict[UUID, IsoRecord]:
     records = select_schema_dict(IsoRecordInDB, "uuid", "SELECT * FROM iso_files")
-    administrators = get_administrators()
     
     for uuid, record in records.items():
-        imported_by = administrators.get(record.imported_by) if record.imported_by is not None else None
-        last_modified_by = administrators.get(record.last_modified_by) if record.last_modified_by is not None else None
-        
-        records[uuid] = IsoRecord(
-            **record.model_dump(exclude={"imported_by","last_modified_by"}),
-            imported_by=imported_by,
-            last_modified_by=last_modified_by,
-        )
+        records[uuid] = prepare_from_database_record(record)
         
     return records
 

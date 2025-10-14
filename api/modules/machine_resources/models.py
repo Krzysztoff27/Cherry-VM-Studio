@@ -9,6 +9,7 @@ from modules.users.models import Administrator
 class IsoRecordInDB(BaseModel):
     uuid: UUID
     name: str
+    remote: bool
     file_name: str
     file_location: str
     file_size_bytes: int
@@ -22,7 +23,9 @@ class IsoRecordInDB(BaseModel):
 class IsoRecord(BaseModel):
     uuid: UUID
     name: str
+    remote: bool
     file_name: str
+    file_location: str | None
     file_size_bytes: int
     last_used: dt.datetime | None
     imported_at: dt.datetime | None
