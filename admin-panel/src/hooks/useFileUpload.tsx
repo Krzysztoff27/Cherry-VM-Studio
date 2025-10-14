@@ -17,7 +17,7 @@ const useFileUpload = (path: string) => {
         if (isNull(file)) return;
 
         const formData = new FormData();
-        Object.entries(([key, value]) => formData.set(key, value));
+        formData.append("data", JSON.stringify(data));
         formData.append("file", file);
 
         const headers = new AxiosHeaders(authOptions.headers as Record<string, string>);

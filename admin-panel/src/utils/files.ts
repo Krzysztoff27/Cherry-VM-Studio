@@ -17,3 +17,5 @@ export const formatBytesToUnit = (bytes: number, unit: ByteUnit, decimals = 2): 
     const value = bytes / Math.pow(1024, index);
     return `${value.toFixed(decimals)} ${unit}`;
 };
+
+export const formatBytesToRelevantUnit = (bytes: number) => formatBytesToUnit(bytes, getRelevantUnit(bytes));

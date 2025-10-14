@@ -5,6 +5,7 @@ import { ActionIcon, Group, Text } from "@mantine/core";
 import { IconDisc, IconSettings } from "@tabler/icons-react";
 import DateDifferenceCell from "../../../atoms/table/DateDifferenceCell";
 import IsoFileOptionsMenu from "../../../molecules/table/IsoFileOptionsMenu/IsoFileOptionsMenu";
+import { formatBytesToRelevantUnit } from "../../../../utils/files";
 
 export const getColumns = (refresh, openIsoFileModal) => [
     {
@@ -27,27 +28,26 @@ export const getColumns = (refresh, openIsoFileModal) => [
         maxSize: 300,
     },
     {
-        accessorKey: "location",
+        accessorKey: "file_location",
         enableSorting: true,
         header: t("iso.table.headers.location", { ns: "pages" }),
-        cell: (props) => <Text c="dimmed">{props.getValue()}</Text>,
+        cell: (props) => <Text c="dimmed">{props.getValue() || "Local"}</Text>,
         minSize: 300,
         maxSize: 400,
     },
     {
-        accessorKey: "size",
+        accessorKey: "file_size_bytes",
         enableSorting: true,
         header: t("iso.table.headers.size", { ns: "pages" }),
-        cell: (props) => <Text c="dimmed">{props.getValue()}</Text>,
+        cell: (props) => <Text c="dimmed">{formatBytesToRelevantUnit(props.getValue())}</Text>,
         minSize: 120,
         maxSize: 120,
     },
     {
-        accessorKey: "lastUsed",
+        accessorKey: "last_used",
         header: t("iso.table.headers.last-used", { ns: "pages" }),
         cell: DateDifferenceCell,
         minSize: 160,
-        maxSize: 160,
     },
     {
         accessorKey: "options",

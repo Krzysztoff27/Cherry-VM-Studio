@@ -52,11 +52,11 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
 
     const submitForm = form.onSubmit(async (values) => {
         if (importType === "file") {
-            uploadFile(values.file, { name: values.name });
+            closeModal();
+            await uploadFile(values.file, { name: values.name });
         } else if (importType == "url") {
         }
 
-        closeModal();
         onSubmit?.();
     });
 
