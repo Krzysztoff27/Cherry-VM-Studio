@@ -47,7 +47,7 @@ async def start_machine_async(uuid: UUID):
     """
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
-            machine = libvirt_read_write_connection.virDomainLookupByUUID(uuid) 
+            machine = libvirt_read_write_connection.lookupByUUID(uuid.bytes) 
             logging.debug(f"Trying to start {machine}")
             machine.create()
             result = await wait_for_machine_state(machine)
@@ -58,6 +58,10 @@ async def start_machine_async(uuid: UUID):
 
 
 async def start_machine(uuid: UUID):
+    if is_vm_running(uuid):
+        logging.error("Machine is already running!")
+        return False
+    
     if vm_tasks.get(uuid) and not vm_tasks[uuid].done():
         logging.error("Machine is already starting!")
         return False
@@ -91,7 +95,7 @@ async def stop_machine_async(uuid: UUID):
 
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
-            machine = libvirt_read_write_connection.virDomainLookupByUUID(uuid) 
+            machine = libvirt_read_write_connection.lookupByUUID(uuid.bytes) 
             
             for FLAG in SHUTDOWN_FLAGS:
                 try:
@@ -118,6 +122,10 @@ async def stop_machine_async(uuid: UUID):
             raise libvirt.libvirtError(str(e))
 
 async def stop_machine(uuid: UUID):
+    if not is_vm_running(uuid):
+        logging.error("Machine is not running!")
+        return False
+    
     if vm_tasks.get(uuid) and not vm_tasks[uuid].done():
         logging.error("Machine is already stopping!")
         return False
@@ -138,3 +146,11 @@ def is_vm_loading(uuid: UUID) -> bool:
     task = vm_tasks.get(uuid)
     return task is not None and not task.done()
 
+def is_vm_running(uuid: UUID) -> bool:
+    with LibvirtConnection("ro") as libvirt_connection:
+        machine = libvirt_connection.lookupByUUID(uuid.bytes)
+        state, _ = machine.state()
+        if state == libvirt.VIR_DOMAIN_RUNNING:
+            return True
+        else:
+            return False

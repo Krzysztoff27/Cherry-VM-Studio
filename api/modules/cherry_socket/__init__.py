@@ -6,16 +6,34 @@ from __future__ import annotations
 
 import socket
 import json
-import uuid
 import logging
 
-from typing import Any, Dict, Optional
+from uuid import UUID, uuid4
+from typing import Any, Dict, Optional, Union
 from config import SOCKET_CONFIG
+from modules.cherry_socket.models import ClientRequest, ServerSuccess, ServerError, server_response
 
 logger = logging.getLogger(__name__)
 
-def client_request(request_id: uuid.UUID, action: str, params: Optional[Dict[str, Any]]) -> dict:
-    payload = {
+# Define server messages body for convenience
+def server_success(request_id: UUID, result: Union[str, dict, None]) -> ServerSuccess:
+    payload: ServerSuccess = {
+        "success": True,
+        "request_id": str(request_id),
+        "result": result
+    }
+    return payload
+    
+def server_error(request_id: Optional[UUID] , error_type: str, message: str) -> ServerError:
+    payload: ServerError = {
+        "success": False,
+        "request_id": str(request_id),
+        "error": {"type": error_type, "message": message}
+    }
+    return payload
+
+def client_request(request_id: UUID, action: str, params: Optional[Dict[str, Any]]) -> ClientRequest:
+    payload: ClientRequest = {
         "id": str(request_id),
         "action": action,
         "params": params
@@ -67,7 +85,7 @@ class CherrySocketClient:
         self._file = None
         self._sock = None
     
-    def call(self, action: str, params: Optional[Dict[str, Any]] = None, request_id: Optional[uuid.UUID] = None) -> Dict[str, Any]:
+    def call(self, action: str, params: Optional[Dict[str, Any]] = None, request_id: Optional[UUID] = None) -> Dict[str, Any]:
         """
         Send one request and read (expect) one response line.
         Return parsed JSON response (dict).
@@ -80,7 +98,7 @@ class CherrySocketClient:
             params = {}
         
         if request_id is None:
-            request_id = uuid.uuid4()
+            request_id = uuid4()
        
         data = (json.dumps(client_request(request_id, action, params), separators=(",", ":")) + "\n").encode("utf-8")
         
@@ -104,5 +122,5 @@ class CherrySocketClient:
             server_response = json.loads(line.decode("utf-8").strip())
         except Exception as e:
             raise ValueError(f"Invalid JSON from server: {e}")
-
+        
         return server_response

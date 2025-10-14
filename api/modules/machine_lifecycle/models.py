@@ -1,33 +1,7 @@
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Literal, Union, ClassVar
-from modules.websockets.models import Command
-from modules.users.models import ClientInDB, AdministratorInDB
 
-################################
-# Machine data retrieval models
-################################
-
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
-class MachineData(BaseModel):                       
-    uuid: UUID                                      
-    group: str | None = None                        
-    group_member_id: int | None = None              
-    owner: AdministratorInDB | None = None          
-    assigned_clients: dict[UUID, ClientInDB] = {}   
-    port: int | None = None                         
-    domain: str | None = None                       
-
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
-class MachineState(MachineData):                    
-    active: bool = False                            
-    loading: bool = False                           
-    active_connections: list | None = None          
-    cpu: int = 0                                    
-    ram_max: int | None = None                      
-    ram_used: int | None = None                     
-    uptime: int | None = None     
-                      
 ################################
 #   Machine creation models
 ################################
@@ -60,26 +34,12 @@ class StoragePool(BaseModel):
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
-    name: str                                                                                                                                           
-    size: int # in MiB 
-                                                                          
+    uuid: Optional[UUID] = None
+    name: str
+    size: int # in Bytes
     type: DiskType
-    pool_type: StoragePools
     
-    source: StoragePool | None = None
-        
-    @model_validator(mode="after")
-    def auto_create_source(self) -> "MachineDisk":
-        if self.source is None:
-            if not self.name or not self.type:
-                raise ValueError("Missing 'name' or 'type' for automatic StoragePool creation")
-
-            self.source = StoragePool(
-                pool=self.pool_type,
-                volume=f"{self.name}.{self.type}"
-            )
-        return self
-    
+    pool: StoragePools
                 
 class NetworkInterfaceSource(BaseModel):
     type: Literal["network", "bridge"]
@@ -108,7 +68,7 @@ class MachineGraphicalFramebuffer(BaseModel):
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
 class MachineParameters(BaseModel):
-    uuid: UUID # Unique identifier                     
+    uuid: Optional[UUID] = None # Unique identifier                     
     name: str # Unique - libvirt requirement                                                                               
     description: Optional[str] = None
     
@@ -160,11 +120,3 @@ class CreateMachineForm(BaseModel):
     source_uuid: UUID
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
-    
-    
-
-class MachineWebsocketCommand(Command):
-    method: Literal["SUBSCRIBE"]
-    target: set[UUID] = set()
-    
-

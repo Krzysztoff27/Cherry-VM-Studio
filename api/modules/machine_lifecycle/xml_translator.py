@@ -1,70 +1,40 @@
 from __future__ import annotations
 
 import logging
-import libvirt
+import string
 import xml.etree.ElementTree as ET
 
-from typing import Union, Optional, Any
 from uuid import UUID
+from typing import Union, Optional, Any, Literal
+from pathlib import Path
 
-from modules.machines.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
-from modules.libvirt_socket import LibvirtConnection
-from modules.postgresql import pool, select_schema
-from modules.cherry_socket import CherrySocketClient
+from modules.machine_lifecycle.disks import create_machine_disk, delete_machine_disk, get_machine_disk_size
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
 
 logger = logging.getLogger(__name__)
-
-# Helper functions for creating XML string based on MachineParameters model
-# and parsing XML strings back to MachineData model
 
 ################################
 #   XML elements creation
 ################################
 
-"""
-++++++++======---------::::::.:.....................................::::-
-++++++++++====-----------=*+-.......::.............................:::::-
-*+++++++++===----------+%@@@##*+++++#*+====++#*++-..................:::::
-**+++++++++===-------=%@@@@@@@@%%####*+***#%%%%%%#+..............::::::::
-+***++++++++====----+%%@@@@@@@%%%#*+#####%%#%%%%%%#-...........:::::...::
-++*+++++++++======-=#@@@@@@@@@@@%%##%#####%%%%#%%%%#:..--....:::::::::::-
-++++++++++++=+======*@@@@@%@@@%@%@@##@@@%%%+@@#*%###...:+#%-:.::::::::---
-*******++++++++++====#@@@@@@@%%@@@@@@@@@@%%%%%%%%##+:::::=%%=::::.:::----
-#****+*++++++++++++===+@@@@@@@@@@%%@@%%%@%%%%%%%##=::::::::#%#::::::-----
-****+++++++++++++++======*@@@@@@@%%%%%%@@@%%%%#+:..........:#+=:::-------
-***+++++++++++++++=========+@@@@@@@@@@@@%@@%*-:.........:-:-+%%++++------
-******+++++++=+++=============@@@@@@@@@@@@+:::.......:::+#=*%##%@%%=-----
-********+++++++++++===========*@@@@@@@@+----::::::.::::-##*#*#%@@@%%=----
-*******+*++++++++++=+=========+@@@@@@@@*---:-:::::::::::-**##%%@%%%%=-:--
-##*#********+++++++++++++======%@@@@@@@@+---::-:-:-:-::::-###%%%%%%%-::::
-##*#*********++++++++++++=======@@@@@@@@#----:-::::-:-::::-+##%%%#%*---==
-###*******+*++++++++++++++======@@@@@@@@@*-----:-:::::::::--+%#%#%%=:--==
-####****++++++++++++*#*+-.:.--+#@@@@@@@@#=:.....::.....::::--+%%%##+=====
-###***************##%%@@@@@@%@@@@@@@@@@@@%*---..-======---::::%%%%%*=====
-##**************#@@@@@@@@@@@@@@@@@@@@@#++++=-::=+####++**+-:::#%%%%#=====
-##**#*********##@@@@@@@@@@@@@@@@@@@%%%#####+===*#%%%%#+---=--=#%%%#%+====
-###############@@@@@@@@@@@@@@%%@@@%%%%%%##*+++*##@@%##+=-:-===%%%%##*===+
-#############%@@@@@@@@@@@@@%%%%%%%%%%%%##*++**###%@@%%##+--=++#%%####++++
-###########%@@@@@@@@@@@@@@@%%#%%%%%%%%%#########%%@@@%##+=-=+####%#%%++++
-##########@@@@@@@@@@@@@@@@%%%%%%%%%%%%%%#####%%@@@@@%%%%#*+++#%#%%%%%++++
-%#######%@@@@@@@@@@@@@@@@@@%%%%@@%%%@@%%#####%@@@@@@%%#%%###+=%%%%%%%++++
-"""
-
-def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk, system: bool) -> ET.Element:
-    disk = ET.SubElement(root_element, "disk", type="file", device="disk")
+def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk, disk_uuid: UUID, system: Union[Literal[True], Literal[False]], target: str | None = None) -> ET.Element:
+    if system is False and target is None:
+        raise ValueError("target must be specified when creating non-system disk")
+    
+    disk = ET.SubElement(root_element, "disk", type="volume", device="disk")
     
     ET.SubElement(disk, "alias", name=machine_disk.name)
     ET.SubElement(disk, "driver", name="qemu", type=machine_disk.type)
     
     # Verified by MachineDisk model validator
-    assert machine_disk.source is not None
-    ET.SubElement(disk, "source", pool=machine_disk.source.pool, volume=machine_disk.source.volume)
+    ET.SubElement(disk, "source", pool=machine_disk.pool, volume=f"{disk_uuid}.{machine_disk.type}")
         
     if system:
-        ET.SubElement(disk, "target", dev="sda", bus="virtio")
+        ET.SubElement(disk, "target", dev="vda", bus="virtio")
         ET.SubElement(disk, "boot", order="1")
     else:
-        ET.SubElement(disk, "target", dev=machine_disk.name, bus="virtio")
+        assert target is not None
+        ET.SubElement(disk, "target", dev=target, bus="virtio")
     return disk
 
 
@@ -96,96 +66,130 @@ def create_machine_graphics_xml(root_element: ET.Element, framebuffer: MachineGr
     return graphics
    
     
-def create_machine_xml(machine: MachineParameters) -> str:
+def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
     """
     Gets MachineParameters object and creates XML string based on it.
     """
-    domain = ET.Element("domain", type="kvm")
     
-    uuid = ET.SubElement(domain, "uuid")
-    uuid.text = str(machine.uuid)
+    # Keep track of created disks and delete them if further creation of XML fails - cleanup
+    created_disks = []
     
-    name = ET.SubElement(domain, "name")
-    name.text = machine.name
-    
-    description = ET.SubElement(domain, "description")
-    if machine.description:
-        description.text = machine.description
+    try:
+        domain = ET.Element("domain", type="kvm")
+        
+        
+        uuid = ET.SubElement(domain, "uuid")
+        uuid.text = str(machine_uuid)
+        
+        
+        name = ET.SubElement(domain, "name")
+        name.text = machine.name
+        
+        
+        description = ET.SubElement(domain, "description")
+        if machine.description:
+            description.text = machine.description
 
-    metadata = ET.SubElement(domain, "metadata")
-    vm_info = ET.SubElement(metadata, "vm:info", {"xmlns:vm": "http://example.com/virtualization"})
-    
-    group_metadata = ET.SubElement(vm_info, f"vm:{machine.group_metadata.tag}")
-    group_metadata.text = machine.group_metadata.value
-    
-    if machine.group_member_id_metadata:
-        group_member_id_metadata = ET.SubElement(vm_info, f"vm:{machine.group_member_id_metadata.tag}")
-        if machine.group_member_id_metadata.value:
-            group_member_id_metadata.text = machine.group_member_id_metadata.value
-    
-    if machine.additional_metadata:
-        for machine_metadata in machine.additional_metadata:
-            tag = ET.SubElement(vm_info, f"vm:{machine_metadata.tag}")
-            tag.text = str(machine_metadata.value)
 
-    ram = ET.SubElement(domain, "memory", unit="MiB")
-    ram.text = str(machine.ram)
+        metadata = ET.SubElement(domain, "metadata")
+        vm_info = ET.SubElement(metadata, "vm:info", {"xmlns:vm": "http://example.com/virtualization"})
+        
+        group_metadata = ET.SubElement(vm_info, f"vm:{machine.group_metadata.tag}")
+        group_metadata.text = machine.group_metadata.value
+        
+        if machine.group_member_id_metadata:
+            group_member_id_metadata = ET.SubElement(vm_info, f"vm:{machine.group_member_id_metadata.tag}")
+            if machine.group_member_id_metadata.value:
+                group_member_id_metadata.text = machine.group_member_id_metadata.value
+        
+        if machine.additional_metadata:
+            for machine_metadata in machine.additional_metadata:
+                tag = ET.SubElement(vm_info, f"vm:{machine_metadata.tag}")
+                tag.text = str(machine_metadata.value)
 
-    vcpu = ET.SubElement(domain, "vcpu")
-    vcpu.text = str(machine.vcpu)
-    
-    os = ET.SubElement(domain, "os")
-    type = ET.SubElement(os, "type")
-    type.text = "hvm"
-    
-    features = ET.SubElement(domain, 'features')
-    ET.SubElement(features, 'acpi')
-    ET.SubElement(features, 'apic')
-    ET.SubElement(features, 'pae')
-    
-    cpu = ET.SubElement(domain, 'cpu', mode='host-model', check='partial')
-    ET.SubElement(cpu, 'model', fallback='allow')
-    
-    ET.SubElement(domain, 'on_poweroff').text = 'destroy'
-    ET.SubElement(domain, 'on_reboot').text = 'restart'
-    ET.SubElement(domain, 'on_crash').text = 'restart'
-    
-    devices = ET.SubElement(domain, "devices")
-    
-    create_machine_disk_xml(devices, machine.system_disk, True)
-    
-    cdrom = ET.SubElement(domain, "disk", type="volume", device="cdrom")
-    ET.SubElement(cdrom, "alias", name="cd-rom")
-    ET.SubElement(cdrom, "driver", name="qemu", type="raw")
-    
-    if machine.iso_image:
-        if isinstance(machine.iso_image, StoragePool):
-            ET.SubElement(cdrom, "source", pool=machine.iso_image.pool, volume=machine.iso_image.volume)
-        else:
-            raise ValueError("iso_image must be of type StoragePool")
+
+        ram = ET.SubElement(domain, "memory", unit="MiB")
+        ram.text = str(machine.ram)
+
+
+        vcpu = ET.SubElement(domain, "vcpu")
+        vcpu.text = str(machine.vcpu)
+        
+        
+        os = ET.SubElement(domain, "os")
+        type = ET.SubElement(os, "type")
+        type.text = "hvm"
+        
+        
+        features = ET.SubElement(domain, 'features')
+        ET.SubElement(features, 'acpi')
+        ET.SubElement(features, 'apic')
+        ET.SubElement(features, 'pae')
+        
+        
+        cpu = ET.SubElement(domain, 'cpu', mode='host-model', check='partial')
+        ET.SubElement(cpu, 'model', fallback='allow')
+        
+        
+        ET.SubElement(domain, 'on_poweroff').text = 'destroy'
+        ET.SubElement(domain, 'on_reboot').text = 'restart'
+        ET.SubElement(domain, 'on_crash').text = 'restart'
+        
+        
+        devices = ET.SubElement(domain, "devices")
+        
+        system_disk_uuid = create_machine_disk(machine.system_disk)
+        created_disks.append(system_disk_uuid)
+        create_machine_disk_xml(devices, machine.system_disk, system_disk_uuid, True)
+        
+        cdrom = ET.SubElement(domain, "disk", type="volume", device="cdrom")
+        ET.SubElement(cdrom, "alias", name="cd-rom")
+        ET.SubElement(cdrom, "driver", name="qemu", type="raw")
+        
+        if machine.iso_image:
+            if isinstance(machine.iso_image, StoragePool):
+                ET.SubElement(cdrom, "source", pool=machine.iso_image.pool, volume=machine.iso_image.volume)
+            else:
+                raise ValueError("iso_image must be of type StoragePool")
+                
+        ET.SubElement(cdrom, "target", dev="vdb", bus="virtio")
+        ET.SubElement(cdrom, "readonly")
+        ET.SubElement(cdrom, "boot", order="2")
+        
+        if machine.additional_disks:
+            device = "vdc"
+            device_prefix = device[:-1] # "vd" from "vdc"
             
-    ET.SubElement(cdrom, "target", dev="sdb", bus="virtio")
-    ET.SubElement(cdrom, "readonly")
-    ET.SubElement(cdrom, "boot", order="2")
+            for disk in machine.additional_disks:
+                disk_uuid = create_machine_disk(disk)
+                created_disks.append(disk_uuid)
+                create_machine_disk_xml(devices, disk, disk_uuid, False, device)
+                
+                device_suffix = device[-1]
+                new_suffix = string.ascii_lowercase[string.ascii_lowercase.index(device_suffix) + 1]
+                device = f"{device_prefix}{new_suffix}"
+
+        if machine.network_interfaces:
+            for nic in machine.network_interfaces:
+                create_machine_network_interface_xml(devices, nic)
+
+        create_machine_graphics_xml(devices, machine.framebuffer)
+
+        video = ET.SubElement(devices, "video")
+        model = ET.SubElement(video, "model", type="virtio", heads="1")
+        ET.SubElement(model, "resolution", x="1920", y="1080")
+
+
+        # Output XML as a string
+        machine_xml = ET.tostring(domain, encoding="unicode")
+        
+        logger.debug(machine_xml)
+        
+        return machine_xml
     
-    
-    if machine.additional_disks:
-        for disk in machine.additional_disks:
-            create_machine_disk_xml(devices, disk, False)
-
-    if machine.network_interfaces:
-        for nic in machine.network_interfaces:
-            create_machine_network_interface_xml(devices, nic)
-
-    create_machine_graphics_xml(devices, machine.framebuffer)
-
-    video = ET.SubElement(devices, "video")
-    model = ET.SubElement(video, "model", type="virtio", heads="1")
-    ET.SubElement(model, "resolution", x="1920", y="1080")
-
-    # Output XML as a string
-    machine_xml = ET.tostring(domain, encoding="unicode")
-    return machine_xml
+    except Exception as e:
+        for disk in created_disks: delete_machine_disk(disk, "cvms-disk-images")
+        raise Exception(f"Failed to create machine XML: {e}")
 
 ################################
 #   XML elements parsing
@@ -236,28 +240,22 @@ def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
     allowed_pool_types = ["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
     source_el = get_required_xml_tag(disk_element, "source")
     
+    # Volume - serving as UUID
     if "pool" in source_el.attrib and "volume" in source_el.attrib:
-        pool=get_required_xml_tag_attribute(source_el, "pool")
+        pool = get_required_xml_tag_attribute(source_el, "pool")
         
         if pool not in allowed_pool_types:
             raise ValueError(f"StoragePool pool cannot be of type: {pool}")
-        else:
-            source = StoragePool(
-                pool=pool, # type: ignore - pool type is checked against allowed pool types after being fetched from the XML string
-                volume=get_required_xml_tag_attribute(source_el, "volume")
-            )
+        
+        volume = get_required_xml_tag_attribute(source_el, "volume")
     else:
         raise ValueError(f"Disk source not found or is of unsupported type. It must be either file or storage pool.")
     
     # Size
-    # Retrieve disk size from CherrySocket - not kept under libvirt XML + disks are dynamic
-    with CherrySocketClient() as cherry_socket:
-        response = cherry_socket.call("get_machine_disk_size", source.model_dump())
-        if response["capacity"] is not None:
-            size = response["capacity"]
-        else:
-            raise ValueError(f"Could not retrieve {source.volume} size")
+    disk_uuid = Path(volume).stem
+    disk_size = get_machine_disk_size(UUID(disk_uuid), pool)
     
+
     # Type
     allowed_disk_types = ["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"] 
     driver_el = get_required_xml_tag(disk_element, "driver")
@@ -267,10 +265,11 @@ def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
         raise ValueError(f"MachineDisk cannot be of type: {type}")
 
     return MachineDisk(
+        uuid=UUID(disk_uuid),
         name=name,
-        source=source,
-        size=size,
-        type=type     # type: ignore - type is checked against allowed disk types after being fetched from the XML string
+        size=disk_size,
+        type=type, # type: ignore - type is checked against allowed disk types after being fetched from the XML string
+        pool=pool # type: ignore - type is checked against allowed pools after being fetched from the XML string
     )
 
 
@@ -432,76 +431,3 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         
     except ValueError as e:
         raise ValueError(f"Failed to parse machine XML: {e}")
-        
-################################
-# Machine components creation
-################################
-def create_machine_disk(machine_disk: MachineDisk) -> dict:
-    with CherrySocketClient() as cherry_socket:
-        response = cherry_socket.call("create_machine_disk", machine_disk.model_dump())
-        return response
-
-
-################################
-#  Machine creation actions
-################################
-
-def create_machine(machine: Union[str, MachineParameters]) -> None:
-    """
-    Creates non-persistent machine - no configuration template in database.
-    """
-    machine_xml = create_machine_xml(machine) if isinstance(machine, MachineParameters) else machine
-
-    with LibvirtConnection("rw") as libvirt_connection:
-        try:
-            libvirt_connection.defineXML(machine_xml)
-        except libvirt.libvirtError as e:
-            logger.error(f"Failed to define machine: {e}")
-        except Exception as e:
-            logger.exception(e)
-            
-        logger.debug(f"Defined machine {machine_xml}")
-    
-    
-def create_machine_snapshot(machine: Union[str, MachineParameters]) -> None:
-    pass
-
-# Experimental functions - to be implemented in the future
-def create_machine_template(machine: Union[str, MachineParameters]) -> None:
-    """
-    Create machine template (database record) without creating the machine itself.
-    """
-    machine = parse_machine_xml(machine) if isinstance(machine, str) else machine
-
-    with pool.connection() as connection:
-        with connection.cursor() as cursor: 
-            with connection.transaction():
-                cursor.execute(f"""
-                            INSERT INTO machine_templates (uuid, name, description, group_metadata, group_member_id_metadata, additional_metadata, ram, vcpu, os_type, disks, username, password, network_interfaces)
-                            VALUES (%(uuid)s, %(name)s, %(description)s, %(group_metadata)s, %(group_member_id_metadata)s, %(additional_metadata)s, %(ram)s, %(vcpu)s, %(os_type)s, %(disks)s, %(username)s, %(password)s, %(network_interfaces)s)
-                            """, machine.model_dump())
-
-
-def create_machine_from_template(template_uuid: UUID) -> None:
-    """
-    Creates machine based on configuration template from database.
-    """
-    machine_template = select_schema(MachineParameters, "SELECT * FROM machine_templates WHERE uuid = %s", (template_uuid,))[0]
-    create_machine(machine_template)
- 
-    
-def create_template_from_machine(machine_uuid: UUID) -> None:
-    """
-    Creates machine template based on a running machine.
-    """
-    with LibvirtConnection("ro") as libvirt_connection:
-        try:
-            machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
-            raw_machine_xml = machine.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE)
-            create_machine_template(raw_machine_xml)
-        except libvirt.libvirtError as e:
-            logger.error(f"Failed to get XML of machine: {e}")
-        except Exception as e:
-            logger.exception(e)
-        
-        logger.debug(f"Created template from machine of UUID: {machine_uuid}")
