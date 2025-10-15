@@ -10,6 +10,8 @@ from streaming_form_data.targets import FileTarget, ValueTarget
 
 from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException, UploadedFile
 
+logger = logging.getLogger(__name__)
+
 
 class UploadSizeValidator(BaseModel):
     body_len: int = 0
@@ -66,7 +68,7 @@ class UploadHandler(BaseModel):
         async for chunk in request.stream():
             size_validator(chunk)
             parser.data_received(chunk)
-            logging.info(f"Received chunk of size={len(chunk)} bytes")
+            logger.info(f"Received chunk of size={len(chunk)} bytes")
         
         return UploadedFile(
             name=filename,
