@@ -47,16 +47,13 @@ class SimpleTableManager(Generic[DBModel, MainModel, CreationModel], BaseModel):
         return self.get_record_by_field("uuid", str(uuid))
     
     
-    def get_all_records(self, column_name: str = "uuid") -> dict[KeyType, MainModel]:
+    def get_all_records(self) -> dict[UUID, MainModel]:
         
-        if column_name not in self.allowed_fields_for_select:
-            logging.error(f"[SimpleTableManager:{self.table_name}] Invalid column name '{column_name}' passed to get_all(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
-            raise InvalidFieldNameException(field_name=column_name)
+        records = select_schema_dict(self.model_in_db, "uuid", f"SELECT * FROM {self.table_name}")
         
-        records = select_schema_dict(self.model_in_db, column_name, f"SELECT * FROM {self.table_name}")
-        
-        for key, record in records.items():
-            records[key] = self.transform_record(record)
+        for uuid, record in records.items():
+            logging.info(f"Transforming record with uuid={uuid}", record.model_dump())
+            records[uuid] = self.transform_record(record)
             
         return records
     
@@ -104,8 +101,8 @@ class SimpleTableManager(Generic[DBModel, MainModel, CreationModel], BaseModel):
         
         query = sql.SQL("UPDATE {table} SET {field_name} = {new_value} WHERE uuid = {uuid}").format(
             table=sql.Identifier(self.table_name),
-            field_name=field_name,
-            new_value=new_value,
+            field_name=sql.Identifier(field_name),
+            new_value=sql.Identifier(new_value),
             uuid=uuid
         )
         
