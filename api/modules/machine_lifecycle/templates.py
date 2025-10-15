@@ -11,7 +11,7 @@ from modules.postgresql import pool, select_schema
 from modules.machine_lifecycle.models import MachineParameters
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
 from modules.machine_lifecycle.machines import create_machine
-from modules.machine_resources.template_library import create_machine_template
+from modules.machine_resources.template_library import TemplateLibrary
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def create_template_from_machine(machine_uuid: UUID) -> None:
         try:
             machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
             raw_machine_xml = machine.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE)
-            create_machine_template(raw_machine_xml)
+            TemplateLibrary.create_record(parse_machine_xml(raw_machine_xml))
         except libvirt.libvirtError as e:
             logger.error(f"Failed to get XML of machine: {e}")
         except Exception as e:
