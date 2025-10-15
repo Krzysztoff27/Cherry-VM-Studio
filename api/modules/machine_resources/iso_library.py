@@ -6,7 +6,10 @@ from modules.exceptions.models import RaisedException
 
 from .models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord, IsoRecordInDB
 from modules.postgresql import select_schema_dict, select_schema_one, pool
+from modules.postgresql.simple_table_manager import SimpleTableManager
 from modules.users.users import get_administrator_by_field, get_administrators
+
+logger = logging.getLogger(__name__)
 
 
 def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
@@ -22,44 +25,11 @@ def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
     )
 
 
-def get_iso_record_by_field(field_name: Literal["uuid", "name"], value: str) -> IsoRecord | None:
-    
-    if field_name not in {"uuid", "name"}:
-        raise RaisedException("Invalid field_name passed.")
-    
-    record = select_schema_one(IsoRecordInDB, f"SELECT * FROM iso_files WHERE iso_files.{field_name} = (%s)", (value, ))
-    
-    return prepare_from_database_record(record) if record is not None else None
-    
-
-def get_iso_record_by_uuid(uuid: UUID) -> IsoRecord | None:
-    return get_iso_record_by_field("uuid", str(uuid))
-
-def get_iso_record_by_name(name: str) -> IsoRecord | None:
-    return get_iso_record_by_field("name", name)
-    
-    
-def get_iso_records() -> dict[UUID, IsoRecord]:
-    records = select_schema_dict(IsoRecordInDB, "uuid", "SELECT * FROM iso_files")
-    
-    for uuid, record in records.items():
-        records[uuid] = prepare_from_database_record(record)
-        
-    return records
-
-
-def create_iso_record(form: CreateIsoRecordArgs) -> IsoRecord:
-    with pool.connection() as connection:
-        with connection.cursor() as cursor: 
-            with connection.transaction():
-                cursor.execute("""
-                    INSERT INTO iso_files (uuid, name, file_name, file_location, file_size_bytes, imported_by, imported_at)            
-                    VALUES (%(uuid)s, %(name)s, %(file_name)s, %(file_location)s, %(file_size_bytes)s, %(imported_by)s, %(imported_at)s)
-                """, form.model_dump())
-                
-    iso_record = get_iso_record_by_uuid(form.uuid)
-    
-    if iso_record is None:
-        raise RaisedException("Error occured while creating the ISO File Record in the iso_files database table.", form)
-        
-    return iso_record
+IsoLibrary = SimpleTableManager(
+    table_name="iso_files",
+    allowed_fields_for_select={"uuid", "name"},
+    model=IsoRecord,
+    model_in_db=IsoRecordInDB,
+    model_creation_args=CreateIsoRecordArgs,
+    transform_record=prepare_from_database_record,
+)

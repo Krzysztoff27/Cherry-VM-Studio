@@ -7,7 +7,7 @@ from typing import Union
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machines_state.state_management import stop_machine
+from modules.machine_state.state_management import stop_machine
 from modules.machine_lifecycle.models import MachineParameters
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml
 from modules.machine_lifecycle.disks import delete_machine_disk

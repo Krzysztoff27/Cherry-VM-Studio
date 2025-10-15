@@ -10,7 +10,7 @@ from application.app import app
 from config.files_config import FILES_CONFIG
 from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException
 from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord
-from modules.machine_resources.iso_library import create_iso_record, get_iso_record_by_name
+from modules.machine_resources.iso_library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.file.upload_handler import UploadHandler
 
@@ -46,7 +46,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
                 imported_at=dt.datetime.now(),
             )
             
-            duplicate = get_iso_record_by_name(creation_args.name)
+            duplicate = IsoLibrary.get_record_by_field("name", creation_args.name)
         
             if duplicate is not None:
                 raise HTTPException(
@@ -54,7 +54,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
                     detail=f'ISO file record with name={creation_args.name} already exists.'
                 )
             
-            return create_iso_record(creation_args)
+            return IsoLibrary.create_record(creation_args)
         
         except Exception as e:
             if uploaded_file is not None and os.path.exists(uploaded_file.location):

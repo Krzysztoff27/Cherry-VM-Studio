@@ -1,8 +1,8 @@
 import asyncio
 from application.app import app
 from fastapi import WebSocket
-from modules.machines_state.websocket_broadcaster import broadcast_machine_state
-from modules.machines_state.websocket_handler import MachinesWebsocketHandler
+from modules.machine_state.websocket_broadcaster import broadcast_machine_state
+from modules.machine_state.websocket_handler import MachinesWebsocketHandler
 from modules.websockets.subscription_manager import SubscriptionManager
 
 machine_broadcast_manager = SubscriptionManager(broadcast_data=broadcast_machine_state)

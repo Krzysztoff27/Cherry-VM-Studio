@@ -3,8 +3,8 @@ from xml.etree import ElementTree
 import libvirt
 from fastapi import HTTPException
 from uuid import UUID
-from modules.machines_state.state_management import is_vm_loading
-from modules.machines_state.models import MachineData, MachineState
+from modules.machine_state.state_management import is_vm_loading
+from modules.machine_state.models import MachineData, MachineState
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AdministratorInDB, ClientInDB
 from modules.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one

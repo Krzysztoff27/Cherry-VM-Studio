@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
-from modules.machines_state.data_retrieval import get_machine_states_by_uuids
+from modules.machine_state.data_retrieval import get_machine_states_by_uuids
 from modules.websockets.models import DataResponse, SubscriptionsDict
 
 async def broadcast_machine_state(subscriptions: SubscriptionsDict):   
