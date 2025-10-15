@@ -50,12 +50,18 @@ const useFileUpload = (path: string) => {
             title: tns("uploading.title"),
             message: getProgressMessageNode(`0${relevantSizeUnit} / ${fileSizeFormatted} (0%)`),
             autoClose: false,
-            withCloseButton: false,
+            withCloseButton: true,
         });
 
         try {
+            const controller = new AbortController();
+            const handleAbort = () => controller.abort();
+
             await axios.post(fullPath, formData, {
                 headers,
+                signal: controller.signal,
+                maxBodyLength: Infinity,
+                maxContentLength: Infinity,
                 onUploadProgress: (progressEvent) => {
                     const uploadProgress = progressEvent.total ? Math.round((progressEvent.loaded / progressEvent.total) * 100) : 0;
 
@@ -64,6 +70,7 @@ const useFileUpload = (path: string) => {
                         message: getProgressMessageNode(
                             `${formatBytesToUnit(progressEvent.loaded, relevantSizeUnit)} / ${fileSizeFormatted} (${uploadProgress}%)`
                         ),
+                        onClose: handleAbort,
                     });
                 },
             });
