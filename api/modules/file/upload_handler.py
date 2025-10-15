@@ -68,7 +68,6 @@ class UploadHandler(BaseModel):
         async for chunk in request.stream():
             size_validator(chunk)
             parser.data_received(chunk)
-            logger.info(f"Received chunk of size={len(chunk)} bytes")
         
         return UploadedFile(
             name=filename,
