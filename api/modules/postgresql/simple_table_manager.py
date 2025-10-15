@@ -52,7 +52,6 @@ class SimpleTableManager(Generic[DBModel, MainModel, CreationModel], BaseModel):
         records = select_schema_dict(self.model_in_db, "uuid", f"SELECT * FROM {self.table_name}")
         
         for uuid, record in records.items():
-            logging.info(f"Transforming record with uuid={uuid}", record.model_dump())
             records[uuid] = self.transform_record(record)
             
         return records

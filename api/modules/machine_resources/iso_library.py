@@ -18,7 +18,7 @@ def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
     file_location = record.file_location if record.remote else None
     
     return IsoRecord(
-        **record.model_dump(exclude={"imported_by","last_modified_by"}),
+        **record.model_dump(exclude={"imported_by","last_modified_by","file_location"}),
         imported_by=imported_by,
         last_modified_by=last_modified_by,
         file_location=file_location
