@@ -11,7 +11,7 @@ class IsoRecordInDB(BaseModel):
     name: str
     remote: bool | None
     file_name: str
-    file_location: str
+    file_location: str | None
     file_size_bytes: int
     last_used: dt.datetime | None
     imported_by: UUID | None
