@@ -58,7 +58,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             location = os.path.join(upload_handler.save_directory_path, f"{uuid}.iso")
             if os.path.exists(location):
                 os.remove(location)
-                logging.error(f"Removed ISO file {uuid}.iso due to errors that occured during import.", e)
+                logging.error(f"Removed ISO file {uuid}.iso due to errors that occured during import.")
             raise e
         
     except ClientDisconnect:
