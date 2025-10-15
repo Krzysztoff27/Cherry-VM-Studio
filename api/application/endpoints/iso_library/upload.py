@@ -24,7 +24,7 @@ upload_handler = UploadHandler(
     allowed_file_extensions=set({".iso"})
 )
 
-@app.post("/iso/upload", response_model=IsoRecord, tags=["ISO Library"])
+@app.post("/iso/upload", response_model=None, tags=["ISO Library"])
 async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
     
     uploaded_file = None # important
@@ -51,7 +51,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
                     detail=f'ISO file record with name={creation_args.name} already exists.'
                 )
             
-            return IsoLibrary.create_record(creation_args)
+            IsoLibrary.create_record(creation_args)
         
         except Exception as e:
             if uploaded_file is not None and os.path.exists(uploaded_file.location):
