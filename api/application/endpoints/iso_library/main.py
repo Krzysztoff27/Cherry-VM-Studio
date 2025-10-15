@@ -2,7 +2,7 @@ import os
 from uuid import UUID
 
 from fastapi import HTTPException
-from api.config.files_config import FILES_CONFIG
+from config.files_config import FILES_CONFIG
 from modules.postgresql.models import RecordNotFoundException
 from modules.machine_resources.iso_library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
