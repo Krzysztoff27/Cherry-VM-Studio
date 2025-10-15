@@ -1,6 +1,7 @@
 import datetime as dt
 import logging
 import os
+from uuid import uuid4
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
@@ -27,16 +28,16 @@ upload_handler = UploadHandler(
 @app.post("/iso/upload", response_model=None, tags=["ISO Library"])
 async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
     
-    uploaded_file = None # important
+    uuid = uuid4()
     
     try:
         try:
-            uploaded_file = await upload_handler.handle(request)
+            uploaded_file = await upload_handler.handle(request, uuid)
             form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
             
             creation_args = CreateIsoRecordArgs(
                 **form_data.model_dump(), 
-                uuid=uploaded_file.uuid,
+                uuid=uuid,
                 file_name=uploaded_file.name,
                 file_size_bytes=uploaded_file.size,
                 imported_by=current_user.uuid,
@@ -54,9 +55,10 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             IsoLibrary.create_record(creation_args)
         
         except Exception as e:
-            if uploaded_file is not None and os.path.exists(uploaded_file.location):
-                os.remove(uploaded_file.location)
-                logging.error(f"Removed ISO file {uploaded_file.uuid}.iso due to errors that occured during import.")
+            location = os.path.join(upload_handler.save_directory_path, f"{uuid}.iso")
+            if os.path.exists(location):
+                os.remove(location)
+                logging.error(f"Removed ISO file {uuid}.iso due to errors that occured during import.")
             raise e
         
     except ClientDisconnect:

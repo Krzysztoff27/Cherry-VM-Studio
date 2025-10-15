@@ -17,7 +17,6 @@ class UploadInvalidExtensionException(Exception):
         super().__init__(f"Invalid file extension: {extension}")
 
 class UploadedFile(BaseModel):
-    uuid: UUID
     name: str
     location: str
     size: int

@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -41,15 +42,14 @@ class UploadHandler(BaseModel):
     allowed_file_extensions: set[str]
     save_directory_path: Path
     
-    async def handle(self, request: Request) -> UploadedFile:
+    async def handle(self, request: Request, uuid: UUID) -> UploadedFile:
         size_validator = UploadSizeValidator(max_size_bytes=self.max_size_bytes)
         filename_validator = FilenameValidator(allowed_file_extensions=self.allowed_file_extensions)
         
         filename = request.headers.get("filename")
         filename = filename_validator.validate(filename)
-        
-        file_uuid = uuid4()
-        file_location = os.path.join(self.save_directory_path, f"{file_uuid}.iso")
+
+        file_location = os.path.join(self.save_directory_path, f"{uuid}.iso")
         
         file_target = FileTarget(file_location, validator=UploadSizeValidator(max_size_bytes=self.max_size_bytes))
         data_target = ValueTarget()
@@ -66,9 +66,9 @@ class UploadHandler(BaseModel):
         async for chunk in request.stream():
             size_validator(chunk)
             parser.data_received(chunk)
+            logging.info(f"Received chunk of size={len(chunk)} bytes")
         
         return UploadedFile(
-            uuid=file_uuid,
             name=filename,
             location=file_location,
             size=size_validator.body_len,
