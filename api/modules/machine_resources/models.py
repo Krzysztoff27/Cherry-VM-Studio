@@ -41,7 +41,6 @@ class CreateIsoRecordForm(BaseModel):
 class CreateIsoRecordArgs(CreateIsoRecordForm):
     uuid: UUID
     file_name: str
-    file_location: str
     file_size_bytes: int
     imported_by: UUID
     imported_at: dt.datetime

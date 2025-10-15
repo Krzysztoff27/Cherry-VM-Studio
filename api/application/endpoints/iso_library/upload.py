@@ -32,15 +32,12 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
     try:
         try:
             uploaded_file = await upload_handler.handle(request)
-            logging.info(f"Saved ISO file {uploaded_file.uuid}.iso at location {uploaded_file.location}")
-            
             form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
             
             creation_args = CreateIsoRecordArgs(
                 **form_data.model_dump(), 
                 uuid=uploaded_file.uuid,
                 file_name=uploaded_file.name,
-                file_location=uploaded_file.location,
                 file_size_bytes=uploaded_file.size,
                 imported_by=current_user.uuid,
                 imported_at=dt.datetime.now(),
