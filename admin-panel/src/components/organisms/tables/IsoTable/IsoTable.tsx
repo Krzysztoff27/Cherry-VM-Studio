@@ -6,6 +6,8 @@ import { IsoFile } from "../../../../types/api.types";
 import { safeObjectValues } from "../../../../utils/misc";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import { getColumns } from "./columns";
+import usePermissions from "../../../../hooks/usePermissions";
+import PERMISSIONS from "../../../../config/permissions.config";
 
 export interface IsoTableProps {
     isoFiles: Record<string, IsoFile>;
@@ -17,6 +19,9 @@ export interface IsoTableProps {
 
 const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTableProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "iso.controls.");
+    const { hasPermissions } = usePermissions();
+
+    const viewMode = !hasPermissions(PERMISSIONS.MANAGE_ISO_FILES);
 
     const data = useMemo(() => safeObjectValues(isoFiles), [isoFiles]);
     const columns = useMemo(() => getColumns(openIsoFileModal), []);
@@ -53,6 +58,7 @@ const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTa
                 },
                 withImports: false,
                 searchColumnKey: "name",
+                viewMode,
             }}
         />
     );
