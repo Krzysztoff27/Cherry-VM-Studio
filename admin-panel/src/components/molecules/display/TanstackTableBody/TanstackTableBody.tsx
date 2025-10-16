@@ -1,18 +1,32 @@
 import { ActionIcon, Box, ScrollArea } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
-import { flexRender } from "@tanstack/react-table";
+import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
 import classes from "./TanstackTableBody.module.css";
 
-const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
+export interface TanstackTableBodyProps {
+    table: Table<any>;
+    loading: boolean;
+    error: Response | null;
+    RowComponent?: React.ReactElement;
+    rowProps?: (uuid: string) => Record<string, any>;
+}
+
+const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): React.JSX.Element => {
+    RowComponent = RowComponent || Box;
+
     return (
-        <Box className={classes.table}>
-            {table.getHeaderGroups().map(headerGroup => (
+        <ScrollArea
+            className={classes.table}
+            scrollbars="xy"
+            offsetScrollbars
+        >
+            {table.getHeaderGroups().map((headerGroup) => (
                 <Box
                     className={classes.tr}
                     key={headerGroup.id}
                 >
-                    {headerGroup.headers.map(header => (
+                    {headerGroup.headers.map((header) => (
                         <Box
                             className={classes.th}
                             key={header.id}
@@ -46,37 +60,32 @@ const TanstackTableBody = ({ table, loading, error }): React.JSX.Element => {
                 </Box>
             ))}
 
-            {!loading && !error && (
-                <ScrollArea
-                    scrollbars="y"
-                    offsetScrollbars
-                    style={{ flex: 1 }} // makes it take available height in .bodyWrapper
-                >
-                    {table.getRowModel().rows.map(row => (
-                        <Box
-                            className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                            key={row.id}
-                        >
-                            {row.getVisibleCells().map(cell => (
-                                <Box
-                                    className={classes.td}
-                                    key={cell.id}
-                                    style={{
-                                        flexBasis: cell.column.getSize(),
-                                        flexGrow: 1,
-                                        flexShrink: 0,
-                                        minWidth: cell.column.columnDef.minSize,
-                                        maxWidth: cell.column.columnDef.maxSize,
-                                    }}
-                                >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Box>
-                            ))}
-                        </Box>
-                    ))}
-                </ScrollArea>
-            )}
-        </Box>
+            {!loading &&
+                !error &&
+                table.getRowModel().rows.map((row) => (
+                    <RowComponent
+                        className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
+                        key={row.id}
+                        {...rowProps?.(row.id)}
+                    >
+                        {row.getVisibleCells().map((cell) => (
+                            <Box
+                                className={classes.td}
+                                key={cell.id}
+                                style={{
+                                    flexBasis: cell.column.getSize(),
+                                    flexGrow: 1,
+                                    flexShrink: 0,
+                                    minWidth: cell.column.columnDef.minSize,
+                                    maxWidth: cell.column.columnDef.maxSize,
+                                }}
+                            >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </Box>
+                        ))}
+                    </RowComponent>
+                ))}
+        </ScrollArea>
     );
 };
 

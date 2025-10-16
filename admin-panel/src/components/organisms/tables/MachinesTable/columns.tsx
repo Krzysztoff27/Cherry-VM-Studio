@@ -4,26 +4,8 @@ import MachineStateCell from "../../../atoms/table/MachineStateCell";
 import ProgressWithPercentage from "../../../atoms/feedback/ProgressWithPercentage/ProgressWithPercentage";
 import MachineControlsCell from "../../../atoms/table/MachineControlsCell";
 import MachineAssignedUserCell from "../../../atoms/table/MachineAssignedUserCell";
-import { safeObjectValues } from "../../../../utils/misc";
 
-export const parseData = (machines) =>
-    safeObjectValues(machines).map((machine) => {
-        const name = `${machine.group} ${machine.group_member_id}`;
-        const state = { fetching: machine.active === undefined, loading: machine.loading, active: machine.active };
-
-        return {
-            uuid: machine.uuid,
-            details: { name, state },
-            state: state,
-            cpu: machine.cpu,
-            ram: Math.round((machine.ram_used / machine.ram_max) * 100),
-            owner: [machine.owner],
-            clients: safeObjectValues(machine.assigned_clients),
-            options: { state, uuid: machine.uuid },
-        };
-    });
-
-export const getColumns = (refresh: () => void, global: boolean, viewMode: boolean) =>
+export const getColumns = (global: boolean, viewMode: boolean) =>
     [
         {
             accessorKey: "details",

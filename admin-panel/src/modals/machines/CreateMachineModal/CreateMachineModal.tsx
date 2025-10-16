@@ -161,8 +161,6 @@ const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element =>
         onSubmit?.();
     };
 
-    console.log(form.values.disks);
-
     return (
         <Modal.Stack>
             <Modal

@@ -1,11 +1,60 @@
 import { ActionIcon, Button, Group, Skeleton, useMatches } from "@mantine/core";
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, ComponentType } from "react";
 import TableSearch from "../TableSearch/TableSearch";
 import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
-import { IconFileImport, IconFilter, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconFileImport, IconFilter, IconPlus, IconTrash, TablerIcon } from "@tabler/icons-react";
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
-import { TableControlsButton, TableControlsProps } from "../../../../types/components.types";
 import { useMediaQuery } from "@mantine/hooks";
+
+export interface TableControlsButton {
+    name: string;
+    position?: number;
+    component: ComponentType<any>;
+    props?: { [key: string]: any }; // button component props
+    children?: any;
+}
+
+export interface TableControlsModal {
+    component: ComponentType<any>;
+    props?: { [key: string]: any };
+}
+
+export interface TableControlsTranslations {
+    create?: string;
+    delete?: string;
+    import?: string;
+    filter?: string;
+}
+
+export interface TableControlsIcons {
+    create?: TablerIcon;
+    delete?: TablerIcon;
+    import?: TablerIcon;
+    filter?: TablerIcon;
+}
+
+export interface TableControlsModals {
+    create?: TableControlsModal;
+    delete?: TableControlsModal;
+    import?: TableControlsModal;
+    filter?: TableControlsModal;
+    [key: string]: TableControlsModal;
+}
+
+export interface TableControlsProps {
+    table: any;
+    modals: TableControlsModals;
+    translations: TableControlsTranslations;
+    additionalButtons?: TableControlsButton[];
+    viewMode?: boolean;
+    withImports?: boolean;
+    withFilters?: boolean;
+    withCreation?: boolean;
+    withDeletion?: boolean;
+    icons?: TableControlsIcons;
+    searchColumnKey?: string;
+    onFilteringChange?: (callback: (prev: any) => any) => void;
+}
 
 const TableControls = ({
     table,

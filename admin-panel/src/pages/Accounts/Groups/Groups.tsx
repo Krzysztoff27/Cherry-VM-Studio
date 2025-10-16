@@ -26,7 +26,7 @@ const Groups = (): React.JSX.Element => {
                     refreshTable={refresh}
                 />
                 <GroupsTable
-                    groupData={groupData}
+                    groups={groupData}
                     error={error}
                     loading={loading}
                     refresh={refresh}

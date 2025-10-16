@@ -27,7 +27,7 @@ const IsoLibrary = (): React.JSX.Element => {
 
             <Paper className={classes.tablePaper}>
                 <IsoTable
-                    data={data}
+                    isoFiles={data}
                     loading={loading}
                     error={error}
                     refresh={refresh}

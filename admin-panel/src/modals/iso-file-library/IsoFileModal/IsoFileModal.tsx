@@ -7,12 +7,11 @@ import { getFullUserName } from "../../../utils/users";
 import { IsoRecord, User } from "../../../types/api.types";
 import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 import { formatBytesToRelevantUnit } from "../../../utils/files";
-import { isNull } from "lodash";
 import useFetch from "../../../hooks/useFetch";
 
 const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "iso");
-    const { data, error, loading } = useFetch(`/iso/${uuid}`);
+    const { data, error, loading } = useFetch(uuid ? `/iso/${uuid}` : undefined);
 
     const file = data as IsoRecord;
 

@@ -3,14 +3,14 @@
  * @param {*} variable
  * @returns {boolean}
  */
-export const isObject = variable => typeof variable === "object" && variable !== null && !Array.isArray(variable);
+export const isObject = (variable) => typeof variable === "object" && variable !== null && !Array.isArray(variable);
 
 /**
  * Checks if variable is falsy or if it's length is 0
  * @param {*} variable
  * @returns {boolean}
  */
-export const noneOrEmpty = variable => !variable || !variable.length;
+export const noneOrEmpty = (variable) => !variable || !variable.length;
 
 /**
  * Zips keys from keyArray and values from valueArray into one object
@@ -96,7 +96,7 @@ export const startsWithLetter = (str = "") => (str ? /[a-z]/i.test(str[0]) : fal
  * @param {Array} array
  * @returns {boolean}
  */
-export const hasMultipleOccurrences = (element, array = []) => array.filter(e => e === element).length > 1;
+export const hasMultipleOccurrences = (element, array = []) => array.filter((e) => e === element).length > 1;
 
 export const pluralize = (text, refAmount) => `${text}${refAmount > 1 ? "s" : ""}`;
 
@@ -125,7 +125,7 @@ export const toggleInArray = (array, value) => {
     return index === -1 ? [...array, value] : array.filter((_, i) => i !== index);
 };
 
-export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...(a || {}), ...(b || {}) })?.map(key => ({ ...a[key], ...b?.[key] }));
+export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...(a || {}), ...(b || {}) })?.map((key) => ({ ...a[key], ...b?.[key] }));
 
 export const validPath = (path = "") => (path.startsWith("/") ? path : `/${path}`);
 

@@ -11,6 +11,7 @@ const handleFetch = async (
         status: 503,
         headers: { "Content-Type": "text/plain" },
     });
+
     const fetchData = async () => await fetch(URL, options).catch(() => responseOnNoResponse);
 
     let response = await fetchData();

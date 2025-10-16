@@ -19,18 +19,18 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
 
     const openPasswordModal = (uuid: string) => {
         setCurrentUuid(uuid);
-        setModalsOpened(prev => ({ ...prev, password: true }));
+        setModalsOpened((prev) => ({ ...prev, password: true }));
     };
 
-    const closePasswordModal = () => setModalsOpened(prev => ({ ...prev, password: false }));
+    const closePasswordModal = () => setModalsOpened((prev) => ({ ...prev, password: false }));
 
     const openAccountModal = (uuid: string, mode: boolean) => {
         setAccountModalMode(mode);
         setCurrentUuid(uuid);
-        setModalsOpened(prev => ({ ...prev, account: true }));
+        setModalsOpened((prev) => ({ ...prev, account: true }));
     };
 
-    const closeAccountModal = () => setModalsOpened(prev => ({ ...prev, account: false }));
+    const closeAccountModal = () => setModalsOpened((prev) => ({ ...prev, account: false }));
 
     return (
         <Stack w="100%">
@@ -54,7 +54,7 @@ const Users = ({ accountType }: { accountType: AccountType }): React.JSX.Element
                 )}
                 <AccountTable
                     accountType={accountType}
-                    userData={data}
+                    accounts={data}
                     loading={loading}
                     error={error}
                     refresh={refresh}

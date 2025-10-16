@@ -4,10 +4,9 @@ import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import { ActionIcon, Group, Text } from "@mantine/core";
 import { IconDisc, IconSettings } from "@tabler/icons-react";
 import DateDifferenceCell from "../../../atoms/table/DateDifferenceCell";
-import IsoFileOptionsMenu from "../../../molecules/table/IsoFileOptionsMenu/IsoFileOptionsMenu";
 import { formatBytesToRelevantUnit } from "../../../../utils/files";
 
-export const getColumns = (refresh, openIsoFileModal) => [
+export const getColumns = (openIsoFileModal: (uuid: string) => void) => [
     {
         accessorKey: "selection",
         enableSorting: false,

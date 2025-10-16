@@ -74,7 +74,7 @@ const Placeholder = () => (
 );
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
-    const { data: group, loading, refresh: refreshModal } = useFetch(`/group/${uuid}`);
+    const { data: group, loading, refresh: refreshModal } = useFetch(uuid ? `/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { putRequest } = useApi();
 

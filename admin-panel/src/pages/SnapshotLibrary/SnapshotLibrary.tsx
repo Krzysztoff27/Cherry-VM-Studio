@@ -41,9 +41,10 @@ const SnapshotLibrary = (): React.JSX.Element => {
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
                 <SnapshotsTable
-                    data={DUMMY_DATA}
+                    snapshots={DUMMY_DATA}
                     loading={false}
                     error={null}
+                    refresh={() => {}}
                 />
             </Paper>
         </Stack>

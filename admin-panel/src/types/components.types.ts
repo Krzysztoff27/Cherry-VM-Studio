@@ -152,11 +152,6 @@ export interface SnapshotSelectProps {
     forceSnapshotDataUpdate: boolean;
 }
 
-export interface ContentTableProps {
-    headers: any[];
-    rows: any[][];
-}
-
 export interface BusinessCardProps {
     imageSrc?: string;
     name: string;
@@ -202,69 +197,6 @@ export interface SizeSelectProps {
     sizes: number[];
     value: number;
     setValue: (prev: number | string) => any;
-}
-
-export interface TableControlsButton {
-    name: string;
-    position?: number;
-    component: ComponentType<any>;
-    props?: { [key: string]: any }; // button component props
-    children?: any;
-}
-
-export interface TableControlsModal {
-    component: ComponentType<any>;
-    props?: { [key: string]: any };
-}
-
-export interface TableControlsTranslations {
-    create?: string;
-    delete?: string;
-    import?: string;
-    filter?: string;
-}
-
-export interface TableControlsIcons {
-    create?: TablerIcon;
-    delete?: TablerIcon;
-    import?: TablerIcon;
-    filter?: TablerIcon;
-}
-
-export interface TableControlsModals {
-    create?: TableControlsModal;
-    delete?: TableControlsModal;
-    import?: TableControlsModal;
-    filter?: TableControlsModal;
-    [key: string]: TableControlsModal;
-}
-
-export interface TableControlsProps {
-    table: any;
-    modals: TableControlsModals;
-    translations: TableControlsTranslations;
-    additionalButtons?: TableControlsButton[];
-    viewMode?: boolean;
-    withImports?: boolean;
-    withFilters?: boolean;
-    withCreation?: boolean;
-    withDeletion?: boolean;
-    icons?: TableControlsIcons;
-    searchColumnKey?: string;
-    onFilteringChange?: (callback: (prev: any) => any) => void;
-}
-
-export interface TableStateHeadingProps {
-    getIsSomeRowsSelected: () => boolean;
-    getIsAllRowsSelected: () => boolean;
-    getCoreRowModel: () => any;
-    getSelectedRowModel: () => any;
-    getRowCount: () => number;
-    translations: {
-        all: string;
-        selected: string;
-        filtered: string;
-    };
 }
 
 export interface UserMultiselectProps extends MultiSelectProps {

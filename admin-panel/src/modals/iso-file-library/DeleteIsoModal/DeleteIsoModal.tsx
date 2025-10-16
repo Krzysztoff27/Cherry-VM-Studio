@@ -8,7 +8,7 @@ const DeleteIsoModal = ({ opened, onClose, onSubmit = () => undefined, uuids }):
     const { tns } = useNamespaceTranslation("modals", "confirm.iso-removal");
 
     const onConfirm = async () => {
-        await uuids.forEach(async (uuid: string) => await deleteRequest(`iso/delete/${uuid}`));
+        await Promise.all(uuids.map((uuid: string) => deleteRequest(`iso/delete/${uuid}`)));
         onClose();
         onSubmit();
     };

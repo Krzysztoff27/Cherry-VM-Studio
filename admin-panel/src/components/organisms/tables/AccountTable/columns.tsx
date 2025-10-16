@@ -7,7 +7,12 @@ import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import DateDifferenceCell from "../../../atoms/table/DateDifferenceCell";
 import AccountOptionsMenu from "../../../molecules/table/AccountOptionsMenu/AccountOptionsMenu";
 
-export const getColumns = (accountType: AccountType, refresh: () => void, openAccountModal: () => void, openPasswordModal: () => void) => [
+export const getColumns = (
+    accountType: AccountType,
+    refresh: () => void,
+    openAccountModal: (uuid: string, mode: boolean) => void,
+    openPasswordModal: (uuid: string) => void
+) => [
     {
         accessorKey: "selection",
         enableSorting: false,

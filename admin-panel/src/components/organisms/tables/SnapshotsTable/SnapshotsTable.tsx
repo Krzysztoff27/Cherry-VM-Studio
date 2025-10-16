@@ -1,88 +1,48 @@
-import { Group, Stack } from "@mantine/core";
-import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import TanstackTableBody from "../../../molecules/display/TanstackTableBody/TanstackTableBody";
-import TableStateHeading from "../../../molecules/feedback/TableStateHeading/TableStateHeading";
-import TableControls from "../../../molecules/interactive/TableControls/TableControls";
-import TablePagination from "../../../molecules/interactive/TablePagination/TablePagination";
-import classes from "./SnapshotsTable.module.css";
-import { getColumns } from "./tableConfig";
-import { values } from "lodash";
+import { getColumns } from "./columns";
 import { safeObjectValues } from "../../../../utils/misc";
+import { Snapshot } from "../../../../types/api.types";
+import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 
-const SnapshotsTable = ({ data, loading, error, refresh }): React.JSX.Element => {
+export interface SnapshotsTableProps {
+    snapshots: Record<string, Snapshot>;
+    loading: boolean;
+    error: Response | null;
+    refresh: () => void;
+}
+
+const SnapshotsTable = ({ snapshots, loading, error, refresh }: SnapshotsTableProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "snapshots.controls.");
-    const [columnFilters, setColumnsFilters] = useState([]);
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
+    const data = useMemo(() => safeObjectValues(snapshots), [snapshots]);
     const columns = useMemo(() => getColumns(), []);
-    const tableData = useMemo(() => safeObjectValues(data), [data]);
-
-    const table = useReactTable({
-        data: tableData,
-        columns: columns,
-        state: {
-            columnFilters,
-            pagination,
-        },
-        getRowId: (row: any) => row.uuid,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-    });
-
-    const onFilteringChange = (callback: (prev: any) => any) => {
-        setColumnsFilters(callback);
-        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    };
-
-    const onDelete = () => {
-        refresh();
-        table.toggleAllRowsSelected(false);
-    };
-
-    const selectedUuids = table.getSelectedRowModel().rows.map((row) => row.id);
 
     return (
-        <Stack className={classes.container}>
-            <Stack className={classes.top}>
-                <Group justify="space-between">
-                    <TableStateHeading
-                        {...table}
-                        loading={loading}
-                        translations={{
-                            all: tns("all-snapshots"),
-                            selected: tns("selected-snapshots"),
-                            filtered: tns("filtered-results"),
-                        }}
-                    />
-                    <TableControls
-                        table={table}
-                        modals={{}}
-                        translations={{
-                            import: tns("import"),
-                            filter: tns("filters"),
-                            delete: tns("delete-selected"),
-                        }}
-                        withCreation={false}
-                        onFilteringChange={onFilteringChange}
-                        searchColumnKey="name"
-                    />
-                </Group>
-            </Stack>
-            <TanstackTableBody
-                table={table}
-                loading={loading}
-                error={error}
-            />
-            <TablePagination
-                pagination={pagination}
-                setPagination={setPagination}
-                getPageCount={table.getPageCount}
-            />
-        </Stack>
+        <TanstackTable
+            data={data}
+            columns={columns}
+            error={error}
+            loading={loading}
+            refresh={refresh}
+            headingProps={{
+                translations: {
+                    all: tns("all-snapshots"),
+                    selected: tns("selected-snapshots"),
+                    filtered: tns("filtered-results"),
+                },
+            }}
+            controlsProps={{
+                modals: {},
+                translations: {
+                    import: tns("import"),
+                    filter: tns("filters"),
+                    delete: tns("delete-selected"),
+                },
+                withCreation: false,
+                searchColumnKey: "name",
+            }}
+        />
     );
 };
 

@@ -9,7 +9,7 @@ export type MachineStates = "online" | "offline" | "loading" | "fetching";
 
 export type ConnectionStatuses = "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED" | "UNINSTANTIATED";
 
-export type WebSocketResponseMethods = "ACKNOWLEDGE" | "REJECT" | "LOADING_START" | "LOADING_FIN" | "DATA";
+export type WebSocketResponseMethods = "ACKNOWLEDGE" | "REJECT" | "DATA";
 
 export interface WebSocketCommand {
     method: string;
@@ -65,24 +65,26 @@ export interface User extends UserInDB {
     permissions: number;
 }
 
+// machines
+
 export interface MachineData {
     uuid: string;
-    group: string;
-    group_member_id: number;
-    owner: UserInDB;
-    assigned_clients: { [uuid: string]: UserInDB };
-    domain: string;
-    port: number;
+    group: string | null;
+    group_member_id: number | null;
+    owner: UserInDB | null;
+    assigned_clients: Record<string, UserInDB>;
+    domain: string | null;
+    port: number | null;
 }
 
-export interface MachineState {
-    uuid: string;
+export interface MachineState extends MachineData {
     active: boolean;
     loading: boolean;
+    active_connections?: Array<string> | null;
     cpu?: number;
     ram_used?: number;
     ram_max?: number;
-    active_connections?: Array<string> | null;
+    uptime: number | null;
 }
 
 export type MachineAll = MachineData | MachineState;
@@ -99,4 +101,24 @@ export interface IsoRecord {
     last_modified_at?: string;
     imported_by?: User;
     last_modified_by?: User;
+}
+
+// libraries
+
+export interface IsoFile {
+    uuid: string;
+    name: string;
+    remote: boolean | null;
+    file_name: string;
+    file_location: string | null;
+    file_size_bytes: number;
+    last_used: string | null;
+    imported_at: string | null;
+    imported_by: User | null;
+    last_modified_at: string | null;
+    last_modified_by: User | null;
+}
+
+export interface Snapshot {
+    [x: string]: any;
 }
