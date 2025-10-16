@@ -121,7 +121,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                                 variant="default"
                                                 className={classes.fileButton}
                                                 aria-selected={!isNull(currentValues.file)}
-                                                aria-error={!isEmpty(form.errors.file)}
+                                                aria-invalid={!isEmpty(form.errors.file)}
                                                 leftSection={isNull(currentValues.file) ? <IconUpload size={18} /> : <IconFile size={18} />}
                                             >
                                                 {currentValues.file?.name || "Upload file"}

@@ -21,7 +21,7 @@
     border-radius: var(--mantine-radius-md) 0 0 var(--mantine-radius-md);
 }
 
-.fileButton[aria-error="true"] > * {
+.fileButton[aria-invalid="true"] > * {
     color: var(--mantine-color-red-7);
 }
 

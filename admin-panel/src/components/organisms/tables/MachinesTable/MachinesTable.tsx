@@ -1,13 +1,6 @@
-import { ActionIcon, Box, Group, ScrollArea, Stack } from "@mantine/core";
-import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import TableStateHeading from "../../../molecules/feedback/TableStateHeading/TableStateHeading";
-import TablePagination from "../../../molecules/interactive/TablePagination/TablePagination";
-import classes from "./MachinesTable.module.css";
 import { Link } from "react-router-dom";
-import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
-import TableControls from "../../../molecules/interactive/TableControls/TableControls";
 import usePermissions from "../../../../hooks/usePermissions";
 import PERMISSIONS from "../../../../config/permissions.config";
 import CreateMachineModal from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
