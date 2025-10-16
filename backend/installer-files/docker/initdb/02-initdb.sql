@@ -115,8 +115,8 @@ CREATE TABLE machine_snapshots_shares (
 
 CREATE INDEX administrators_idx ON administrators (uuid, username, email);
 CREATE INDEX clients_idx ON clients (uuid, username, email);
-CREATE INDEX roles_idx ON roles (uuid);
-CREATE INDEX groups_idx ON groups (uuid);
+CREATE INDEX roles_idx ON roles (uuid, name);
+CREATE INDEX groups_idx ON groups (uuid, name);
 CREATE INDEX administrators_roles_idx ON administrators_roles (administrator_uuid, role_uuid);
 CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
 CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owners(machine_uuid, owner_uuid);
@@ -135,10 +135,12 @@ VALUES
     ('Machine Manager', 3),
     ('Client Accounts Manager', 4),
     ('Administrative Accounts Manager', 8),
-    ('Accounts Manager', 12),
+    ('Global Accounts Manager', 12),
     ('Client Credentials Manager', 16),
     ('Administrative Credentials Manager', 32),
-    ('Credentials Manager', 48);
+    ('Global Credentials Manager', 48),
+    ('ISO File Manager', 64),
+    ('System Resources Administrator', 128);
 
 -- Insert root administrator
 INSERT INTO administrators (uuid, username, password)
@@ -151,5 +153,5 @@ SELECT
     '83212b1e-b222-4bba-a1d4-450e08cbbeb1',
     uuid
 FROM roles
-WHERE name IN ('Machine Manager', 'Accounts Manager', 'Credentials Manager');
+WHERE name IN ('Machine Manager', 'Global Accounts Manager', 'Global Credentials Manager', 'ISO File Manager', 'System Resources Administrator');
 
