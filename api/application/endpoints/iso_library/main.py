@@ -2,8 +2,9 @@ import os
 from uuid import UUID
 
 from fastapi import HTTPException
+from config.permissions_config import PERMISSIONS
 from config.files_config import FILES_CONFIG
-from modules.postgresql.models import RecordNotFoundException
+from modules.users.permissions import verify_permissions
 from modules.machine_resources.iso_library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.machine_resources.models import IsoRecord
@@ -24,6 +25,8 @@ async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministra
 
 @app.delete("/iso/delete/{uuid}", response_model=None, tags=['ISO Library'])
 async def __delete_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication):
+    verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
+        
     record = IsoLibrary.get_record_by_uuid(uuid)
     
     if record is None: 

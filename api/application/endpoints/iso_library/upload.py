@@ -9,6 +9,8 @@ from pydantic import ValidationError as PydanticValidationError
 
 from application.app import app
 from config.files_config import FILES_CONFIG
+from config.permissions_config import PERMISSIONS
+from modules.users.permissions import verify_permissions
 from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException
 from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord
 from modules.machine_resources.iso_library import IsoLibrary
@@ -27,6 +29,7 @@ upload_handler = UploadHandler(
 
 @app.post("/iso/upload", response_model=None, tags=["ISO Library"])
 async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
+    verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
     uuid = uuid4()
     
