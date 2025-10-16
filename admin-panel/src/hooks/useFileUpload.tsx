@@ -22,7 +22,7 @@ const useFileUpload = (path: string) => {
 
         const headers = new AxiosHeaders(authOptions.headers as Record<string, string>);
         headers.set("Content-Type", "multipart/form-data");
-        headers.set("filename", file.name);
+        headers.set("filename", encodeURIComponent(file.name));
 
         const relevantSizeUnit = getRelevantUnit(file.size);
         const fileSizeFormatted = formatBytesToUnit(file.size, relevantSizeUnit);

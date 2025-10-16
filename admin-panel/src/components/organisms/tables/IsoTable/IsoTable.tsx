@@ -10,6 +10,7 @@ import classes from "./IsoTable.module.css";
 import { getColumns } from "./tableConfig";
 import { safeObjectValues } from "../../../../utils/misc";
 import IsoFileImportModal from "../../../../modals/iso-file-library/IsoFileImportModal/IsoFileImportModal";
+import DeleteIsoModal from "../../../../modals/iso-file-library/DeleteIsoModal/DeleteIsoModal";
 
 const IsoTable = ({ data, loading, error, refresh, openIsoFileModal }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "iso.controls.");
@@ -64,6 +65,10 @@ const IsoTable = ({ data, loading, error, refresh, openIsoFileModal }): React.JS
                             create: {
                                 component: IsoFileImportModal,
                                 props: { onSubmit: refresh },
+                            },
+                            delete: {
+                                component: DeleteIsoModal,
+                                props: { uuids: selectedUuids, onSubmit: onDelete },
                             },
                         }}
                         translations={{
