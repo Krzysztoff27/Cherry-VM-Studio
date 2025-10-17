@@ -29,6 +29,7 @@ upload_handler = UploadHandler(
 
 @app.post("/iso/upload", response_model=None, tags=["ISO Library"])
 async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
+    logger.info(f"{dt.datetime.now()} : Started ISO file upload.")
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
     uuid = uuid4()
@@ -61,15 +62,16 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             location = os.path.join(upload_handler.save_directory_path, f"{uuid}.iso")
             if os.path.exists(location):
                 os.remove(location)
-                logging.error(f"Removed ISO file {uuid}.iso due to errors that occured during import.")
+                logger.error(f"{dt.datetime.now()} : Removed ISO file {uuid}.iso due to errors that occured during import.")
             raise e
         
     except ClientDisconnect:
+        logger.error(f"{dt.datetime.now()} : Client disconnected during ISO file upload.")
         pass
     except HTTPException as e:
         raise e
     except PydanticValidationError as e:
-        logging.exception("Validation error during the ISO upload.")
+        logger.exception("Validation error during the ISO upload.")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail='Invalid JSON form structure'
@@ -95,7 +97,7 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             detail=f'Maximum request body size limit ({MAX_REQUEST_BODY_SIZE} bytes) exceeded.'
         )
     except Exception:
-        logging.exception("There was an error during file upload through the /iso/upload endpoint.\n")
+        logger.exception("There was an error during file upload through the /iso/upload endpoint.\n")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail='There was an error uploading the file'
