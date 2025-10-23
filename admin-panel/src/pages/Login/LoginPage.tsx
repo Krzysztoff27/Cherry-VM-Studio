@@ -1,18 +1,17 @@
 import { Avatar, Button, Center, Divider, Fieldset, Group, PasswordInput, Space, Text, TextInput } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import React from "react";
-import useAuth from "../../hooks/useAuth.ts";
 import useApi from "../../hooks/useApi.ts";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { TokenRequestForm } from "../../types/api.types.ts";
+import { useAuthentication } from "../../contexts/AuthenticationContext.tsx";
 
 export default function LoginPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { postRequest } = useApi();
-    const { setAccessToken, setRefreshToken } = useAuth();
+    const { setAccessToken, setRefreshToken } = useAuthentication();
     const form = useForm({
         mode: "uncontrolled",
         validate: {

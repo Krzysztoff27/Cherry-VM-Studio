@@ -7,21 +7,6 @@ export interface useFetchReturn {
     refresh: () => void;
 }
 
-interface Tokens {
-    access_token: string | null;
-    refresh_token: string | null;
-}
-
-export interface useAuthReturn {
-    tokens: Tokens;
-    authOptions: RequestInit | null;
-    refreshOptions: RequestInit | null;
-    logout: () => void;
-    clearTokens: () => void;
-    setAccessToken: (token: string | null) => void;
-    setRefreshToken: (token: string | null) => void;
-}
-
 export interface useApiWebSocketReturn {
     setUrl: (path: string) => void;
     sendCommand: (method: WebSocketCommandMethods, data: object) => void;

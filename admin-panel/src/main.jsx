@@ -14,6 +14,7 @@ import "./styles/main.css";
 
 import theme from "./config/theme.config.ts";
 import "./config/translation.config.ts";
+import { AuthenticationProvider } from "./contexts/AuthenticationContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <MantineProvider

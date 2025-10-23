@@ -1,12 +1,12 @@
 import { Button, Center } from "@mantine/core";
 import { useNavigate, useRouteError } from "react-router-dom";
 import classes from "./ErrorBoundary.module.css";
-import useAuth from "../../../../hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import { useAuthentication } from "../../../../contexts/AuthenticationContext";
 
 export default function ErrorBoundary() {
     const { t } = useTranslation();
-    const { logout } = useAuth();
+    const { logout } = useAuthentication();
     const navigate = useNavigate();
     const { status, i18nKey, message: detail } = useRouteError();
 

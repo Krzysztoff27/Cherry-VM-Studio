@@ -1,12 +1,11 @@
-import { Button, Divider, NavLink, Stack, Text, Title } from "@mantine/core";
+import { Button, Divider, Stack } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import useAuth from "../../../../hooks/useAuth.ts";
+import { useLocation, useNavigate } from "react-router-dom";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
 import classes from "./SecondBar.module.css";
 import PAGES from "../../../../config/pages.config.ts";
 import { Page } from "../../../../types/config.types.ts";
-import usePermissions from "../../../../hooks/usePermissions.ts";
+import { usePermissions } from "../../../../contexts/PermissionsContext.tsx";
 
 export default function SecondBar(): React.ReactElement {
     const { tns } = useNamespaceTranslation("layouts");
@@ -17,8 +16,8 @@ export default function SecondBar(): React.ReactElement {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const page = PAGES.find(p => location.pathname.startsWith(p.path));
-        setActive(page?.subpages?.findIndex(subpage => location.pathname == subpage.path) ?? -1);
+        const page = PAGES.find((p) => location.pathname.startsWith(p.path));
+        setActive(page?.subpages?.findIndex((subpage) => location.pathname == subpage.path) ?? -1);
         setPage(page);
     }, [location.pathname]);
 

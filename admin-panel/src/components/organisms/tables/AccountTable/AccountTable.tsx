@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import PERMISSIONS from "../../../../config/permissions.config";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import usePermissions from "../../../../hooks/usePermissions";
 import CreateAccountModal from "../../../../modals/account/CreateAccountModal/CreateAccountModal";
 import DeleteAccountsModal from "../../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
 import { IconUserPlus } from "@tabler/icons-react";
@@ -10,6 +9,7 @@ import { getColumns } from "./columns";
 import { User } from "../../../../types/api.types";
 import { AccountType } from "../../../../types/config.types";
 import { prepareData } from "./data";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 export interface AccountTableProps {
     loading: boolean;

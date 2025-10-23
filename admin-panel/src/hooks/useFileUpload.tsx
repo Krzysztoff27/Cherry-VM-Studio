@@ -1,14 +1,14 @@
 import { isNull } from "lodash";
 import axios, { AxiosHeaders } from "axios";
-import useAuth from "./useAuth";
 import useApi from "./useApi";
 import { notifications } from "@mantine/notifications";
 import { formatBytesToUnit, getRelevantUnit } from "../utils/files";
 import { Text } from "@mantine/core";
 import useNamespaceTranslation from "./useNamespaceTranslation";
+import { useAuthentication } from "../contexts/AuthenticationContext";
 
 const useFileUpload = (path: string) => {
-    const { authOptions } = useAuth();
+    const { authOptions } = useAuthentication();
     const { getPath } = useApi();
     const fullPath = getPath(path);
     const { tns, t } = useNamespaceTranslation("notifications", "file");

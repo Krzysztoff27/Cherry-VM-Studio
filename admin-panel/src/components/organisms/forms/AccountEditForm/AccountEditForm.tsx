@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { Stack, Title, Group, TextInput, Button, MultiSelect, Text, Box, ScrollArea } from "@mantine/core";
+import { useEffect } from "react";
+import { Stack, Title, Group, TextInput, Button, Text, Box, ScrollArea } from "@mantine/core";
 import { IconLabelFilled, IconAt, IconMail, IconEdit } from "@tabler/icons-react";
 import classes from "./AccountEditForm.module.css";
 import { useForm, hasLength, isEmail } from "@mantine/form";
@@ -8,12 +8,9 @@ import useApi from "../../../../hooks/useApi";
 import useErrorHandler from "../../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import usePermissions from "../../../../hooks/usePermissions";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { ErrorCallbackFunction } from "../../../../types/hooks.types";
-import { safeObjectValues } from "../../../../utils/misc";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
-import RoleInfoCard from "../../../atoms/display/RoleInfoCard/RoleInfoCard";
-import useFetch from "../../../../hooks/useFetch";
 import RoleMultiselect from "../../../atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../atoms/interactive/GroupMultiselect/GroupMultiselect";
 
@@ -38,7 +35,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         validate: {
             name: hasLength({ max: 50 }, tns("validation.name-too-long")),
             surname: hasLength({ max: 50 }, tns("validation.surname-too-long")),
-            username: val =>
+            username: (val) =>
                 /\s/.test(val)
                     ? tns("validation.username-spaces")
                     : !/^[\w.-]+$/.test(val)
@@ -52,7 +49,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                     : null,
             email: isEmail(tns("validation.email-invalid")),
         },
-        onValuesChange: values => {
+        onValuesChange: (values) => {
             form.setFieldValue("username", values.username.toLowerCase());
         },
     });
@@ -63,8 +60,8 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
             surname: user?.surname ?? "",
             username: user?.username ?? "",
             email: user?.email ?? "",
-            roles: user?.roles?.map(role => role.uuid) ?? [],
-            groups: user?.groups?.map(group => group.uuid) ?? [],
+            roles: user?.roles?.map((role) => role.uuid) ?? [],
+            groups: user?.groups?.map((group) => group.uuid) ?? [],
         });
 
     useEffect(() => {
@@ -78,7 +75,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                 const match = json.detail.match(/UUID=([a-f0-9-]+)/i);
                 const roleUuid = match ? match[1] : null;
                 const roleName = user.roles[roleUuid].name;
-                form.setFieldValue("roles", user?.roles?.map(role => role.uuid) ?? []);
+                form.setFieldValue("roles", user?.roles?.map((role) => role.uuid) ?? []);
                 return form.setFieldError("roles", tns("validation.cannot-revoke-role", { name: roleName }));
             }
         }
@@ -89,7 +86,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         parseAndHandleError(response, json);
     };
 
-    const onFormSubmit = form.onSubmit(async values => {
+    const onFormSubmit = form.onSubmit(async (values) => {
         const res = await putRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
         if (!res) return;
 

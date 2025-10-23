@@ -4,8 +4,8 @@ import { useDisclosure } from "@mantine/hooks";
 import classes from "./AccountOptionsMenu.module.css";
 import DeleteAccountsModal from "../../../../modals/account/DeleteAccountsModal/DeleteAccountsModal";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import usePermissions from "../../../../hooks/usePermissions";
 import PERMISSIONS from "../../../../config/permissions.config";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 const AccountOptionsMenu = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }): React.JSX.Element => {
     const uuid = row.id;

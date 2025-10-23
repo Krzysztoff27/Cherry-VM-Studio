@@ -1,13 +1,25 @@
-import { useMemo, useCallback } from "react";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { useAuthReturn } from "../types/hooks.types";
 
-/**
- * Custom react hook providing the application with authentication support.
- */
+interface Tokens {
+    access_token: string | null;
+    refresh_token: string | null;
+}
 
-export default function useAuth(): useAuthReturn {
+export interface AuthenticationContextValue {
+    tokens: Tokens;
+    authOptions: RequestInit | null;
+    refreshOptions: RequestInit | null;
+    logout: () => void;
+    clearTokens: () => void;
+    setAccessToken: (token: string | null) => void;
+    setRefreshToken: (token: string | null) => void;
+}
+
+const AuthenticationContext = createContext<AuthenticationContextValue | undefined>(undefined);
+
+export const AuthenticationProvider = ({ children }: { children?: ReactNode }): ReactNode => {
     const [cookies, setCookies] = useCookies(["access_token", "refresh_token"]);
     const navigate = useNavigate();
 
@@ -56,13 +68,21 @@ export default function useAuth(): useAuthReturn {
         [cookies.refresh_token]
     );
 
-    return {
-        setAccessToken,
-        setRefreshToken,
-        clearTokens,
-        logout,
+    const value = {
         tokens,
         authOptions,
         refreshOptions,
+        logout,
+        clearTokens,
+        setAccessToken,
+        setRefreshToken,
     };
-}
+
+    return <AuthenticationContext.Provider value={value}>{children}</AuthenticationContext.Provider>;
+};
+
+export const useAuthentication = () => {
+    const ctx = useContext(AuthenticationContext);
+    if (!ctx) throw new Error("useAuthentication must be used within an AuthenticationProvider");
+    return ctx;
+};

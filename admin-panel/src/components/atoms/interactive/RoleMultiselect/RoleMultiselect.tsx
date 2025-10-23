@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import useFetch from "../../../../hooks/useFetch";
 import { safeObjectValues } from "../../../../utils/misc";
-import usePermissions from "../../../../hooks/usePermissions";
 import RoleInfoCard from "../../display/RoleInfoCard/RoleInfoCard";
 import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import { useTranslation } from "react-i18next";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 const RoleMultiselect = (props: MultiSelectProps): React.JSX.Element => {
     const { data: roles } = useFetch("roles");
@@ -14,7 +14,7 @@ const RoleMultiselect = (props: MultiSelectProps): React.JSX.Element => {
     const sortOptions = (a, b) => (a.disabled !== b.disabled ? a.disabled - b.disabled : a.label.localeCompare(b.label));
 
     const roleOptions = safeObjectValues(roles)
-        .map(role => ({
+        .map((role) => ({
             label: role.name,
             value: role.uuid,
             disabled: !hasPermissions(role.permissions),

@@ -6,8 +6,8 @@ import { IsoFile } from "../../../../types/api.types";
 import { safeObjectValues } from "../../../../utils/misc";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import { getColumns } from "./columns";
-import usePermissions from "../../../../hooks/usePermissions";
 import PERMISSIONS from "../../../../config/permissions.config";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 export interface IsoTableProps {
     isoFiles: Record<string, IsoFile>;

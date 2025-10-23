@@ -2,9 +2,9 @@ import { useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { v4 as uuidv4 } from "uuid";
 import { validPath } from "../utils/misc.js";
-import useAuth from "./useAuth.ts";
 import { useApiWebSocketReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
+import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
 
 const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
@@ -13,7 +13,7 @@ const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const [socketUrl, setSocketUrl] = useState(getUrl(path));
     const setUrl = (path: string) => setSocketUrl(getUrl(path));
 
-    const { tokens } = useAuth();
+    const { tokens } = useAuthentication();
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl);
 
     const connectionStatus: string = {

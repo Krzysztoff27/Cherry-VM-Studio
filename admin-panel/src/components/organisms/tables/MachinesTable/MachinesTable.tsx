@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { Link } from "react-router-dom";
-import usePermissions from "../../../../hooks/usePermissions";
 import PERMISSIONS from "../../../../config/permissions.config";
 import CreateMachineModal from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
 import { getColumns } from "./columns";
 import { parseData } from "./data";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "machines.controls.");

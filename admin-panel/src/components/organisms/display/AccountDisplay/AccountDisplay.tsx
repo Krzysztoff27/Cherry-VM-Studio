@@ -2,10 +2,10 @@ import { Stack, Group, Text, Box, Button, Title } from "@mantine/core";
 import classes from "./AccountDisplay.module.css";
 import PERMISSIONS from "../../../../config/permissions.config";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import usePermissions from "../../../../hooks/usePermissions";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
 import BadgeGroup from "../../../atoms/display/BadgeGroup/BadgeGroup";
 import PermissionsList from "../../../atoms/display/PermissionsList/PermissionsList";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 const AccountDisplay = ({ onClose, onEdit, user }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
@@ -47,13 +47,13 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                 {user?.account_type === "administrative" ? (
                     <BadgeGroup
                         label={`${tns("roles")}:`}
-                        items={user?.roles.map(role => role.name)}
+                        items={user?.roles.map((role) => role.name)}
                         emptyMessage={`${t("none")}`}
                     />
                 ) : (
                     <BadgeGroup
                         label={`${tns("assigned-groups")}:`}
-                        items={user?.groups.map(group => group.name)}
+                        items={user?.groups.map((group) => group.name)}
                         emptyMessage={`${t("none")}`}
                     />
                 )}
