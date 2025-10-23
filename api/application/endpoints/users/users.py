@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from application.app import app
 from modules.exceptions.models import RaisedException
 from modules.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
-from modules.users.permissions import verify_can_change_password, verify_can_manage_user
+from modules.users.permissions import is_admin, verify_can_change_password, verify_can_manage_user
 from modules.users.models import AnyUser, ChangePasswordRequest, CreateUserForm, Filters, AccountTypes, Administrator, Client, ModifyUserForm
 from modules.users.validation import validate_creation_details, validate_modification_details
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
@@ -15,6 +15,9 @@ from modules.authentication.validation import DependsOnAdministrativeAuthenticat
 async def __read_logged_in_user__(current_user: DependsOnAuthentication) -> AnyUser:
     return current_user
 
+@app.get("/user/permissions", response_model=int, tags=['Users'])
+async def __read_logged_in_users_permissions__(current_user: DependsOnAuthentication) -> int:
+    return current_user.permissions if is_admin(current_user) else -1
 
 @app.get("/user/{uuid}", response_model=Administrator | Client, tags=['Users'])
 async def __read_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> AnyUser:
