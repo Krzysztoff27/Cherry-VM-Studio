@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from "react";
+import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 
 interface PermissionsContextValue {
@@ -8,7 +8,14 @@ interface PermissionsContextValue {
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
 
 export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { data: permissions } = useFetch("user/permissions");
+    const { data: user } = useFetch("user");
+    const [permissions, setPermissions] = useState<number>(0);
+
+    useEffect(() => {
+        if (permissions !== user?.permissions) {
+            setPermissions(user?.permissions || 0);
+        }
+    }, [JSON.stringify(user)]);
 
     const isClientAccount = (perm: number) => perm === -1;
 
@@ -16,6 +23,8 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         (required: number) => permissions != null && !isClientAccount(permissions) && (permissions | required) === permissions,
         [permissions]
     );
+
+    console.log(permissions);
 
     return <PermissionsContext.Provider value={{ hasPermissions }}>{children}</PermissionsContext.Provider>;
 };

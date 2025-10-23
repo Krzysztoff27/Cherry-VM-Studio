@@ -47,19 +47,21 @@ const TableControls = ({
 
     const anyRowsSelected = useCallback(() => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected(), [table]);
 
-    const defaultButtons = getDefaultButtons(icons, translations, viewMode, anyRowsSelected());
+    const defaultButtons = useMemo(() => getDefaultButtons(icons, translations, viewMode, anyRowsSelected()), [icons, translations, viewMode]);
 
-    let buttons = entries(defaultButtons)
-        .map(([key, variants]) => (hiddenButtons[key] ? null : merge(variants[currentVariants[key]], options[key])))
-        .filter((e) => !isNull(e));
+    let buttons = useMemo(
+        () =>
+            entries(defaultButtons)
+                .map(([key, variants]) => (hiddenButtons[key] ? null : merge(variants[currentVariants[key]], options[key])))
+                .filter((e) => !isNull(e)),
+        [defaultButtons, currentVariants]
+    );
 
     const insertAtPos = (button: TableControlsButton) => buttons.splice(isNaN(button.position) ? buttons.length : button.position, 0, button);
 
     additionalButtons?.forEach(insertAtPos);
 
     const hasModal = useCallback((buttonName: string) => !!modals[buttonName], [modals]);
-
-    console.log(buttons);
 
     return (
         <Group
