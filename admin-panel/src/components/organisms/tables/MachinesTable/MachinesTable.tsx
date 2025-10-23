@@ -43,8 +43,10 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                     filter: tns("filters"),
                 },
                 viewMode: viewMode,
-                withImports: false,
-                withCreation: !global,
+                hiddenButtons: {
+                    import: true,
+                    create: !global,
+                },
             }}
             RowComponent={Link}
             rowProps={(uuid) => ({ to: `/machines/${uuid}` })}

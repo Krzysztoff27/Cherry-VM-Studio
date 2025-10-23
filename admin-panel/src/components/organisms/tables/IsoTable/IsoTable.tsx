@@ -56,7 +56,9 @@ const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTa
                     filter: tns("filters"),
                     delete: tns("delete-selected"),
                 },
-                withImports: false,
+                hiddenButtons: {
+                    import: true,
+                },
                 searchColumnKey: "name",
                 viewMode,
             }}

@@ -27,7 +27,7 @@ export type TableControlsDefaultButtonsConfig = {
 };
 
 export type TableControlsTranslations = {
-    [K in TableControlsDefaultButtons]: string;
+    [K in TableControlsDefaultButtons]?: string;
 };
 
 export type TableControlsIcons = {

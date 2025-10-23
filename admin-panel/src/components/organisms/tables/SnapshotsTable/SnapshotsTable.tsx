@@ -39,7 +39,9 @@ const SnapshotsTable = ({ snapshots, loading, error, refresh }: SnapshotsTablePr
                     filter: tns("filters"),
                     delete: tns("delete-selected"),
                 },
-                withCreation: false,
+                hiddenButtons: {
+                    create: true,
+                },
                 searchColumnKey: "name",
             }}
         />
