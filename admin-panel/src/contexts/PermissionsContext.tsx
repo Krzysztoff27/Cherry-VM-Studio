@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 import { useAuthentication } from "./AuthenticationContext";
+import { isNull } from "lodash";
 
 interface PermissionsContextValue {
     hasPermissions: (required: number) => boolean;
@@ -13,7 +14,9 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const { data: permissions, refresh } = useFetch("user/permissions");
 
     useEffect(() => {
-        refresh();
+        if (!isNull(tokens.access_token)) {
+            refresh();
+        }
     }, [tokens.access_token]);
 
     const isClientAccount = (perm: number) => perm === -1;
