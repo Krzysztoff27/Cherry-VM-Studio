@@ -1,5 +1,5 @@
 import { Group, MantineStyleProp, ScrollArea, Stack, Table, Text } from "@mantine/core";
-import { arrayIntoChunks } from "../../../utils/misc";
+import { arrayIntoChunks } from "../../../../utils/misc";
 import { useTranslation } from "react-i18next";
 
 function MachineDataTable({ machine, currentState }) {

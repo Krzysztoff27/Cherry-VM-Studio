@@ -1,7 +1,7 @@
 import { Avatar, Group, Modal, Skeleton, Stack, Text, Title } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { IconUsersGroup } from "@tabler/icons-react";
-import MembersTable from "../../../components/organisms/MembersTable/MembersTable";
+import MembersTable from "../../../components/organisms/tables/MembersTable/MembersTable";
 import classes from "./GroupModal.module.css";
 import AddMembersField from "../../../components/molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";

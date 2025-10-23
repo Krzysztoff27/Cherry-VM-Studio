@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
-import BusinessCardCell from "../../atoms/table/BusinessCardCell";
+import BusinessCardCell from "../../../atoms/table/BusinessCardCell";
 import { Box, Button, ScrollArea, Stack } from "@mantine/core";
 import { IconLinkOff } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
-import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
 const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("modals", "group");
@@ -51,12 +51,12 @@ const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element =
         <Stack className={classes.container}>
             <Stack className={classes.top}></Stack>
             <Box className={classes.table}>
-                {table.getHeaderGroups().map(headerGroup => (
+                {table.getHeaderGroups().map((headerGroup) => (
                     <Box
                         className={classes.tr}
                         key={headerGroup.id}
                     >
-                        {headerGroup.headers.map(header => (
+                        {headerGroup.headers.map((header) => (
                             <Box
                                 className={classes.th}
                                 key={header.id}
@@ -68,12 +68,12 @@ const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element =
                 ))}
 
                 <ScrollArea scrollbars="y">
-                    {table.getRowModel().rows.map(row => (
+                    {table.getRowModel().rows.map((row) => (
                         <Box
                             className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
                             key={row.id}
                         >
-                            {row.getVisibleCells().map(cell => (
+                            {row.getVisibleCells().map((cell) => (
                                 <Box
                                     className={classes.td}
                                     key={cell.id}

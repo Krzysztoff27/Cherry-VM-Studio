@@ -3,10 +3,11 @@ import { useState } from "react";
 import classes from "./TanstackTable.module.css";
 import { Group, Stack } from "@mantine/core";
 import TableStateHeading, { TableStateHeadingProps } from "../../feedback/TableStateHeading/TableStateHeading";
-import TableControls, { TableControlsProps } from "../../interactive/TableControls/TableControls";
+import TableControls from "../../interactive/TableControls/TableControls";
 import TanstackTableBody from "../TanstackTableBody/TanstackTableBody";
 import TablePagination from "../../interactive/TablePagination/TablePagination";
 import { merge } from "lodash";
+import { TableControlsProps } from "../../interactive/TableControls/TableControls.types";
 
 export interface TanstackTableProps {
     loading: boolean;
