@@ -1,12 +1,10 @@
-import { List, Stack, StackProps, Title } from "@mantine/core";
-import { User } from "../../../../types/api.types";
+import { List } from "@mantine/core";
 import PERMISSIONS from "../../../../config/permissions.config";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { PermissionProps } from "../../../../types/components.types";
 
-const PermissionsList = ({ user, ...props }: PermissionProps): React.JSX.Element => {
+const PermissionsList = ({ user, ...props }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("modals", "account.permission-list");
-    const hasPermission = permissionMask => (user.permissions & permissionMask) !== 0;
+    const hasPermission = (permissionMask) => (user.permissions & permissionMask) !== 0;
 
     if (user.account_type === "client")
         return (
@@ -35,7 +33,9 @@ const PermissionsList = ({ user, ...props }: PermissionProps): React.JSX.Element
                   }`
               )
             : null,
-    ].filter(e => e);
+        hasPermission(PERMISSIONS.MANAGE_ISO_FILES) ? tns("manage-iso-files") : null,
+        hasPermission(PERMISSIONS.MANAGE_SYSTEM_RESOURCES) ? tns("manage-system-resources") : null,
+    ].filter((e) => e);
 
     return (
         <List

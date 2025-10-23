@@ -81,7 +81,9 @@
             "users-manage-client": "This user can MANAGE client accounts.",
             "users-password-administrative-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
             "users-password-administrative": "This user can CHANGE both administrative and client account's PASSWORDS.",
-            "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS."
+            "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
+            "manage-iso-files": "This user can MANAGE global ISO files.",
+            "manage-system-resources": "This user can MANAGE system resource limits."
         }
     },
     "group": {

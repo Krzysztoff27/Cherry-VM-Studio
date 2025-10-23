@@ -151,7 +151,9 @@
             "manage-all-accounts": "create, edit and remove all accounts",
             "modify-clients-credentials": "modify client accounts' credentials",
             "modify-administrators-credentials": "modify administrative accounts' credentials",
-            "modify-credentials": "modify all accounts' credentials"
+            "modify-credentials": "modify all accounts' credentials",
+            "manage-iso-files": "create, edit and remove global ISO files",
+            "manage-system-resources": "set global system resource limits for administrators"
         }
     },
     "snapshots": {
