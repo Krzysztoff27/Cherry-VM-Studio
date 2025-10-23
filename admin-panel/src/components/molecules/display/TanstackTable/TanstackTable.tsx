@@ -74,7 +74,10 @@ const TanstackTable = ({
                         table={table}
                         onFilteringChange={onFilteringChange}
                         {...controlsProps}
-                        modals={merge(controlsProps.modals, controlsProps.modals.delete && { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } })}
+                        modals={merge(
+                            controlsProps.modals,
+                            controlsProps.modals?.delete && { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } }
+                        )}
                     />
                 </Group>
             </Stack>

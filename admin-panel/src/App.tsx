@@ -20,13 +20,14 @@ import { PermissionsProvider } from "./contexts/PermissionsContext.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-            <Route errorElement={<ErrorBoundary/>} element={
-                <AuthenticationProvider>
-                    <PermissionsProvider>
-                        <Outlet/>
-                    </PermissionsProvider>
-                </AuthenticationProvider>
-            }>
+        <Route element={
+            <AuthenticationProvider>
+                <PermissionsProvider>
+                    <Outlet/>
+                </PermissionsProvider>
+            </AuthenticationProvider>
+        }>
+            <Route errorElement={<ErrorBoundary/>} >
                 <Route path='/dobre'            element={<Dobre/>}/>
                 <Route element={<HomeLayout/>}>
                     <Route path='/'           element={<Home/>}/>
@@ -54,7 +55,7 @@ const router = createBrowserRouter(
                     <Route path='/login' element={<LoginPage/>}/>
                 </Route>
             </Route>
-        
+        </Route>
     )
 );
 

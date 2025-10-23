@@ -2,14 +2,17 @@ import { TablerIcon } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 export interface TableControlsButtonOptions {
-    name: string;
-    component: ComponentType<any>;
+    component?: ComponentType<any>;
     props?: { [key: string]: any };
     children?: any;
 }
 
-export interface TableControlsButton extends TableControlsButtonOptions {
+export interface TableControlsButton {
+    name: string;
+    component: ComponentType<any>;
     position?: number;
+    props?: { [key: string]: any };
+    children?: any;
 }
 
 export interface TableControlsModal {
@@ -21,8 +24,8 @@ export type TableControlsDefaultButtons = "create" | "delete" | "import" | "filt
 
 export type TableControlsDefaultButtonsConfig = {
     [K in TableControlsDefaultButtons]: {
-        small: TableControlsButtonOptions;
-        large: TableControlsButtonOptions;
+        small: TableControlsButton;
+        large: TableControlsButton;
     };
 };
 

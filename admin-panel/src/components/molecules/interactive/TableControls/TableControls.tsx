@@ -59,6 +59,8 @@ const TableControls = ({
 
     const hasModal = useCallback((buttonName: string) => !!modals[buttonName], [modals]);
 
+    console.log(buttons);
+
     return (
         <Group
             justify="flex-end"

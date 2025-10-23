@@ -31,7 +31,8 @@
             "search": "Search",
             "filters": "Filters",
             "import": "Import",
-            "create-machine": "Create machine"
+            "create-machine": "Create machine",
+            "create-multiple": "Create multiple VMs"
         },
         "table": {
             "headers": {

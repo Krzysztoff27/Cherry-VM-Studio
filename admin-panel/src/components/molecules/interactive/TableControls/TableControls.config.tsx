@@ -1,5 +1,5 @@
 import { ActionIcon, Button } from "@mantine/core";
-import { TableControlsDefaultButtonsConfig, TableControlsButton, TableControlsIcons, TableControlsTranslations } from "./TableControls.types";
+import { TableControlsDefaultButtonsConfig, TableControlsIcons, TableControlsTranslations } from "./TableControls.types";
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
 
 const getDefaultButtons = (
