@@ -1,4 +1,3 @@
-import Footer from "../../organisms/layout/Footer/Footer";
 import { AppShell } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import React from "react";
@@ -25,9 +24,6 @@ export default function HomeLayout(): React.ReactElement {
             >
                 <Outlet />
             </AppShell.Main>
-            <AppShell.Footer p="sm">
-                <Footer />
-            </AppShell.Footer>
         </AppShell>
     );
 }
