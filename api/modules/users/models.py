@@ -102,8 +102,10 @@ AnyUser = Union[Administrator, Client]
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreatedGroup
-class CreatedGroup(Group):
+class CreateGroupFrom(BaseModel):
     uuid: UUID = Field(default_factory=uuid4)
+    name: str
+    users: list[UUID]
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CreateAdministratorForm

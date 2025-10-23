@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from utils.uuid import is_valid_uuid
 from modules.postgresql import select_rows, select_schema, select_schema_dict, select_schema_one, pool
-from modules.users.models import ClientInDB, CreatedGroup, Group
+from modules.users.models import ClientInDB, CreateGroupFrom, Group
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_group_by_field
 def get_group_by_field(field_name: str, value: str) -> Group | None:
@@ -54,7 +54,7 @@ def delete_group_by_uuid(uuid: UUID):
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_group
-def create_group(group_data: CreatedGroup) -> Group:
+def create_group(group_data: CreateGroupFrom) -> Group:
     if get_group_by_name(group_data.name) is not None:
         raise HTTPException(status_code=409, detail="Group with this name already exists")
     
