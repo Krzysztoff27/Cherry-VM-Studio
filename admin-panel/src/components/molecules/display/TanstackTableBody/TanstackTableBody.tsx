@@ -3,6 +3,7 @@ import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler
 import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
 import classes from "./TanstackTableBody.module.css";
+import cs from "classnames";
 
 export interface TanstackTableBodyProps {
     table: Table<any>;
@@ -17,7 +18,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
 
     return (
         <ScrollArea
-            className={classes.table}
+            className={cs(classes.table, "mantine-ScrollArea-content-auto-width")}
             scrollbars="xy"
             offsetScrollbars
         >

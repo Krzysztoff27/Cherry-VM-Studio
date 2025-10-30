@@ -1,11 +1,10 @@
-import { ActionIcon, Button, Group, Skeleton, useMatches } from "@mantine/core";
-import React, { useMemo, useCallback, ComponentType } from "react";
+import { Group } from "@mantine/core";
+import React, { useMemo, useCallback } from "react";
 import TableSearch from "../TableSearch/TableSearch";
 import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
-import { IconFileImport, IconFilter, IconPlus, IconTrash, TablerIcon } from "@tabler/icons-react";
-import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
+import { IconFileImport, IconFilter, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
-import { entries, isNull, keyBy, merge } from "lodash";
+import { entries, isNull, merge } from "lodash";
 import { TableControlsButton, TableControlsProps } from "./TableControls.types";
 import getDefaultButtons from "./TableControls.config";
 

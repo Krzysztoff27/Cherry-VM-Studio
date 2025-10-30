@@ -15,6 +15,6 @@ button {
     border: 2px solid var(--mantine-color-dark-5) !important;
 }
 
-.mantine-ScrollArea-content {
+.mantine-ScrollArea-content-auto-width {
     width: fit-content;
 }

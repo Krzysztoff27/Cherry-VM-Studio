@@ -1,6 +1,6 @@
 import { Box, Group, Slider, SliderProps, Stack, Text } from "@mantine/core";
 import classes from "./EnhancedSlider.module.css";
-import cs, { Value } from "classnames";
+import cs from "classnames";
 import { ReactNode } from "react";
 
 interface EnhancedSliderProps extends SliderProps {
