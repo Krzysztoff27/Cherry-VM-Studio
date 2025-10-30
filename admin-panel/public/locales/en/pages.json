@@ -32,7 +32,7 @@
             "filters": "Filters",
             "import": "Import",
             "create-machine": "Create machine",
-            "create-multiple": "Create multiple VMs"
+            "create-multiple": "Create VMs in bulk"
         },
         "table": {
             "headers": {

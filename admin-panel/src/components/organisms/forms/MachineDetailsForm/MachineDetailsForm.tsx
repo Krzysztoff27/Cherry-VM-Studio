@@ -28,7 +28,6 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
             <TextInput
                 placeholder={tns("machine-name-placeholder")}
                 description={tns("machine-name")}
-                defaultValue="New Machine"
                 w={300}
                 classNames={{ input: "borderless" }}
                 key={form.key("name")}

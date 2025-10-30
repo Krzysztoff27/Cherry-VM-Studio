@@ -67,6 +67,13 @@ export interface User extends UserInDB {
 
 // machines
 
+export interface MachineDisk {
+    name: string;
+    size: number;
+    unit: "MiB" | "GiB";
+    type: "raw" | "qcow2" | "qed" | "qcow" | "luks" | "vdi" | "vmdk" | "vpc" | "vhdx";
+}
+
 export interface MachineData {
     uuid: string;
     group: string | null;

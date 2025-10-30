@@ -1,14 +1,15 @@
-import { Button, ButtonProps, Group, Menu, MenuProps } from "@mantine/core";
+import { Button, Group, Menu, MenuProps } from "@mantine/core";
 import classes from "./SplitButton.module.css";
 import cs from "classnames";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useElementSize } from "@mantine/hooks";
 import { useState } from "react";
+import { MantineButtonAllProps } from "../../../../types/components.types";
 
-interface SplitButtonProps extends ButtonProps {
+export interface SplitButtonProps extends MantineButtonAllProps {
     className?: string;
-    sideButtonProps?: ButtonProps;
-    menuButtonsProps: ButtonProps[];
+    sideButtonProps?: MantineButtonAllProps;
+    menuButtonsProps: MantineButtonAllProps[];
     menuProps: MenuProps;
 }
 
@@ -56,12 +57,16 @@ const SplitButton = ({ children, className, sideButtonProps, menuButtonsProps, m
                     </Button>
                 </Menu.Target>
                 <Menu.Dropdown aria-expanded={opened}>
-                    {menuButtonsProps?.map(({ children, className, ...props }, i) => (
+                    {menuButtonsProps?.map(({ children, className, ...menuButtonProps }, i) => (
                         <Button
                             key={i}
                             variant="default"
                             className={cs(classes.menuButton, className)}
-                            {...props}
+                            {...menuButtonProps}
+                            onClick={(e) => {
+                                setOpened(false);
+                                menuButtonProps.onClick?.(e);
+                            }}
                         >
                             {children}
                         </Button>

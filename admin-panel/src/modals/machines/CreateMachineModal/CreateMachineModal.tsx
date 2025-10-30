@@ -7,15 +7,43 @@ import MachineDetailsForm from "../../../components/organisms/forms/MachineDetai
 import MachineSourceForm from "../../../components/organisms/forms/MachineSourceForm/MachineSourceForm";
 import MachineConfigForm from "../../../components/organisms/forms/MachineConfigForm/MachineConfigForm";
 import MachineDisksForm from "../../../components/organisms/forms/MachineDisksForm/MachineDisksForm";
+import { MachineDisk } from "../../../types/api.types";
 
-const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element => {
+export interface CreateMachineFormValues {
+    name: string;
+    group: string;
+    tags: string[];
+    assigned_clients: string[];
+    source_type: string;
+    source_uuid: string | null;
+    config: {
+        ram: number;
+        vcpu: number;
+    };
+    disks: MachineDisk[];
+    os_disk: number;
+}
+
+export interface CreateMachineModalStackProps {
+    opened: boolean;
+    onClose: () => void;
+    onSubmit: (values: CreateMachineFormValues) => void;
+}
+
+export interface CreateMachineModalProps {
+    opened: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+}
+
+export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMachineModalStackProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "create-machine");
 
     const [configTemplate, setConfigTemplate] = useState<string>("");
 
     const stack = useModalsStack(["details-page", "source-page", "config-page", "disks-page"]);
-    // todo add types
-    const form = useForm({
+
+    const form = useForm<CreateMachineFormValues>({
         initialValues: {
             name: "New Machine",
             group: "",
@@ -27,7 +55,7 @@ const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element =>
                 ram: 1024,
                 vcpu: 1,
             },
-            disks: [{ name: "sda", size: 1024, unit: "MiB", type: "type1" }],
+            disks: [{ name: "sda", size: 1024, unit: "MiB", type: "raw" }],
             os_disk: 0,
         },
         validate: {
@@ -93,12 +121,6 @@ const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element =>
 
     const resetDisksPage = () => {
         form.resetField("disks");
-    };
-
-    const submit = () => {
-        // send request
-        onClose();
-        onSubmit?.();
     };
 
     return (
@@ -175,11 +197,28 @@ const CreateMachineModal = ({ opened, onClose, onSubmit }): React.JSX.Element =>
                     }}
                     onSubmit={() => {
                         stack.close("disks-page");
-                        submit();
+                        onSubmit(form.values);
                     }}
                 />
             </Modal>
         </Modal.Stack>
+    );
+};
+
+export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineModalProps): React.JSX.Element => {
+    const submitMachine = (values: CreateMachineFormValues) => {
+        // send request
+
+        onClose();
+        onSubmit?.();
+    };
+
+    return (
+        <CreateMachineModalStack
+            opened={opened}
+            onSubmit={submitMachine}
+            onClose={onClose}
+        />
     );
 };
 

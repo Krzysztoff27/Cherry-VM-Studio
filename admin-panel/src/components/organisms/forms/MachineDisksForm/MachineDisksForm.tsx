@@ -114,7 +114,7 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
                             </Group>
                             <Select
                                 w={100}
-                                data={["type1", "type2", "type3"]}
+                                data={["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]}
                                 key={form.key(`disks.${i}.type`)}
                                 {...form.getInputProps(`disks.${i}.type`)}
                                 classNames={{ input: "borderless" }}

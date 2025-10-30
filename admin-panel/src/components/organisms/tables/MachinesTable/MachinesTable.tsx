@@ -1,20 +1,15 @@
-import { useMemo, useState } from "react";
-import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import PERMISSIONS from "../../../../config/permissions.config";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
+import CreateMachineSplitButton from "../../../molecules/interactive/CreateMachineSplitButton/CreateMachineSplitButton";
 import { getColumns } from "./columns";
 import { parseData } from "./data";
-import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
-import { usePermissions } from "../../../../contexts/PermissionsContext";
-import SplitButton from "../../../atoms/interactive/SplitButton/SplitButton";
-import { IconDeviceDesktopPlus, IconDevices2 } from "@tabler/icons-react";
-import classes from "./MachinesTable.module.css";
-import { Portal } from "@mantine/core";
-import CreateMachineModal from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
 
 const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX.Element => {
-    const [modalOpened, setModalOpened] = useState(false);
-    const { tns, t } = useNamespaceTranslation("pages", "machines.controls.");
+    const { tns } = useNamespaceTranslation("pages", "machines.controls.");
     const { hasPermissions } = usePermissions();
 
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
@@ -24,13 +19,6 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
 
     return (
         <>
-            <Portal>
-                <CreateMachineModal
-                    opened={modalOpened}
-                    onClose={() => setModalOpened(false)}
-                    onSubmit={refresh}
-                />
-            </Portal>
             <TanstackTable
                 data={data}
                 columns={columns}
@@ -53,49 +41,19 @@ const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX
                         import: true,
                         create: true,
                     },
-                    additionalButtons: global
-                        ? undefined
-                        : [
+                    additionalButtons: !global
+                        ? [
                               {
                                   name: "splitCreate",
-                                  component: SplitButton,
+                                  component: CreateMachineSplitButton,
                                   children: <>{tns("create-machine")}</>,
                                   props: {
-                                      leftSection: (
-                                          <IconDeviceDesktopPlus
-                                              size={16}
-                                              stroke={2}
-                                          />
-                                      ),
-                                      onClick: () => setModalOpened(true),
-                                      className: classes.createButton,
                                       disabled: viewMode,
-                                      sideButtonProps: {
-                                          disabled: viewMode,
-                                          className: classes.sideButton,
-                                      },
-                                      menuButtonsProps: [
-                                          {
-                                              leftSection: (
-                                                  <IconDevices2
-                                                      size={16}
-                                                      stroke={2}
-                                                  />
-                                              ),
-                                              children: <>{tns("create-multiple")} </>,
-                                              className: classes.menuButton,
-                                              justify: "start",
-                                          },
-                                      ],
-                                      menuProps: {
-                                          classNames: {
-                                              dropdown: classes.createMenuDropdown,
-                                          },
-                                          offset: 0,
-                                      },
+                                      onSubmit: refresh,
                                   },
                               },
-                          ],
+                          ]
+                        : [],
                 }}
                 RowComponent={Link}
                 rowProps={(uuid) => ({ to: `/machines/${uuid}` })}

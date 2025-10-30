@@ -39,6 +39,7 @@ const ListInput = ({
                         key={index}
                         align="center"
                         gap="sm"
+                        h="36px"
                     >
                         <ActionIcon
                             variant="default"

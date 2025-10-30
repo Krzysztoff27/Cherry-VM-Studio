@@ -1,9 +1,11 @@
-import { ActionIconProps, ButtonProps, ModalProps, MultiSelectProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
+import { ButtonProps, ModalProps, MultiSelectProps, TextInputProps, TextProps, TitleProps } from "@mantine/core";
 import { TablerIcon } from "@tabler/icons-react";
-import { ComponentType, MouseEventHandler } from "react";
+import { ComponentPropsWithoutRef, ComponentType, MouseEventHandler } from "react";
 import { SparklineProps } from "@mantine/charts";
 import { PopoverProps } from "@mantine/core";
-import { MachineData, MachineState, MachineStates, User, UserInDB } from "./api.types";
+import { MachineData, MachineState, MachineStates, UserInDB } from "./api.types";
+
+export type MantineButtonAllProps = ButtonProps & ComponentPropsWithoutRef<"button">;
 
 export interface StateDividerProps {
     label: MachineStates;
