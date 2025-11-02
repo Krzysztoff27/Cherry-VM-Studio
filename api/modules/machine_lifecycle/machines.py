@@ -8,9 +8,10 @@ from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_state.state_management import stop_machine
-from modules.machine_lifecycle.models import MachineParameters
-from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml
+from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm
+from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk
+from modules.postgresql.main import pool
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +19,45 @@ logger = logging.getLogger(__name__)
 #  Machine lifecycle actions
 ################################
 
-def create_machine(machine: Union[str, MachineParameters]) -> UUID:
+def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID) -> UUID:
     """
-    Creates non-persistent machine - no configuration template in database.
+    Creates a non-persistent machine - no configuration template in the database.
     """
     machine_uuid = uuid4()
-    machine_xml = create_machine_xml(machine, machine_uuid) if isinstance(machine, MachineParameters) else machine
-        
+    
+    machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
+    
+    machine_xml = create_machine_xml(machine, machine_uuid)
+    
+    insert_machine = """
+        INSERT INTO deployed_machines (machine_uuid) VALUES (%s);
+    """
+    
+    insert_owner = """
+        INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
+        VALUES (%s, %s);
+    """
+    
+    insert_client = """
+        INSERT INTO deployed_machines_clients (machine_uuid, client_uuid)
+        VALUES (%s, %s);
+    """
+    
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            with connection.transaction():
+                try:
+                    cursor.execute(insert_machine, (machine_uuid,))
+                    
+                    cursor.execute(insert_owner, (machine_uuid, owner_uuid))
+                    
+                    for client_uuid in machine.assigned_clients:
+                        cursor.execute(insert_client, (machine_uuid, client_uuid))
+                        
+                except Exception as e:
+                    raise Exception(f"Failed to create database records associated with a machine of UUID={machine_uuid}", e)
+            
+    
     with LibvirtConnection("rw") as libvirt_connection:
         try:
             libvirt_connection.defineXML(machine_xml)
@@ -50,6 +83,8 @@ async def delete_machine(machine_uuid: UUID) -> bool:
         system_disk = machine_parameters.system_disk
         additional_disks = machine_parameters.additional_disks
         
+        await stop_machine(machine_uuid)
+        
         assert system_disk.uuid is not None
         delete_machine_disk(system_disk.uuid, system_disk.pool)
         
@@ -57,10 +92,22 @@ async def delete_machine(machine_uuid: UUID) -> bool:
             for disk in additional_disks:
                 assert disk.uuid is not None
                 delete_machine_disk(disk.uuid, disk.pool)
+
+        delete_machine = """
+            DELETE * FROM deployed_machines WHERE machine_uuid = %s;
+        """
         
-        await stop_machine(machine_uuid)
-        
+        with pool.connection() as connection:
+            with connection.cursor() as cursor:
+                with connection.transaction():
+                    try:
+                        cursor.execute(delete_machine, (machine_uuid,))
+                            
+                    except Exception as e:
+                        raise Exception(f"Failed to delete database records associated with a machine of UUID={machine_uuid}", e)
+            
         return True
     
     except Exception as e:
+        logger.exception(f"Failed to delete all components associated with a machine of UUID={machine_uuid}", e)
         return False

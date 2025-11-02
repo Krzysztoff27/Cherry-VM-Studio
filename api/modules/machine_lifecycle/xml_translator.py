@@ -9,7 +9,8 @@ from typing import Union, Optional, Any, Literal
 from pathlib import Path
 
 from modules.machine_lifecycle.disks import create_machine_disk, delete_machine_disk, get_machine_disk_size
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormConfig, CreateMachineFormDisk
+from modules.postgresql import select_rows
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +191,24 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
     except Exception as e:
         for disk in created_disks: delete_machine_disk(disk, "cvms-disk-images")
         raise Exception(f"Failed to create machine XML: {e}")
+
+def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm) -> MachineParameters:
+    machine_parameters = MachineParameters(
+        uuid = machine_form.uuid,
+        name = machine_form.name,
+        # description = machine_form.description,
+        group_metadata = GroupMetadata(value = machine_form.group),
+        additional_metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
+        ram = machine_form.config.ram,
+        vcpu = machine_form.config.vcpu,
+        system_disk = next(MachineDisk(name = disk.name, size = disk.size_bytes, type = disk.disk_type, pool = "cvms-disk-images") for disk in machine_form.disks if disk.is_system_disk),
+        additional_disks = [MachineDisk(name = disk.name, size = disk.size_bytes, type = disk.disk_type, pool = "cvms-disk-images") for disk in machine_form.disks if not disk.is_system_disk],
+        iso_image = (StoragePool(pool = "cvms-iso-images", volume = str(machine_form.source_uuid)) if machine_form.source_type == "iso" else None),
+        # Add snapshot as source type,
+        framebuffer = MachineGraphicalFramebuffer(type = "vnc", port = "auto", listen_type = "network", listen_network = "cherry-ras"),
+        assigned_clients = machine_form.assigned_clients
+    )
+    return machine_parameters
 
 ################################
 #   XML elements parsing
@@ -413,6 +432,10 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         graphics_element = get_required_xml_tag(devices_el, "graphics")
         framebuffer = parse_machine_graphics(graphics_element)
 
+        assigned_clients_query = select_rows("SELECT client_uuid FROM deployed_machines_clients WHERE machine_uuid = %s", (uuid,))
+        
+        assigned_clients = {row["client_uuid"] for row in assigned_clients_query}
+        
         return MachineParameters(
             uuid=uuid,
             name=name,
@@ -424,10 +447,10 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
             vcpu=vcpu,
             system_disk=system_disk,
             additional_disks=additional_disks if additional_disks else None,
-            iso_image=iso_image,  # not stored in XML yet
+            iso_image=iso_image,
             network_interfaces=network_interfaces if network_interfaces else None,
             framebuffer=framebuffer,
-        )
-        
+            assigned_clients=assigned_clients
+        )   
     except ValueError as e:
         raise ValueError(f"Failed to parse machine XML: {e}")

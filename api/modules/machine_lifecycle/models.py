@@ -38,7 +38,6 @@ class MachineDisk(BaseModel):
     name: str
     size: int # in Bytes
     type: DiskType
-    
     pool: StoragePools
                 
 class NetworkInterfaceSource(BaseModel):
@@ -89,6 +88,8 @@ class MachineParameters(BaseModel):
     
     # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer
+    
+    assigned_clients: set[UUID]
     
     @property
     def metadata(self) -> list[Union[GroupMetadata, GroupMemberIdMetadata, MachineMetadata]]:
