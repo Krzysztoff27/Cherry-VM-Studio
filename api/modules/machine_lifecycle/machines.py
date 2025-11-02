@@ -10,7 +10,7 @@ from modules.libvirt_socket import LibvirtConnection
 from modules.machine_state.state_management import stop_machine
 from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
-from modules.machine_lifecycle.disks import delete_machine_disk
+from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup
 from modules.postgresql.main import pool
 
 logger = logging.getLogger(__name__)
@@ -59,6 +59,8 @@ def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_u
             logger.debug(f"Defined machine {machine_xml}")
             return machine_uuid
         except libvirt.libvirtError as e:
+            if not machine_disks_cleanup(machine):
+                logger.error(f"Failed to cleanup diks created for a machine that wasn't succesfully defined.\n Manual cleanup required!")
             raise Exception(f"Failed to define machine: {e}")
         except Exception as e:
             raise Exception(e)

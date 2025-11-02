@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machine_lifecycle.models import MachineDisk
+from modules.machine_lifecycle.models import MachineDisk, MachineParameters
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +69,22 @@ def delete_machine_disk(disk_uuid: UUID, pool: str) -> bool:
         except libvirt.libvirtError as e:
             logger.exception(f"Failed to delete machine disk (volume): {e}")
             return False
+
+def machine_disks_cleanup(machine_parameters: MachineParameters) -> bool:
+    try:
+        system_disk = machine_parameters.system_disk
+        additional_disks = machine_parameters.additional_disks
+            
+        assert system_disk.uuid is not None
+        delete_machine_disk(system_disk.uuid, system_disk.pool)
+            
+        if additional_disks is not None:
+            for disk in additional_disks:
+                assert disk.uuid is not None
+                delete_machine_disk(disk.uuid, disk.pool)
+    except Exception:
+        return False
+    return True
 
 
 def get_machine_disk_size(disk_uuid: UUID, pool: str) -> int:
