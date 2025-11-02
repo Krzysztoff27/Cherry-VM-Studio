@@ -72,7 +72,7 @@ async def __delete_machine__(machine_uuid: UUID, current_user: DependsOnAdminist
 # Debug endpoints used for functions testing - will be removed
 
 @app.get("/machine/xml/create", response_model=str, tags=['Debug'])
-async def __create_machine_xml__(machine_parameters: MachineParameters, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
+async def __create_machine_xml__(machine_parameters: CreateMachineForm, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_xml = create_machine_xml(machine_parameters, machine_uuid)

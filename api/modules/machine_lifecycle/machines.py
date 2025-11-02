@@ -29,10 +29,6 @@ def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_u
     
     machine_xml = create_machine_xml(machine, machine_uuid)
     
-    insert_machine = """
-        INSERT INTO deployed_machines (machine_uuid) VALUES (%s);
-    """
-    
     insert_owner = """
         INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
         VALUES (%s, %s);
@@ -47,7 +43,6 @@ def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_u
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    cursor.execute(insert_machine, (machine_uuid,))
                     
                     cursor.execute(insert_owner, (machine_uuid, owner_uuid))
                     
@@ -94,7 +89,7 @@ async def delete_machine(machine_uuid: UUID) -> bool:
                 delete_machine_disk(disk.uuid, disk.pool)
 
         delete_machine = """
-            DELETE * FROM deployed_machines WHERE machine_uuid = %s;
+            DELETE * FROM deployed_machines_owners WHERE machine_uuid = %s;
         """
         
         with pool.connection() as connection:

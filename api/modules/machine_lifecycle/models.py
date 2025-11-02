@@ -98,7 +98,10 @@ class MachineParameters(BaseModel):
             return base_metadata + self.additional_metadata
         return base_metadata
     
-      
+    
+################################
+#     Machine form models
+################################
 class CreateMachineFormDisk(BaseModel):
     is_system_disk: bool
     name: str
@@ -112,12 +115,16 @@ class CreateMachineFormConfig(BaseModel):
       
     
 class CreateMachineForm(BaseModel):
-    uuid: UUID = Field(default_factory=uuid4)
+    uuid: Optional[UUID] = None
     name: str
+    description: str
     group: str
     tags: set[str]
+    
     assigned_clients: set[UUID]
+    
     source_type: Literal["iso", "snapshot"]
     source_uuid: UUID
+    
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]

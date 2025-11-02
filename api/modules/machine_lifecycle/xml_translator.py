@@ -67,7 +67,7 @@ def create_machine_graphics_xml(root_element: ET.Element, framebuffer: MachineGr
     return graphics
    
     
-def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
+def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], machine_uuid: UUID) -> str:
     """
     Gets MachineParameters object and creates XML string based on it.
     """
@@ -76,6 +76,8 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
     created_disks = []
     
     try:
+        machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
+        
         domain = ET.Element("domain", type="kvm")
         
         
@@ -196,7 +198,7 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
     machine_parameters = MachineParameters(
         uuid = machine_form.uuid,
         name = machine_form.name,
-        # description = machine_form.description,
+        description = machine_form.description,
         group_metadata = GroupMetadata(value = machine_form.group),
         additional_metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
         ram = machine_form.config.ram,
