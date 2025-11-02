@@ -51,9 +51,14 @@ CREATE TABLE clients_groups (
     FOREIGN KEY(group_uuid) REFERENCES groups(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE deployed_machines (
+    machine_uuid UUID PRIMARY KEY
+);
+
 CREATE TABLE deployed_machines_owners (
     machine_uuid UUID PRIMARY KEY,
     owner_uuid UUID,
+    FOREIGN KEY(machine_uuid) REFERENCES deployed_machines(machine_uuid) ON DELETE CASCADE,
     FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
@@ -61,6 +66,7 @@ CREATE TABLE deployed_machines_clients (
     machine_uuid UUID,
     client_uuid UUID,
     PRIMARY KEY(machine_uuid, client_uuid),
+    FOREIGN KEY(machine_uuid) REFERENCES deployed_machines(machine_uuid) ON DELETE CASCADE,
     FOREIGN KEY(client_uuid) REFERENCES clients(uuid) ON DELETE CASCADE
 );
 
@@ -119,6 +125,7 @@ CREATE INDEX roles_idx ON roles (uuid, name);
 CREATE INDEX groups_idx ON groups (uuid, name);
 CREATE INDEX administrators_roles_idx ON administrators_roles (administrator_uuid, role_uuid);
 CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
+CREATE INDEX deployed_machines_idx ON deployed_machines(machine_uuid);
 CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owners(machine_uuid, owner_uuid);
 CREATE INDEX deployed_machines_clients_idx ON deployed_machines_clients(machine_uuid, client_uuid);
 CREATE INDEX network_panel_states_idx ON network_panel_states(owner_uuid);

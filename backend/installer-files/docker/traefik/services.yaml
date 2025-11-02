@@ -23,7 +23,7 @@ http:
       auth:
         basicAuth:
           users:
-            - "CherryAdmin:$apr1$XAa8WkbY$XNs1zQjPVs.8lGKFuSYQV."
+            - "CherryAdmin:$apr1$kkyWSyHX$jnIlY32yAicV1IKaf4CfT/"
       strip-api-prefix:
         stripPrefix: 
           prefixes:
