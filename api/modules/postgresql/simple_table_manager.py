@@ -17,7 +17,7 @@ MainModel = TypeVar("MainModel", bound=BaseModel)
 CreationModel = TypeVar("CreationModel", bound=BaseModel)
 
 
-class SimpleTableManager(Generic[DBModel, MainModel, CreationModel], BaseModel):
+class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
     table_name: str
     allowed_fields_for_select: set[str]
     model: Type[MainModel]
