@@ -9,15 +9,15 @@ interface PermissionsContextValue {
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
 
 export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { tokens } = useAuthentication();
     const { data: permissions, refresh } = useFetch("user/permissions");
-    const first = useRef(false);
+    const { tokens } = useAuthentication();
+    const previousToken = useRef<string | null>(null);
 
     const isClientAccount = (perm: number) => perm === -1;
 
     useEffect(() => {
-        if (tokens.access_token && !first.current) {
-            first.current = true;
+        if (tokens.access_token && previousToken.current !== tokens.access_token) {
+            previousToken.current = tokens.access_token;
             refresh();
         }
     }, [tokens.access_token]);
