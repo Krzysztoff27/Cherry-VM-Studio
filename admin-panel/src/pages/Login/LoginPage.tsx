@@ -52,7 +52,7 @@ export default function LoginPage() {
                         pt="xs"
                     >
                         <Avatar
-                            src="/icons/Cherry Admin Panel.webp"
+                            src="/icons/Cherry VM Studio Logo Small.webp"
                             radius={0}
                         />
                         <Text

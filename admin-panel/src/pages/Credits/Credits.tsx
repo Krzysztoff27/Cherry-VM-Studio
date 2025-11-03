@@ -4,13 +4,17 @@ import classes from "./Credits.module.css";
 import { contributors } from "../../config/project.config";
 import { safeObjectValues } from "../../utils/misc";
 
-const getImageElement = src => {
+const getImageElement = (src) => {
     const img = new Image();
     img.src = src;
     return img;
 };
 
-const images = [getImageElement("/icons/Cherry Admin Panel.webp"), getImageElement("/icons/Tux.webp"), getImageElement("/icons/Geeko Button Green.webp")];
+const images = [
+    getImageElement("/icons/Cherry VM Studio Logo Small.webp"),
+    getImageElement("/icons/Tux.webp"),
+    getImageElement("/icons/Geeko Button Green.webp"),
+];
 
 export default function Credits() {
     return (

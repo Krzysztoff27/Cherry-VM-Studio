@@ -73,7 +73,7 @@ export default function Home() {
                 >
                     <Group>
                         <Image
-                            src="/icons/Cherry Admin Panel.webp"
+                            src="/icons/Cherry VM Studio Logo Small.webp"
                             fit="contain"
                             mah={200}
                             flex={1}
