@@ -6,7 +6,6 @@ import classes from "./Machines.module.css";
 import useMantineNotifications from "../../hooks/useMantineNotifications.jsx";
 import { ERRORS } from "../../config/errors.config.js";
 import MachinesTable from "../../components/organisms/tables/MachinesTable/MachinesTable.tsx";
-import { dummies } from "./dummies.ts";
 
 export default function MachinesPage({ global = false }: { global?: boolean }) {
     // to resolve the issue with glitchy switches between global and private machine lists
@@ -29,8 +28,7 @@ function MachinesPageInner({ global }: { global: boolean }) {
         return null;
     }
 
-    // const machines = loading ? {} : { ...machinesData, ...machinesState };
-    const machines = dummies;
+    const machines = loading ? {} : { ...machinesData, ...machinesState };
 
     return (
         <Stack w="100%">

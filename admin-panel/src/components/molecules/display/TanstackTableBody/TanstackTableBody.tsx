@@ -18,7 +18,8 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
 
     return (
         <ScrollArea
-            className={cs(classes.table, "mantine-ScrollArea-content-auto-width")}
+            className={cs(classes.table)}
+            classNames={{ content: "auto-width" }}
             scrollbars="xy"
             offsetScrollbars
         >

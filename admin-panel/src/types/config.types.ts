@@ -1,4 +1,4 @@
-import { IconProps, TablerIcon } from "@tabler/icons-react";
+import { IconProps } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 export interface UrlNode {
