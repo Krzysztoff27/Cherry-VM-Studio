@@ -194,7 +194,18 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
         for disk in created_disks: delete_machine_disk(disk, "cvms-disk-images")
         raise Exception(f"Failed to create machine XML: {e}")
 
+def translate_disk_form_to_disk(disk_form: CreateMachineFormDisk) -> MachineDisk:
+    return MachineDisk(
+        **disk_form.model_dump(exclude={"size_bytes"}), 
+        size=disk_form.size_bytes,
+        pool = "cvms-disk-images"
+    )
+
 def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm) -> MachineParameters:
+    
+    system_disk = translate_disk_form_to_disk(machine_form.disks[machine_form.os_disk])
+    additional_disks = [translate_disk_form_to_disk(disk) for i, disk in enumerate(machine_form.disks) if i != machine_form.os_disk]
+    
     machine_parameters = MachineParameters(
         uuid = uuid4(),
         name = machine_form.name,
@@ -203,8 +214,8 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
         additional_metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
         ram = machine_form.config.ram,
         vcpu = machine_form.config.vcpu,
-        system_disk = next(MachineDisk(name = disk.name, size = disk.size_bytes, type = disk.disk_type, pool = "cvms-disk-images") for disk in machine_form.disks if disk.is_system_disk),
-        additional_disks = [MachineDisk(name = disk.name, size = disk.size_bytes, type = disk.disk_type, pool = "cvms-disk-images") for disk in machine_form.disks if not disk.is_system_disk],
+        system_disk = system_disk,
+        additional_disks = additional_disks,
         iso_image = (StoragePool(pool = "cvms-iso-images", volume = str(machine_form.source_uuid)) if machine_form.source_type == "iso" else None),
         # Add snapshot as source type,
         framebuffer = MachineGraphicalFramebuffer(type = "vnc", port = "auto", listen_type = "network", listen_network = "cherry-ras"),

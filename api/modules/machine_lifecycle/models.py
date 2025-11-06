@@ -103,10 +103,9 @@ class MachineParameters(BaseModel):
 #     Machine form models
 ################################
 class CreateMachineFormDisk(BaseModel):
-    is_system_disk: bool
     name: str
     size_bytes: int
-    disk_type: DiskType
+    type: DiskType
     
       
 class CreateMachineFormConfig(BaseModel):
@@ -127,3 +126,4 @@ class CreateMachineForm(BaseModel):
     
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
+    os_disk: int = 0
