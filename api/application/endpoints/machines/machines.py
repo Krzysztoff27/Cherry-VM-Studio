@@ -60,14 +60,14 @@ async def __create_machine__(machine_parameters: CreateMachineForm, current_user
     return machine_uuid
 
 @app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
-async def __delete_machine__(machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine_data_by_uuid(machine_uuid)
+async def __delete_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
+    machine = get_machine_data_by_uuid(uuid)
     if not machine:
-        raise HTTPException(404, f"Virtual machine of UUID={machine_uuid} could not be found.")
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(machine_uuid, current_user.uuid):
+        raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
-    if not await delete_machine(machine_uuid):
-        raise HTTPException(500, f"Failed to delete machine of UUID={machine_uuid}.")
+    if not await delete_machine(uuid):
+        raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
 
 # Debug endpoints used for functions testing - will be removed
 
