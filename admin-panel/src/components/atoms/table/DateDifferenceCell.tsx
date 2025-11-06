@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 import React from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { timePassedRounded } from "../../../utils/dates.js";
+import { timePassedRounded } from "../../../utils/dates.ts";
 
 const DateDifferenceCell = ({ getValue }: { getValue: () => string | null }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages");

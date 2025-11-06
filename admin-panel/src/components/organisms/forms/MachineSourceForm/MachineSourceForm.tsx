@@ -1,20 +1,29 @@
 import { Button, Group, Radio, Select, Stack } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import { UseFormReturnType } from "@mantine/form";
+import { CreateMachineFormValues } from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
+import useFetch from "../../../../hooks/useFetch";
+import { entries, uniqueId } from "lodash";
+import { IsoRecord } from "../../../../types/api.types";
 
 interface MachineSourceFormProps {
-    form: any;
+    form: UseFormReturnType<CreateMachineFormValues>;
     classes: Record<string, string>;
     onClose: () => void;
     onSubmit: () => void;
 }
 
 const MachineSourceForm = ({ form, classes, onClose, onSubmit }: MachineSourceFormProps): React.JSX.Element => {
+    const { data: isoFiles } = useFetch("/iso");
     const { t, tns } = useNamespaceTranslation("modals", "create-machine");
 
     const validateSourceForm = () => {
         form.validateField("source_uuid");
         return form.isValid("source_uuid");
     };
+
+    const isoSelectData = entries(isoFiles).map(([uuid, isoRecord]: [string, IsoRecord]) => ({ value: uuid, label: isoRecord.name }));
+    const snapshotSelectData = [];
 
     return (
         <Stack>
@@ -40,7 +49,7 @@ const MachineSourceForm = ({ form, classes, onClose, onSubmit }: MachineSourceFo
                     label={tns(`select-${form.values.source_type}`)}
                     placeholder={tns("none-selected")}
                     classNames={{ input: "borderless" }}
-                    data={["dummy"]}
+                    data={form.values.source_type === "iso" ? isoSelectData : snapshotSelectData}
                     key={form.key("source_uuid")}
                     {...form.getInputProps("source_uuid")}
                 />

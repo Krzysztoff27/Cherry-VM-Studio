@@ -56,5 +56,6 @@
     "previous": "Previous",
     "file": "File",
     "progress": "Progress",
-    "bulk-create": "Bulk create"
+    "bulk-create": "Bulk create",
+    "never": "Never"
 }

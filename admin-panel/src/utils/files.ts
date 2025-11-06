@@ -19,3 +19,17 @@ export const formatBytesToUnit = (bytes: number, unit: ByteUnit, decimals = 2): 
 };
 
 export const formatBytesToRelevantUnit = (bytes: number) => formatBytesToUnit(bytes, getRelevantUnit(bytes));
+
+export function toBytes(value: number, unit: ByteUnit): number {
+    const multipliers: Record<ByteUnit, number> = {
+        B: 1,
+        KiB: 1024,
+        MiB: 1024 ** 2,
+        GiB: 1024 ** 3,
+        TiB: 1024 ** 4,
+        PiB: 1024 ** 5,
+        EiB: 1024 ** 6,
+    };
+
+    return value * multipliers[unit];
+}

@@ -22,7 +22,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             header: t("machines.table.headers.state", { ns: "pages" }),
             enableSorting: false,
             cell: MachineStateCell,
-            minSize: 150,
+            minSize: 100,
             maxSize: 230,
         },
         !global && {
@@ -36,7 +36,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
                     size="sm"
                 />
             ),
-            minSize: 160,
+            minSize: 100,
             maxSize: 300,
         },
 
@@ -44,14 +44,14 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             accessorKey: "owner",
             header: t("machines.table.headers.owner", { ns: "pages" }),
             cell: MachineAssignedUserCell,
-            minSize: 200,
+            minSize: 100,
             maxSize: 500,
         },
         {
             accessorKey: "clients",
             header: t("machines.table.headers.assigned-clients", { ns: "pages" }),
             cell: MachineAssignedUserCell,
-            minSize: 200,
+            minSize: 180,
             maxSize: 500,
         },
         {

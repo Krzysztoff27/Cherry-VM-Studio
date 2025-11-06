@@ -5,9 +5,13 @@ import { IconCircle, IconCircleCheckFilled } from "@tabler/icons-react";
 import { useRef } from "react";
 import classes from "./MachineDisksForm.module.css";
 import cs from "classnames";
+import { UseFormReturnType } from "@mantine/form";
+import { CreateMachineFormValues } from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
+import { MachineDiskForm } from "../../../../types/api.types";
+import { keys } from "lodash";
 
 interface MachineDisksFormProps {
-    form: any;
+    form: UseFormReturnType<CreateMachineFormValues>;
     classes: Record<string, string>;
     onClose: () => void;
     onSubmit: () => void;
@@ -19,13 +23,12 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
     const { t, tns } = useNamespaceTranslation("modals", "create-machine");
 
     const validateDisksForm = () => {
-        // ! fix disk validation
-        form.validateField("disks");
-        return form.isValid("disks");
+        form.values.disks.forEach((disk, i) => keys(disk).forEach((key) => form.validateField(`disks.${i}.${key}`)));
+        return form.values.disks.every((disk, i) => keys(disk).every((key) => form.isValid(`disks.${i}.${key}`)));
     };
 
     const createNewDisk = () => {
-        form.setFieldValue("disks", (prev) => [...prev, { name: "", size: 0, unit: "MiB", type: "type1" }]);
+        form.setFieldValue("disks", (prev) => [...prev, { name: "", size: 1, unit: "GiB", type: "raw" } as MachineDiskForm]);
     };
 
     const removeDisk = (index: number) => {
@@ -56,7 +59,7 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
                                 OS
                             </Flex>
                             <Flex
-                                w="180"
+                                w="216"
                                 className={cs(classes.headerText, classes.left)}
                             >
                                 {tns("drive-name")}
@@ -87,17 +90,22 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
                                 {form.values.os_disk === i ? <IconCircleCheckFilled /> : <IconCircle />}
                             </ActionIcon>
                             <TextInput
+                                w={220}
                                 ref={form.values.disks.length - 1 === i ? newDiskNameRef : null}
                                 classNames={{ input: "borderless" }}
                                 key={form.key(`disks.${i}.name`)}
+                                error={form.errors[`disks.${i}.name`]}
                                 {...form.getInputProps(`disks.${i}.name`)}
                             />
-                            <Group gap="4">
+                            <Group
+                                gap="4"
+                                wrap="nowrap"
+                            >
                                 <NumberInput
                                     w={80}
                                     decimalScale={3}
                                     min={1}
-                                    max={1024}
+                                    max={1048576}
                                     hideControls
                                     classNames={{ input: cs("borderless", classes.sizeInputLeft) }}
                                     key={form.key(`disks.${i}.size`)}
@@ -107,7 +115,7 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
                                     w={80}
                                     data={["MiB", "GiB"]}
                                     allowDeselect={false}
-                                    classNames={{ input: cs("borderless", classes.sizeInputLeft) }}
+                                    classNames={{ input: cs("borderless", classes.sizeInputRight) }}
                                     key={form.key(`disks.${i}.unit`)}
                                     {...form.getInputProps(`disks.${i}.unit`)}
                                 />
@@ -125,6 +133,7 @@ const MachineDisksForm = ({ form, classes: inheritedClasses, onClose, onSubmit }
                     removeEntry={removeDisk}
                     canRemoveEntry={canRemoveDisk}
                     h="300px"
+                    w="600px"
                 />
             </Paper>
 

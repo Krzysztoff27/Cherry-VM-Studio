@@ -1,23 +1,26 @@
 import { ActionIcon, Button, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTrashXFilled } from "@tabler/icons-react";
-import React from "react";
+import React, { MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import useApi from "../../../hooks/useApi";
 
 const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Element => {
     const { t } = useTranslation();
-    const { postRequest } = useApi();
+    const { postRequest, deleteRequest } = useApi();
 
-    const preventEvent = (e) => e.preventDefault();
-
-    const startMachine = (e) => {
-        preventEvent(e);
+    const startMachine = (e: MouseEvent) => {
+        e.preventDefault(); // required to prevent entering the machine page
         postRequest(`/machine/start/${uuid}`);
     };
 
-    const stopMachine = (e) => {
-        preventEvent(e);
+    const stopMachine = (e: MouseEvent) => {
+        e.preventDefault(); // required to prevent entering the machine page
         postRequest(`/machine/stop/${uuid}`);
+    };
+
+    const deleteMachine = (e: MouseEvent) => {
+        e.preventDefault(); // required to prevent entering the machine page
+        deleteRequest(`/machine/delete/${uuid}`);
     };
 
     return (
@@ -30,7 +33,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Eleme
                 variant="light"
                 color="gray"
                 size="xs"
-                onClick={preventEvent}
+                onClick={(e) => e.preventDefault()}
                 disabled={disabled || state.fetching || state?.loading || !state?.active}
             >
                 {t("connect")}
@@ -58,7 +61,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Eleme
                 size="md"
                 color="dark.0"
                 disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={preventEvent}
+                onClick={(e) => e.preventDefault()}
             >
                 <IconSettingsFilled />
             </ActionIcon>
@@ -67,7 +70,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Eleme
                 size="md"
                 color="red.9"
                 disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={preventEvent}
+                onClick={deleteMachine}
             >
                 <IconTrashXFilled size={"24"} />
             </ActionIcon>

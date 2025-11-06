@@ -1,3 +1,4 @@
+import { NumberFormatterFactory } from "@mantine/core";
 import { AccountType } from "./config.types";
 
 export interface TokenRequestForm {
@@ -67,11 +68,19 @@ export interface User extends UserInDB {
 
 // machines
 
+export type MachineDiskTypes = "raw" | "qcow2" | "qed" | "qcow" | "luks" | "vdi" | "vmdk" | "vpc" | "vhdx";
+
 export interface MachineDisk {
+    name: string;
+    size_bytes: number;
+    type: MachineDiskTypes;
+}
+
+export interface MachineDiskForm {
     name: string;
     size: number;
     unit: "MiB" | "GiB";
-    type: "raw" | "qcow2" | "qed" | "qcow" | "luks" | "vdi" | "vmdk" | "vpc" | "vhdx";
+    type: MachineDiskTypes;
 }
 
 export interface MachineData {
@@ -95,6 +104,22 @@ export interface MachineState extends MachineData {
 }
 
 export type MachineAll = MachineData | MachineState;
+
+export interface CreateMachineBody {
+    name: string;
+    description: string;
+    group: string;
+    tags: string[];
+    assigned_clients: string[];
+    source_type: "iso" | "snapshot";
+    source_uuid: string;
+    config: {
+        ram: number;
+        vcpu: number;
+    };
+    disks: MachineDisk[];
+    os_disk: number;
+}
 
 export interface IsoRecord {
     uuid: string;

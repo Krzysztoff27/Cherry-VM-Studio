@@ -7,20 +7,22 @@ import MachineDetailsForm from "../../../components/organisms/forms/MachineDetai
 import MachineSourceForm from "../../../components/organisms/forms/MachineSourceForm/MachineSourceForm";
 import MachineConfigForm from "../../../components/organisms/forms/MachineConfigForm/MachineConfigForm";
 import MachineDisksForm from "../../../components/organisms/forms/MachineDisksForm/MachineDisksForm";
-import { MachineDisk } from "../../../types/api.types";
+import { CreateMachineBody, MachineDisk, MachineDiskForm } from "../../../types/api.types";
+import useApi from "../../../hooks/useApi";
+import { toBytes } from "../../../utils/files";
 
 export interface CreateMachineFormValues {
     name: string;
-    group: string;
     tags: string[];
+    description: string;
     assigned_clients: string[];
-    source_type: string;
+    source_type: "iso" | "snapshot";
     source_uuid: string | null;
     config: {
         ram: number;
         vcpu: number;
     };
-    disks: MachineDisk[];
+    disks: MachineDiskForm[];
     os_disk: number;
 }
 
@@ -46,8 +48,8 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     const form = useForm<CreateMachineFormValues>({
         initialValues: {
             name: "New Machine",
-            group: "",
             tags: [],
+            description: "",
             assigned_clients: [],
             source_type: "iso",
             source_uuid: null,
@@ -69,16 +71,14 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                     : val.length > 24
                     ? tns("validation.name-too-long")
                     : null,
-            group: (val) =>
-                !/^[\w\s.-]+$/.test(val)
-                    ? tns("validation.group-invalid-characters")
-                    : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.group-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.group-too-short")
-                    : val.length > 24
-                    ? tns("validation.group-too-long")
-                    : null,
+            tags: (val) =>
+                val
+                    .map((tag) => {
+                        if (!/^[\w\s.-]+$/.test(tag)) return tns("validation.tags-invalid-characters");
+                        if (!/[a-zA-Z]/.test(tag[0])) return tns("validation.tags-invalid-first");
+                        return null;
+                    })
+                    .find((e) => e) || null,
             source_uuid: isNotEmpty("validation.source-uuid-empty"),
             disks: {
                 name: (val) =>
@@ -96,6 +96,10 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
             },
         },
     });
+
+    useEffect(() => {
+        console.log(form.errors);
+    }, [form.errors]);
 
     useEffect(() => {
         if (opened) {
@@ -206,8 +210,16 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 };
 
 export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineModalProps): React.JSX.Element => {
+    const { postRequest } = useApi();
+
+    const translateValues = (values: CreateMachineFormValues): CreateMachineBody => ({
+        ...values,
+        group: "",
+        disks: values.disks.map((disk) => ({ name: disk.name, type: disk.type, size_bytes: toBytes(disk.size, disk.unit) })),
+    });
+
     const submitMachine = (values: CreateMachineFormValues) => {
-        // send request
+        postRequest("/machine/create", JSON.stringify(translateValues(values)));
 
         onClose();
         onSubmit?.();

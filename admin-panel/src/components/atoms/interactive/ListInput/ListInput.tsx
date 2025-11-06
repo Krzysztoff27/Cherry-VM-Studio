@@ -1,10 +1,10 @@
-import { ActionIcon, ActionIconProps, Group, ScrollArea, ScrollAreaAutosizeProps, Stack } from "@mantine/core";
+import { ActionIcon, ActionIconProps, Group, ScrollArea, Stack, StackProps } from "@mantine/core";
 import { ReactNode } from "react";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { isBoolean } from "lodash";
 import cs from "classnames";
 
-interface ListInputProps extends ScrollAreaAutosizeProps {
+interface ListInputProps extends StackProps {
     values: Array<any>;
     gap?: number | string;
     createEntryButtonProps?: ActionIconProps;
@@ -18,6 +18,7 @@ interface ListInputProps extends ScrollAreaAutosizeProps {
 }
 
 const ListInput = ({
+    h,
     values,
     headerRow = () => null,
     row,
@@ -25,21 +26,23 @@ const ListInput = ({
     removeEntry = () => {},
     canCreateEntry = true,
     canRemoveEntry = true,
-    gap,
     createEntryButtonProps,
     removeEntryButtonProps,
     ...props
 }: ListInputProps): React.JSX.Element => {
     return (
-        <ScrollArea.Autosize {...props}>
-            <Stack gap={gap}>
+        <ScrollArea
+            h={h}
+            scrollbars="xy"
+        >
+            <Stack {...props}>
                 {headerRow(values)}
                 {...values.map((value, index) => (
                     <Group
                         key={index}
-                        align="center"
+                        align="start"
                         gap="sm"
-                        h="36px"
+                        wrap="nowrap"
                     >
                         <ActionIcon
                             variant="default"
@@ -71,7 +74,7 @@ const ListInput = ({
                     </ActionIcon>
                 </Group>
             </Stack>
-        </ScrollArea.Autosize>
+        </ScrollArea>
     );
 };
 

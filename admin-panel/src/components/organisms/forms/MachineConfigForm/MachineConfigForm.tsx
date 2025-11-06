@@ -1,11 +1,13 @@
 import { Button, Divider, Group, Select, Stack, Text } from "@mantine/core";
 import { isNull } from "lodash";
-import React, { useState } from "react";
+import React from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import EnhancedSlider from "../../../atoms/interactive/EnhancedSlider/EnhancedSlider";
+import { UseFormReturnType } from "@mantine/form";
+import { CreateMachineFormValues } from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
 
 interface MachineConfigFormProps {
-    form: any;
+    form: UseFormReturnType<CreateMachineFormValues>;
     classes: Record<string, string>;
     configTemplate: string;
     setConfigTemplate: (callback: ((prev: string) => string) | string) => void;

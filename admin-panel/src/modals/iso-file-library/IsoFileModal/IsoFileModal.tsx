@@ -8,6 +8,7 @@ import { IsoRecord, User } from "../../../types/api.types";
 import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 import { formatBytesToRelevantUnit } from "../../../utils/files";
 import useFetch from "../../../hooks/useFetch";
+import { formatDate } from "../../../utils/dates";
 
 const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "iso");
@@ -71,7 +72,7 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                                 span
                                 className={classes.detailValue}
                             >
-                                {` ${file.last_used?.replace("T", " ")}`}
+                                {` ${file.last_used ? formatDate(new Date(file.last_used)) : t("never")}`}
                             </Text>
                         </Text>
 
@@ -89,7 +90,7 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                                         span
                                         className={classes.detailValue}
                                     >
-                                        {` ${file.imported_at.replace("T", " ")}`}
+                                        {` ${formatDate(new Date(file.imported_at))}`}
                                     </Text>
                                 </Text>
                                 <Text className={classes.detailLabel}>{tns("added-by")}:</Text>
@@ -106,7 +107,7 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                                         span
                                         className={classes.detailValue}
                                     >
-                                        {` ${file.last_modified_at?.replace("T", " ") ?? "-"}`}
+                                        {` ${file.last_modified_at ? formatDate(new Date(file.last_modified_at)) : t("never")}`}
                                     </Text>
                                 </Text>
                                 <Text className={classes.detailLabel}>{tns("last-modified-by")}:</Text>

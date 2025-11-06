@@ -189,11 +189,39 @@
         "ram": "RAM",
         "vcpu": "vCPU",
         "ram-unit": "{{count}} MiB",
+        "vcpu-unit_zero": "{{count}} core",
         "vcpu-unit_one": "{{count}} core",
         "vcpu-unit_other": "{{count}} cores",
         "description-disks": "Here you can add additional disks for the machine.",
         "drive-name": "Drive name",
         "drive-size": "Drive size",
-        "drive-type": "Drive type"
+        "drive-type": "Drive type",
+        "validation": {
+            "name-spaces": "Name cannot contain spaces.",
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-short": "Name must be at least 3 characters long.",
+            "name-invalid-first": "Name must start with a letter.",
+            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+            "tags-invalid-first": "Tag must start with a letter.",
+            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+        }
+    },
+    "create-machines-in-bulk": {
+        "title": "Create Machines in Bulk",
+        "description": {
+            "main": "Use this modal to quickly generate several virtual machines at once.",
+            "set-of-machines": "Add machines configurations and choose how many copies of each to create.",
+            "create-for-group": "If enabled, the defined set of machines will be created for every client in the chosen group. Clients from the group will be automatically assigned to approperiate machines."
+        },
+        "add-first-machine": "Add First Machine",
+        "set-of-machines": "Your Set of Machines",
+        "create-for-group": "Create For Group of Clients",
+        "create-for-group-mode": "Create for group of clients",
+        "select-group": "Select the target group",
+        "number-warning_one": "{{count}} machine will be created.",
+        "number-warning_other": "{{count}} machines will be created.",
+        "validation": {
+            "group-not-selected": "You must select a client group."
+        }
     }
 }

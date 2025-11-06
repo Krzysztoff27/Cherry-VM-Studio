@@ -1,12 +1,14 @@
-import { Autocomplete, Button, Group, Stack, TagsInput, TextInput } from "@mantine/core";
+import { Button, Group, Stack, TagsInput, TextInput } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import UserMultiselect from "../../../molecules/interactive/UserMultiselect/UserMultiselect";
 import { values } from "lodash";
 import useFetch from "../../../../hooks/useFetch";
 import { UserInDB } from "../../../../types/api.types";
+import { UseFormReturnType } from "@mantine/form";
+import { CreateMachineFormValues } from "../../../../modals/machines/CreateMachineModal/CreateMachineModal";
 
 interface MachineDetailsFormProps {
-    form: any;
+    form: UseFormReturnType<CreateMachineFormValues>;
     classes: Record<string, string>;
     onClose: () => void;
     onSubmit: () => void;
@@ -19,35 +21,26 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
 
     const validateDetailsForm = () => {
         form.validateField("name");
-        form.validateField("group");
-        return form.isValid("name") && form.isValid("group");
+        form.validateField("tags");
+        return form.isValid("name") && form.isValid("tags");
     };
 
     return (
         <Stack>
-            <TextInput
-                placeholder={tns("machine-name-placeholder")}
-                description={tns("machine-name")}
-                w={300}
-                classNames={{ input: "borderless" }}
-                key={form.key("name")}
-                {...form.getInputProps("name")}
-            />
             <Group align="top">
-                <Autocomplete
-                    placeholder={tns("machine-group-placeholder")}
-                    description={tns("machine-group")}
+                <TextInput
+                    placeholder={tns("machine-name-placeholder")}
+                    description={tns("machine-name")}
                     w={300}
-                    data={["Server", "Desktop"]}
                     classNames={{ input: "borderless" }}
-                    key={form.key("group")}
-                    {...form.getInputProps("group")}
+                    key={form.key("name")}
+                    {...form.getInputProps("name")}
                 />
                 <TextInput
                     description={tns("machine-group-no")}
                     classNames={{ input: "borderless" }}
                     w={50}
-                    value="0"
+                    value="1"
                     readOnly
                 />
             </Group>
@@ -58,7 +51,8 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
                 classNames={{ input: "borderless" }}
                 key={form.key("tags")}
                 {...form.getInputProps("tags")}
-                disabled
+                maxLength={12}
+                maxTags={3}
             />
             <UserMultiselect
                 placeholder={form.values.assigned_clients.length ? "" : tns("assigned-clients-placeholder")}
