@@ -67,7 +67,7 @@ class MachineGraphicalFramebuffer(BaseModel):
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
 class MachineParameters(BaseModel):
-    uuid: Optional[UUID] = None # Unique identifier                     
+    uuid: UUID # Unique identifier                     
     name: str # Unique - libvirt requirement                                                                               
     description: Optional[str] = None
     
@@ -115,7 +115,6 @@ class CreateMachineFormConfig(BaseModel):
       
     
 class CreateMachineForm(BaseModel):
-    uuid: Optional[UUID] = None
     name: str
     description: str
     group: str

@@ -23,11 +23,9 @@ def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_u
     """
     Creates a non-persistent machine - no configuration template in the database.
     """
-    machine_uuid = uuid4()
-    
     machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
     
-    machine_xml = create_machine_xml(machine, machine_uuid)
+    machine_xml = create_machine_xml(machine, machine.uuid)
     
     insert_owner = """
         INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
@@ -44,20 +42,20 @@ def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_u
             with connection.transaction():
                 try:
                     
-                    cursor.execute(insert_owner, (machine_uuid, owner_uuid))
+                    cursor.execute(insert_owner, (machine.uuid, owner_uuid))
                     
                     for client_uuid in machine.assigned_clients:
-                        cursor.execute(insert_client, (machine_uuid, client_uuid))
+                        cursor.execute(insert_client, (machine.uuid, client_uuid))
                         
                 except Exception as e:
-                    raise Exception(f"Failed to create database records associated with a machine of UUID={machine_uuid}", e)
+                    raise Exception(f"Failed to create database records associated with a machine of UUID={machine.uuid}", e)
             
     
     with LibvirtConnection("rw") as libvirt_connection:
         try:
             libvirt_connection.defineXML(machine_xml)
             logger.debug(f"Defined machine {machine_xml}")
-            return machine_uuid
+            return machine.uuid
         except libvirt.libvirtError as e:
             if not machine_disks_cleanup(machine):
                 logger.error(f"Failed to cleanup diks created for a machine that wasn't succesfully defined.\n Manual cleanup required!")

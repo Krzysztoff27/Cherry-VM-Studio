@@ -4,7 +4,7 @@ import logging
 import string
 import xml.etree.ElementTree as ET
 
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import Union, Optional, Any, Literal
 from pathlib import Path
 
@@ -196,7 +196,7 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
 
 def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm) -> MachineParameters:
     machine_parameters = MachineParameters(
-        uuid = machine_form.uuid,
+        uuid = uuid4(),
         name = machine_form.name,
         description = machine_form.description,
         group_metadata = GroupMetadata(value = machine_form.group),
