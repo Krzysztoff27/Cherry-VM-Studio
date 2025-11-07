@@ -97,7 +97,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
     
 
 
-@app.get("/debug/machine/xml/create", response_model=str, tags=['Debug'])
+@app.post("/debug/machine/xml/create", response_model=str, tags=['Debug'])
 async def __create_machine_xml__(machine_parameters: CreateMachineForm, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")

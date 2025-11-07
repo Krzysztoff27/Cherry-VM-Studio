@@ -205,7 +205,7 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
         created_disks.append(system_disk_uuid)
         create_machine_disk_xml(devices, machine.system_disk, system_disk_uuid, True)
         
-        cdrom = ET.SubElement(domain, "disk", type="volume", device="cdrom")
+        cdrom = ET.SubElement(devices, "disk", type="volume", device="cdrom")
         ET.SubElement(cdrom, "alias", name="cd-rom")
         ET.SubElement(cdrom, "driver", name="qemu", type="raw")
         
