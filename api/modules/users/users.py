@@ -189,6 +189,9 @@ def delete_user_by_uuid(uuid: UUID):
             if is_admin(user) and not verify_role_integrity(cursor):
                 connection.rollback()
                 raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
+            
+            cursor.execute(f"DELETE FROM guacamole_entity WHERE name = %s", (uuid,))
+            
             connection.commit()
     
      
@@ -223,7 +226,12 @@ def create_user(user_data: CreateUserForm) -> AnyUser:
                             INSERT INTO clients_groups (client_uuid, group_uuid)
                             VALUES (%(client_uuid)s, %(group_uuid)s)               
                         """, {"client_uuid": user_data.uuid, "group_uuid": group_uuid})  
-                        
+                
+                # Record in guacamole dedicated table that allows for SSO and one-to-one user mapping
+                cursor.execute(f"""
+                        INSERT INTO guacamole_entity (name, type)
+                        VALUES (%(uuid)s, 'USER')
+                        """, {"uuid": user_data.uuid})
         
     # we're assuming here that user will exist after being created
     # surely it won't break :)

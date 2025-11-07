@@ -71,35 +71,61 @@ async def __delete_machine__(uuid: UUID, current_user: DependsOnAdministrativeAu
 
 # Debug endpoints used for functions testing - will be removed
 
-@app.get("/machine/xml/create", response_model=str, tags=['Debug'])
+@app.post("/debug/machine/create", response_model=UUID, tags=['Debug'])
+async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
+    machine_uuid = await async_create_machine(machine_parameters, current_user.uuid)
+    if not machine_uuid:
+        raise HTTPException(500, f"Machine creation failed.")
+    return machine_uuid
+
+@app.post("/debug/machine/create/bulk", response_model=list[UUID], tags=['Debug'])
+async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
+    machine_uuid = await async_create_machine_bulk(machine_parameters, current_user.uuid, machine_count)
+    if not machine_uuid:
+        raise HTTPException(500, f"Bulk machine creation failed.")
+    return machine_uuid
+
+@app.delete("/debug/machine/delete/{uuid}", response_model=None, tags=['Debug'])
+async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
+    machine = get_machine_data_by_uuid(uuid)
+    if not machine:
+        raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
+        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
+    if not await async_delete_machine(uuid):
+        raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
+    
+
+
+@app.get("/debug/machine/xml/create", response_model=str, tags=['Debug'])
 async def __create_machine_xml__(machine_parameters: CreateMachineForm, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_xml = create_machine_xml(machine_parameters, machine_uuid)
     return machine_xml
 
-@app.get("/machine/xml/parse", response_model=MachineParameters, tags=['Debug'])
+@app.get("/debug/machine/xml/parse", response_model=MachineParameters, tags=['Debug'])
 async def __parse_machine_xml__(machine_xml: str, current_user: DependsOnAdministrativeAuthentication) -> MachineParameters:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_parameters = parse_machine_xml(machine_xml)
     return machine_parameters
 
-@app.post("/machine/disk/create", response_model=UUID, tags=['Debug'])
+@app.post("/debug/machine/disk/create", response_model=UUID, tags=['Debug'])
 async def __create_machine_disk__(machine_disk: MachineDisk, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     disk_uuid = create_machine_disk(machine_disk)
     return disk_uuid
 
-@app.delete("/machine/disk/delete/{storage_pool}", response_model=None, tags=['Debug'])
+@app.delete("/debug/machine/disk/delete/{storage_pool}", response_model=None, tags=['Debug'])
 async def __delete_machine_disk__(disk_uuid: UUID, storage_pool: str, current_user: DependsOnAdministrativeAuthentication) -> None:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     if not delete_machine_disk(disk_uuid, storage_pool):
         raise HTTPException(500, f"Failed to remove disk of UUID={disk_uuid}.")
 
-@app.get("/machine/disk/size/{storage_pool}", response_model=int, tags=['Debug'])
+@app.get("/debug/machine/disk/size/{storage_pool}", response_model=int, tags=['Debug'])
 async def __get_machine_disk_size___(disk_uuid: UUID, storage_pool: str, current_user: DependsOnAdministrativeAuthentication) -> int:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")

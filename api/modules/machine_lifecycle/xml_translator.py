@@ -9,15 +9,79 @@ from typing import Union, Optional, Any, Literal
 from pathlib import Path
 
 from modules.machine_lifecycle.disks import create_machine_disk, delete_machine_disk, get_machine_disk_size
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, GroupMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormConfig, CreateMachineFormDisk
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk
 from modules.postgresql import select_rows
 
 logger = logging.getLogger(__name__)
 
 ################################
-#   XML elements creation
+#      Helper functions
 ################################
+def get_required_xml_tag(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> ET.Element:
+    """
+    Finds XML tag. Raises error if tag is missing.
+    """
+    tag = root_element.find(path=path, namespaces=namespaces)
+    
+    if tag is None:
+        raise ValueError(f"Element {path} not found in XML string.")
+    return tag
 
+
+def get_required_xml_tag_text(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> str:
+    """
+    Finds XML tag text property. Raises error if tag is missing.
+    """ 
+    text = root_element.findtext(path=path, namespaces=namespaces)
+    
+    if text is None:
+        raise ValueError(f"Element {path} not found in XML string.")
+    return text
+
+
+def get_required_xml_tag_attribute(root_element: ET.Element, key: str, default: Optional[Any] = None):
+    """
+    Finds XML tag attribute. Raises error if tag is missing.
+    """ 
+    text = root_element.get(key=key, default=default)
+    
+    if text is None:
+        raise ValueError(f"Attribute {key} not found in XML tag {root_element}.")
+    return text
+
+
+def translate_disk_form_to_disk(disk_form: CreateMachineFormDisk) -> MachineDisk:
+    return MachineDisk(
+        **disk_form.model_dump(exclude={"size_bytes"}), 
+        size=disk_form.size_bytes,
+        pool = "cvms-disk-images"
+    )
+
+
+def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm) -> MachineParameters:
+    
+    system_disk = translate_disk_form_to_disk(machine_form.disks[machine_form.os_disk])
+    additional_disks = [translate_disk_form_to_disk(disk) for i, disk in enumerate(machine_form.disks) if i != machine_form.os_disk]
+    
+    return MachineParameters(
+        uuid = uuid4(),
+        title = machine_form.name,
+        description = machine_form.description,
+        metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
+        ram = machine_form.config.ram,
+        vcpu = machine_form.config.vcpu,
+        system_disk = system_disk,
+        additional_disks = additional_disks,
+        iso_image = (StoragePool(pool = "cvms-iso-images", volume = str(machine_form.source_uuid)) if machine_form.source_type == "iso" else None),
+        # Add snapshot as source type,
+        framebuffer = MachineGraphicalFramebuffer(type = "vnc", port = "auto", listen_type = "network", listen_network = "cherry-ras"),
+        assigned_clients = machine_form.assigned_clients
+    )
+
+
+################################
+#    XML elements creation
+################################
 def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk, disk_uuid: UUID, system: Union[Literal[True], Literal[False]], target: str | None = None) -> ET.Element:
     if system is False and target is None:
         raise ValueError("target must be specified when creating non-system disk")
@@ -86,8 +150,11 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
         
         
         name = ET.SubElement(domain, "name")
-        name.text = machine.name
+        name.text = str(machine_uuid)
         
+        
+        title = ET.SubElement(domain, "title")
+        title.text = machine.title
         
         description = ET.SubElement(domain, "description")
         if machine.description:
@@ -97,16 +164,9 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
         metadata = ET.SubElement(domain, "metadata")
         vm_info = ET.SubElement(metadata, "vm:info", {"xmlns:vm": "http://example.com/virtualization"})
         
-        group_metadata = ET.SubElement(vm_info, f"vm:{machine.group_metadata.tag}")
-        group_metadata.text = machine.group_metadata.value
         
-        if machine.group_member_id_metadata:
-            group_member_id_metadata = ET.SubElement(vm_info, f"vm:{machine.group_member_id_metadata.tag}")
-            if machine.group_member_id_metadata.value:
-                group_member_id_metadata.text = machine.group_member_id_metadata.value
-        
-        if machine.additional_metadata:
-            for machine_metadata in machine.additional_metadata:
+        if machine.metadata:
+            for machine_metadata in machine.metadata:
                 tag = ET.SubElement(vm_info, f"vm:{machine_metadata.tag}")
                 tag.text = str(machine_metadata.value)
 
@@ -194,72 +254,10 @@ def create_machine_xml(machine: Union[MachineParameters, CreateMachineForm], mac
         for disk in created_disks: delete_machine_disk(disk, "cvms-disk-images")
         raise Exception(f"Failed to create machine XML: {e}")
 
-def translate_disk_form_to_disk(disk_form: CreateMachineFormDisk) -> MachineDisk:
-    return MachineDisk(
-        **disk_form.model_dump(exclude={"size_bytes"}), 
-        size=disk_form.size_bytes,
-        pool = "cvms-disk-images"
-    )
-
-def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm) -> MachineParameters:
-    
-    system_disk = translate_disk_form_to_disk(machine_form.disks[machine_form.os_disk])
-    additional_disks = [translate_disk_form_to_disk(disk) for i, disk in enumerate(machine_form.disks) if i != machine_form.os_disk]
-    
-    machine_parameters = MachineParameters(
-        uuid = uuid4(),
-        name = machine_form.name,
-        description = machine_form.description,
-        group_metadata = GroupMetadata(value = machine_form.group),
-        additional_metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
-        ram = machine_form.config.ram,
-        vcpu = machine_form.config.vcpu,
-        system_disk = system_disk,
-        additional_disks = additional_disks,
-        iso_image = (StoragePool(pool = "cvms-iso-images", volume = str(machine_form.source_uuid)) if machine_form.source_type == "iso" else None),
-        # Add snapshot as source type,
-        framebuffer = MachineGraphicalFramebuffer(type = "vnc", port = "auto", listen_type = "network", listen_network = "cherry-ras"),
-        assigned_clients = machine_form.assigned_clients
-    )
-    return machine_parameters
 
 ################################
-#   XML elements parsing
+#    XML elements parsing
 ################################
-
-def get_required_xml_tag(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> ET.Element:
-    """
-    Finds XML tag. Raises error if tag is missing.
-    """
-    tag = root_element.find(path=path, namespaces=namespaces)
-    
-    if tag is None:
-        raise ValueError(f"Element {path} not found in XML string.")
-    return tag
-
-
-def get_required_xml_tag_text(root_element: ET.Element, path: str, namespaces: Optional[dict[str, str]] = None) -> str:
-    """
-    Finds XML tag text property. Raises error if tag is missing.
-    """ 
-    text = root_element.findtext(path=path, namespaces=namespaces)
-    
-    if text is None:
-        raise ValueError(f"Element {path} not found in XML string.")
-    return text
-
-
-def get_required_xml_tag_attribute(root_element: ET.Element, key: str, default: Optional[Any] = None):
-    """
-    Finds XML tag attribute. Raises error if tag is missing.
-    """ 
-    text = root_element.get(key=key, default=default)
-    
-    if text is None:
-        raise ValueError(f"Attribute {key} not found in XML tag {root_element}.")
-    return text
-
-
 def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
     """
     Parse <disk> element back into MachineDisk model.
@@ -384,18 +382,17 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         domain = ET.fromstring(machine_xml)
         
         uuid = UUID(get_required_xml_tag_text(domain, "uuid"))
-        name = get_required_xml_tag_text(domain, "name")
+        title = get_required_xml_tag_text(domain, "title")
         description = get_required_xml_tag_text(domain, "description")
 
 
-        additional_metadata = []
+        metadata = []
         metadata_el = get_required_xml_tag(domain, "metadata/vm:info", {"vm": "http://example.com/virtualization"})
-        group_metadata = GroupMetadata(value=get_required_xml_tag_text(metadata_el, "vm:group", {"vm": "http://example.com/virtualization"}))
         
         for child in metadata_el:
-            tag = child.tag.split("}", 1)[-1]  # strip namespace
-            if tag not in ["group", "groupMemberId"] and child.text is not None:
-                additional_metadata.append(MachineMetadata(tag=tag, value=child.text))
+            tag = child.tag.split("}", 1)[-1]  # strip namespace element
+            if child.text is not None:
+                metadata.append(MachineMetadata(tag=tag, value=child.text))
 
 
         ram = int(get_required_xml_tag_text(domain, "memory"))
@@ -451,11 +448,9 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         
         return MachineParameters(
             uuid=uuid,
-            name=name,
+            title=title,
             description=description,
-            group_metadata=group_metadata,
-            group_member_id_metadata=None,
-            additional_metadata=additional_metadata if additional_metadata else None,
+            metadata=metadata if metadata else None,
             ram=ram,
             vcpu=vcpu,
             system_disk=system_disk,

@@ -70,6 +70,7 @@ def delete_machine_disk(disk_uuid: UUID, pool: str) -> bool:
             logger.exception(f"Failed to delete machine disk (volume): {e}")
             return False
 
+
 def machine_disks_cleanup(machine_parameters: MachineParameters) -> bool:
     try:
         system_disk = machine_parameters.system_disk
