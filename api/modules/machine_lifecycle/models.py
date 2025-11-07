@@ -95,7 +95,6 @@ class CreateMachineFormConfig(BaseModel):
 class CreateMachineForm(BaseModel):
     name: str
     description: str
-    group: str
     tags: set[str]
     
     assigned_clients: set[UUID]

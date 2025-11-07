@@ -4,8 +4,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from h11 import Request
 from pydantic import ValidationError
+from contextlib import asynccontextmanager
+from modules.postgresql.main import open_async_pool, close_async_pool
 
-app = FastAPI(root_path="/api")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await open_async_pool()
+    yield
+    await close_async_pool()
+
+app = FastAPI(root_path="/api", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # allow local origins

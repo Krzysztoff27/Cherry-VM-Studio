@@ -25,3 +25,9 @@ async_pool = psycopg_pool.AsyncConnectionPool(
         "row_factory": dict_row, # ensure that query results are returned as a dictionary
     },
 )
+
+async def open_async_pool():
+    await async_pool.open()
+
+async def close_async_pool():
+    await async_pool.close()
