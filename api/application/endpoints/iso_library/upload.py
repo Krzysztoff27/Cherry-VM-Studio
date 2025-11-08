@@ -99,7 +99,6 @@ async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthent
 
 @app.post("/iso/upload/complete", response_model=None, tags=["ISO Library"])
 async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: DependsOnAdministrativeAuthentication):
-    logging.info("Completing ISO file upload. Data: ", data)
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
     name_duplicate = IsoLibrary.get_record_by_field("name", data.name)
@@ -113,7 +112,7 @@ async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: 
     if not re.match(REGEX_CONFIG.universal_name, data.name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ISO record name must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods."
+            detail="ISO record name must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, spaces, underscores, hyphens and periods."
         )
     
     try: 
