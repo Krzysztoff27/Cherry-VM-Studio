@@ -49,7 +49,7 @@ async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthent
         uuid_header = request.headers.get("upload-uuid")
         
         if not uuid_header:
-            raise UploadHeadersError("'uuid' header is required to identify the upload.")
+            raise UploadHeadersError("'upload-uuid' header is required to identify the upload.")
         
         uuid = UUID(uuid_header)
         
