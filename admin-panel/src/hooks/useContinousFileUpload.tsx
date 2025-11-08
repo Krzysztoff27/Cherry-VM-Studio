@@ -55,9 +55,8 @@ const useContinousFileUpload = (path: string) => {
             const startResponse = await axios.post(`${uploadPath}/start`, null, { headers, signal: controller.signal });
 
             const uuid = startResponse.data;
-            let offset = 0;
 
-            while (offset < file.size) {
+            for (let offset = 0; offset < file.size; offset += API_CONFIG.upload_chunk) {
                 const slice = file.slice(offset, offset + API_CONFIG.upload_chunk);
                 const formData = new FormData();
                 formData.append("file", slice);
@@ -65,8 +64,9 @@ const useContinousFileUpload = (path: string) => {
                 await axios.post(`${uploadPath}/chunk`, formData, {
                     headers: {
                         ...headers,
-                        uuid,
-                        offset,
+                        "Content-Type": "multipart/form-data",
+                        "upload-uuid": uuid,
+                        "bits-offset": offset,
                     },
                     maxBodyLength: Infinity,
                     maxContentLength: Infinity,

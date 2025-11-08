@@ -156,7 +156,7 @@
         "url": "File URL",
         "save-locally": "Save as a local copy.",
         "validation": {
-            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-long": "Name length cannot exceed 24 characters.",
             "name-too-short": "Name must be at least 3 characters long.",
             "name-invalid-first": "Name must start with a letter.",
             "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
