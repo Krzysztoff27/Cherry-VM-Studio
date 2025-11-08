@@ -99,6 +99,7 @@ async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthent
 
 @app.post("/iso/upload/complete", response_model=None, tags=["ISO Library"])
 async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: DependsOnAdministrativeAuthentication):
+    logging.info("Completing ISO file upload. Data: ", data)
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
     name_duplicate = IsoLibrary.get_record_by_field("name", data.name)
