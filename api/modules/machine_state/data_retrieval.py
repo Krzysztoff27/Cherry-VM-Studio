@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 from xml.etree import ElementTree
 import libvirt
@@ -11,6 +12,7 @@ from modules.postgresql import select_schema_dict, select_schema_one, select_sin
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
 
+logger = logging.getLogger(__name__)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_owner
 def get_machine_owner(machine_uuid: UUID) -> AdministratorInDB | None:
@@ -77,9 +79,24 @@ def get_machine_data(machine: libvirt.virDomain) -> MachineData:
         domain = "" #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
     )
 
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_membership
+def check_machine_membership(machine_uuid: UUID) -> bool:
+    query_uuid_in_db = select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE machine_uuid = %s", (machine_uuid, ))
+    
+    if not query_uuid_in_db:
+        logger.debug(f"Machine {machine_uuid} not found in the database. Not a member!")
+        return False
+    
+    machine_uuid_in_db = query_uuid_in_db[0]
+    logger.debug(f"machine_uuid_in_db: {machine_uuid_in_db}")
+    
+    return machine_uuid == machine_uuid_in_db
+    
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_data_by_uuid
 def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
+    if not check_machine_membership(uuid):
+        raise HTTPException(status_code=500, detail="Requested data of a machine that is not managed by Cherry VM Studio.")
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machine = libvirt_readonly_connection.lookupByUUID(uuid.bytes)
         if not machine:
@@ -92,7 +109,16 @@ def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
 def get_all_machines() -> dict[UUID, MachineData]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machines = libvirt_readonly_connection.listAllDomains(0)
-        return {UUID(machine.UUIDString()): get_machine_data(machine) for machine in machines}
+        
+        managed_machines = {}
+        
+        for machine in machines:
+            machine_uuid = UUID(machine.UUIDString())
+            if check_machine_membership(machine_uuid):
+                managed_machines[machine_uuid] = get_machine_data(machine)
+                
+        return managed_machines
+    
     raise HTTPException(status_code=503, detail="API could not connect to the VM service.")
 
             
@@ -125,6 +151,12 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_states_by_uuids
 def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[UUID, MachineState]:
+    # Blatantly inefficient - called every time a WS retrieves machine state from Libvirt - FIX THIS!
+    for machine_uuid in machine_uuids:
+        if not check_machine_membership(machine_uuid):
+            machine_uuids.remove(machine_uuid)
+            logger.warning("get_machine_states_by_uuids tried to fetch machine state not managed by Cherry VM Studio.")
+            
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machine_states = dict()
         
