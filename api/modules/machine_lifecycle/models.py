@@ -8,29 +8,17 @@ from typing import Optional, Literal, Union, ClassVar
 DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
 StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
 
-
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
     tag: str
     value: str
-    
-    
-class GroupMetadata(BaseModel):
-    tag: ClassVar[str] = "group"
-    value: str
-    
-    
-class GroupMemberIdMetadata(BaseModel):
-    tag: ClassVar[str] = "groupMemberId"
-    value: Optional[str] = None
 
-
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#StoragePool
 class StoragePool(BaseModel):
     # For now the StoragePool selection is limited to predefined pools on local filesystem
     pool: StoragePools
     # Volume is basically disk name + disk type eg. "disk.qcow2"
     volume: str
-
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
 class MachineDisk(BaseModel):
@@ -39,17 +27,18 @@ class MachineDisk(BaseModel):
     size: int # in Bytes
     type: DiskType
     pool: StoragePools
-                
+    
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#NetworkInterfaceSource            
 class NetworkInterfaceSource(BaseModel):
     type: Literal["network", "bridge"]
     value: str
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterfaces
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterface
 class MachineNetworkInterface(BaseModel):
     name: str  
     source: NetworkInterfaceSource
     
-    
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineGraphicalFramebuffer
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
     port: Union[Literal["auto"], str] 
@@ -64,17 +53,14 @@ class MachineGraphicalFramebuffer(BaseModel):
         if self.listen_type == "address" and self.listen_address is None:
             raise ValueError("listen_address is required when listen_type is 'address'")
         return self
-    
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
 class MachineParameters(BaseModel):
-    uuid: UUID # Unique identifier                     
-    name: str # Unique - libvirt requirement                                                                               
+    uuid: UUID | None = None                   
+    title: str                                                                             
     description: Optional[str] = None
     
-    group_metadata: GroupMetadata
-    # group_member_id_metadata is an ordinal number assigned during machine runtime to be displayed for informative reasons in admin-panel, therefore can be empty during MachineParameters definition
-    group_member_id_metadata: Optional[GroupMemberIdMetadata] = None
-    additional_metadata: Optional[list[MachineMetadata]] = None 
+    metadata: Optional[list[MachineMetadata]] = None 
           
     ram: int # in MiB                                  
     vcpu: int                                           
@@ -90,13 +76,6 @@ class MachineParameters(BaseModel):
     framebuffer: MachineGraphicalFramebuffer
     
     assigned_clients: set[UUID]
-    
-    @property
-    def metadata(self) -> list[Union[GroupMetadata, GroupMemberIdMetadata, MachineMetadata]]:
-        base_metadata =  [self.group_metadata, self.group_member_id_metadata]
-        if self.additional_metadata is not None:
-            return base_metadata + self.additional_metadata
-        return base_metadata
     
     
 ################################
@@ -116,7 +95,6 @@ class CreateMachineFormConfig(BaseModel):
 class CreateMachineForm(BaseModel):
     name: str
     description: str
-    group: str
     tags: set[str]
     
     assigned_clients: set[UUID]

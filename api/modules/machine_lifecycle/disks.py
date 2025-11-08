@@ -40,7 +40,7 @@ def create_machine_disk(machine_disk: MachineDisk) -> UUID:
             
             volume_xml = ET.tostring(volume_root, encoding="unicode")
             
-            logger.info(volume_xml)
+            # logger.info(volume_xml)
             
             storage_pool.createXML(volume_xml)
             
@@ -59,8 +59,10 @@ def delete_machine_disk(disk_uuid: UUID, pool: str) -> bool:
                 raise Exception(f"Could not find {pool} storage pool")
 
             if not storage_pool.isActive():
+                logger.debug(f"Activating inactive storage pool {pool}.")
                 storage_pool.create()
 
+            logger.info(f"Deleting volume {disk_uuid} from pool {pool}.")
             volume = storage_pool.storageVolLookupByName(str(disk_uuid))
             volume.delete(0)
             
@@ -70,19 +72,24 @@ def delete_machine_disk(disk_uuid: UUID, pool: str) -> bool:
             logger.exception(f"Failed to delete machine disk (volume): {e}")
             return False
 
+
 def machine_disks_cleanup(machine_parameters: MachineParameters) -> bool:
     try:
+        logger.info(f"Machine disk cleanup called for machine {machine_parameters.uuid}.")
         system_disk = machine_parameters.system_disk
         additional_disks = machine_parameters.additional_disks
             
-        assert system_disk.uuid is not None
+        if not system_disk.uuid:
+            raise ValueError("Invalid MachineParameters model.\nmachine_disks_cleanup() requires a model with valid disk UUIDs.")
         delete_machine_disk(system_disk.uuid, system_disk.pool)
             
         if additional_disks is not None:
             for disk in additional_disks:
                 assert disk.uuid is not None
                 delete_machine_disk(disk.uuid, disk.pool)
-    except Exception:
+                
+    except Exception as e:
+        logger.exception(f"Failed machine {machine_parameters.uuid} disk cleanup: {e}")
         return False
     return True
 
