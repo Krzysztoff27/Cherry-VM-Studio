@@ -7,7 +7,7 @@ from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
 
-from api.config.regex_config import REGEX_CONFIG
+from config.regex_config import REGEX_CONFIG
 from application.app import app
 from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
