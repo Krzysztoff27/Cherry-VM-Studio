@@ -8,7 +8,7 @@ from uuid import UUID, uuid4
 from typing import Union, Optional, Any, Literal
 from pathlib import Path
 
-from modules.machine_lifecycle.disks import create_machine_disk, delete_machine_disk, get_machine_disk_size
+from modules.machine_lifecycle.disks import get_machine_disk_size
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk
 from modules.postgresql import select_rows
 
@@ -88,7 +88,7 @@ def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk,
     
     disk = ET.SubElement(root_element, "disk", type="volume", device="disk")
     
-    ET.SubElement(disk, "alias", name=machine_disk.name)
+    ET.SubElement(disk, "alias", name=f"ua-{machine_disk.name}")
     ET.SubElement(disk, "driver", name="qemu", type=machine_disk.type)
     
     # Verified by MachineDisk model validator
@@ -202,7 +202,7 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
         create_machine_disk_xml(devices, machine.system_disk, machine.system_disk.uuid, True)
         
         cdrom = ET.SubElement(devices, "disk", type="volume", device="cdrom")
-        ET.SubElement(cdrom, "alias", name="cd-rom")
+        ET.SubElement(cdrom, "alias", name="ua-cd-rom")
         ET.SubElement(cdrom, "driver", name="qemu", type="raw")
         
         if machine.iso_image:
@@ -259,7 +259,7 @@ def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
     """
     # Name
     alias_el = get_required_xml_tag(disk_element, "alias")
-    name = get_required_xml_tag_attribute(alias_el, "name")
+    name = get_required_xml_tag_attribute(alias_el, "name").removeprefix("ua-")
     
     # Source
     allowed_pool_types = ["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
@@ -417,13 +417,12 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
                         pool = get_required_xml_tag_attribute(source_element, "pool"), # type: ignore
                         volume = get_required_xml_tag_attribute(source_element, "volume")
                     )
-                    
-
-            boot_element = get_required_xml_tag(disk_element, "boot")
-            if get_required_xml_tag_attribute(boot_element, "order") == "1":
-                system_disk = parse_machine_disk(disk_element)
-            else:
-                additional_disks.append(parse_machine_disk(disk_element))
+            else:     
+                boot_element = get_required_xml_tag(disk_element, "boot")
+                if get_required_xml_tag_attribute(boot_element, "order") == "1":
+                    system_disk = parse_machine_disk(disk_element)
+                else:
+                    additional_disks.append(parse_machine_disk(disk_element))
         
         if system_disk is None:
             raise ValueError("No system disk found in domain XML (missing <boot order='1'>).")

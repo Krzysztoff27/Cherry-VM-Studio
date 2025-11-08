@@ -428,8 +428,6 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
             async with connection.cursor() as cursor:
                 async with connection.transaction():
                     await cursor.execute(delete_machine, (machine_uuid,))
-        
-        logger.info(f"Succesfully deleted machine {machine_uuid}.")
     
     except Exception as e:
         logger.exception(f"Failed to delete all components associated with a machine {machine_uuid}: {e}")
