@@ -73,14 +73,14 @@ async def __delete_machine__(uuid: UUID, current_user: DependsOnAdministrativeAu
 
 @app.post("/debug/machine/create", response_model=UUID, tags=['Debug'])
 async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
-    machine_uuid = await async_create_machine(machine_parameters, current_user.uuid)
+    machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
     if not machine_uuid:
         raise HTTPException(500, f"Machine creation failed.")
     return machine_uuid
 
 @app.post("/debug/machine/create/bulk", response_model=list[UUID], tags=['Debug'])
 async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
-    machine_uuid = await async_create_machine_bulk(machine_parameters, current_user.uuid, machine_count)
+    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, machine_count)
     if not machine_uuid:
         raise HTTPException(500, f"Bulk machine creation failed.")
     return machine_uuid
@@ -92,16 +92,18 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
         raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
-    if not await async_delete_machine(uuid):
+    if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
     
 
 
 @app.post("/debug/machine/xml/create", response_model=str, tags=['Debug'])
-async def __create_machine_xml__(machine_parameters: CreateMachineForm, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
+async def __create_machine_xml__(machine_parameters: MachineParameters, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_xml = create_machine_xml(machine_parameters, machine_uuid)
+    if not machine_xml:
+        raise HTTPException(500, "Machine XML creation failed.")
     return machine_xml
 
 @app.get("/debug/machine/xml/parse", response_model=MachineParameters, tags=['Debug'])

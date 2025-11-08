@@ -75,19 +75,21 @@ def delete_machine_disk(disk_uuid: UUID, pool: str) -> bool:
 
 def machine_disks_cleanup(machine_parameters: MachineParameters) -> bool:
     try:
-        logger.info(f"Machine disk cleanup called for machine {machine_parameters.uuid}")
+        logger.info(f"Machine disk cleanup called for machine {machine_parameters.uuid}.")
         system_disk = machine_parameters.system_disk
         additional_disks = machine_parameters.additional_disks
             
-        assert system_disk.uuid is not None
+        if not system_disk.uuid:
+            raise ValueError("Invalid MachineParameters model.\nmachine_disks_cleanup() requires a model with valid disk UUIDs.")
         delete_machine_disk(system_disk.uuid, system_disk.pool)
             
         if additional_disks is not None:
             for disk in additional_disks:
                 assert disk.uuid is not None
                 delete_machine_disk(disk.uuid, disk.pool)
+                
     except Exception as e:
-        logger.error(f"Failed machine {machine_parameters.uuid} disk cleanup: {e}")
+        logger.exception(f"Failed machine {machine_parameters.uuid} disk cleanup: {e}")
         return False
     return True
 
