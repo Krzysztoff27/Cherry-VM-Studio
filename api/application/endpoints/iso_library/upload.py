@@ -5,14 +5,13 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
-from pydantic import ValidationError as PydanticValidationError
 
 from application.app import app
 from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
 from modules.users.permissions import verify_permissions
 from modules.file_upload.models import UploadAlreadyExists, UploadHeadersError, UploadNotExistent, UploadTooLargeException
-from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord
+from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm
 from modules.machine_resources.iso_library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.file_upload.upload_handler import UploadHandler

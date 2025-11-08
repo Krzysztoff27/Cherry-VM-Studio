@@ -56,7 +56,7 @@ class UploadHandler(BaseModel):
         
         self._schedule_deletion(uuid)
         
-        with open(file_location): # create file
+        with open(file_location, "w"): # create file
             pass
     
     async def append_chunk(self, request: Request, uuid: UUID, offset: int):
