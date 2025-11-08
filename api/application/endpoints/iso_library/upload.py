@@ -1,11 +1,13 @@
 import datetime as dt
 import logging
 import os
+import re
 from uuid import UUID, uuid4
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
 
+from api.config.regex_config import REGEX_CONFIG
 from application.app import app
 from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
@@ -101,6 +103,12 @@ async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f'ISO file record with name={data.name} already exists.'
+        )
+        
+    if not re.match(REGEX_CONFIG.universal_name, data.name):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="ISO record name must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods."
         )
     
     try: 
