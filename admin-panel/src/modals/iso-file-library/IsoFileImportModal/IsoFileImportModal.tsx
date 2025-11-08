@@ -6,13 +6,13 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconDisc, IconFile, IconUpload, IconX } from "@tabler/icons-react";
 import { isEmpty, isNull } from "lodash";
 import classes from "./IsoFileImportModal.module.css";
-import useFileUpload from "../../../hooks/useFileUpload";
+import useContinousFileUpload from "../../../hooks/useContinousFileUpload";
 
 type ImportTypes = "file" | "url";
 
 const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-iso");
-    const { uploadFile } = useFileUpload("/iso/upload");
+    const { uploadFile } = useContinousFileUpload("/iso/upload");
 
     const [importType, setImportType] = useState<ImportTypes>("file");
 

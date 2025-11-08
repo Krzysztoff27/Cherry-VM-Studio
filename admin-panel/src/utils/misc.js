@@ -127,7 +127,7 @@ export const toggleInArray = (array, value) => {
 
 export const mergeObjectPropertiesToArray = (a, b) => Object.keys({ ...(a || {}), ...(b || {}) })?.map((key) => ({ ...a[key], ...b?.[key] }));
 
-export const validPath = (path = "") => (path.startsWith("/") ? path : `/${path}`);
+export const validPath = (path = "") => "/" + path.replace(/^\/+/, "").replace(/\/+$/, "");
 
 export default {
     isObject,
