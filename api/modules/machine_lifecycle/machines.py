@@ -5,7 +5,7 @@ import libvirt
 import asyncio
 import copy
 
-from typing import Union
+from typing import Union, Optional, overload
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
@@ -14,6 +14,7 @@ from modules.machine_lifecycle.models import MachineParameters, CreateMachineFor
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
 from modules.postgresql.main import pool, async_pool
+from modules.postgresql.simple_select import select_single_field
 
 logger = logging.getLogger(__name__)
 
@@ -210,17 +211,35 @@ async def create_machine_async(machine: Union[MachineParameters, CreateMachineFo
                 except Exception as e:
                     await asyncio.to_thread(machine_disks_cleanup, machine)
                     raise Exception(f"Failed to define machine {machine.uuid}:\n{e}")
-                
 
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, machine_count: int) -> list[UUID]:
+
+@overload             
+async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, machine_count: int) -> list[UUID]:...
+
+@overload
+async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, group_uuid: UUID) -> list[UUID]:...
+
+
+async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, machine_count: Optional[int] = None, group_uuid: Optional[UUID] = None) -> list[UUID]:
     """
     Creates a number of machines transactionally in parallel.\n
-    In the event of a failure, it rolls back DB changes and cleans up libvirt definitions for every machine.
+    In the event of a failure, it rolls back DB changes and cleans up libvirt definitions for every machine.\n
+    Either **machine_count** or **group_uuid** must be specified.
     """
     
-    if machine_count < 1:
+    if (machine_count is None and group_uuid is None) or (machine_count is not None and group_uuid is not None):
+        raise ValueError("Valid arguments must contain either machine_count or group_uuid. Not both, not none.")
+    
+    if machine_count is not None and machine_count < 1:
         raise ValueError("machine_count in async_create_machine_bulk() must be greater than or equal to 1!")
     
+    group_members: list[UUID] = []
+    
+    if group_uuid is not None:
+        group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
+        if not group_members:
+            raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
+        
     machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
     
     insert_owner = """
@@ -242,10 +261,20 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
     
     try:
         logger.debug("Creating machine clones.")
-        for machine_clone in range (machine_count):
-            machine_clone = copy.deepcopy(machine)
-            machine_clone.uuid = uuid4()
-            machine_clones.append(machine_clone)
+        
+        if machine_count is not None:
+            for machine_clone in range (machine_count):
+                machine_clone = copy.deepcopy(machine)
+                machine_clone.uuid = uuid4()
+                machine_clones.append(machine_clone)
+        
+        if group_uuid is not None:
+            for client_uuid in group_members:
+                machine_clone = copy.deepcopy(machine)
+                machine_clone.uuid = uuid4()
+                machine_clone.assigned_clients = {client_uuid}
+                machine_clones.append(machine_clone)
+        
     except Exception as e:
         raise Exception(f"Failed to create machine clones for bulk creation in the number of {machine_count}:\n{e}")
         

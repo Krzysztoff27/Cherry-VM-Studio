@@ -12,8 +12,9 @@ from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm
 
-# REQUESTS
-
+################################
+#         Production
+################################
 @app.get("/machines/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     verify_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS)
@@ -53,13 +54,47 @@ async def __stop_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuth
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to stop.")
 
 @app.post("/machine/create", response_model=UUID, tags=['Machine Creation'])
+async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
+    machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
+    if not machine_uuid:
+        raise HTTPException(500, f"Machine creation failed.")
+    return machine_uuid
+
+@app.post("/machine/create/bulk", response_model=list[UUID], tags=['Machine Creation'])
+async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
+    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, machine_count=machine_count)
+    if not machine_uuid:
+        raise HTTPException(500, f"Bulk machine creation failed.")
+    return machine_uuid
+
+@app.post("/machine/create/per-group", response_model=list[UUID], tags=['Machine Creation'])
+async def __async_create_machine_per_group__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
+    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, group_uuid=group_uuid)
+    if not machine_uuid:
+        raise HTTPException(500, f"Per-group machine creation failed.")
+    return machine_uuid
+
+@app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
+async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
+    machine = get_machine_data_by_uuid(uuid)
+    if not machine:
+        raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
+        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
+    if not await delete_machine_async(uuid):
+        raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
+
+################################
+#           Legacy
+################################
+@app.post("/legacy/machine/create", response_model=UUID, tags=['Legacy'])
 async def __create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     machine_uuid = create_machine(machine_parameters, current_user.uuid)
     if not machine_uuid:
         raise HTTPException(500, f"Failed to create machine.")
     return machine_uuid
 
-@app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
+@app.delete("/legacy/machine/delete/{uuid}", response_model=None, tags=['Legacy'])
 async def __delete_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -69,34 +104,9 @@ async def __delete_machine__(uuid: UUID, current_user: DependsOnAdministrativeAu
     if not await delete_machine(uuid):
         raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
 
-# Debug endpoints used for functions testing - will be removed
-
-@app.post("/debug/machine/create", response_model=UUID, tags=['Debug'])
-async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
-    machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
-    if not machine_uuid:
-        raise HTTPException(500, f"Machine creation failed.")
-    return machine_uuid
-
-@app.post("/debug/machine/create/bulk", response_model=list[UUID], tags=['Debug'])
-async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
-    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, machine_count)
-    if not machine_uuid:
-        raise HTTPException(500, f"Bulk machine creation failed.")
-    return machine_uuid
-
-@app.delete("/debug/machine/delete/{uuid}", response_model=None, tags=['Debug'])
-async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine_data_by_uuid(uuid)
-    if not machine:
-        raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user.uuid):
-        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
-    if not await delete_machine_async(uuid):
-        raise HTTPException(500, f"Failed to delete machine of UUID={uuid}.")
-    
-
-
+################################
+#           Debug
+################################
 @app.post("/debug/machine/xml/create", response_model=str, tags=['Debug'])
 async def __create_machine_xml__(machine_parameters: MachineParameters, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
