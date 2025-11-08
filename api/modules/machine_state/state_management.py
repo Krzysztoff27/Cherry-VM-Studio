@@ -123,7 +123,7 @@ async def stop_machine_async(uuid: UUID):
 
 async def stop_machine(uuid: UUID):
     if not is_vm_running(uuid):
-        logging.error("Machine is not running!")
+        logging.warning("Machine is not running!")
         return False
     
     if vm_tasks.get(uuid) and not vm_tasks[uuid].done():
