@@ -105,7 +105,7 @@ async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: 
     
     try: 
         upload_handler.finish_upload(data.uuid)
-        location = upload_handler.get_temporary_location(data.uuid)
+        location = upload_handler.get_final_location(data.uuid)
         
         creation_args = CreateIsoRecordArgs(
             **data.model_dump(), 
