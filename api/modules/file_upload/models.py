@@ -11,13 +11,21 @@ class UploadHeadersError(Exception):
     pass
 
 
-class UploadInvalidExtensionException(Exception):
-    def __init__(self, extension: str):
-        self.extension = extension
-        super().__init__(f"Invalid file extension: {extension}")
+class UploadNotExistent(Exception):
+    def __init__(self, uuid: UUID, **args):
+        self.uuid = uuid
+        super().__init__(**args)
+        
+class UploadAlreadyExists(Exception):
+    def __init__(self, uuid: UUID, **args):
+        self.uuid = uuid
+        super().__init__(**args)
+        
 
 class UploadedFile(BaseModel):
     name: str
     location: str
     size: int
     form_data: str
+    
+    

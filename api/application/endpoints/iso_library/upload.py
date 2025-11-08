@@ -1,7 +1,7 @@
 import datetime as dt
 import logging
 import os
-from uuid import uuid4
+from uuid import UUID, uuid4
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
@@ -11,11 +11,11 @@ from application.app import app
 from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
 from modules.users.permissions import verify_permissions
-from modules.file.models import UploadHeadersError, UploadInvalidExtensionException, UploadTooLargeException
+from modules.file_upload.models import UploadAlreadyExists, UploadHeadersError, UploadNotExistent, UploadTooLargeException
 from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord
 from modules.machine_resources.iso_library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
-from modules.file.upload_handler import UploadHandler
+from modules.file_upload.upload_handler import UploadHandler
 
 logger = logging.getLogger(__name__)
 
@@ -24,67 +24,55 @@ MAX_REQUEST_BODY_SIZE = FILES_CONFIG.upload_iso_max_size + 1024
 upload_handler = UploadHandler(
     max_size_bytes=MAX_REQUEST_BODY_SIZE,
     save_directory_path=FILES_CONFIG.upload_iso_directory,
-    allowed_file_extensions=set({".iso"})
+    extension="iso"
 )
 
-@app.post("/iso/upload", response_model=None, tags=["ISO Library"])
-async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthentication, request: Request):
-    logger.info(f"{dt.datetime.now()} : Started ISO file upload.")
+@app.post("/iso/upload/start", response_model=UUID, tags=["ISO Library"])
+async def __start_iso_file_upload__(current_user: DependsOnAdministrativeAuthentication):
+    try: 
+        uuid = uuid4()
+        upload_handler.start_upload(uuid)
+        return uuid
+    except UploadAlreadyExists:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Somehow you've hit the 1 : billion probability of a UUID collision. Please try again lul."
+        )
+
+@app.post("/iso/upload/chunk", response_model=None, tags=["ISO Library"])
+async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthentication, request: Request):
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
-    uuid = uuid4()
+    uuid = None
     
-    try:
-        try:
-            uploaded_file = await upload_handler.handle(request, uuid)
-            form_data = CreateIsoRecordForm.model_validate_json(uploaded_file.form_data)
-            
-            creation_args = CreateIsoRecordArgs(
-                **form_data.model_dump(), 
-                uuid=uuid,
-                file_name=uploaded_file.name,
-                file_size_bytes=uploaded_file.size,
-                imported_by=current_user.uuid,
-                imported_at=dt.datetime.now(),
-            )
-            
-            duplicate = IsoLibrary.get_record_by_field("name", creation_args.name)
+    try: 
+        offset = int(request.headers.get("chunk-offset", 0))
+        uuid_header = request.headers.get("upload-uuid")
         
-            if duplicate is not None:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=f'ISO file record with name={creation_args.name} already exists.'
-                )
-            
-            IsoLibrary.create_record(creation_args)
+        if not uuid_header:
+            raise UploadHeadersError("'uuid' header is required to identify the upload.")
         
-        except Exception as e:
-            location = os.path.join(upload_handler.save_directory_path, f"{uuid}.iso")
-            if os.path.exists(location):
-                os.remove(location)
-                logger.error(f"{dt.datetime.now()} : Removed ISO file {uuid}.iso due to errors that occured during import.")
-            raise e
+        uuid = UUID(uuid_header)
         
-    except ClientDisconnect:
-        logger.error(f"{dt.datetime.now()} : Client disconnected during ISO file upload.")
-        pass
+        await upload_handler.append_chunk(request, uuid, offset)
+        
     except HTTPException as e:
         raise e
-    except PydanticValidationError as e:
-        logger.exception("Validation error during the ISO upload.")
+    except ClientDisconnect:
+        logger.error(f"{dt.datetime.now()} : Client disconnected during ISO file upload.")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail='Invalid JSON form structure'
+            status_code=status.HTTP_408_REQUEST_TIMEOUT,
+            detail=f"Client disconnected. Connection closed."
+        )
+    except UploadNotExistent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Upload with uuid={uuid} does not exist or has expired due to inactivity."
         )
     except UploadHeadersError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
             detail=f"Invalid headers: {e}"
-        )
-    except UploadInvalidExtensionException as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
-            detail=f'File extension {e.extension} is not allowed.'
         )
     except UploadTooLargeException as e:
         raise HTTPException(
@@ -97,12 +85,44 @@ async def __upload_iso_file__(current_user: DependsOnAdministrativeAuthenticatio
             detail=f'Maximum request body size limit ({MAX_REQUEST_BODY_SIZE} bytes) exceeded.'
         )
     except Exception:
-        logger.exception("There was an error during file upload through the /iso/upload endpoint.\n")
+        logger.exception("There was an error during file upload through the /iso/upload/chunk endpoint.\n")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail='There was an error uploading the file'
         ) 
     
+
+@app.post("/iso/upload/complete", response_model=None, tags=["ISO Library"])
+async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: DependsOnAdministrativeAuthentication):
+    verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
+    
+    name_duplicate = IsoLibrary.get_record_by_field("name", data.name)
+
+    if name_duplicate is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f'ISO file record with name={data.name} already exists.'
+        )
+    
+    try: 
+        upload_handler.finish_upload(data.uuid)
+        location = upload_handler.get_temporary_location(data.uuid)
+        
+        creation_args = CreateIsoRecordArgs(
+            **data.model_dump(), 
+            file_name="",
+            file_size_bytes=os.path.getsize(location),
+            imported_by=current_user.uuid,
+            imported_at=dt.datetime.now(),
+        )
+        
+        IsoLibrary.create_record(creation_args)
+    except UploadNotExistent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Upload with uuid={data.uuid} does not exist or has expired due to inactivity."
+        )
+        
         
     
     

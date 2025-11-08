@@ -1,7 +1,6 @@
 import datetime as dt
-from uuid import UUID, uuid4
-from numpy import int64
-from pydantic import BaseModel, Field
+from uuid import UUID
+from pydantic import BaseModel
 
 from modules.users.models import Administrator
 
@@ -35,6 +34,7 @@ class IsoRecord(BaseModel):
     
     
 class CreateIsoRecordForm(BaseModel):
+    uuid: UUID
     name: str
     
     
