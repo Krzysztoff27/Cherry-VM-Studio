@@ -47,12 +47,16 @@ async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthent
     uuid = None
     
     try: 
-        offset = int(request.headers.get("chunk-offset", 0))
+        offset_header = request.headers.get("bits-offset")
         uuid_header = request.headers.get("upload-uuid")
+        
+        if not offset_header:
+            raise UploadHeadersError("'bits-offset' header is required to identify the uploaded chunk start location.")
         
         if not uuid_header:
             raise UploadHeadersError("'upload-uuid' header is required to identify the upload.")
         
+        offset = int(offset_header)
         uuid = UUID(uuid_header)
         
         await upload_handler.append_chunk(request, uuid, offset)
