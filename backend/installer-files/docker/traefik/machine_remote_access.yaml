@@ -6,13 +6,22 @@ http:
         - websecure
       tls: {}
       middlewares:
-        - forward-auth-whitelist
         - strip-incoming-header
         - forward-auth
         - rewrite-path
       service:
         cherry-guacamole-service
     
+    # This router exists only for devlopment purposes in order to block /api/forwardauth endpoint
+    api-forwardauth:
+      rule: 'Host(`{{ env "DOMAIN_NAME" }}`) && Path(`/api/forwardauth`)'
+      entryPoints:
+        - web
+      middlewares:
+        - forward-auth-whitelist
+      service:
+        cherry-api-service
+
   middlewares:
     # 0) API forwardauth endpoint access is restricted to internal use - drop request if it comes from outside the internal Docker network
     forward-auth-whitelist:
@@ -43,3 +52,7 @@ services:
       loadBalancer:
         servers:
           - url: "http://cherry-guacamole:8080/guacamole"
+    cherry-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-api:8000"

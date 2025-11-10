@@ -9,6 +9,7 @@ http:
       rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/guacamole`)
       service: cherry-guacamole-service
       entryPoints: web
+    # The API is available from the outside only for development purposes
     cherry-api-router:
       rule: Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/api`)
       service: cherry-api-service
