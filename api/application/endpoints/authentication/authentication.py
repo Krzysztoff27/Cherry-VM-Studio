@@ -1,5 +1,6 @@
-from fastapi import Depends, Cookie
+from fastapi import Depends, Header
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from typing import Annotated
 
 from application.app import app
@@ -22,9 +23,16 @@ async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Token
     return get_user_tokens(current_user)
 
 @app.get("/forwardauth", response_model=dict[str, str], tags=['Authentication'])
-async def __forwardauth__(tokens: Annotated[Tokens, Cookie()]) -> dict[str, str]:
-    user = get_authenticated_user(tokens.access_token)
+async def __forwardauth__(authorization: Annotated[str | None, Header()]) -> JSONResponse:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
+    
+    access_token = authorization.removeprefix("Bearer ").strip()
+    user = get_authenticated_user(access_token)
     if not user:
         raise HTTPUnauthorizedException(detail="Invalid session token.")
+    
     headers = {"X-Guacamole-User": str(user.uuid)}
-    return headers
+    # Different services relying on forwardauth process responses in their own way.
+    # For the sake of compatibility, the headers are sent in both content and headers section of the response.
+    return JSONResponse(content=headers, headers=headers)
