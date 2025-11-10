@@ -1,0 +1,45 @@
+http:
+  routers:
+    machine-remote-access:
+      rule: 'Host(`{{ printf "session.%s" (env "DOMAIN_NAME") }}`) && PathRegexp(`/((rdp|vnc|ssh))/([0-9a-fA-F-]+)`)'
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - forward-auth-whitelist
+        - strip-incoming-header
+        - forward-auth
+        - rewrite-path
+      service:
+        cherry-guacamole-service
+    
+  middlewares:
+    # 0) API forwardauth endpoint access is restricted to internal use - drop request if it comes from outside the internal Docker network
+    forward-auth-whitelist:
+      ipWhiteList:
+          sourceRange:
+            - '{{ env "NETWORK_DOCKER_INTERNAL_SUBNET" }}'
+    # 1) Strip any rogue X-Guacamole-User header
+    strip-incoming-header:
+      headers:
+        customRequestHeaders:
+          X-Guacamole-User: ""
+    # 2) Call API to validate session (access) token
+    # If token validation succeds, trusted X-Guacamole-User header is returned
+    forward-auth:
+      forwardAuth: 
+        address: "http://cherry-api:8000/api/forwardauth"
+        trustForwardHeader: true 
+        authResponseHeaders:
+          - "X-Guacamole-User"
+    # 3) Rewrite initial path to a valid Guacamole connection URL
+    rewrite-path:
+      replacePathRegex:
+        regex: "^/(rdp|vnc|ssh)/([0-9a-fA-F-]+)$"
+        replacement: "/guacamole/#/client/${2}?protocol=${1}" 
+
+services:
+    cherry-guacamole-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-guacamole:8080/guacamole"

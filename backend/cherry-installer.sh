@@ -444,6 +444,12 @@ create_docker_networks(){
         NETWORK_DOCKER_INTERNAL_GATEWAY=$(docker network inspect -f '{{ (index .IPAM.Config 0).Gateway }}' "$NETWORK_DOCKER_INTERNAL_NAME")
     } >/dev/null 2>>"$ERR_LOG"
     
+    printf 'Adding internal Docker network to .env file\n'
+    {
+        printf 'NETWORK_DOCKER_INTERNAL_SUBNET=%s\n' "$NETWORK_DOCKER_INTERNAL_SUBNET"
+    } >> "${DIR_DOCKER_HOST}/.env" 2>>"$ERR_LOG"
+    
+
     if systemctl -q is-active firewalld; then
         printf 'Adding internal Docker network to docker firewalld zone.\n'
         {
