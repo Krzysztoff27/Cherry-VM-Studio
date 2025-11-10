@@ -4,19 +4,24 @@ import { useForm } from "@mantine/form";
 import { useRef, useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconDisc, IconFile, IconUpload, IconX } from "@tabler/icons-react";
-import { isEmpty, isNull } from "lodash";
+import { isEmpty, isNull, values } from "lodash";
 import classes from "./IsoFileImportModal.module.css";
 import useContinousFileUpload from "../../../hooks/useContinousFileUpload";
+import useFetch from "../../../hooks/useFetch";
+import { IsoRecord } from "../../../types/api.types";
 
 type ImportTypes = "file" | "url";
 
 const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-iso");
     const { uploadFile } = useContinousFileUpload("/iso/upload");
+    const { data: isoRecords } = useFetch("/iso");
 
     const [importType, setImportType] = useState<ImportTypes>("file");
 
     const resetRef = useRef<() => void>(null);
+
+    const takenNames = values(isoRecords).map((record: IsoRecord) => record.name);
 
     const form = useForm({
         mode: "uncontrolled",
@@ -35,6 +40,8 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                     ? tns("validation.name-too-short")
                     : val.length > 24
                     ? tns("validation.name-too-long")
+                    : takenNames.includes(val)
+                    ? tns("validation.name-duplicate")
                     : null,
             file: (val: File | null) =>
                 !val.name.endsWith(".iso")
@@ -57,6 +64,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
         } else if (importType == "url") {
         }
 
+        onClose();
         onSubmit?.();
     });
 
@@ -99,6 +107,8 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                             placeholder={tns("name")}
                             w={300}
                             key={form.key("name")}
+                            maxLength={24}
+                            minLength={3}
                             {...form.getInputProps("name")}
                         />
                         {importType === "file" ? (
