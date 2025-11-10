@@ -13,128 +13,14 @@ from modules.machine_state.state_management import stop_machine
 from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
-from modules.postgresql.main import pool, async_pool
+from modules.postgresql.main import async_pool
 from modules.postgresql.simple_select import select_single_field
 
 logger = logging.getLogger(__name__)
 
 ################################
-#  Machine lifecycle actions
+#          Creation
 ################################
-
-def create_machine(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID) -> UUID:
-    """
-    Creates a non-persistent machine - no configuration template in the database.
-    """
-    machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
-    
-    machine_uuid = uuid4()
-    
-    # List of created disks to be passed to cleanup function on failure
-    created_disks = []
-    
-    system_disk_uuid = create_machine_disk(machine.system_disk)
-    created_disks.append(system_disk_uuid)
-    # Modify original MachineParameters instance to include generated disk UUID which will be included in machine XML volume mapping
-    machine.system_disk.uuid = system_disk_uuid
-    
-    if machine.additional_disks:
-        for disk in machine.additional_disks:
-            disk_uuid = create_machine_disk(disk)
-            created_disks.append(disk_uuid)
-            # Same as with system_disk - set additional disk UUID to the one returned from the function that creates disks in storage volume
-            disk.uuid = disk_uuid
-            
-           
-    # Pass modified machine object which now includes disks UUIDs to create XML string from it which will be used for machine definition
-    machine_xml = create_machine_xml(machine, machine_uuid)
-    
-    insert_owner = """
-        INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
-        VALUES (%s, %s);
-    """
-    
-    insert_client = """
-        INSERT INTO deployed_machines_clients (machine_uuid, client_uuid)
-        VALUES (%s, %s);
-    """
-    
-    with pool.connection() as connection:
-        with connection.cursor() as cursor:
-            with connection.transaction():
-                try:
-                    
-                    cursor.execute(insert_owner, (machine_uuid, owner_uuid))
-                    
-                    for client_uuid in machine.assigned_clients:
-                        cursor.execute(insert_client, (machine_uuid, client_uuid))
-                        
-                except Exception as e:
-                    raise Exception(f"Failed to create database records associated with a machine of UUID={machine_uuid}", e)
-            
-    
-    with LibvirtConnection("rw") as libvirt_connection:
-        try:
-            libvirt_connection.defineXML(machine_xml)
-            logger.debug(f"Defined machine {machine_xml}")
-            return machine_uuid
-        except libvirt.libvirtError as e:
-            if not machine_disks_cleanup(machine):
-                logger.error(f"Failed to cleanup disks created for a machine that wasn't succesfully defined.\n Manual cleanup required!")
-            raise Exception(f"Failed to define machine: {e}")
-        except Exception as e:
-            raise Exception(e)
-
-        
-async def delete_machine(machine_uuid: UUID) -> bool:
-    with LibvirtConnection("ro") as libvirt_connection:
-        try:
-            machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
-            raw_machine_xml = machine.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE)
-            machine_parameters = parse_machine_xml(raw_machine_xml)
-        except libvirt.libvirtError as e:
-            raise Exception(f"Failed to get XML of machine: {e}")
-        except Exception as e:
-            raise Exception(e)
-    
-    try:
-        system_disk = machine_parameters.system_disk
-        additional_disks = machine_parameters.additional_disks
-        
-        await stop_machine(machine_uuid)
-        
-        assert system_disk.uuid is not None
-        delete_machine_disk(system_disk.uuid, system_disk.pool)
-        
-        if additional_disks is not None:
-            for disk in additional_disks:
-                assert disk.uuid is not None
-                delete_machine_disk(disk.uuid, disk.pool)
-
-        delete_machine = """
-            DELETE * FROM deployed_machines_owners WHERE machine_uuid = %s;
-        """
-        
-        with pool.connection() as connection:
-            with connection.cursor() as cursor:
-                with connection.transaction():
-                    try:
-                        cursor.execute(delete_machine, (machine_uuid,))
-                            
-                    except Exception as e:
-                        raise Exception(f"Failed to delete database records associated with a machine of UUID={machine_uuid}", e)
-            
-        return True
-    
-    except Exception as e:
-        logger.exception(f"Failed to delete all components associated with a machine of UUID={machine_uuid}", e)
-        return False
-
-
-################################
-#  Dedicated async functions
-################################
-
 async def create_machine_async(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID) -> UUID:
     """
     Creates a single machine transactionally.\n
@@ -211,7 +97,6 @@ async def create_machine_async(machine: Union[MachineParameters, CreateMachineFo
                 except Exception as e:
                     await asyncio.to_thread(machine_disks_cleanup, machine)
                     raise Exception(f"Failed to define machine {machine.uuid}:\n{e}")
-
 
 @overload             
 async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, machine_count: int) -> list[UUID]:...
@@ -368,7 +253,9 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
                     await asyncio.gather(*(delete_machine_async(created_machine) for created_machine in created_machines))
                     raise Exception(f"Error during bulk creation: {e}.\nRolled back {len(created_machines)} machines.")
 
-
+################################
+#         Deletion
+################################
 async def delete_machine_async(machine_uuid: UUID) -> bool:
     """
     Deletes a machine and other associated elements (DB entries, disks) asynchronously.\n

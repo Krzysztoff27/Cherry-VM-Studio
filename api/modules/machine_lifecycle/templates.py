@@ -22,7 +22,7 @@ def create_machine_from_template(template_uuid: UUID) -> None:
     Creates machine based on configuration template from database.
     """
     machine_template = select_schema(MachineParameters, "SELECT * FROM machine_templates WHERE uuid = %s", (template_uuid,))[0]
-    create_machine(machine_template)
+    
  
     
 def create_template_from_machine(machine_uuid: UUID) -> None:
