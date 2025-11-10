@@ -55,8 +55,6 @@ async def __stop_machine__(uuid: UUID, current_user: DependsOnAdministrativeAuth
 
 @app.post("/machine/create", response_model=UUID, tags=['Machine Creation'])
 async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
-        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
     if not machine_uuid:
         raise HTTPException(500, "Machine creation failed.")
@@ -64,8 +62,6 @@ async def __async_create_machine__(machine_parameters: CreateMachineForm, curren
 
 @app.post("/machine/create/bulk", response_model=list[UUID], tags=['Machine Creation'])
 async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
-        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, machine_count=machine_count)
     if not machine_uuid:
         raise HTTPException(500, f"Failed to create {machine_count} machines in bulk.")
@@ -73,8 +69,6 @@ async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, c
 
 @app.post("/machine/create/for-group", response_model=list[UUID], tags=['Machine Creation'])
 async def __async_create_machine_per_group__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
-    if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
-        raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, group_uuid=group_uuid)
     if not machine_uuid:
         raise HTTPException(500, f"Machine creation for group {group_uuid} failed.")
