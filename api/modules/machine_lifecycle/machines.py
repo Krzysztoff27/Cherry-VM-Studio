@@ -322,7 +322,7 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
                         if isinstance(result, BaseException):
                             raise result
                     
-                    logger.info(f"Succesfully created disks for {len(created_machines)} in bulk.")
+                    logger.info(f"Succesfully created disks for {len(machine_clones)} in bulk.")
                     
                     
                     
