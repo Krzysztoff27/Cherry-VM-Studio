@@ -120,7 +120,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
                                                 <Group className={classes.rowGroup}>
                                                     <Group className={classes.machineDetail}>
                                                         <IconDeviceDesktop size={18} />
-                                                        <Text size="sm">{value.machine.name}</Text>
+                                                        <Text size="sm">{value.machine.title}</Text>
                                                         <PillGroup>
                                                             {value.machine.tags.map((tag) => (
                                                                 <Pill>{tag}</Pill>

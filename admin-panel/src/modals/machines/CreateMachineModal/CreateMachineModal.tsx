@@ -7,12 +7,12 @@ import MachineDetailsForm from "../../../components/organisms/forms/MachineDetai
 import MachineSourceForm from "../../../components/organisms/forms/MachineSourceForm/MachineSourceForm";
 import MachineConfigForm from "../../../components/organisms/forms/MachineConfigForm/MachineConfigForm";
 import MachineDisksForm from "../../../components/organisms/forms/MachineDisksForm/MachineDisksForm";
-import { CreateMachineBody, MachineDisk, MachineDiskForm } from "../../../types/api.types";
+import { CreateMachineBody, MachineDiskForm } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
 import { toBytes } from "../../../utils/files";
 
 export interface CreateMachineFormValues {
-    name: string;
+    title: string;
     tags: string[];
     description: string;
     assigned_clients: string[];
@@ -47,7 +47,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 
     const form = useForm<CreateMachineFormValues>({
         initialValues: {
-            name: "New Machine",
+            title: "New Machine",
             tags: [],
             description: "",
             assigned_clients: [],
@@ -61,7 +61,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
             os_disk: 0,
         },
         validate: {
-            name: (val) =>
+            title: (val) =>
                 !/^[\w\s.-]+$/.test(val)
                     ? tns("validation.name-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])

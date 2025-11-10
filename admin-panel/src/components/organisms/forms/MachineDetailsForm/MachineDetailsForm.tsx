@@ -20,9 +20,9 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
     const { t, tns } = useNamespaceTranslation("modals", "create-machine");
 
     const validateDetailsForm = () => {
-        form.validateField("name");
+        form.validateField("title");
         form.validateField("tags");
-        return form.isValid("name") && form.isValid("tags");
+        return form.isValid("title") && form.isValid("tags");
     };
 
     return (
@@ -33,8 +33,8 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
                     description={tns("machine-name")}
                     w={300}
                     classNames={{ input: "borderless" }}
-                    key={form.key("name")}
-                    {...form.getInputProps("name")}
+                    key={form.key("title")}
+                    {...form.getInputProps("title")}
                 />
                 <TextInput
                     description={tns("machine-group-no")}

@@ -106,7 +106,7 @@ export interface MachineState extends MachineData {
 export type MachineAll = MachineData | MachineState;
 
 export interface CreateMachineBody {
-    name: string;
+    title: string;
     description: string;
     group: string;
     tags: string[];
