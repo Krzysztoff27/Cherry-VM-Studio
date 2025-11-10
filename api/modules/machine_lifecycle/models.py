@@ -93,7 +93,7 @@ class CreateMachineFormConfig(BaseModel):
       
     
 class CreateMachineForm(BaseModel):
-    name: str
+    title: str
     description: str
     tags: set[str]
     
