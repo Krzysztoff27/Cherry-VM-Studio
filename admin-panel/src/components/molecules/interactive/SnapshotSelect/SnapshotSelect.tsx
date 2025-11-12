@@ -11,7 +11,7 @@ const VALUE_SEPERATOR = ":::";
 
 export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshotDataUpdate }: SnapshotSelectProps) {
     const { t } = useTranslation();
-    const { getRequest } = useApi();
+    const { sendRequest } = useApi();
     const [snapshotComponents, setSnapshotComponents] = useState([]);
     const [presetComponents, setPresetComponents] = useState([]);
     const [confirmationOpened, { open, close }] = useDisclosure(false);
@@ -23,8 +23,8 @@ export default function SnapshotSelect({ loadSnapshot, loadPreset, forceSnapshot
 
     useEffect(() => {
         const setData = async () => {
-            const snapshots = await getRequest("/network/snapshots");
-            const presets = await getRequest("/network/presets");
+            const snapshots = await sendRequest("GET", "/network/snapshots");
+            const presets = await sendRequest("GET", "/network/presets");
             setSnapshotComponents(
                 snapshots?.map((s, i) => (
                     <option

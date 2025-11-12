@@ -7,7 +7,7 @@ const handleFetch = async (
     errorCallback: ErrorCallbackFunction,
     tryRefreshingTokens?: () => Promise<string | null>
 ) => {
-    const responseOnNoResponse = new Response(`{"detail": No response from server}`, {
+    const responseOnNoResponse = new Response(`{"detail": "No response from server"}`, {
         status: 503,
         headers: { "Content-Type": "text/plain" },
     });

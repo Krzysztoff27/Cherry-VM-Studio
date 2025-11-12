@@ -1,5 +1,5 @@
-import { useToggle } from "@mantine/hooks";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { AxiosHeaders } from "axios";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -10,8 +10,8 @@ interface Tokens {
 
 export interface AuthenticationContextValue {
     tokens: Tokens;
-    authOptions: RequestInit | null;
-    refreshOptions: RequestInit | null;
+    authHeaders: AxiosHeaders | null;
+    refreshHeaders: AxiosHeaders | null;
     logout: () => void;
     clearTokens: () => void;
     setAccessToken: (token: string | null) => void;
@@ -46,33 +46,30 @@ export const AuthenticationProvider = ({ children }: { children?: ReactNode }): 
         }),
         [cookies.access_token, cookies.refresh_token]
     );
-
-    const authOptions = useMemo(
-        () => ({
-            headers: {
+    const authHeaders = useMemo(
+        () =>
+            new AxiosHeaders({
                 Accept: "application/json",
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + cookies.access_token,
-            },
-        }),
+            }),
         [cookies.access_token]
     );
 
-    const refreshOptions = useMemo(
-        () => ({
-            headers: {
+    const refreshHeaders = useMemo(
+        () =>
+            new AxiosHeaders({
                 Accept: "application/json",
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + cookies.refresh_token,
-            },
-        }),
+            }),
         [cookies.refresh_token]
     );
 
     const value = {
         tokens,
-        authOptions,
-        refreshOptions,
+        authHeaders,
+        refreshHeaders,
         logout,
         clearTokens,
         setAccessToken,

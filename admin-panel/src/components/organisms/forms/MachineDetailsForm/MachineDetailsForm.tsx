@@ -1,4 +1,4 @@
-import { Button, Group, Stack, TagsInput, TextInput } from "@mantine/core";
+import { Button, Group, Stack, TagsInput, Textarea, TextInput } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import UserMultiselect from "../../../molecules/interactive/UserMultiselect/UserMultiselect";
 import { values } from "lodash";
@@ -62,6 +62,14 @@ const MachineDetailsForm = ({ form, classes, onClose, onSubmit }: MachineDetails
                 w={366}
                 key={form.key("assigned_clients")}
                 {...form.getInputProps("assigned_clients")}
+            />
+            <Textarea
+                placeholder={tns("machine-description-placeholder")}
+                description={tns("machine-description")}
+                w={366}
+                classNames={{ input: "borderless" }}
+                key={form.key("description")}
+                {...form.getInputProps("description")}
             />
             <Group
                 mt="lg"

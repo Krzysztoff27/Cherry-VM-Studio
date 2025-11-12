@@ -6,6 +6,11 @@ export interface TokenRequestForm {
     password: string;
 }
 
+export interface Tokens {
+    access_token: string;
+    refresh_token: string;
+}
+
 export type MachineStates = "online" | "offline" | "loading" | "fetching";
 
 export type ConnectionStatuses = "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED" | "UNINSTANTIATED";

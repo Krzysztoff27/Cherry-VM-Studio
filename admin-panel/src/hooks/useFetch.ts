@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import useApi from "./useApi";
-import { useFetchReturn } from "../types/hooks.types";
+import { AxiosError, AxiosRequestConfig } from "axios";
 
-const useFetch = (path: string | undefined, options: object | undefined = undefined, cleanBeforeRefresh = false): useFetchReturn => {
+export interface useFetchReturn {
+    loading: boolean;
+    error: AxiosError | null;
+    data: any | null;
+    refresh: () => void;
+}
+
+const useFetch = (path?: string, config: AxiosRequestConfig = undefined, cleanBeforeRefresh = false): useFetchReturn => {
     const [data, setData] = useState<any | null>(null);
-    const [error, setError] = useState<Response | null>(null);
+    const [error, setError] = useState<AxiosError | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshValue, setRefreshValue] = useState<boolean>(false);
 
@@ -12,7 +19,7 @@ const useFetch = (path: string | undefined, options: object | undefined = undefi
         setRefreshValue((prev) => !prev);
     };
 
-    const { getRequest } = useApi();
+    const { sendRequest } = useApi();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,13 +28,13 @@ const useFetch = (path: string | undefined, options: object | undefined = undefi
             setError(null);
             setLoading(true);
 
-            const onError = (response: Response, body: object) => {
+            const onError = (error: AxiosError) => {
                 setData(null);
-                setError(response);
+                setError(error);
                 setLoading(false);
             };
 
-            const json = await getRequest(path, options, onError);
+            const json = await sendRequest("GET", path, config, onError);
 
             if (!json) return;
             setData(json);
@@ -35,7 +42,7 @@ const useFetch = (path: string | undefined, options: object | undefined = undefi
             setLoading(false);
         };
         fetchData();
-    }, [path, options, refreshValue]);
+    }, [path, config, refreshValue]);
 
     return { loading, error, data, refresh };
 };

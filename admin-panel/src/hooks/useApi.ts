@@ -1,64 +1,86 @@
-import handleFetch from "../handlers/handleFetch.js";
 import useErrorHandler from "./useErrorHandler.ts";
 import { validPath } from "../utils/misc.js";
-import { ErrorCallbackFunction, useApiReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { merge, toString } from "lodash";
+import { ERRORS } from "../config/errors.config.ts";
+import { Tokens } from "../types/api.types.ts";
 
-/**
- * Custom react hook for sending requests to the Cherry API
- */
+type RequestMethods = "GET" | "POST" | "PUT" | "DELETE";
+
+export interface useApiReturn {
+    getPath: Function;
+    sendRequest: <T = any>(method: RequestMethods, path: string, config?: AxiosRequestConfig, errorCallback?: (error: AxiosError) => void) => Promise<T>;
+}
+
 export const useApi = (): useApiReturn => {
     const API_URL: string = urlConfig.api_requests;
     const { parseAndHandleError } = useErrorHandler();
-    const { authOptions, refreshOptions, setAccessToken, setRefreshToken } = useAuthentication();
+    const { authHeaders, refreshHeaders, setAccessToken, setRefreshToken } = useAuthentication();
 
-    /**
-     * Combines given relative path with the base API URL
-     */
+    const baseApiRequestConfig = {
+        headers: authHeaders,
+        transitional: { clarifyTimeoutError: true },
+    } as AxiosRequestConfig;
+
     const getPath = (path: string): string => (API_URL ? `${API_URL}${validPath(path)}` : undefined);
 
-    const refreshTokens = async () => {
-        return fetch(getPath("refresh"), refreshOptions)
-            .then((res) => res.ok && res.json())
-            .then((json) => {
-                setAccessToken(json?.access_token);
-                setRefreshToken(json?.refresh_token);
-                return json?.access_token;
+    const refreshTokens = async (): Promise<Tokens> => {
+        return await axios
+            .get(getPath("refresh"), {
+                headers: refreshHeaders,
             })
-            .catch((err) => {
-                console.error("Error occured while parsing response body during token refresh.\n", err);
-                return null;
+            .then((response) => {
+                setAccessToken(response.data?.access_token);
+                setRefreshToken(response.data?.refresh_token);
+                return response.data;
+            })
+            .catch((error: AxiosError) => {
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        setAccessToken(null);
+                        setRefreshToken(null);
+                    } else console.error(error.response);
+                } else console.error("Error occured during refreshing the tokens.", error);
             });
     };
 
-    const sendRequest = async (
+    const sendRequest = async <T = any>(
+        method: RequestMethods,
         path: string,
-        method: string,
-        options: RequestInit = {},
-        body: BodyInit | undefined = undefined,
-        errorCallback: ErrorCallbackFunction
-    ): Promise<any> =>
-        await handleFetch(
-            getPath(path),
-            {
-                ...authOptions,
-                ...options,
-                method: method,
-                body: body,
-            },
-            errorCallback,
-            refreshTokens
-        );
+        config: AxiosRequestConfig = {},
+        errorCallback: (error: AxiosError) => void = parseAndHandleError
+    ): Promise<T> => {
+        const mergedConfig = merge(baseApiRequestConfig, config);
+        const axiosFunction = axios[method.toLowerCase()];
 
-    const getRequest = (path: string, options = {}, errorCallback = parseAndHandleError) => sendRequest(path, "GET", options, undefined, errorCallback);
-    const deleteRequest = (path: string, options = {}, errorCallback = parseAndHandleError) => sendRequest(path, "DELETE", options, undefined, errorCallback);
-    const postRequest = (path: string, body: BodyInit, options = {}, errorCallback = parseAndHandleError) =>
-        sendRequest(path, "POST", options, body, errorCallback);
-    const putRequest = (path: string, body: BodyInit, options = {}, errorCallback = parseAndHandleError) =>
-        sendRequest(path, "PUT", options, body, errorCallback);
+        const sendFetch = async (): Promise<AxiosResponse> => await axiosFunction(getPath(path), mergedConfig);
 
-    return { getPath, getRequest, postRequest, putRequest, deleteRequest };
+        return await sendFetch()
+            .then((response) => response.data)
+            .catch(async (error: AxiosError) => {
+                if (error.code === "ECONNABORTED")
+                    if (error.response) {
+                        if (toString(error.response.status) !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
+
+                        // handle expired access token - try to refresh tokens
+                        const tokens = await refreshTokens();
+                        if (!tokens.access_token) return errorCallback(error);
+
+                        // after succesfull refresh send the original request again for seamless UX
+                        mergedConfig.headers["Authorization"] = `Bearer ${tokens.access_token}`;
+                        return await sendFetch()
+                            .then((response) => response.data)
+                            .catch(errorCallback);
+                    }
+                if (error.request) return errorCallback(new AxiosError("No response from the API service.", "503"));
+
+                console.error("Unhandled error occured during fetch.", error);
+            });
+    };
+
+    return { getPath, sendRequest };
 };
 
 export default useApi;
