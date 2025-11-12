@@ -12,9 +12,3 @@ export type ErrorCallbackFunction = (response: Response, json: { [x: string]: an
 type HTMLRequestFunction = (relativePath: string, options?: RequestInit, errorCallback?: ErrorCallbackFunction) => Promise<any>;
 
 type HTMLBodyRequestFunction = (relativePath: string, body?: BodyInit, options?: RequestInit, errorCallback?: ErrorCallbackFunction) => Promise<any>;
-
-export interface sendNotificationProps {
-    color?: string | null;
-    loading?: boolean;
-    uniqueId?: boolean;
-}

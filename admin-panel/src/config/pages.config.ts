@@ -73,6 +73,7 @@ const PAGES: Page[] = [
         key: "network-panel",
         path: "/network-panel",
         icon: IconTopologyStar,
+        disabled: true,
     },
 ];
 

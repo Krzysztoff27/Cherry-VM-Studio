@@ -113,7 +113,6 @@ export type MachineAll = MachineData | MachineState;
 export interface CreateMachineBody {
     title: string;
     description: string;
-    group: string;
     tags: string[];
     assigned_clients: string[];
     source_type: "iso" | "snapshot";

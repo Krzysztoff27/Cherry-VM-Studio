@@ -1,20 +1,31 @@
 import useMantineNotifications from "./useMantineNotifications";
-import { ERROR_DETAIL_MAPPING } from '../config/errors.config';
-import { safeObjectKeys } from '../utils/misc'
-import { ErrorResponseBody } from "../types/api.types";
 import { AxiosError } from "axios";
+import { toString } from "lodash";
+import { ErrorCode } from "react-i18next";
+import { ERROR_VARIANTS_MAP, ExpandedErrorCode } from "../config/errors.config";
 
-const useErrorHandler = () => {
+export interface ErrorHandlerReturn {
+    handleError: (error: ErrorCode | ExpandedErrorCode) => Promise<void>;
+    handleAxiosError: (error: AxiosError) => Promise<void>;
+}
+
+const useErrorHandler = (): ErrorHandlerReturn => {
     const { sendErrorNotification } = useMantineNotifications();
 
-    const parseAndHandleError = async (error: AxiosError) => {
-        let codes = [error.response.status];
-        
-        if (safeObjectKeys(ERROR_DETAIL_MAPPING).includes(error.response?.data?.detail) codes = [ERROR_DETAIL_MAPPING[body.detail], ...codes];
-        sendErrorNotification(codes);
-    }
+    const handleError = async (error: ErrorCode | ExpandedErrorCode) => {
+        sendErrorNotification(error);
+    };
 
-    return { parseAndHandleError };
+    const handleAxiosError = async (error: AxiosError) => {
+        const code = toString(error.response?.status || "600");
+        const data = error.response?.data as Record<string, any>;
+        const detail = data?.detail;
+        const variant = ERROR_VARIANTS_MAP[code]?.[detail];
+
+        sendErrorNotification([code, variant] as ErrorCode | ExpandedErrorCode);
+    };
+
+    return { handleError, handleAxiosError };
 };
 
 export default useErrorHandler;

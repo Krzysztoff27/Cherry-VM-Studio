@@ -11,9 +11,6 @@ export const getRelevantUnit = (bytes: number): ByteUnit => {
 export const formatBytesToUnit = (bytes: number, unit: ByteUnit, decimals = 2): string => {
     const units: ByteUnit[] = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"];
     const index = units.indexOf(unit);
-
-    if (index === -1) throw new Error(`Invalid unit: ${unit}`);
-
     const value = bytes / Math.pow(1024, index);
     return `${value.toFixed(decimals)} ${unit}`;
 };

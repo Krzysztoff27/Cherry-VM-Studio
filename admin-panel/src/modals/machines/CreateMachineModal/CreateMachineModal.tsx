@@ -210,16 +210,15 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 };
 
 export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineModalProps): React.JSX.Element => {
-    const { postRequest } = useApi();
+    const { sendRequest } = useApi();
 
     const translateValues = (values: CreateMachineFormValues): CreateMachineBody => ({
         ...values,
-        group: "",
         disks: values.disks.map((disk) => ({ name: disk.name, type: disk.type, size_bytes: toBytes(disk.size, disk.unit) })),
     });
 
     const submitMachine = (values: CreateMachineFormValues) => {
-        postRequest("/machine/create", JSON.stringify(translateValues(values)));
+        sendRequest("POST", "/machine/create", { data: translateValues(values) });
 
         onClose();
         onSubmit?.();

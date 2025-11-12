@@ -4,11 +4,11 @@ import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const DeleteGroupsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
-    const { deleteRequest } = useApi();
+    const { sendRequest } = useApi();
     const { tns } = useNamespaceTranslation("modals", "confirm.group-removal");
 
     const onConfirm = () => {
-        uuids.forEach((uuid: string) => deleteRequest(`group/delete/${uuid}`));
+        uuids.forEach((uuid: string) => sendRequest("DELETE", `group/delete/${uuid}`));
         onClose();
         onSubmit();
     };

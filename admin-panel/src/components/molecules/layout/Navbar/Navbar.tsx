@@ -34,6 +34,7 @@ export default function Navbar(): React.ReactElement {
                         active={active === i}
                         label={tns(`navbar.${category.key}`)}
                         icon={<category.icon stroke={1.5} />}
+                        disabled={category.disabled}
                     />
                 ))}
             </Stack>

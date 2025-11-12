@@ -1,8 +1,15 @@
 import { notifications, NotificationsProps } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
-import { useTranslation } from "react-i18next";
-import { sendNotificationProps } from "../types/hooks.types";
+import { ErrorCode, useTranslation } from "react-i18next";
 import { NotificationProps } from "@mantine/core";
+import { ExpandedErrorCode } from "../config/errors.config";
+import { isArray } from "lodash";
+
+export interface SendNotificationOptions {
+    color?: string | null;
+    loading?: boolean;
+    uniqueId?: boolean;
+}
 
 export const useMantineNotifications = () => {
     const { t } = useTranslation();
@@ -13,15 +20,20 @@ export const useMantineNotifications = () => {
     // only one of them will be sent as they will have the same id
     const getUniqueId = (id: string | number) => `${id}${new Date().getSeconds()}`;
 
-    const sendNotification = (id: string, options: sendNotificationProps | undefined = {}, interpolatedValues: object | undefined = {}, customProps = {}) => {
-        const notificationId = options.uniqueId ? getUniqueId(id) : id;
+    const sendNotification = (
+        key: string,
+        options: SendNotificationOptions | undefined = {},
+        interpolatedValues: object | undefined = {},
+        customProps = {}
+    ) => {
+        const notificationId = options.uniqueId ? getUniqueId(key) : key;
 
         notifications.show({
             id: notificationId,
             color: options.color || "suse-green",
             loading: options.loading || false,
-            title: format(`${id}.title`, interpolatedValues),
-            message: format(`${id}.message`, interpolatedValues),
+            title: format(`${key}.title`, interpolatedValues),
+            message: format(`${key}.message`, interpolatedValues),
 
             ...customProps,
         });
@@ -29,10 +41,11 @@ export const useMantineNotifications = () => {
         return () => notifications.hide(notificationId);
     };
 
-    const sendErrorNotification = (i18nextKeys: string[] | string = [], interpolatedValues = {}) => {
-        i18nextKeys = [i18nextKeys].flat();
-        const notificationId = getUniqueId(i18nextKeys[0]);
-        const keys: string[] = [...i18nextKeys, "600"];
+    const sendErrorNotification = (error: ErrorCode | ExpandedErrorCode, interpolatedValues = {}) => {
+        const [code, variant] = isArray(error) ? error : [error, undefined];
+
+        const notificationId = getUniqueId([code, variant].filter((e) => e).join("-"));
+        const key = variant ? `${code}.variant.${variant}` : code;
 
         notifications.show({
             id: notificationId,
@@ -42,14 +55,8 @@ export const useMantineNotifications = () => {
             className: "error-class",
             color: "red",
             icon: <IconX />,
-            title: format(
-                keys.map((key) => `error.${key}.title`),
-                interpolatedValues
-            ),
-            message: format(
-                keys.map((key) => `error.${key}.message`),
-                interpolatedValues
-            ),
+            title: format(`error.${key}.title`, interpolatedValues),
+            message: format(`error.${key}.message`, interpolatedValues),
         });
 
         return () => notifications.hide(notificationId);

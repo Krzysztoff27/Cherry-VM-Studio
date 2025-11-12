@@ -5,7 +5,7 @@ import useApi from "../../../hooks/useApi";
 
 const ChangePasswordModal = ({ uuid, opened, onClose }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
-    const { putRequest } = useApi();
+    const { sendRequest } = useApi();
 
     const form = useForm({
         mode: "uncontrolled",
@@ -15,7 +15,7 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
         },
 
         validate: {
-            password: val =>
+            password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")
                     : !/[0-9]/.test(val)
@@ -38,7 +38,7 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
 
     const onSubmit = form.onSubmit(async ({ password }) => {
         console.log(password);
-        await putRequest(`/user/change-password/${uuid}`, JSON.stringify({ password }));
+        await sendRequest("PUT", `/user/change-password/${uuid}`, { data: { password } });
         closeModal();
     });
 

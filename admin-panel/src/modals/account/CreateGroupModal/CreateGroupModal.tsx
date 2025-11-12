@@ -9,11 +9,12 @@ import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
 import { safeObjectValues } from "../../../utils/misc";
+import { AxiosError } from "axios";
 
 export default function CreateGroupModal({ opened, onClose, onSubmit }): React.JSX.Element {
     const { t, tns } = useNamespaceTranslation("modals", "create-group");
-    const { postRequest } = useApi();
-    const { parseAndHandleError } = useErrorHandler();
+    const { sendRequest } = useApi();
+    const { handleAxiosError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { data: users, error, loading } = useFetch("users?account_type=client");
 
@@ -34,13 +35,17 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
         onClose();
     };
 
-    const onPostError: ErrorCallbackFunction = (response, json) => {
-        if (response.status != 409) parseAndHandleError(response, json);
-        if (/name/.test(json?.detail)) form.setFieldError("name", tns("validation.name-duplicate"));
+    const onPostError = (error: AxiosError) => {
+        if (error.response?.status != 409) handleAxiosError(error);
+
+        const data = error.response?.data as Record<string, any>;
+        const detail = data?.detail;
+
+        if (detail.includes("name")) form.setFieldError("name", tns("validation.name-duplicate"));
     };
 
     const submitForm = form.onSubmit(async (values) => {
-        const res = await postRequest("group/create", JSON.stringify(values), undefined, onPostError);
+        const res = await sendRequest("POST", "group/create", { data: values }, onPostError);
         if (!res) return;
 
         sendNotification("group.created", undefined, { name: res.name });

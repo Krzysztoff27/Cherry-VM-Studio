@@ -9,12 +9,10 @@ import { useAuthentication } from "../contexts/AuthenticationContext";
 import API_CONFIG from "../config/api.config";
 
 const useContinousFileUpload = (path: string) => {
-    const { authOptions } = useAuthentication();
+    const { authHeaders } = useAuthentication();
     const { getPath } = useApi();
     const { tns, t } = useNamespaceTranslation("notifications", "file");
     const uploadPath = getPath(path);
-
-    const headers = new AxiosHeaders(authOptions.headers as Record<string, string>);
 
     const uploadFile = async (file: File | null, data: { [key: string]: any } = {}) => {
         if (isNull(file)) return;
@@ -52,7 +50,7 @@ const useContinousFileUpload = (path: string) => {
             const controller = new AbortController();
             const handleAbort = () => controller.abort();
 
-            const startResponse = await axios.post(`${uploadPath}/start`, null, { headers, signal: controller.signal });
+            const startResponse = await axios.post(`${uploadPath}/start`, null, { headers: authHeaders, signal: controller.signal });
 
             const uuid = startResponse.data;
 
@@ -63,7 +61,7 @@ const useContinousFileUpload = (path: string) => {
 
                 await axios.post(`${uploadPath}/chunk`, formData, {
                     headers: {
-                        ...headers,
+                        ...authHeaders,
                         "Content-Type": "multipart/form-data",
                         "upload-uuid": uuid,
                         "bits-offset": offset,
@@ -84,7 +82,7 @@ const useContinousFileUpload = (path: string) => {
                 });
             }
 
-            await axios.post(`${uploadPath}/complete`, { uuid, ...data }, { headers, signal: controller.signal });
+            await axios.post(`${uploadPath}/complete`, { uuid, ...data }, { headers: authHeaders, signal: controller.signal });
 
             notifications.update({
                 id: notification,

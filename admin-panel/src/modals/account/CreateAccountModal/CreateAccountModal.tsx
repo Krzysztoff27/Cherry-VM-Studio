@@ -10,12 +10,13 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
+import { AxiosError } from "axios";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
     const { t, tns } = useNamespaceTranslation("modals", "account");
-    const { postRequest } = useApi();
-    const { parseAndHandleError } = useErrorHandler();
+    const { sendRequest } = useApi();
+    const { handleAxiosError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
 
     const form = useForm({
@@ -71,19 +72,23 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         onClose();
     };
 
-    const onPostError: ErrorCallbackFunction = (response, json) => {
-        if (response.status != 409) parseAndHandleError(response, json);
-        if (/username/.test(json?.detail)) form.setFieldError("username", tns("validation.username-duplicate"));
-        else if (/email/.test(json?.detail)) form.setFieldError("email", tns("validation.email-duplicate"));
+    const onPostError = (error: AxiosError) => {
+        if (error.response.status != 409) return handleAxiosError(error);
+
+        const data = error.response?.data as Record<string, any>;
+        const detail = data?.detail;
+
+        ["username", "email"].forEach((field) => {
+            if (detail.includes(field)) form.setFieldError(field, tns(`validation.${field}-duplicate`));
+        });
     };
 
     const onFormSubmit = form.onSubmit(async ({ confirmPassword: _, ...values }) => {
         const body = { account_type: accountType, ...values };
         if (accountType === "administrative") delete body.groups;
         else if (accountType === "client") delete body.roles;
-        console.log(body);
 
-        const res = await postRequest("user/create", JSON.stringify(body), undefined, onPostError);
+        const res = await sendRequest("POST", "user/create", { data: body }, onPostError);
         if (!res) return;
 
         sendNotification("account.created", undefined, { username: res.username });

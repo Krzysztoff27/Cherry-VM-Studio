@@ -1,20 +1,8 @@
-export const ERROR_DETAIL_MAPPING = {
-    "Incorrect username or password.": "401-LOGIN",
-    "Please log in to the panel again.": "401-SESSION",
-    "Snapshot not found": "404-SNAPSHOT",
-    "Preset not found": "404-PRESET",
-};
-
 export const ERRORS = {
     HTTP_400_BAD_REQUEST: "400",
-    HTTP_400_CANNOT_REMOVE_USER: "400-CANNOT-REMOVE-USER",
     HTTP_401_UNAUTHORIZED: "401",
-    HTTP_401_LOGIN_FAILED: "401-LOGIN",
-    HTTP_401_SESSION_EXPIRED: "401-SESSION",
     HTTP_403_FORBIDDEN: "403",
-    HTTP_404_PAGE_NOT_FOUND: "404",
-    HTTP_404_SNAPSHOT_NOT_FOUND: "404-SNAPSHOT",
-    HTTP_404_PRESET_NOT_FOUND: "404-PRESET",
+    HTTP_404_NOT_FOUND: "404",
     HTTP_408_REQUEST_TIMEOUT: "408",
     HTTP_409_DUPLICATE_ERROR: "409",
     HTTP_410_RESOURCE_GONE: "410",
@@ -30,6 +18,49 @@ export const ERRORS = {
     CVMM_651_NETWORK_PRESET_CALC_FAILED_CORE_FUNC: "651-CORE-FUNCTION",
     CVMM_651_NETWORK_PRESET_CALC_FAILED_VARIABLE: "651-VARIABLE",
     CVMM_651_NETWORK_PRESET_CALC_FAILED_CUSTOM_FUNC: "651-CUSTOM-FUNCTION",
+} as const;
+
+export const ERRORS_EXPANDED = {
+    HTTP_400_BAD_REQUEST: ["400", undefined],
+    HTTP_400_CANNOT_REMOVE_USER: ["400", "CANNOT-REMOVE-USER"],
+    HTTP_401_UNAUTHORIZED: ["401", undefined],
+    HTTP_401_INVALID_CREDENTIALS: ["401", "INVALID-CREDENTIALS"],
+    HTTP_401_SESSION_EXPIRED: ["401", "SESSION-EXPIRED"],
+    HTTP_403_FORBIDDEN: ["403", undefined],
+    HTTP_404_NOT_FOUND: ["404", undefined],
+    HTTP_404_PAGE_NOT_FOUND: ["404", "PAGE"],
+    HTTP_404_SNAPSHOT_NOT_FOUND: ["404", "SNAPSHOT"],
+    HTTP_404_PRESET_NOT_FOUND: ["404", "PRESET"],
+    HTTP_408_REQUEST_TIMEOUT: ["408", undefined],
+    HTTP_409_DUPLICATE_ERROR: ["409", undefined],
+    HTTP_410_RESOURCE_GONE: ["410", undefined],
+    HTTP_418_IM_A_TEAPOT: ["418", undefined],
+    HTTP_429_TOO_MANY_REQUESTS: ["429", undefined],
+    HTTP_500_INTERNAL_SERVER_ERROR: ["500", undefined],
+    HTTP_503_SERVICE_UNAVAILABLE: ["503", undefined],
+    CVMM_600_UNKNOWN_ERROR: ["600", undefined],
+    CVMM_601_INVALID_ENV_CONFIGURATION: ["601", undefined],
+    CVMM_650_INVALID_NETWORK_CONFIGURATION: ["650", undefined],
+    CVMM_651_NETWORK_PRESET_CALC_FAILED: ["651", undefined],
+    CVMM_651_NETWORK_PRESET_CALC_FAILED_UNDEFINED: ["651", "NOT-DEFINED"],
+    CVMM_651_NETWORK_PRESET_CALC_FAILED_CORE_FUNC: ["651", "CORE-FUNCTION"],
+    CVMM_651_NETWORK_PRESET_CALC_FAILED_VARIABLE: ["651", "VARIABLE"],
+    CVMM_651_NETWORK_PRESET_CALC_FAILED_CUSTOM_FUNC: ["651", "CUSTOM-FUNCTION"],
+} as const;
+
+export const ERROR_VARIANTS_MAP = {
+    "401": {
+        "Incorrect username or password.": "INVALID-CREDENTIALS",
+        "Please log in to the panel again.": "SESSION-EXPIRED",
+    },
+    "404": {
+        "Snapshot not found": "SNAPSHOT",
+        "Preset not found": "PRESET",
+    },
 };
 
-export default { ERRORS, ERROR_DETAIL_MAPPING };
+export type ErrorCode = (typeof ERRORS)[keyof typeof ERRORS];
+
+export type ExpandedErrorCode = (typeof ERRORS_EXPANDED)[keyof typeof ERRORS_EXPANDED];
+
+export default { ERRORS, ERRORS_EXPANDED };

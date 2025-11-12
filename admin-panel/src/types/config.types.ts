@@ -33,6 +33,7 @@ export interface Page {
     icon: ComponentType<IconProps>;
     subpages?: Page[];
     permissions?: number;
+    disabled?: boolean;
 }
 
 export type AccountType = "administrative" | "client";

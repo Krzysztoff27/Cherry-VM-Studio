@@ -54,14 +54,14 @@ export default function ModifySnapshotsButton({ forceSnapshotDataUpdate, initiat
  */
 function SnapshotModificationModal({ opened, onClose, close, initiateSnapshotDataUpdate, forceSnapshotDataUpdate }) {
     const { t } = useTranslation();
-    const { getRequest } = useApi();
+    const { sendRequest } = useApi();
     const [snapshots, setSnapshots] = useState([]);
     // prevents the modal changing to the "no snapshots to edit" state during fade out transitions (in cases where all snapshots get deleted):
     const [debouncedLength] = useDebouncedValue(snapshots?.length, 100);
 
     useEffect(() => {
         const getSnapshots = async () => {
-            await setSnapshots(await getRequest("network/snapshots"));
+            setSnapshots(await sendRequest("GET", "network/snapshots"));
         };
         getSnapshots();
     }, [opened, forceSnapshotDataUpdate]); // refresh every time the modal is opened
@@ -149,7 +149,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
     toBeDeletedRef.current = toBeDeleted;
 
     // snapshot name validators
-    const onlyValidCharacters = str => /^[!-z]*$/.test(str);
+    const onlyValidCharacters = (str) => /^[!-z]*$/.test(str);
     /**
      * method called by the form for each text input during validation
      * @param {string} val value of current text input
@@ -179,10 +179,10 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
      * @param {function} callbackFunction function used to determine the values, executed for every snapshot (as their first parameter).
      * @returns {Object} Object where key is snapshot UUID and value is based on the callback function return value for particular snapshot.
      */
-    const createUuidKeyedObject = callbackFunction => snapshots.reduce((acc, snapshot) => ({ ...acc, [snapshot.uuid]: callbackFunction(snapshot) }), {});
+    const createUuidKeyedObject = (callbackFunction) => snapshots.reduce((acc, snapshot) => ({ ...acc, [snapshot.uuid]: callbackFunction(snapshot) }), {});
 
-    const getFormValidation = useCallback(() => createUuidKeyedObject(_ => validationMethod), [snapshots]);
-    const getInitialValues = useCallback(() => createUuidKeyedObject(snapshot => snapshot.name), [snapshots]);
+    const getFormValidation = useCallback(() => createUuidKeyedObject((_) => validationMethod), [snapshots]);
+    const getInitialValues = useCallback(() => createUuidKeyedObject((snapshot) => snapshot.name), [snapshots]);
 
     // mantine form holding values of the snapshot name inputs
     const renamingForm = useForm({
@@ -203,8 +203,8 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
         renamingForm.validate();
     }, [toBeDeleted, renamingForm.values]);
 
-    const onDeleteButtonClick = uuid => {
-        setToBeDeleted(prev => {
+    const onDeleteButtonClick = (uuid) => {
+        setToBeDeleted((prev) => {
             let newDeleted = { ...prev };
             prev[uuid] ? delete newDeleted[uuid] : (newDeleted[uuid] = true);
             return newDeleted;
@@ -217,7 +217,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
      * Function to send requests resulting in renaming snapshots to new values.
      * @param {Object} names values from the submited renamingForm
      */
-    const renameSnapshots = async values => {
+    const renameSnapshots = async (values) => {
         const initialValues = getInitialValues();
         const toBeRenamed = Object.entries(values).filter(([uuid, name]) => initialValues[uuid] !== name && !toBeDeletedRef.current[uuid]);
         if (!toBeRenamed.length) return;
@@ -237,7 +237,7 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
             .map(([uuid, _]) => uuid);
         if (!uuids.length) return;
 
-        uuids.forEach(uuid => deleteRequest(`network/snapshot/${uuid}`));
+        uuids.forEach((uuid) => deleteRequest(`network/snapshot/${uuid}`));
         sendNotification("network-panel.snapshot-remove", {}, { count: uuids.length });
 
         setToBeDeleted({});
@@ -247,13 +247,13 @@ function ModificationForm({ snapshots, close, initiateSnapshotDataUpdate }) {
      * Function called when user clicks the submit button.
      */
     const onFormSubmit = renamingForm.onSubmit(
-        async values => {
+        async (values) => {
             close();
             await renameSnapshots(values);
             await deleteSnapshots();
             setTimeout(initiateSnapshotDataUpdate, 200);
         },
-        errors => {
+        (errors) => {
             const firstErrorPath = Object.keys(errors)[0];
             renamingForm.getInputNode(firstErrorPath)?.focus();
         }
@@ -372,7 +372,7 @@ function ModificationFormLine({ snapshot, inputProps, isDeleted, onDeleteButtonC
                     justify="right"
                     gap="xs"
                 >
-                    <Text>{snapshot?.nodes?.filter?.(node => node.type === "machine")?.length || 0}</Text>
+                    <Text>{snapshot?.nodes?.filter?.((node) => node.type === "machine")?.length || 0}</Text>
                     <IconDeviceDesktop />
                 </Group>
                 <Group

@@ -5,26 +5,29 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import useErrorHandler from "../../../hooks/useErrorHandler";
-import { ERRORS } from "../../../config/errors.config";
+import { ERRORS, ERRORS_EXPANDED } from "../../../config/errors.config";
+import { AxiosError } from "axios";
 
 const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
-    const { deleteRequest } = useApi();
+    const { sendRequest } = useApi();
     const { tns } = useNamespaceTranslation("modals", "confirm.account-removal");
     const { sendErrorNotification } = useMantineNotifications();
-    const { parseAndHandleError } = useErrorHandler();
+    const { handleAxiosError } = useErrorHandler();
 
-    const onPostError: ErrorCallbackFunction = (response, json) => {
-        if (response.status == 400) {
-            if (/permission unassigned/.test(json?.detail)) {
-                sendErrorNotification(ERRORS.HTTP_400_CANNOT_REMOVE_USER);
-                return;
-            }
+    const onPostError = (error: AxiosError) => {
+        if (error.response?.status !== 400) return handleAxiosError(error);
+
+        const data = error.response?.data as Record<string, any>;
+        const detail = data?.detail;
+
+        if (detail.includes("permission unassigned")) {
+            sendErrorNotification(ERRORS_EXPANDED.HTTP_400_CANNOT_REMOVE_USER);
+            return;
         }
-        parseAndHandleError(response, json);
     };
 
     const onConfirm = () => {
-        uuids.forEach((uuid) => deleteRequest(`user/delete/${uuid}`, undefined, onPostError));
+        uuids.forEach((uuid: string) => sendRequest("DELETE", `user/delete/${uuid}`, undefined, onPostError));
         onClose();
         onSubmit();
     };

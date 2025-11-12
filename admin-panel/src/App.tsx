@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider } from "react-router-dom";
-import { Protected, ReverseProtected } from "./wrappers/Protected";
-import ErrorBoundary from "./components/organisms/display/ErrorBoundary/ErrorBoundary.jsx";
+import Protected from "./wrappers/Protected";
+import ErrorBoundary from "./components/organisms/display/ErrorBoundary/ErrorBoundary";
 import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
 import Home from "./pages/Home/Home";
@@ -17,6 +17,7 @@ import SnapshotLibrary from "./pages/SnapshotLibrary/SnapshotLibrary.tsx";
 import IsoLibrary from "./pages/IsoLibrary/IsoLibrary.tsx";
 import { AuthenticationProvider } from "./contexts/AuthenticationContext.tsx";
 import { PermissionsProvider } from "./contexts/PermissionsContext.tsx";
+import ReverseProtected from "./wrappers/ReverseProtected.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -37,7 +38,7 @@ const router = createBrowserRouter(
                 <Route element={<Protected/>}>
                     <Route element={<PanelLayout/>}>
                         <Route path='/home'                     element={<Home/>}/>
-                        <Route path='/network-panel'            element={<NetworkPanel/>}/>    
+                        {/* <Route path='/network-panel'            element={<NetworkPanel/>}/>     */}
                     </Route>
                     <Route element={<PanelLayout doubleNavbar/>}>
                         <Route path='/machines/snapshots'       element={<SnapshotLibrary/>}/>
@@ -54,6 +55,7 @@ const router = createBrowserRouter(
                 <Route element={<ReverseProtected/>}>
                     <Route path='/login' element={<LoginPage/>}/>
                 </Route>
+                <Route path="*" loader={() => {throw new Response("Page not found", {status: 404})}} />
             </Route>
         </Route>
     )

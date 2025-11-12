@@ -16,12 +16,14 @@ export interface useApiReturn {
 
 export const useApi = (): useApiReturn => {
     const API_URL: string = urlConfig.api_requests;
-    const { parseAndHandleError } = useErrorHandler();
+    const { handleAxiosError } = useErrorHandler();
     const { authHeaders, refreshHeaders, setAccessToken, setRefreshToken } = useAuthentication();
 
     const baseApiRequestConfig = {
         headers: authHeaders,
         transitional: { clarifyTimeoutError: true },
+        timeout: 3000,
+        timeoutErrorMessage: "No response from the API service.",
     } as AxiosRequestConfig;
 
     const getPath = (path: string): string => (API_URL ? `${API_URL}${validPath(path)}` : undefined);
@@ -50,23 +52,22 @@ export const useApi = (): useApiReturn => {
         method: RequestMethods,
         path: string,
         config: AxiosRequestConfig = {},
-        errorCallback: (error: AxiosError) => void = parseAndHandleError
+        errorCallback: (error: AxiosError) => void = handleAxiosError
     ): Promise<T> => {
         const mergedConfig = merge(baseApiRequestConfig, config);
-        const axiosFunction = axios[method.toLowerCase()];
 
-        const sendFetch = async (): Promise<AxiosResponse> => await axiosFunction(getPath(path), mergedConfig);
+        const sendFetch = async (): Promise<AxiosResponse> => await axios({ ...mergedConfig, method, url: getPath(path) });
 
         return await sendFetch()
             .then((response) => response.data)
             .catch(async (error: AxiosError) => {
-                if (error.code === "ECONNABORTED")
+                if (error.code !== "ETIMEDOUT")
                     if (error.response) {
                         if (toString(error.response.status) !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
 
                         // handle expired access token - try to refresh tokens
                         const tokens = await refreshTokens();
-                        if (!tokens.access_token) return errorCallback(error);
+                        if (!tokens?.access_token) return errorCallback(error);
 
                         // after succesfull refresh send the original request again for seamless UX
                         mergedConfig.headers["Authorization"] = `Bearer ${tokens.access_token}`;
@@ -74,7 +75,7 @@ export const useApi = (): useApiReturn => {
                             .then((response) => response.data)
                             .catch(errorCallback);
                     }
-                if (error.request) return errorCallback(new AxiosError("No response from the API service.", "503"));
+                if (error.request) return errorCallback(error);
 
                 console.error("Unhandled error occured during fetch.", error);
             });

@@ -6,21 +6,21 @@ import useApi from "../../../hooks/useApi";
 
 const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Element => {
     const { t } = useTranslation();
-    const { postRequest, deleteRequest } = useApi();
+    const { sendRequest } = useApi();
 
     const startMachine = (e: MouseEvent) => {
         e.preventDefault(); // required to prevent entering the machine page
-        postRequest(`/machine/start/${uuid}`);
+        sendRequest("POST", `/machine/start/${uuid}`);
     };
 
     const stopMachine = (e: MouseEvent) => {
         e.preventDefault(); // required to prevent entering the machine page
-        postRequest(`/machine/stop/${uuid}`);
+        sendRequest("POST", `/machine/stop/${uuid}`);
     };
 
     const deleteMachine = (e: MouseEvent) => {
         e.preventDefault(); // required to prevent entering the machine page
-        deleteRequest(`/machine/delete/${uuid}`);
+        sendRequest("DELETE", `/machine/delete/${uuid}`);
     };
 
     return (

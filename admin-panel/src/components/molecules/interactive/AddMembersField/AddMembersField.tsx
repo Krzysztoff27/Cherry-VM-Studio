@@ -11,14 +11,14 @@ import { useTranslation } from "react-i18next";
 const AddMembersField = ({ groupUuid, alreadyAddedUsers, refresh }): React.JSX.Element => {
     const { data } = useFetch("users?account_type=client");
     const { t } = useTranslation();
+    const { sendRequest } = useApi();
     const [selected, setSelected] = useState([]);
-    const { putRequest } = useApi();
 
-    const addedUuids = useMemo(() => alreadyAddedUsers.map(user => user.uuid), [JSON.stringify(alreadyAddedUsers)]);
-    const users = safeObjectValues(data).filter(user => !addedUuids.includes(user.uuid));
+    const addedUuids = useMemo(() => alreadyAddedUsers.map((user) => user.uuid), [JSON.stringify(alreadyAddedUsers)]);
+    const users = safeObjectValues(data).filter((user) => !addedUuids.includes(user.uuid));
 
     const submit = async () => {
-        await putRequest(`group/join/${groupUuid}`, JSON.stringify(selected));
+        await sendRequest("PUT", `group/join/${groupUuid}`, { data: selected });
         refresh();
         setSelected([]);
     };
@@ -30,7 +30,7 @@ const AddMembersField = ({ groupUuid, alreadyAddedUsers, refresh }): React.JSX.E
                 w={"calc(100% - 136px)"}
                 users={users}
                 classNames={classes}
-                onChange={val => setSelected(val)}
+                onChange={(val) => setSelected(val)}
                 value={selected}
             />
 

@@ -76,7 +76,7 @@ const Placeholder = () => (
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
     const { data: group, loading, refresh: refreshModal } = useFetch(uuid ? `/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
-    const { putRequest } = useApi();
+    const { sendRequest } = useApi();
 
     const refresh = () => {
         refreshTable();
@@ -84,7 +84,7 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
     };
 
     const removeMember = async (member: string) => {
-        await putRequest(`group/leave/${uuid}`, JSON.stringify([member]));
+        await sendRequest("PUT", `group/leave/${uuid}`, { data: [member] });
         refresh();
     };
 

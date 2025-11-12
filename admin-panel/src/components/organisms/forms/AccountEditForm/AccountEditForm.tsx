@@ -13,11 +13,12 @@ import { ErrorCallbackFunction } from "../../../../types/hooks.types";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
 import RoleMultiselect from "../../../atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../atoms/interactive/GroupMultiselect/GroupMultiselect";
+import { AxiosError } from "axios";
 
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
-    const { putRequest } = useApi();
-    const { parseAndHandleError } = useErrorHandler();
+    const { sendRequest } = useApi();
+    const { handleAxiosError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
     const { hasPermissions } = usePermissions();
 
@@ -69,25 +70,32 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         console.log(form.getValues());
     }, [JSON.stringify(user)]);
 
-    const onPostError: ErrorCallbackFunction = (response, json) => {
-        if (response.status == 400) {
-            if (/permission unassigned/.test(json?.detail)) {
-                const match = json.detail.match(/UUID=([a-f0-9-]+)/i);
-                const roleUuid = match ? match[1] : null;
-                const roleName = user.roles[roleUuid].name;
-                form.setFieldValue("roles", user?.roles?.map((role) => role.uuid) ?? []);
-                return form.setFieldError("roles", tns("validation.cannot-revoke-role", { name: roleName }));
-            }
+    const onPostError = (error: AxiosError) => {
+        const data = error.response?.data as Record<string, any>;
+        const detail = data?.detail;
+
+        if (error.response?.status === 400 && detail.includes("permission unassigned")) {
+            const match = detail.match(/UUID=([a-f0-9-]+)/i);
+            const roleUuid = match ? match[1] : null;
+            const roleName = user.roles[roleUuid].name;
+
+            form.resetField("roles");
+            form.setFieldError("roles", tns("validation.cannot-revoke-role", { name: roleName }));
+            return;
         }
-        if (response.status == 409) {
-            if (/username/.test(json?.detail)) return form.setFieldError("username", tns("validation.username-duplicate"));
-            if (/email/.test(json?.detail)) return form.setFieldError("email", tns("validation.email-duplicate"));
+
+        if (error.response?.status === 409) {
+            ["username", "email"].forEach((field) => {
+                if (detail?.includes(field)) form.setFieldError(field, tns(`validation.${field}-duplicate`));
+            });
+            return;
         }
-        parseAndHandleError(response, json);
+
+        handleAxiosError(error);
     };
 
     const onFormSubmit = form.onSubmit(async (values) => {
-        const res = await putRequest(`user/modify/${user?.uuid}`, JSON.stringify(values), undefined, onPostError);
+        const res = await sendRequest("PUT", `user/modify/${user?.uuid}`, { data: values }, onPostError);
         if (!res) return;
 
         sendNotification("account.modified", undefined, { username: res.username });

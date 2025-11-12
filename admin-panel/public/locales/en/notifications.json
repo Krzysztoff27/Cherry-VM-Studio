@@ -6,23 +6,27 @@
         },
         "400": {
             "title": "Bad Request",
-            "message": "Your request could not be processed due to an error. Please verify your input and try again."
-        },
-        "400-CANNOT-REMOVE-USER": {
-            "title": "Cannot Remove User",
-            "message": "Cannot remove user as it would leave at least one permission unassigned. Please make sure to pass the permissions to another account first."
+            "message": "Your request could not be processed due to an error. Please verify your input and try again.",
+            "variants": {
+                "CANNOT-REMOVE-USER": {
+                    "title": "Cannot Remove User",
+                    "message": "Cannot remove user as it would leave at least one permission unassigned. Please make sure to pass the permissions to another account first."
+                }
+            }
         },
         "401": {
             "title": "Unauthorized",
-            "message": "You are not authorized to access this resource. Please log in to continue."
-        },
-        "401-LOGIN": {
-            "title": "Login failed",
-            "message": "Incorrect username or password."
-        },
-        "401-SESSION": {
-            "title": "Session expired",
-            "message": "Please log in to the panel again."
+            "message": "You are not authorized to access this resource. Please log in to continue.",
+            "variants": {
+                "INVALID-CREDENTIALS": {
+                    "title": "Login failed",
+                    "message": "Incorrect username or password."
+                },
+                "SESSION-EXPIRED": {
+                    "title": "Session expired",
+                    "message": "Please log in to the panel again."
+                }
+            }
         },
         "403": {
             "title": "Access Denied",
@@ -30,23 +34,21 @@
         },
         "404": {
             "title": "{{resource, capitalize}} Not Found",
-            "message": "The {{resource, lowercase}} you are looking for could not be found"
-        },
-        "404-PAGE": {
-            "title": "Page Not Found",
-            "message": "The page you are looking for could not be found. Please check the URL or contact the development team."
-        },
-        "404-NO-LONGER": {
-            "title": "{{resource, capitalize}} Not Found",
-            "message": "Searched {{resource, lowercase}} no longer exists."
-        },
-        "404-SNAPSHOT": {
-            "title": "Snapshot Not Found",
-            "message": "Selected snapshot no longer exists."
-        },
-        "404-PRESET": {
-            "title": "Preset Not Found",
-            "message": "Selected preset no longer exists."
+            "message": "The {{resource, lowercase}} you are looking for could not be found",
+            "variants": {
+                "PAGE": {
+                    "title": "Page Not Found",
+                    "message": "The page you are looking for could not be found. Please check the URL or contact the development team."
+                },
+                "SNAPSHOT": {
+                    "title": "Snapshot Not Found",
+                    "message": "Selected snapshot no longer exists."
+                },
+                "PRESET": {
+                    "title": "Preset Not Found",
+                    "message": "Selected preset no longer exists."
+                }
+            }
         },
         "408": {
             "title": "Request Timeout",
@@ -90,23 +92,25 @@
         },
         "651": {
             "title": "Could Not Load The Preset",
-            "message": "{{message}}"
-        },
-        "651-undefined": {
-            "title": "Could Not Load The Preset",
-            "message": "{{key}} is either not defined or empty."
-        },
-        "651-CORE-FUNCTION": {
-            "title": "Could Not Load The Preset",
-            "message": "Syntax error occurred in the preset's {{key}} core function."
-        },
-        "651-VARIABLE": {
-            "title": "Could Not Load The Preset",
-            "message": "An error occured during calculation of the \"{{key}}\" variable."
-        },
-        "651-CUSTOM-FUNCTION": {
-            "title": "Could Not Load The Preset",
-            "message": "An error occured during calculation of the \"{{key}}\" custom function."
+            "message": "{{message}}",
+            "variants": {
+                "NOT-DEFINED": {
+                    "title": "Could Not Load The Preset",
+                    "message": "{{key}} is either not defined or empty."
+                },
+                "CORE-FUNCTION": {
+                    "title": "Could Not Load The Preset",
+                    "message": "Syntax error occurred in the preset's {{key}} core function."
+                },
+                "VARIABLE": {
+                    "title": "Could Not Load The Preset",
+                    "message": "An error occured during calculation of the \"{{key}}\" variable."
+                },
+                "CUSTOM-FUNCTION": {
+                    "title": "Could Not Load The Preset",
+                    "message": "An error occured during calculation of the \"{{key}}\" custom function."
+                }
+            }
         }
     },
     "account": {

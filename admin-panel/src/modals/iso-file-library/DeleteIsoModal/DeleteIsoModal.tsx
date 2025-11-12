@@ -4,11 +4,11 @@ import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 const DeleteIsoModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
-    const { deleteRequest } = useApi();
+    const { sendRequest } = useApi();
     const { tns } = useNamespaceTranslation("modals", "confirm.iso-removal");
 
     const onConfirm = async () => {
-        await Promise.all(uuids.map((uuid: string) => deleteRequest(`iso/delete/${uuid}`)));
+        await Promise.all(uuids.map((uuid: string) => sendRequest("DELETE", `iso/delete/${uuid}`)));
         onClose();
         onSubmit();
     };
