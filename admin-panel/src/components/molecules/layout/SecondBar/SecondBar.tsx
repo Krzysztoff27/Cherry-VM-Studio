@@ -5,7 +5,7 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.t
 import classes from "./SecondBar.module.css";
 import PAGES from "../../../../config/pages.config.ts";
 import { Page } from "../../../../types/config.types.ts";
-import { usePermissions } from "../../../../contexts/PermissionsContext.tsx";
+import { usePermissions } from "../../../../contexts/PermissionsContext";
 
 export default function SecondBar(): React.ReactElement {
     const { tns } = useNamespaceTranslation("layouts");

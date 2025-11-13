@@ -88,6 +88,11 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
         refresh();
     };
 
+    const addMembers = async (members: string[]) => {
+        await sendRequest("PUT", `group/join/${uuid}`, { data: members });
+        refresh();
+    };
+
     return (
         <Modal
             opened={opened}
@@ -130,12 +135,10 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                     >
                         <AddMembersField
                             alreadyAddedUsers={group?.users || []}
-                            groupUuid={uuid}
-                            refresh={refresh}
+                            onSubmit={addMembers}
                         />
                         <MembersTable
                             usersData={group?.users || []}
-                            refresh={refresh}
                             removeMember={removeMember}
                         />
                     </Stack>

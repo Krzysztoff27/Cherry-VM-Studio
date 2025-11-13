@@ -26,7 +26,7 @@ const MachineConfigForm = ({ form, configTemplate, setConfigTemplate, classes, o
     };
 
     return (
-        <Stack>
+        <Stack style={{ overflow: "hidden" }}>
             <Select
                 description={tns("config-template")}
                 placeholder={isNull(configTemplate) ? tns("none-selected") : ""}
@@ -44,7 +44,7 @@ const MachineConfigForm = ({ form, configTemplate, setConfigTemplate, classes, o
             <EnhancedSlider
                 heading={tns("ram")}
                 label={(val) => tns("ram-unit", { count: val })}
-                w="250"
+                w="100%"
                 size="sm"
                 color="cyan.7"
                 thumbSize="12"
@@ -57,7 +57,7 @@ const MachineConfigForm = ({ form, configTemplate, setConfigTemplate, classes, o
             <EnhancedSlider
                 heading={tns("vcpu")}
                 label={(val) => tns("vcpu-unit", { count: val })}
-                w="250"
+                w="100%"
                 size="sm"
                 color="pink.7"
                 thumbSize="12"

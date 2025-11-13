@@ -1,7 +1,6 @@
 .container {
     width: 100%;
     flex: 1;
-    padding-left: var(--mantine-spacing-md);
     min-height: 0;
     gap: 0;
 }

@@ -1,8 +1,8 @@
 import { notifications, NotificationsProps } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
-import { ErrorCode, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { NotificationProps } from "@mantine/core";
-import { ExpandedErrorCode } from "../config/errors.config";
+import { ErrorCode, ExpandedErrorCode } from "../config/errors.config";
 import { isArray } from "lodash";
 
 export interface SendNotificationOptions {

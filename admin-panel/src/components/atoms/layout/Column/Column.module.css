@@ -1,16 +1,12 @@
 .column {
     display: flex;
+    flex-direction: column;
 }
 
 .columnPaper {
     flex: 1;
-    align-items: stretch;
     padding: var(--mantine-spacing-md);
     background-color: var(--mantine-color-dark-8);
     border: 2px var(--mantine-color-dark-6) solid;
-}
-
-.columnPaper > * {
-    width: 100%;
-    height: 100%;
+    min-height: 0 !important;
 }

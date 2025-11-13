@@ -6,7 +6,7 @@ import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-tabl
 import classes from "./MembersTable.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
-const MembersTable = ({ usersData, refresh, removeMember }): React.JSX.Element => {
+const MembersTable = ({ usersData, removeMember }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("modals", "group");
     const data = useMemo(
         () =>

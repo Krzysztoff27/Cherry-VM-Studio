@@ -68,7 +68,30 @@
         },
         "graph": {
             "resource-used": "{{resource}} used"
-        }
+        },
+        "details": "Details",
+        "resources": "Resources",
+        "disks": "Disks",
+        "assigned-clients": "Assigned Clients",
+        "machine-name": "Machine name",
+        "machine-name-placeholder": "Machine name",
+        "machine-group-no": "No.",
+        "machine-tags": "Additional tags",
+        "machine-tags-placeholder": "Tags",
+        "machine-description-placeholder": "Description",
+        "machine-description": "Description",
+        "ram": "RAM",
+        "vcpu": "vCPU",
+        "ram-unit": "MiB",
+        "vcpu-unit": "cores",
+        "vcpu-unit_zero": "cores",
+        "vcpu-unit_one": "core",
+        "vcpu-unit_other": "cores",
+        "machine-configuration": "Machine configuration",
+        "domain-path": "Domain path",
+        "ip-address-port": "IP Address : Port",
+        "state": "Machine state",
+        "active-connections": "Active connections"
     },
     "login": {
         "title": "Cherry Admin Panel",

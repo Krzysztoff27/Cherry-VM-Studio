@@ -108,6 +108,12 @@ export interface MachineState extends MachineData {
     uptime: number | null;
 }
 
+export interface SimpleState {
+    fetching: boolean;
+    loading: boolean;
+    active: boolean;
+}
+
 export type MachineAll = MachineData | MachineState;
 
 export interface CreateMachineBody {

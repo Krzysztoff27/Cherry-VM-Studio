@@ -1,37 +1,23 @@
-import { Group, Indicator, Stack, Text } from "@mantine/core";
-import { IconDeviceDesktop } from "@tabler/icons-react";
+import { Badge, Group, Stack, Text } from "@mantine/core";
 import React from "react";
+import MachineActivityIndicator from "../feedback/MachineActivityIndicator/MachineActivityIndicator";
 
 const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
-    const { state, name } = getValue();
+    const { state, name, tags } = getValue();
 
     return (
         <Group gap="md">
-            <Indicator
-                position="bottom-end"
-                color={state.fetching ? "orange.6" : state.loading ? "yellow" : state.active ? "suse-green.7" : "cherry"}
-                withBorder={true}
-                size="12"
-            >
-                <IconDeviceDesktop
-                    size={28}
-                    color={!state.active ? "var(--mantine-color-dark-1)" : undefined}
-                />
-            </Indicator>
+            <MachineActivityIndicator state={state} />
             <Stack gap="0">
                 <Text
                     tt="capitalize"
                     size="xl"
                 >
-                    {getValue().name}
+                    {name}
                 </Text>
-                <Text
-                    tt="capitalize"
-                    size="xs"
-                    c="dimmed"
-                >
-                    Suse-Image-X.Y.Z
-                </Text>
+                {tags?.map?.((tag: string) => (
+                    <Badge variant="Light">{tag}</Badge>
+                ))}
             </Stack>
         </Group>
     );

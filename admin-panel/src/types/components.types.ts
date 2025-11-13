@@ -39,11 +39,6 @@ export interface MachineTitleProps extends TitleProps {
     machine: MachineData;
 }
 
-export interface MachineControlsProps {
-    currentState: MachineState;
-    size?: string | number | null | undefined;
-}
-
 export interface SparklineWithTextProps extends Omit<SparklineProps, "data"> {
     label: string;
     chartData: Array<number>;
@@ -84,11 +79,6 @@ export interface MachineCardProps {
     currentState: MachineState;
     /** The navigation path where clicking the card should redirect the user. */
     to: string;
-}
-
-export interface MachineHeadingProps {
-    machine: MachineData;
-    currentState: MachineState;
 }
 
 export interface CardGroupProps {
@@ -199,11 +189,6 @@ export interface SizeSelectProps {
     sizes: number[];
     value: number;
     setValue: (prev: number | string) => any;
-}
-
-export interface UserMultiselectProps extends MultiSelectProps {
-    users: UserInDB[];
-    classNames?: { [key: string]: any };
 }
 
 export interface TablePaginationProps {

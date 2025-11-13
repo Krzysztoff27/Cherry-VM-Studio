@@ -1,12 +1,15 @@
-import { MultiSelect } from "@mantine/core";
+import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import React from "react";
-import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { useTranslation } from "react-i18next";
-import { safeObjectValues } from "../../../../utils/misc";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
 import classes from "./UserMultiselect.module.css";
-import { UserMultiselectProps } from "../../../../types/components.types";
 import { useElementSize } from "@mantine/hooks";
+import { UserInDB } from "../../../../types/api.types";
+
+export interface UserMultiselectProps extends MultiSelectProps {
+    users: UserInDB[];
+    classNames?: { [key: string]: any };
+}
 
 const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserMultiselectProps): React.JSX.Element => {
     const { ref } = useElementSize();
@@ -24,7 +27,7 @@ const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserM
         />
     );
 
-    const onInputChange = val => {
+    const onInputChange = (val) => {
         ref.current.parentElement.parentElement.scrollTo({ left: ref.current.parentElement.parentElement.scrollWidth });
         onChange?.(val);
     };

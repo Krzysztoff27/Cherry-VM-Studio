@@ -17,7 +17,7 @@
     "403": {
         "code": 403,
         "title": "Access Denied",
-        "message": "Your account doesn't have the necessary permissions to access this resource. Please check your user group membership."
+        "message": "Your account doesn't have the necessary permissions to access this resource. Please check roles assigned to your profile."
     },
     "404": {
         "code": 404,

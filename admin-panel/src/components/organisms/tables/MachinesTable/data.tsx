@@ -4,12 +4,11 @@ import { MachineState } from "../../../../types/api.types";
 
 export const parseData = (machines: Record<string, MachineState>) =>
     values(machines).map((machine) => {
-        const name = `${machine.group} ${machine.group_member_id}`;
         const state = { fetching: machine.active === undefined, loading: machine.loading, active: machine.active };
 
         return {
             uuid: machine.uuid,
-            details: { name, state },
+            details: { name: machine.title, state, tags: machine.tags },
             state: state,
             cpu: machine.cpu,
             ram: Math.round((machine.ram_used / machine.ram_max) * 100),

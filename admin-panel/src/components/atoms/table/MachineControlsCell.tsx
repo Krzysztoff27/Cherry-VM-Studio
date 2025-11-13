@@ -59,15 +59,6 @@ const MachineControlsCell = ({ uuid, state, disabled = false }): React.JSX.Eleme
             <ActionIcon
                 variant="light"
                 size="md"
-                color="dark.0"
-                disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={(e) => e.preventDefault()}
-            >
-                <IconSettingsFilled />
-            </ActionIcon>
-            <ActionIcon
-                variant="light"
-                size="md"
                 color="red.9"
                 disabled={disabled || state.fetching || state?.loading || state?.active}
                 onClick={deleteMachine}

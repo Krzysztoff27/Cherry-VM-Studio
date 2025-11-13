@@ -1,27 +1,20 @@
 import { Stack } from "@mantine/core";
-import Loading from "../../atoms/feedback/Loading/Loading.tsx";
-import useFetch from "../../../hooks/useFetch.ts";
 import MachineHeading from "../../organisms/display/MachineHeading/MachineHeading.tsx";
 import MachineDataTable from "../../organisms/display/MachineDataTable/MachineDataTable.tsx";
-import { MachineData } from "../../../types/api.types.ts";
+import { MachineState } from "../../../types/api.types.ts";
 
-export default function MachineDataDisplay({ currentState, uuid }) {
-    const { loading, error, data } = useFetch(`/machine/${uuid}`);
-    const machine = data as MachineData;
+export interface MachineDataDisplay {
+    machine: MachineState;
+}
 
-    if (loading) return <Loading />;
-    if (error) throw error;
-
+export default function MachineDataDisplay({ machine }) {
     return (
-        <Stack>
-            <MachineHeading
-                machine={machine}
-                currentState={currentState}
-            />
-            <MachineDataTable
-                machine={machine}
-                currentState={currentState}
-            />
+        <Stack
+            pt="md"
+            h="100%"
+        >
+            <MachineHeading machine={machine} />
+            <MachineDataTable machine={machine} />
         </Stack>
     );
 }

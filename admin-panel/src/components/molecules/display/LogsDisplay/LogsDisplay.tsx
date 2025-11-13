@@ -5,7 +5,7 @@ export default function ConsoleDisplay() {
     const viewport = useRef(null);
     const [logs, setLogs] = useState([]);
 
-    const addNewLog = (log: string) => setLogs(oldLogs => [log, ...oldLogs]);
+    const addNewLog = (log: string) => setLogs((oldLogs) => [log, ...oldLogs]);
     const scrollToBottom = () => viewport.current?.scrollTo({ top: viewport.current?.scrollHeight, behavior: "smooth" });
 
     useEffect(() => {
@@ -20,6 +20,7 @@ export default function ConsoleDisplay() {
         <Paper
             bg="dark"
             p="xs"
+            h="100%"
         >
             <ScrollArea
                 viewportRef={viewport}

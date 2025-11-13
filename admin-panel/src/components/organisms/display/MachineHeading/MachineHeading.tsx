@@ -1,30 +1,34 @@
-import { Group } from "@mantine/core";
+import { Group, Title } from "@mantine/core";
 import React from "react";
-import MachineTitle from "../../../atoms/typography/MachineTitle/MachineTitle";
-import { MachineHeadingProps } from "../../../../types/components.types";
-import { IconDeviceDesktop, IconDeviceDesktopOff } from "@tabler/icons-react";
 import MachineControls from "../../../atoms/interactive/MachineControls/MachineControls";
-import StateBadge from "../../../molecules/feedback/StateBadge/StateBadge";
+import classes from "./MachineHeading.module.css";
+import MachineActivityIndicator from "../../../atoms/feedback/MachineActivityIndicator/MachineActivityIndicator";
+import { MachineState } from "../../../../types/api.types";
 
-const MachineHeading = ({ currentState, machine }: MachineHeadingProps): React.JSX.Element => (
-    <Group
-        justify="space-between"
-        pl="lg"
-        pr="lg"
-    >
-        <Group align="center">
-            {currentState?.active ? <IconDeviceDesktop size={"40"} /> : <IconDeviceDesktopOff size={"40"} />}
-            <MachineTitle
-                order={1}
+export interface MachineHeadingProps {
+    machine: MachineState;
+}
+
+const MachineHeading = ({ machine }: MachineHeadingProps): React.JSX.Element => {
+    const state = { fetching: machine?.active === undefined, loading: machine.loading, active: machine.active };
+
+    return (
+        <Group className={classes.container}>
+            <Group className={classes.leftGroup}>
+                <MachineActivityIndicator state={state} />
+                <Title
+                    order={2}
+                    className={classes.title}
+                >
+                    {machine?.title ?? "Unnamed Machine"}
+                </Title>
+            </Group>
+            <MachineControls
                 machine={machine}
+                state={state}
             />
-            <MachineControls currentState={currentState} />
         </Group>
-        <StateBadge
-            machineState={currentState}
-            sizes={{ badge: "xl", loader: "md", icon: 15 }}
-        />
-    </Group>
-);
+    );
+};
 
 export default MachineHeading;

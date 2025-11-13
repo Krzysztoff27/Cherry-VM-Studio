@@ -1,7 +1,14 @@
 import { Badge, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import classes from "./BadgeGroup.module.css";
+import { ReactNode } from "react";
 
-const BadgeGroup = ({ items, label, emptyMessage = "" }) => {
+export interface BadgeGroupProps {
+    items: ReactNode[];
+    label?: ReactNode;
+    emptyMessage?: ReactNode;
+}
+
+const BadgeGroup = ({ items, label, emptyMessage = "" }: BadgeGroupProps) => {
     return (
         <Stack className={classes.container}>
             {label && (

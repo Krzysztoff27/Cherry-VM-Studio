@@ -61,7 +61,7 @@ export const useApi = (): useApiReturn => {
         return await sendFetch()
             .then((response) => response.data)
             .catch(async (error: AxiosError) => {
-                if (error.code !== "ETIMEDOUT")
+                if (error.code !== "ETIMEDOUT" && error.code !== "ERR_NETWORK")
                     if (error.response) {
                         if (toString(error.response.status) !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
 

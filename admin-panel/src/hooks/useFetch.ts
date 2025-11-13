@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import useApi from "./useApi";
 import { AxiosError, AxiosRequestConfig } from "axios";
+import { isNull, isUndefined } from "lodash";
 
-export interface useFetchReturn {
+export interface useFetchReturn<T = any> {
     loading: boolean;
     error: AxiosError | null;
-    data: any | null;
+    data: T | null;
     refresh: () => void;
 }
 
-const useFetch = (path?: string, config: AxiosRequestConfig = undefined, cleanBeforeRefresh = false): useFetchReturn => {
-    const [data, setData] = useState<any | null>(null);
+const useFetch = <T = any>(path?: string, config: AxiosRequestConfig = undefined, cleanBeforeRefresh = false): useFetchReturn => {
+    const [data, setData] = useState<T | null>(null);
     const [error, setError] = useState<AxiosError | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshValue, setRefreshValue] = useState<boolean>(false);
@@ -36,7 +37,7 @@ const useFetch = (path?: string, config: AxiosRequestConfig = undefined, cleanBe
 
             const json = await sendRequest("GET", path, config, onError);
 
-            if (!json) return;
+            if (isUndefined(json) || isNull(json)) return;
             setData(json);
             setError(null);
             setLoading(false);

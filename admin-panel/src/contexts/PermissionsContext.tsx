@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useCallback, useEffect, useRef } from "react";
 import useFetch from "../hooks/useFetch";
 import { useAuthentication } from "./AuthenticationContext";
+import { MachineData, User } from "../types/api.types";
+import PERMISSIONS from "../config/permissions.config";
 
 interface PermissionsContextValue {
     hasPermissions: (required: number) => boolean;
+    canManageMachine: (user: User, machine: MachineData) => boolean;
 }
 
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
@@ -27,7 +30,10 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         [permissions]
     );
 
-    return <PermissionsContext.Provider value={{ hasPermissions }}>{children}</PermissionsContext.Provider>;
+    const canManageMachine = (user: User, machine: MachineData) =>
+        (user && machine.owner && user.uuid === machine.owner.uuid) || hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
+
+    return <PermissionsContext.Provider value={{ hasPermissions, canManageMachine }}>{children}</PermissionsContext.Provider>;
 };
 
 export const usePermissions = () => {

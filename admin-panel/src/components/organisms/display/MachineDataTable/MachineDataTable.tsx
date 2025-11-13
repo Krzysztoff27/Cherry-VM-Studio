@@ -1,66 +1,100 @@
-import { Group, MantineStyleProp, ScrollArea, Stack, Table, Text } from "@mantine/core";
-import { arrayIntoChunks } from "../../../../utils/misc";
-import { useTranslation } from "react-i18next";
+import { Group, Loader, ScrollArea, Stack, TextInput } from "@mantine/core";
+import BadgeGroup from "../../../atoms/display/BadgeGroup/BadgeGroup";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import { MachineState } from "../../../../types/api.types";
+import React from "react";
+import { chunk } from "lodash";
+import { IconCircleFilled } from "@tabler/icons-react";
 
-function MachineDataTable({ machine, currentState }) {
-    const { t } = useTranslation();
-    const keyTdStyle: MantineStyleProp = { textAlign: "right", fontWeight: 500, width: "25%" };
+export interface MachineDataTableProps {
+    machine: MachineState;
+}
 
-    const activeConnectionsArray =
-        currentState?.active_connections?.map((address: string, i: number) => (
-            <Text
-                fz="lg"
-                key={i}
-            >
-                {address}
-            </Text>
-        )) || [];
-    const activeConnectionsSplit = arrayIntoChunks(activeConnectionsArray, 4);
-    const activeConnectionsStacks = activeConnectionsSplit.length
-        ? activeConnectionsSplit.map((elements, i) => (
-              <Stack
-                  gap="sm"
-                  key={i}
-              >
-                  {...elements}
-              </Stack>
-          ))
-        : t("none");
+const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element => {
+    const { t, tns } = useNamespaceTranslation("pages", "machine");
+    const state = { fetching: machine?.active === undefined, loading: machine.loading, active: machine.active };
+    const stateColor = `var(--mantine-color-${state.fetching ? "orange-5" : state.loading ? "yellow-5" : state.active ? "suse-green-5" : "cherry-5"})`;
+    const chunkedActiveConnections = chunk(machine.active_connections?.length ? machine.active_connections : [null, null], 2);
 
     return (
         <ScrollArea>
-            <Table
-                fz="lg"
-                withRowBorders={false}
-                striped
-            >
-                <Table.Tbody>
-                    <Table.Tr>
-                        <Table.Td style={keyTdStyle}>{t("machine.info.type", { ns: "pages" })}:</Table.Td>
-                        <Table.Td tt="capitalize">{`${machine.group} (${machine.group_member_id})`}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td style={keyTdStyle}>{t("machine.info.domain", { ns: "pages" })}:</Table.Td>
-                        <Table.Td>
-                            <a href={`http://${machine.domain}`}>{machine.domain}</a>
-                        </Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td style={keyTdStyle}>{t("machine.info.address", { ns: "pages" })}:</Table.Td>
-                        <Table.Td>
-                            <a href={`http://172.16.100.1:${machine.port}`}>172.16.100.1:{machine.port}</a>
-                        </Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td style={{ verticalAlign: "top", ...keyTdStyle }}>{t("machine.info.active-connections", { ns: "pages" })}:</Table.Td>
-                        <Table.Td>
-                            <Group align="top">{activeConnectionsStacks}</Group>
-                        </Table.Td>
-                    </Table.Tr>
-                </Table.Tbody>
-            </Table>
+            <Stack p="md">
+                <BadgeGroup
+                    items={machine?.tags || []}
+                    label={undefined}
+                />
+                <Group>
+                    <TextInput
+                        description={tns("state")}
+                        classNames={{
+                            input: "borderless",
+                        }}
+                        leftSectionWidth={40}
+                        readOnly
+                        flex="1"
+                        styles={{
+                            input: {
+                                color: stateColor,
+                            },
+                        }}
+                        leftSection={
+                            state.fetching || state.loading ? (
+                                <Loader
+                                    type="bars"
+                                    size="12"
+                                    color={stateColor}
+                                />
+                            ) : (
+                                <IconCircleFilled
+                                    size={8}
+                                    color={stateColor}
+                                />
+                            )
+                        }
+                        value={t(state.fetching ? "fetching" : state.loading ? "loading" : state.active ? "online" : "offline")}
+                    />
+                    <TextInput
+                        description={tns("ip-address-port")}
+                        classNames={{
+                            input: "borderless",
+                        }}
+                        flex="1"
+                        readOnly
+                        value="172.20.0.1:7000"
+                    />
+                </Group>
+                <TextInput
+                    description={tns("domain-path")}
+                    classNames={{
+                        input: "borderless",
+                    }}
+                    readOnly
+                    value="session.lenovo.lab/<uuid-of-the-machine>"
+                />
+
+                {chunkedActiveConnections.map((chunk, i) => (
+                    <Group
+                        key={i}
+                        align="end"
+                    >
+                        <TextInput
+                            description={i === 0 ? tns("active-connections") : ""}
+                            classNames={{ input: "borderless" }}
+                            readOnly
+                            value={chunk[0] ?? "-"}
+                            flex="1"
+                        />
+                        <TextInput
+                            classNames={{ input: "borderless" }}
+                            readOnly
+                            value={chunk[1] ?? "-"}
+                            flex="1"
+                        />
+                    </Group>
+                ))}
+            </Stack>
         </ScrollArea>
     );
-}
+};
 
 export default MachineDataTable;
