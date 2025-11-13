@@ -13,7 +13,5 @@ async def broadcast_machine_state(subscriptions: SubscriptionsDict):
         if subscription.websocket.application_state != WebSocketState.CONNECTED or subscription.websocket.client_state != WebSocketState.CONNECTED: 
             continue
         
-        logging.info("Subscribed machines: ", subscription.resources)
         body = get_machine_states_by_uuids(subscription.resources)
-        logging.info(f"Fetched machine states: {body}")
         await subscription.websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
