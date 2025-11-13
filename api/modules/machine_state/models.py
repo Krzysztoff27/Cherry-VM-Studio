@@ -11,8 +11,8 @@ from modules.users.models import ClientInDB, AdministratorInDB
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
 class MachineData(BaseModel):                       
     uuid: UUID                                      
-    group: str | None = None                        
-    group_member_id: int | None = None              
+    title: str | None = None
+    tags: list[str] | None = None        
     owner: AdministratorInDB | None = None          
     assigned_clients: dict[UUID, ClientInDB] = {}   
     port: int | None = None                         
