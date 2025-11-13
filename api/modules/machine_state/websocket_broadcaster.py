@@ -1,3 +1,4 @@
+import json
 import logging
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
@@ -14,5 +15,5 @@ async def broadcast_machine_state(subscriptions: SubscriptionsDict):
         
         logging.info("Subscribed machines: ", subscription.resources)
         body = get_machine_states_by_uuids(subscription.resources)
-        logging.info("Fetched machine states: ", body)
+        logging.info("Fetched machine states: ", json.dumps(body))
         await subscription.websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
