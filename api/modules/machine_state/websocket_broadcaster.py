@@ -15,5 +15,5 @@ async def broadcast_machine_state(subscriptions: SubscriptionsDict):
         
         logging.info("Subscribed machines: ", subscription.resources)
         body = get_machine_states_by_uuids(subscription.resources)
-        logging.info("Fetched machine states: ", json.dumps(body))
+        logging.info(f"Fetched machine states: {body}")
         await subscription.websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
