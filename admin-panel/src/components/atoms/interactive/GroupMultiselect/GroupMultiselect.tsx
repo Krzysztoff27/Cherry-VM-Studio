@@ -11,13 +11,11 @@ const GroupMultiselect = (props: MultiSelectProps): React.JSX.Element => {
     const sortOptions = (a, b) => a.label.localeCompare(b.label);
 
     const groupOptions = safeObjectValues(groups)
-        .map(group => ({
+        .map((group) => ({
             label: group.name,
             value: group.uuid,
         }))
         .sort(sortOptions);
-
-    console.log(groups);
 
     return (
         <MultiSelect
