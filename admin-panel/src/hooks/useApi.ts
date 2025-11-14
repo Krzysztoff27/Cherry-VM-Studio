@@ -63,7 +63,7 @@ export const useApi = (): useApiReturn => {
             .catch(async (error: AxiosError) => {
                 if (error.code !== "ETIMEDOUT" && error.code !== "ERR_NETWORK")
                     if (error.response) {
-                        if (toString(error.response.status) !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
+                        if (error.response.status !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
 
                         // handle expired access token - try to refresh tokens
                         const tokens = await refreshTokens();
