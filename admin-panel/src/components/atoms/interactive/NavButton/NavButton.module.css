@@ -5,12 +5,9 @@
 
     &:disabled,
     &[data-disabled] {
-        background-color: var(--mantine-color-cherry-7);
-        border-color: var(--mantine-color-cherry-12);
-    }
-
-    &[data-disabled]:hover {
-        background-color: var(--mantine-color-cherry-10);
+        pointer-events: none;
+        color: var(--mantine-color-dimmed);
+        background-color: var(--mantine-color-dark-6);
     }
 
     &:not(&[data-disabled]):hover {
@@ -18,3 +15,12 @@
     }
 }
 
+.actionIcon[aria-selected="true"] {
+    background-color: var(--mantine-color-cherry-7);
+    border-color: var(--mantine-color-cherry-12);
+    color: white;
+
+    &:hover {
+        background-color: var(--mantine-color-cherry-10);
+    }
+}

@@ -4,8 +4,7 @@ import cs from "classnames";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useElementSize } from "@mantine/hooks";
 import { useState } from "react";
-import { MantineButtonAllProps } from "../../../../types/components.types";
-
+import { MantineButtonAllProps } from "../../../../types/mantine.types";
 export interface SplitButtonProps extends MantineButtonAllProps {
     className?: string;
     sideButtonProps?: MantineButtonAllProps;

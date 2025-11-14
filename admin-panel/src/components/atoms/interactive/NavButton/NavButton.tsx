@@ -1,24 +1,31 @@
-import { ActionIcon } from '@mantine/core';
-import React from 'react'
+import { ActionIcon } from "@mantine/core";
+import React from "react";
 import classes from "./NavButton.module.css";
-import { NavButtonProps } from '../../../../types/components.types';
 
-export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(
-    ({ icon, label, active = false, ...props } : NavButtonProps, ref) => {
-        return (
+export interface NavButtonProps {
+    label: string;
+    active?: boolean;
+    icon: React.ReactElement;
+    [key: string]: any;
+}
+
+export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(({ icon, label, active = false, disabled, ...props }: NavButtonProps, ref) => {
+    return (
+        <div style={{ cursor: disabled ? "not-allowed" : active ? "default" : "pointer" }}>
             <ActionIcon
                 {...props}
                 ref={ref}
-                variant='filled'
+                variant="filled"
                 className={classes.actionIcon}
-                disabled={active}
-                size='xl'
+                disabled={active || disabled}
+                size="xl"
                 aria-label={label}
+                aria-selected={active}
             >
                 {icon}
             </ActionIcon>
-        )
-    }
-);
+        </div>
+    );
+});
 
 export default NavButton;

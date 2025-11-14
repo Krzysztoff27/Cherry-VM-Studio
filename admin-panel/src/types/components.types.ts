@@ -5,8 +5,6 @@ import { SparklineProps } from "@mantine/charts";
 import { PopoverProps } from "@mantine/core";
 import { MachineData, MachineState, MachineStates, UserInDB } from "./api.types";
 
-export type MantineButtonAllProps = ButtonProps & ComponentPropsWithoutRef<"button">;
-
 export interface StateDividerProps {
     label: MachineStates;
 }
@@ -26,13 +24,6 @@ export interface MediumPanelButonProps extends ButtonProps {
     Icon: TablerIcon;
     label: string;
     onClick?: MouseEventHandler;
-}
-
-export interface NavButtonProps {
-    label: string; // aria-label
-    active?: boolean; // is currently selected? default = false
-    icon: React.ReactElement;
-    [x: string]: unknown;
 }
 
 export interface MachineTitleProps extends TitleProps {
