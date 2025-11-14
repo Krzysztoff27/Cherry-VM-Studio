@@ -20,7 +20,7 @@ const AddMembersField = ({ onSubmit, alreadyAddedUuids, multiselectProps, button
     const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
 
-    const users = useMemo(() => safeObjectValues(data).filter((user) => !alreadyAddedUuids.includes(user.uuid)), [JSON.stringify(alreadyAddedUuids)]);
+    const users = safeObjectValues(data).filter((user) => !alreadyAddedUuids.includes(user.uuid));
 
     const submit = () => {
         onSubmit(selected);

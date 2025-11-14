@@ -44,10 +44,6 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
         },
     });
 
-    useEffect(() => {
-        console.log(form.values);
-    }, [form.values]);
-
     const createEntry = () => {
         setSupportModalOpened(true);
     };

@@ -37,7 +37,6 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
     };
 
     const onSubmit = form.onSubmit(async ({ password }) => {
-        console.log(password);
         await sendRequest("PUT", `/user/change-password/${uuid}`, { data: { password } });
         closeModal();
     });

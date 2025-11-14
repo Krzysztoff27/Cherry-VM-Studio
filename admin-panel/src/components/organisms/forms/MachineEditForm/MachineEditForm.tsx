@@ -112,15 +112,9 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
         form.setFieldValue("assigned_clients", (prev) => [...prev, ...newClients]);
     };
 
-    const removeMember = (uuid: string) => {
-        console.log(uuid);
-        form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
-    };
-
+    const removeMember = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
     const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
     const assignedUsers = form.values.assigned_clients.map((uuid) => users[uuid]);
-
-    console.log(form.values, keys(machine.assigned_clients));
 
     return (
         <Tabs

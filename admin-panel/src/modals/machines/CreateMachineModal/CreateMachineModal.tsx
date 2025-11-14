@@ -100,10 +100,6 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     });
 
     useEffect(() => {
-        console.log(form.errors);
-    }, [form.errors]);
-
-    useEffect(() => {
         if (opened) {
             form.reset();
             setConfigTemplate("");

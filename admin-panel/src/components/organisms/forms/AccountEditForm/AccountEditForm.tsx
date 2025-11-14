@@ -67,7 +67,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
 
     useEffect(() => {
         resetValues();
-        console.log(form.getValues());
     }, [JSON.stringify(user)]);
 
     const onPostError = (error: AxiosError) => {
