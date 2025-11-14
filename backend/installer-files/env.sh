@@ -16,9 +16,9 @@ readonly DIR_SYSTEMD_INST="${INSTALLER_ROOTPATH}/systemd"; export DIR_SYSTEMD_IN
 readonly DIR_SYSTEMD_SCRIPTS_INST="${DIR_SYSTEMD_INST}/scripts"; export DIR_SYSTEMD_SCRIPTS_INST
 readonly DIR_SYSTEMD_SERVICES_INST="${DIR_SYSTEMD_INST}/services"; export DIR_SYSTEMD_SERVICES_INST
 
-readonly DIR_POLKIT_INST="${INSTALLER_ROOTPATH}/polkit"; export DIR_POLKIT_INST
-readonly DIR_POLKIT_ACTIONS_INST="${DIR_POLKIT_INST}/actions"; export DIR_POLKIT_ACTIONS_INST
-readonly DIR_POLKIT_RULES_INST="${DIR_POLKIT_INST}/rules"; export DIR_POLKIT_RULES_INST
+# readonly DIR_POLKIT_INST="${INSTALLER_ROOTPATH}/polkit"; export DIR_POLKIT_INST
+# readonly DIR_POLKIT_ACTIONS_INST="${DIR_POLKIT_INST}/actions"; export DIR_POLKIT_ACTIONS_INST
+# readonly DIR_POLKIT_RULES_INST="${DIR_POLKIT_INST}/rules"; export DIR_POLKIT_RULES_INST
 
 ###############################
 # host filesystem directories
@@ -49,7 +49,6 @@ readonly POOL_LIBVIRT_ISO_IMAGES_NAME="cvms-iso-images"; export POOL_LIBVIRT_ISO
 readonly POOL_LIBVIRT_ISO_IMAGES="${POOL_LIBVIRT_ROOT}/iso-images"; export POOL_LIBVIRT_ISO_IMAGES
 readonly POOL_LIBVIRT_NFS_NAME="cvms-network-filesystems"; export POOL_LIBVIRT_NFS_NAME
 readonly POOL_LIBVIRT_NFS="${POOL_LIBVIRT_ROOT}/network-filesystems"; export POOL_LIBVIRT_NFS
-
 
 # Systemd directories
 readonly DIR_SYSTEMD_SERVICES='/etc/systemd/system'; export DIR_SYSTEMD_SERVICES
@@ -105,7 +104,7 @@ readonly SYSTEM_WORKER_HOME_DIR="${STACK_ROOTPATH}/${SYSTEM_WORKER_USERNAME}"; e
 # (for cherry-watchdog service)
 ###############################
 readonly WATCHED_CONTAINERS=(
-    "$CONTAINER_API"
+    # "$CONTAINER_API"
     "$CONTAINER_GUACD"
 ); export WATCHED_CONTAINERS
 
@@ -120,42 +119,39 @@ readonly POSTGRESQL_PASSWORD='guacadmin'; export POSTGRESQL_PASSWORD
 #virtual network infrastructure
 ###############################
 # Networks
-readonly NETWORK_RAS_NAME='cherry-ras-network'; export NETWORK_RAS_NAME
+readonly NETWORK_RAS_NAME='cherry-ras'; export NETWORK_RAS_NAME
 readonly NETWORK_RAS_RANGE=10; export NETWORK_RAS_RANGE
-readonly NETWORK_RAS_NETMASK=28; export NETWORK_RAS_NETMASK
+readonly NETWORK_RAS_NETMASK=24; export NETWORK_RAS_NETMASK
 
-#TODO Same as above - decide which to remove
-declare -rA NETWORK_RAS=(
-    ['name']='cherry-ras-network'
-    ['range']=10
-    ['netmask']=28
-); export NETWORK_RAS
+readonly NETWORK_VM_NAME='cherry-vm'; export NETWORK_VM_NAME
+readonly NETWORK_VM_RANGE=172; export NETWORK_VM_RANGE
+readonly NETWORK_VM_NETMASK=24; export NETWORK_VM_NETMASK
 
 readonly NETWORK_DOCKER_INTERNAL_NAME='cherry-internal'; export NETWORK_DOCKER_INTERNAL_NAME
 
 # IPv4 address suffixes (independent of the network part of the address which is randomized in order to avoid conflicts with existing networks)
-readonly SUFFIX_VETH_EXT_RASBUS=1; export SUFFIX_VETH_EXT_RASBUS
-readonly SUFFIX_BR_RASBR=2; export SUFFIX_BR_RASBR
-readonly SUFFIX_VETH_API_RASBUS=3; export SUFFIX_VETH_API_RASBUS
-readonly SUFFIX_VETH_GUACD_RASBUS=4; export SUFFIX_VETH_GUACD_RASBUS
+# readonly SUFFIX_VETH_EXT_RASBUS=1; export SUFFIX_VETH_EXT_RASBUS
+# readonly SUFFIX_BR_RASBR=2; export SUFFIX_BR_RASBR
+# readonly SUFFIX_VETH_API_RASBUS=3; export SUFFIX_VETH_API_RASBUS
+readonly SUFFIX_VETH_GUACD_RASBUS=2; export SUFFIX_VETH_GUACD_RASBUS
 
 # VETH pairs
-readonly VETH_API_RASBUS='api-rasBus'; export VETH_API_RASBUS
-readonly VETH_RASBUS_API='rasBus-api'; export VETH_RASBUS_API
+# readonly VETH_API_RASBUS='api-rasBus'; export VETH_API_RASBUS
+# readonly VETH_RASBUS_API='rasBus-api'; export VETH_RASBUS_API
 
-readonly VETH_GUACD_RASBUS='guacd-rasBus'; export VETH_GUACD_RASBUS
-readonly VETH_RASBUS_GUACD='rasBus-guacd'; export VETH_RASBUS_GUACD
+readonly VETH_GUACD_RASBUS='guacd-rasBr'; export VETH_GUACD_RASBUS
+readonly VETH_RASBUS_GUACD='rasBr-guacd'; export VETH_RASBUS_GUACD
 
 #vmBr is a bridge connecting all of the VM guests to the rest of the remote access infrastructure as well as the Internet
-readonly VETH_VMBR_RASBUS='vmBr-rasBus'; export VETH_VMBR_RASBUS
-readonly VETH_RASBUS_VMBR='rasBus-vmBr'; export VETH_RASBUS_VMBR
+# readonly VETH_VMBR_RASBUS='vmBr-rasBus'; export VETH_VMBR_RASBUS
+# readonly VETH_RASBUS_VMBR='rasBus-vmBr'; export VETH_RASBUS_VMBR
 #ext veth end acts as an endpoint allowing Internet access for the guest VMs
-readonly VETH_EXT_RASBUS='ext-rasBus'; export VETH_EXT_RASBUS
-readonly VETH_RASBUS_EXT='rasBus-ext'; export VETH_RASBUS_EXT
+# readonly VETH_EXT_RASBUS='ext-rasBus'; export VETH_EXT_RASBUS
+# readonly VETH_RASBUS_EXT='rasBus-ext'; export VETH_RASBUS_EXT
 
 #dedicated link for TLS socket communication with libvirt daemon
-readonly VETH_LIBVIRT_RASBUS='libvirt-rasBus'; export VETH_LIBVIRT_RASBUS
-readonly VETH_RASBUS_LIBVIRT='rasBus-libvirt'; export VETH_RASBUS_LIBVIRT
+# readonly VETH_LIBVIRT_RASBUS='libvirt-rasBus'; export VETH_LIBVIRT_RASBUS
+# readonly VETH_RASBUS_LIBVIRT='rasBus-libvirt'; export VETH_RASBUS_LIBVIRT
 
 # Network bridges
 #bridge that connects all of the VM guests to the rest of the remote access infrastructure as well as the Internet
@@ -167,8 +163,8 @@ readonly BR_RASBR='cherry-rasBr'; export BR_RASBR
 # Associate two VETH ends
 #TODO Unify with the rest of arrays to use direct expansion. Modify creation functions.
 readonly VETH_PAIRS=(
-    "VETH_API_RASBUS VETH_RASBUS_API"
+    # "VETH_API_RASBUS VETH_RASBUS_API"
     "VETH_GUACD_RASBUS VETH_RASBUS_GUACD"
-    "VETH_VMBR_RASBUS VETH_RASBUS_VMBR"
-    "VETH_EXT_RASBUS VETH_RASBUS_EXT"
+    # "VETH_VMBR_RASBUS VETH_RASBUS_VMBR"
+    # "VETH_EXT_RASBUS VETH_RASBUS_EXT"
 ); export VETH_PAIRS

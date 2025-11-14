@@ -91,6 +91,8 @@ attach_veths_rasbus(){
     #VETH pair for VM guests external connectivity
     # log_runner 'NS_RASBUS' ip netns exec "$NS_RASBUS" ip link set dev "$VETH_RASBUS_EXT" master "$BR_RASBR"
     log_runner 'NS_RASBUS' ip link set dev "$VETH_RASBUS_EXT" master "$BR_RASBR"
+
+    # SET RASBR-GUACD UP
 }
 
 ###############################

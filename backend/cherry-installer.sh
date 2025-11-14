@@ -148,7 +148,7 @@ elif [[ "$ID" == "opensuse-tumbleweed" || "$ID" == "opensuse-leap" || "$ID_LIKE"
         #install_wrapper PACKAGES PKG_INSTALL
 
         # Obsolete - delete after confirming that universal installation works
-        PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils" "yq")
+        PACKAGES=("docker" "docker-compose" "libxslt-tools" "bridge-utils" "yq" "ipcalc")
         PATTERNS=("kvm_server" "kvm_tools")
         install_wrapper PACKAGES PKG_INSTALL
         install_wrapper PATTERNS PTTRN_INSTALL
@@ -269,6 +269,29 @@ rand_between() {
     printf '%i' "$((RANDOM % ($2 - $1 + 1) + $1))"; 
 }
 
+ip2dec() {
+    local IFS=.
+    local a b c d
+
+    # Read all 4 octets; missing octets become 0
+    read -r a b c d <<< "$1"
+
+    # Validate numeric fields (prevent syntax error)
+    a=${a:-0}; b=${b:-0}; c=${c:-0}; d=${d:-0}
+
+    # Convert to decimal
+    printf "%u\n" $(( (a * 16777216) + (b * 65536) + (c * 256) + d ))
+}
+
+dec2ip() {
+    local num=$1
+    printf "%u.%u.%u.%u\n" \
+        $(( (num >> 24) & 255 )) \
+        $(( (num >> 16) & 255 )) \
+        $(( (num >> 8)  & 255 )) \
+        $((  num        & 255 ))
+}
+
 generate_subnet() {
     local IP_SUBNET_RANGE=$1
 
@@ -318,11 +341,33 @@ generate_network(){
         printf '%s' "networks: {}" >> "$SETTINGS_FILE"
     fi
 
+    # Calculate DHCP range
+    IPC_OUTPUT="$(ipcalc "$NET_IP/$NET_MASK")"
+
+    NETWORK_ADDR="$(echo "$IPC_OUTPUT" | awk '/Network/ {print $2}' | cut -d'/' -f1)"
+    BROADCAST_ADDR="$(echo "$IPC_OUTPUT" | awk '/Broadcast/ {print $2}')"
+
+    NET_DEC=$(ip2dec "$NETWORK_ADDR")
+    BROAD_DEC=$(ip2dec "$BROADCAST_ADDR")
+
+    FIRST_USABLE=$((NET_DEC + 1))
+    LAST_USABLE=$((BROAD_DEC - 1))
+
+    # Reserve 5 IPs → DHCP starts at +5
+    DHCP_START_DEC=$((FIRST_USABLE + 5))
+    DHCP_END_DEC=$LAST_USABLE
+
+    DHCP_START=$(dec2ip "$DHCP_START_DEC")
+    DHCP_END=$(dec2ip "$DHCP_END_DEC")
+
+
     # Check if NET_NAME already exists under networks
     if ! yq eval ".networks.$NET_NAME" "$SETTINGS_FILE" | grep -vq "null"; then
         yq eval -i ".networks.$NET_NAME = {
             \"network\": \"$NET_IP\",
-            \"netmask\": $NET_MASK
+            \"netmask\": $NET_MASK,
+            \"dhcp_start\": \"$DHCP_START\",
+            \"dhcp_end\": \"$DHCP_END\"
         }" "$SETTINGS_FILE"
         chown "$SYSTEM_USER_USERNAME":"$SYSTEM_USER_GROUPNAME" "$SETTINGS_FILE"
     fi
@@ -331,7 +376,8 @@ generate_network(){
 create_networks(){
     printf 'Randomising network subnets for virtual network infrastructure.\n'
     {
-        generate_network "${NETWORK_RAS['range']}" "${NETWORK_RAS['netmask']}" "${NETWORK_RAS['name']}"
+        generate_network "$NETWORK_RAS_RANGE" "$NETWORK_RAS_NETMASK" "$NETWORK_RAS_NAME"
+        generate_network "$NETWORK_VM_RANGE" "$NETWORK_VM_NETMASK" "$NETWORK_VM_NAME"
     } >/dev/null 2>>"$ERR_LOG"
     
 }
@@ -428,6 +474,61 @@ configure_daemon_libvirt(){
         virsh pool-autostart "$POOL_LIBVIRT_NFS_NAME"
         chown -R "$SYSTEM_WORKER_USERNAME":"$SYSTEM_WORKER_GROUPNAME" "$POOL_LIBVIRT_NFS"
     } >/dev/null 2>>"$ERR_LOG"
+    printf 'Creating networks and bridges.\n'
+    {
+        local prefix_network_ras
+        local netmask_network_ras
+        local dhcp_start_network_ras
+        local dhcp_end_network_ras
+
+        prefix_network_ras=$(yq eval ".networks.${NETWORK_RAS_NAME}.network" "$SETTINGS_FILE")
+        netmask_network_ras=$(yq eval ".networks.${NETWORK_RAS_NAME}.netmask" "$SETTINGS_FILE")
+        dhcp_start_network_ras=$(yq eval ".networks.${NETWORK_RAS_NAME}.dhcp_start" "$SETTINGS_FILE")
+        dhcp_end_network_ras=$(yq eval ".networks.${NETWORK_RAS_NAME}.dhcp_end" "$SETTINGS_FILE")
+
+        local network_ras="
+            <network>
+                <name>$NETWORK_RAS_NAME</name>
+                <bridge name='${BR_RASBR}' stp='off' delay='0'/>
+                <ip address='${prefix_network_ras%.*}.1' prefix='$netmask_network_ras'>
+                    <dhcp>
+                        <range start='$dhcp_start_network_ras' end='$dhcp_end_network_ras'/>
+                    </dhcp>
+                </ip>
+            </network>
+        "
+        virsh net-define --file <(echo "$network_ras")
+        virsh net-start "$NETWORK_RAS_NAME"
+        virsh net-autostart "$NETWORK_RAS_NAME"
+
+        local prefix_network_vm
+        local netmask_network_vm
+        local dhcp_start_network_vm
+        local dhcp_end_network_vm
+
+        prefix_network_vm=$(yq eval ".networks.${NETWORK_VM_NAME}.network" "$SETTINGS_FILE")
+        netmask_network_vm=$(yq eval ".networks.${NETWORK_VM_NAME}.netmask" "$SETTINGS_FILE")
+        dhcp_start_network_vm=$(yq eval ".networks.${NETWORK_VM_NAME}.dhcp_start" "$SETTINGS_FILE")
+        dhcp_end_network_vm=$(yq eval ".networks.${NETWORK_VM_NAME}.dhcp_end" "$SETTINGS_FILE")
+
+        local network_vm="
+            <network>
+                <name>$NETWORK_VM_NAME</name>
+                <bridge name='${BR_VMBR}' stp='off' delay='0'/>
+                <forward mode='nat'/>
+                <ip address='${prefix_network_vm%.*}.1' prefix='$netmask_network_vm'>
+                    <dhcp>
+                        <range start='$dhcp_start_network_vm' end='$dhcp_end_network_vm'/>
+                    </dhcp>
+                </ip>
+            </network>
+        "
+
+        virsh net-define --file <(echo "$network_vm")
+        virsh net-start "$NETWORK_VM_NAME"
+        virsh net-autostart "$NETWORK_VM_NAME"
+
+    }
 }
 
 create_docker_networks(){
@@ -564,7 +665,7 @@ prepare_filesystem | dialog --colors --backtitle "Cherry VM Studio" --title "Fil
 
 create_system_user | dialog --colors --backtitle "Cherry VM Studio" --title "System configuration" --progressbox 20 100;
 
-configure_polkit | dialog --colors --backtitle "Cherry VM Studio" --title "Polkit configuration" --progressbox 20 100;
+# configure_polkit | dialog --colors --backtitle "Cherry VM Studio" --title "Polkit configuration" --progressbox 20 100;
 
 create_networks | dialog --colors --backtitle "Cherry VM Studio" --title "Randomising internal network addresses" --progressbox 20 100;
 
