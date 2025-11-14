@@ -65,7 +65,7 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
     
     return MachineParameters(
         uuid = uuid4(),
-        title = machine_form.name,
+        title = machine_form.title,
         description = machine_form.description,
         metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
         ram = machine_form.config.ram,
