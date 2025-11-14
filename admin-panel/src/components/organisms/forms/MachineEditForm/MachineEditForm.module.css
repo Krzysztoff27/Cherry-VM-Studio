@@ -14,8 +14,8 @@
 }
 
 .fieldset {
-    margin-top: var(--mantine-spacing-lg);
+    margin-top: var(--mantine-spacing-sm);
+    padding-top: var(--mantine-spacing-md);
     height: 100%;
     border: none;
-    overflow: auto;
 }

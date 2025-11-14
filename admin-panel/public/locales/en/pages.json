@@ -87,11 +87,27 @@
         "vcpu-unit_zero": "cores",
         "vcpu-unit_one": "core",
         "vcpu-unit_other": "cores",
+        "description-disks": "Here you can add additional disks for the machine.",
+        "drive-name": "Drive name",
+        "drive-size": "Drive size",
+        "drive-type": "Drive type",
         "machine-configuration": "Machine configuration",
         "domain-path": "Domain path",
         "ip-address-port": "IP Address : Port",
         "state": "Machine state",
-        "active-connections": "Active connections"
+        "active-connections": "Active connections",
+        "hardware-specifications": "Hardware Specifications",
+        "machine-details": "Machine Details",
+        "config-template": "Configuration Templates",
+        "validation": {
+            "name-spaces": "Name cannot contain spaces.",
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-short": "Name must be at least 3 characters long.",
+            "name-invalid-first": "Name must start with a letter.",
+            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+            "tags-invalid-first": "Tag must start with a letter.",
+            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+        }
     },
     "login": {
         "title": "Cherry Admin Panel",

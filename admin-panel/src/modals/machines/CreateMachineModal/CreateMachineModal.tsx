@@ -1,15 +1,17 @@
 import { isNotEmpty, useForm } from "@mantine/form";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { Modal, useModalsStack } from "@mantine/core";
+import { Modal, Stack, Text, useModalsStack } from "@mantine/core";
 import { useEffect, useState } from "react";
 import classes from "./CreateMachineModal.module.css";
-import MachineDetailsForm from "../../../components/organisms/forms/MachineDetailsForm/MachineDetailsForm";
-import MachineSourceForm from "../../../components/organisms/forms/MachineSourceForm/MachineSourceForm";
-import MachineConfigForm from "../../../components/organisms/forms/MachineConfigForm/MachineConfigForm";
-import MachineDisksForm from "../../../components/organisms/forms/MachineDisksForm/MachineDisksForm";
 import { CreateMachineBody, MachineDiskForm } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
 import { toBytes } from "../../../utils/files";
+import MachineDetailsFieldset from "../../../components/molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
+import FormControlButtons from "../../../components/atoms/interactive/FormControlButtons/FormControlButtons";
+import MachineConfigFieldset from "../../../components/molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
+import MachineSourceFieldset from "../../../components/molecules/forms/MachineSourceFieldset/MachineSourceFieldset";
+import MachineDisksFieldset from "../../../components/molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
+import { keys } from "lodash";
 
 export interface CreateMachineFormValues {
     title: string;
@@ -127,6 +129,22 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
         form.resetField("disks");
     };
 
+    const validateDetailsForm = () => {
+        form.validateField("title");
+        form.validateField("tags");
+        return form.isValid("title") && form.isValid("tags");
+    };
+
+    const validateSourceForm = () => {
+        form.validateField("source_uuid");
+        return form.isValid("source_uuid");
+    };
+
+    const validateDisksForm = () => {
+        form.values.disks.forEach((disk, i) => keys(disk).forEach((key) => form.validateField(`disks.${i}.${key}`)));
+        return form.values.disks.every((disk, i) => keys(disk).every((key) => form.isValid(`disks.${i}.${key}`)));
+    };
+
     return (
         <Modal.Stack>
             <Modal
@@ -134,13 +152,26 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 title={tns("title")}
                 onClose={onClose}
             >
-                <MachineDetailsForm
+                <MachineDetailsFieldset<CreateMachineFormValues>
                     form={form}
-                    classes={classes}
+                    i18nextNamespace="modals"
+                    i18nextPrefix="create-machine"
+                />
+                <FormControlButtons
                     onClose={onClose}
                     onSubmit={() => {
-                        stack.open("source-page");
-                        stack.close("details-page");
+                        if (validateDetailsForm()) {
+                            stack.open("source-page");
+                            stack.close("details-page");
+                        }
+                    }}
+                    classNames={{
+                        close: classes.closeButton,
+                        submit: classes.nextButton,
+                    }}
+                    label={{
+                        close: t("close"),
+                        submit: t("next"),
                     }}
                 />
             </Modal>
@@ -149,17 +180,26 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 title={tns("title")}
                 onClose={onClose}
             >
-                <MachineSourceForm
-                    form={form}
-                    classes={classes}
+                <MachineSourceFieldset<CreateMachineFormValues> form={form} />
+                <FormControlButtons
                     onClose={() => {
                         resetSourcePage();
                         stack.open("details-page");
                         stack.close("source-page");
                     }}
                     onSubmit={() => {
-                        stack.open("config-page");
-                        stack.close("source-page");
+                        if (validateSourceForm()) {
+                            stack.open("config-page");
+                            stack.close("source-page");
+                        }
+                    }}
+                    classNames={{
+                        close: classes.closeButton,
+                        submit: classes.nextButton,
+                    }}
+                    label={{
+                        close: t("previous"),
+                        submit: t("next"),
                     }}
                 />
             </Modal>
@@ -168,11 +208,14 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 title={tns("title")}
                 onClose={onClose}
             >
-                <MachineConfigForm
+                <MachineConfigFieldset<CreateMachineFormValues>
                     form={form}
-                    classes={classes}
                     configTemplate={configTemplate}
                     setConfigTemplate={setConfigTemplate}
+                    i18nextNamespace="modals"
+                    i18nextPrefix="create-machine"
+                />
+                <FormControlButtons
                     onClose={() => {
                         resetConfigPage();
                         stack.open("source-page");
@@ -181,6 +224,14 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                     onSubmit={() => {
                         stack.open("disks-page");
                         stack.close("config-page");
+                    }}
+                    classNames={{
+                        close: classes.closeButton,
+                        submit: classes.nextButton,
+                    }}
+                    label={{
+                        close: t("previous"),
+                        submit: t("next"),
                     }}
                 />
             </Modal>
@@ -191,17 +242,33 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 onClose={onClose}
                 size="680px"
             >
-                <MachineDisksForm
-                    form={form}
-                    classes={classes}
+                <Stack>
+                    <Text className={classes.description}>{tns("description-disks")}</Text>
+                    <MachineDisksFieldset<CreateMachineFormValues>
+                        form={form}
+                        i18nextNamespace="modals"
+                        i18nextPrefix="create-machine"
+                    />
+                </Stack>
+                <FormControlButtons
                     onClose={() => {
                         resetDisksPage();
                         stack.open("config-page");
                         stack.close("disks-page");
                     }}
                     onSubmit={() => {
-                        stack.close("disks-page");
-                        onSubmit(form.values);
+                        if (validateDisksForm) {
+                            stack.close("disks-page");
+                            onSubmit(form.values);
+                        }
+                    }}
+                    classNames={{
+                        close: classes.closeButton,
+                        submit: classes.nextButton,
+                    }}
+                    label={{
+                        close: t("previous"),
+                        submit: t("create"),
                     }}
                 />
             </Modal>

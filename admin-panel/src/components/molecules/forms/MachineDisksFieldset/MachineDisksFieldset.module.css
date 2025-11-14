@@ -1,10 +1,6 @@
-.description {
-    color: var(--mantine-color-dimmed);
-    font-size: var(--mantine-font-size-sm);
-}
-
 .formBorder {
     border: var(--mantine-color-dark-6) solid 2px;
+    border-radius: var(--mantine-radius-md);
     padding: var(--mantine-spacing-md);
 }
 

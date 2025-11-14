@@ -1,10 +1,11 @@
-import { ActionIcon, ActionIconProps, Group, ScrollArea, Stack, StackProps } from "@mantine/core";
+import { ActionIcon, ActionIconProps, Fieldset, Group, ScrollArea, Stack, StackProps } from "@mantine/core";
 import { ReactNode } from "react";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { isBoolean } from "lodash";
 import cs from "classnames";
 
 interface ListInputProps extends StackProps {
+    disabled?: boolean;
     values: Array<any>;
     gap?: number | string;
     createEntryButtonProps?: ActionIconProps;
@@ -19,6 +20,7 @@ interface ListInputProps extends StackProps {
 
 const ListInput = ({
     h,
+    disabled,
     values,
     headerRow = () => null,
     row,
@@ -49,7 +51,7 @@ const ListInput = ({
                             size="36px"
                             color="white"
                             onClick={() => removeEntry(index)}
-                            disabled={isBoolean(canRemoveEntry) ? !canRemoveEntry : canRemoveEntry(index)}
+                            disabled={(isBoolean(canRemoveEntry) ? !canRemoveEntry : canRemoveEntry(index)) || disabled}
                             {...removeEntryButtonProps}
                             className={cs("borderless", removeEntryButtonProps?.className)}
                         >
@@ -66,7 +68,7 @@ const ListInput = ({
                         variant="default"
                         size="36px"
                         onClick={() => createEntry()}
-                        disabled={!canCreateEntry}
+                        disabled={!canCreateEntry || disabled}
                         {...createEntryButtonProps}
                         className={cs("borderless", createEntryButtonProps?.className)}
                     >

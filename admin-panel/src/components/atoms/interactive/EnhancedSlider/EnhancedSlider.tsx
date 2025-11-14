@@ -3,23 +3,25 @@ import classes from "./EnhancedSlider.module.css";
 import cs from "classnames";
 import { ReactNode } from "react";
 
-interface EnhancedSliderProps extends SliderProps {
-    heading: ReactNode;
+export interface EnhancedSliderProps extends SliderProps {
+    heading?: ReactNode;
     label: (value: number) => ReactNode;
 }
 
-const EnhancedSlider = ({ label, heading, value, onChange, min, max, children, className, ...props }: EnhancedSliderProps): React.JSX.Element => {
+const EnhancedSlider = ({ label, disabled, heading, value, onChange, min, max, children, className, ...props }: EnhancedSliderProps): React.JSX.Element => {
     return (
         <Stack
             gap="0"
             className={cs(classes.container, className)}
         >
-            <Text
-                fw="500"
-                size="sm"
-            >
-                {heading}
-            </Text>
+            {heading && (
+                <Text
+                    fw="500"
+                    size="sm"
+                >
+                    {heading}
+                </Text>
+            )}
             <Group
                 align="center"
                 gap="sm"
@@ -30,6 +32,7 @@ const EnhancedSlider = ({ label, heading, value, onChange, min, max, children, c
                         min={min}
                         value={value}
                         onChange={onChange}
+                        disabled={disabled}
                         {...props}
                     />
                 </Box>
@@ -58,6 +61,7 @@ const EnhancedSlider = ({ label, heading, value, onChange, min, max, children, c
                             min={min}
                             clampBehavior="strict"
                             onChange={onChange}
+                            readOnly={disabled}
                         />
                     </Group>
                 </Box>

@@ -7,6 +7,7 @@ import AddMembersField from "../../../components/molecules/interactive/AddMember
 import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { useEffect, useState } from "react";
+import { Group as GroupType, UserInDB } from "../../../types/api.types";
 
 const Placeholder = () => (
     <Stack className={classes.container}>
@@ -74,7 +75,7 @@ const Placeholder = () => (
 );
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
-    const { data: group, loading, refresh: refreshModal } = useFetch(uuid ? `/group/${uuid}` : undefined);
+    const { data: group, loading, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { sendRequest } = useApi();
 
@@ -134,7 +135,7 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                         mih="0"
                     >
                         <AddMembersField
-                            alreadyAddedUsers={group?.users || []}
+                            alreadyAddedUuids={(group?.users || []).map((user: UserInDB) => user.uuid)}
                             onSubmit={addMembers}
                         />
                         <MembersTable

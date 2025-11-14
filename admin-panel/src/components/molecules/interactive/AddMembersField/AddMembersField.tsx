@@ -10,18 +10,17 @@ import { User } from "../../../../types/api.types";
 
 export interface AddMembersFieldProps {
     onSubmit: (uuids: string[]) => void;
-    alreadyAddedUsers: User[];
+    alreadyAddedUuids: string[];
     multiselectProps?: Partial<UserMultiselectProps>;
     buttonProps?: Partial<ButtonProps>;
 }
 
-const AddMembersField = ({ onSubmit, alreadyAddedUsers, multiselectProps, buttonProps }: AddMembersFieldProps): React.JSX.Element => {
+const AddMembersField = ({ onSubmit, alreadyAddedUuids, multiselectProps, buttonProps }: AddMembersFieldProps): React.JSX.Element => {
     const { data } = useFetch("users?account_type=client");
     const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
 
-    const addedUuids = useMemo(() => alreadyAddedUsers.map((user) => user.uuid), [JSON.stringify(alreadyAddedUsers)]);
-    const users = safeObjectValues(data).filter((user) => !addedUuids.includes(user.uuid));
+    const users = useMemo(() => safeObjectValues(data).filter((user) => !alreadyAddedUuids.includes(user.uuid)), [JSON.stringify(alreadyAddedUuids)]);
 
     const submit = () => {
         onSubmit(selected);

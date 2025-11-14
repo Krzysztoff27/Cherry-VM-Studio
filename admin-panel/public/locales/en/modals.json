@@ -197,6 +197,8 @@
         "drive-name": "Drive name",
         "drive-size": "Drive size",
         "drive-type": "Drive type",
+        "machine-description": "Enter machine description",
+        "machine-description-placeholder": "Machine description",
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
             "name-too-long": "Name length cannot exceed 50 characters.",

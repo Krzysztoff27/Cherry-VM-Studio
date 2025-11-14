@@ -1,7 +1,7 @@
-import { Fieldset, Group, ScrollArea, Stack, Tabs, TagsInput, Textarea, TextInput } from "@mantine/core";
+import { Fieldset, Group, ScrollArea, Stack, Tabs, TagsInput, Textarea, TextInput, Title } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
-import { MachineData, MachineState, SimpleState, User } from "../../../../types/api.types";
+import { MachineData, MachineDiskForm, MachineState, SimpleState, User } from "../../../../types/api.types";
 import EnhancedSlider from "../../../atoms/interactive/EnhancedSlider/EnhancedSlider";
 import { useForm } from "@mantine/form";
 import MembersTable from "../../tables/MembersTable/MembersTable";
@@ -9,7 +9,24 @@ import AddMembersField from "../../../molecules/interactive/AddMembersField/AddM
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachineEditForm.module.css";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { isNull } from "lodash";
+import { isNull, keys } from "lodash";
+import MachineDetailsFieldset from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
+import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
+import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
+import { useEffect, useMemo } from "react";
+
+export interface MachineEditFormValues {
+    title: string;
+    tags: string[];
+    description: string;
+    config: {
+        ram: number;
+        vcpu: number;
+    };
+    disks: MachineDiskForm[];
+    os_disk: number;
+    assigned_clients: string[];
+}
 
 export interface MachineEditFormProps {
     machine: MachineState;
@@ -23,26 +40,73 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
 
     const state: SimpleState = { fetching: machine?.active === undefined, loading: machine?.loading, active: machine?.active };
 
-    const form = useForm({
-        initialValues: {
-            title: "Dummy title",
-            tags: ["Dummy", "Placeholder", "Server"],
-            description: "Lorem ipsum sol doles or whatever",
-            config: {
-                ram: 1024,
-                vcpu: 3,
+    const initialValues = useMemo(
+        () =>
+            ({
+                // title: machine.title,
+                title: "Unnamed Machine",
+                // tags: machine.tags,
+                tags: ["Dummy", "Placeholder"],
+                // description: machine.description,
+                description: "",
+                config: {
+                    ram: machine.ram_max,
+                    vcpu: machine.cpu,
+                },
+                disks: [],
+                os_disk: 0,
+                assigned_clients: keys(machine.assigned_clients),
+            } as MachineEditFormValues),
+        [JSON.stringify(machine)]
+    );
+
+    const form = useForm<MachineEditFormValues>({
+        initialValues: initialValues,
+        validateInputOnChange: true,
+        validate: {
+            title: (val) =>
+                !/^[\w\s.-]+$/.test(val)
+                    ? tns("validation.name-invalid-characters")
+                    : !/[a-zA-Z]/.test(val[0])
+                    ? tns("validation.name-invalid-first")
+                    : val.length < 3
+                    ? tns("validation.name-too-short")
+                    : val.length > 24
+                    ? tns("validation.name-too-long")
+                    : null,
+            tags: (val) =>
+                val
+                    .map((tag) => {
+                        if (!/^[\w\s.-]+$/.test(tag)) return tns("validation.tags-invalid-characters");
+                        if (!/[a-zA-Z]/.test(tag[0])) return tns("validation.tags-invalid-first");
+                        return null;
+                    })
+                    .find((e) => e) || null,
+            disks: {
+                name: (val) =>
+                    /\s/.test(val)
+                        ? tns("validation.name-spaces")
+                        : !/^[\w.-]+$/.test(val)
+                        ? tns("validation.name-invalid-characters")
+                        : !/[a-zA-Z]/.test(val[0])
+                        ? tns("validation.name-invalid-first")
+                        : val.length < 3
+                        ? tns("validation.name-too-short")
+                        : val.length > 24
+                        ? tns("validation.name-too-long")
+                        : null,
             },
-            disks: [
-                { name: "sda", size_bytes: 12540558, type: "raw", os_disk: false },
-                { name: "sdb", size_bytes: 1240558, type: "raw", os_disk: true },
-            ],
-            assigned_clients: [],
         },
     });
 
-    const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
+    const reloadForm = () => {
+        form.setInitialValues(initialValues);
+        form.reset();
+    };
 
-    const refresh = () => form.setValues(machine);
+    useEffect(() => {
+        reloadForm();
+    }, [state.fetching]);
 
     const addAssignedClients = (newClients: string[]) => {
         form.setFieldValue("assigned_clients", (prev) => [...prev, ...newClients]);
@@ -53,7 +117,10 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
         form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
     };
 
+    const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
     const assignedUsers = form.values.assigned_clients.map((uuid) => users[uuid]);
+
+    console.log(form.values, keys(machine.assigned_clients));
 
     return (
         <Tabs
@@ -90,92 +157,36 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                 value="details"
                 className={classes.tabPanel}
             >
-                <Fieldset
-                    className={classes.fieldset}
+                <MachineDetailsFieldset<MachineEditFormValues>
+                    form={form}
+                    props={{ fieldset: { variant: "default", className: classes.fieldset } }}
                     disabled={disabled}
-                >
-                    <ScrollArea>
-                        <Stack pt="md">
-                            <Group align="top">
-                                <TextInput
-                                    placeholder={tns("machine-name-placeholder")}
-                                    description={tns("machine-name")}
-                                    w={400}
-                                    classNames={{ input: "borderless" }}
-                                    key={form.key("title")}
-                                    {...form.getInputProps("title")}
-                                />
-                                <TextInput
-                                    description={tns("machine-group-no")}
-                                    classNames={{ input: "borderless" }}
-                                    w={50}
-                                    value="1"
-                                    readOnly
-                                />
-                            </Group>
-                            <TagsInput
-                                placeholder={form.values.tags.length ? "" : tns("machine-tags-placeholder")}
-                                description={tns("machine-tags")}
-                                w={466}
-                                classNames={{ input: "borderless" }}
-                                maxLength={12}
-                                maxTags={3}
-                                key={form.key("tags")}
-                                {...form.getInputProps("tags")}
-                            />
-                            <Textarea
-                                placeholder={tns("machine-description-placeholder")}
-                                description={tns("machine-description")}
-                                w={466}
-                                classNames={{ input: "borderless" }}
-                                key={form.key("description")}
-                                {...form.getInputProps("description")}
-                            />
-                        </Stack>
-                    </ScrollArea>
-                </Fieldset>
+                    withoutAssignedClients
+                />
             </Tabs.Panel>
             <Tabs.Panel
                 value="resources"
                 className={classes.tabPanel}
             >
-                <Fieldset
-                    className={classes.fieldset}
+                <MachineConfigFieldset<MachineEditFormValues>
+                    form={form}
+                    props={{ fieldset: { variant: "default", className: classes.fieldset } }}
                     disabled={disabled}
-                >
-                    <Stack pt="md">
-                        <EnhancedSlider
-                            heading={tns("ram")}
-                            label={(val) => tns("ram-unit", { count: val })}
-                            w="100%"
-                            size="xs"
-                            thumbSize="10"
-                            styles={{ thumb: { border: "none" } }}
-                            max={4096}
-                            step={128}
-                            key={form.key("config.ram")}
-                            {...form.getInputProps("config.ram")}
-                        />
-
-                        <EnhancedSlider
-                            heading={tns("vcpu")}
-                            label={(val) => tns("vcpu-unit", { count: val })}
-                            w="100%"
-                            size="xs"
-                            thumbSize="10"
-                            styles={{ thumb: { border: "none" } }}
-                            min={0}
-                            max={8}
-                            key={form.key("config.vcpu")}
-                            {...form.getInputProps("config.vcpu")}
-                        />
-                    </Stack>
-                </Fieldset>
+                    setConfigTemplate={() => {}}
+                    configTemplate=""
+                />
             </Tabs.Panel>
             <Tabs.Panel
                 value="disks"
                 className={classes.tabPanel}
-            ></Tabs.Panel>
+            >
+                <MachineDisksFieldset<MachineEditFormValues>
+                    form={form}
+                    props={{ fieldset: { variant: "default", className: classes.fieldset } }}
+                    disabled={disabled}
+                    osDiskReadonly={true}
+                />
+            </Tabs.Panel>
             <Tabs.Panel
                 value="clients"
                 className={classes.tabPanel}
@@ -190,7 +201,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                         h="100%"
                     >
                         <AddMembersField
-                            alreadyAddedUsers={form.values.assigned_clients}
+                            alreadyAddedUuids={form.values.assigned_clients}
                             onSubmit={addAssignedClients}
                             multiselectProps={{ classNames: { input: "borderless" } }}
                             buttonProps={{ className: "borderless" }}
