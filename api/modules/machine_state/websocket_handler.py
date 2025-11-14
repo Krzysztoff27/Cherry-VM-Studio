@@ -3,11 +3,14 @@ from starlette.websockets import WebSocketDisconnect
 from json import JSONDecodeError
 from pydantic import ValidationError
 
-from .models import MachineWebsocketCommand
+from .models import MachineWebsocketSubscribeCommand
+from modules.machine_state.data_retrieval import check_machine_membership
 from modules.exceptions.models import CredentialsException
 from modules.websockets.subscription_manager import SubscriptionManager
 from modules.websockets.websocket_handler import WebSocketHandler
 from modules.authentication.validation import validate_user_token
+
+logger = logging.getLogger(__name__)
 
 class MachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager
@@ -31,12 +34,17 @@ class MachinesWebsocketHandler(WebSocketHandler):
     """ handle received command """
     async def handle_command(self, json: dict) -> None:
         try:
-            command = MachineWebsocketCommand.model_validate(json)
+            command = MachineWebsocketSubscribeCommand.model_validate(json)
             validate_user_token(command.access_token, 'access')
+            
+            for machine_uuid in command.target:
+                if not check_machine_membership(machine_uuid):
+                    command.target.remove(machine_uuid)
+                    logger.warning("Machine Websocket: Tried to subscribe to a machine not managed by Cherry VM Studio.")
             
             self.subscription_manager.set_subscriptions(self.websocket, command.target)
             
-            await self.acknowledge(json)
+            await self.acknowledge(command.model_dump())
             
         except ValidationError:
             await self.reject(json, "Command validation error. Ensure that sent commands follow the expected structure.")
@@ -46,7 +54,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             await self.reject(json, "Command validation error - invalid UUID.")
         except Exception as e:
             await self.reject(json)
-            logging.error(f"""
+            logger.error(f"""
                 Unhandled exception within websocket {self.websocket} in handle_command.\n
                 Received json:\n
                 {json}\n

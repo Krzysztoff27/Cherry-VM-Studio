@@ -72,8 +72,6 @@ def get_machine_data(machine: libvirt.virDomain) -> MachineData:
     return MachineData (
         uuid = machine_uuid, 
         owner= get_machine_owner(machine_uuid),
-        group = get_element_from_machine_xml_as_text(machine, "metadata/vm:info", "vm:group"),
-        group_member_id = int(get_element_from_machine_xml_as_text(machine, "metadata/vm:info", "vm:groupMemberId") or 0), 
         assigned_clients = get_clients_assigned_to_machine(UUID(machine.UUIDString())),
         port = port,
         domain = "" #To be changed when VM connection proxying is finally done - SQL GET from the Guacamole db
@@ -150,17 +148,11 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
     
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_states_by_uuids
-def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[UUID, MachineState]:
-    # Blatantly inefficient - called every time a WS retrieves machine state from Libvirt - FIX THIS!
-    for machine_uuid in machine_uuids:
-        if not check_machine_membership(machine_uuid):
-            machine_uuids.remove(machine_uuid)
-            logger.warning("get_machine_states_by_uuids tried to fetch machine state not managed by Cherry VM Studio.")
-            
+def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[UUID, MachineState]:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machine_states = dict()
         
-        for machine_uuid in machine_uuids:
+        for machine_uuid in machine_uuids.copy():
             machine = libvirt_readonly_connection.lookupByUUID(machine_uuid.bytes)
             if machine is not None:
                 state = get_machine_state(machine)

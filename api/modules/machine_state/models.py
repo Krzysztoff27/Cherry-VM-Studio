@@ -12,7 +12,8 @@ from modules.users.models import ClientInDB, AdministratorInDB
 class MachineData(BaseModel):                       
     uuid: UUID                                      
     title: str | None = None
-    tags: list[str] | None = None        
+    tags: list[str] | None = None
+    description: str | None = None        
     owner: AdministratorInDB | None = None          
     assigned_clients: dict[UUID, ClientInDB] = {}   
     port: int | None = None                         
@@ -28,7 +29,7 @@ class MachineState(MachineData):
     ram_used: int | None = None                     
     uptime: int | None = None     
 
-class MachineWebsocketCommand(Command):
+class MachineWebsocketSubscribeCommand(Command):
     method: Literal["SUBSCRIBE"]
     target: set[UUID] = set()
     
