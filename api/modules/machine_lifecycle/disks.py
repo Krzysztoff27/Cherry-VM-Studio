@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_lifecycle.models import MachineDisk, MachineParameters
+from config.env_config import ENV_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,8 @@ def create_machine_disk(machine_disk: MachineDisk) -> UUID:
             volume_uuid = uuid4()
             volume_name.text = f"{str(volume_uuid)}.{machine_disk.type}"
             
-            volume_description = ET.SubElement(volume_root, "description")
-            volume_description.text = machine_disk.name
+            # volume_description = ET.SubElement(volume_root, "description")
+            # volume_description.text = machine_disk.name
             
             volume_capacity = ET.SubElement(volume_root, "capacity")
             # volume_capacity.text = str(bytes_to_mib(machine_disk.size))
@@ -37,6 +38,14 @@ def create_machine_disk(machine_disk: MachineDisk) -> UUID:
             
             volume_target = ET.SubElement(volume_root, "target")
             ET.SubElement(volume_target, "format", type=machine_disk.type)
+            
+            volume_permissions = ET.SubElement(volume_target, "permissions")
+            permissions_mode = ET.SubElement(volume_permissions, "mode")
+            permissions_mode.text = "0660"
+            permissions_owner = ET.SubElement(volume_permissions, "owner")
+            permissions_owner.text = f"{ENV_CONFIG.SYSTEM_WORKER_UID}"
+            permissions_group = ET.SubElement(volume_permissions, "group")
+            permissions_group.text = f"{ENV_CONFIG.SYSTEM_WORKER_GID}"
             
             volume_xml = ET.tostring(volume_root, encoding="unicode")
             

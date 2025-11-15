@@ -5,3 +5,4 @@ from .database_config import DATABASE_CONFIG
 from .permissions_config import PERMISSIONS
 from .machines_config import MACHINES_CONFIG
 from .logger_config import LOGGER_CONFIG
+from .env_config import ENV_CONFIG

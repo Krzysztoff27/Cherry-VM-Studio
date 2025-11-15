@@ -155,6 +155,8 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
         description = ET.SubElement(domain, "description")
         if machine.description:
             description.text = machine.description
+        else:
+            description.text = " "
 
 
         metadata = ET.SubElement(domain, "metadata")
