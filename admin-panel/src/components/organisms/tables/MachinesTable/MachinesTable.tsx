@@ -8,14 +8,14 @@ import CreateMachineSplitButton from "../../../molecules/interactive/CreateMachi
 import { getColumns } from "./columns";
 import { parseData } from "./data";
 
-const MachinesTable = ({ machines, loading, refresh, error, global }): React.JSX.Element => {
+const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "machines.controls.");
     const { hasPermissions } = usePermissions();
 
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
     const data = useMemo(() => parseData(machines), [global, machines, viewMode]);
-    const columns = useMemo(() => getColumns(global, viewMode), [global, viewMode]);
+    const columns = useMemo(() => getColumns(global, viewMode, onRemove), [global, viewMode]);
 
     return (
         <>

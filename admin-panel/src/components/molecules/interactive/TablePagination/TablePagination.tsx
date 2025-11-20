@@ -10,14 +10,15 @@ const TablePagination = ({ pagination, setPagination, getPageCount }: TablePagin
             <Box w="50" />
             <Pagination
                 value={pagination.pageIndex + 1}
-                onChange={val => setPagination(prev => ({ ...prev, pageIndex: val - 1 }))}
+                onChange={(val) => setPagination((prev) => ({ ...prev, pageIndex: val - 1 }))}
                 total={getPageCount() || 1}
                 siblings={2}
                 withEdges
+                classNames={{ control: classes.paginationControl }}
             />
             <SizeSelect
                 value={pagination.pageSize}
-                setValue={val => setPagination(prev => ({ ...prev, pageSize: parseInt(val as string) }))}
+                setValue={(val) => setPagination((prev) => ({ ...prev, pageSize: parseInt(val as string) }))}
                 sizes={[5, 10, 25, 50]}
             />
         </Group>

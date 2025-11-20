@@ -6,3 +6,7 @@
     width: 100%;
     padding: 0 var(--mantine-spacing-md);
 }
+
+.paginationControl {
+    border-width: 2px !important;
+}

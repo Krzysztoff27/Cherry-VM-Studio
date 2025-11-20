@@ -20,13 +20,22 @@ export default function MachinesPage({ global = false }: { global?: boolean }) {
 function MachinesPageInner({ global }: { global: boolean }) {
     const { sendErrorNotification } = useMantineNotifications();
     const { loading, error, data: machinesData, refresh } = useFetch(global ? "machines/global" : "machines");
-    const { machinesState } = useMachineState(safeObjectKeys(machinesData));
+    const { machinesState, setMachinesState } = useMachineState(safeObjectKeys(machinesData));
 
     if (error) {
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
         console.error(error);
         return null;
     }
+
+    const onRemove = (uuid: string) => {
+        refresh();
+        setMachinesState((prev) => {
+            const states = prev;
+            delete states[uuid];
+            return states;
+        });
+    };
 
     const machines = loading ? {} : { ...machinesData, ...machinesState };
 
@@ -39,6 +48,7 @@ function MachinesPageInner({ global }: { global: boolean }) {
                     loading={loading}
                     error={error}
                     global={global}
+                    onRemove={onRemove}
                 />
             </Paper>
         </Stack>

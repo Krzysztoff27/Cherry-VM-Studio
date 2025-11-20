@@ -5,7 +5,7 @@ import ProgressWithPercentage from "../../../atoms/feedback/ProgressWithPercenta
 import MachineControlsCell from "../../../atoms/table/MachineControlsCell";
 import MachineAssignedUserCell from "../../../atoms/table/MachineAssignedUserCell";
 
-export const getColumns = (global: boolean, viewMode: boolean) =>
+export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: string) => void) =>
     [
         {
             accessorKey: "details",
@@ -61,6 +61,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             cell: ({ getValue }) => (
                 <MachineControlsCell
                     disabled={viewMode}
+                    onRemove={onRemove}
                     {...getValue()}
                 />
             ),

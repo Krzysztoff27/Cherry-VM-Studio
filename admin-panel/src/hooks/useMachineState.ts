@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import useApiWebSocket from "./useApiWebSocket.ts";
-import { WebSocketResponse } from "../types/api.types";
+import { MachineState, WebSocketResponse } from "../types/api.types";
 
 const useMachineState = (uuids: string[] | string) => {
     const { lastJsonMessage, sendCommand } = useApiWebSocket("/ws/vm");
-    const [machinesState, setMachinesState] = useState({});
+    const [machinesState, setMachinesState] = useState<Record<string, MachineState>>({});
     let dataMsg = <WebSocketResponse>lastJsonMessage;
 
     useEffect(() => {
@@ -17,10 +17,10 @@ const useMachineState = (uuids: string[] | string) => {
     }, [JSON.stringify(uuids)]);
 
     useEffect(() => {
-        if (dataMsg?.method === "DATA") setMachinesState(dataMsg?.body);
+        if (dataMsg?.method === "DATA") setMachinesState(dataMsg?.body as Record<string, MachineState>);
     }, [dataMsg]);
 
-    return { machinesState };
+    return { machinesState, setMachinesState };
 };
 
 export default useMachineState;
