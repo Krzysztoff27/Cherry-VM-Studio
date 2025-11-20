@@ -43,7 +43,10 @@ class SubscriptionManager(BaseModel):
         
         if websocket_id in self.subscriptions:
             del self.subscriptions[websocket_id]
-
+            
+    def remove_subscription_from_all(self, resource_uuid: UUID):
+        for subscription in self.subscriptions.values():
+            subscription.resources.remove(resource_uuid)
         
     async def run_continuous_broadcast(self, intervalInSeconds):
         """ start running the broadcast data function for the subscriptions every interval """

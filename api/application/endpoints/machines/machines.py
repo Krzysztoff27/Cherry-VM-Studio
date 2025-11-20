@@ -11,6 +11,7 @@ from config.permissions_config import PERMISSIONS
 from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm
+from .websocket import machine_broadcast_manager
 
 ################################
 #         Production
@@ -83,6 +84,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
         raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
+    machine_broadcast_manager.remove_subscription_from_all(uuid)
 
 ################################
 #           Debug

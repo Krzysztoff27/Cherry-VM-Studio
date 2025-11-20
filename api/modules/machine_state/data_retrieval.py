@@ -155,8 +155,16 @@ def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[U
         for machine_uuid in machine_uuids.copy():
             machine = libvirt_readonly_connection.lookupByUUID(machine_uuid.bytes)
             if machine is not None:
-                state = get_machine_state(machine)
-                machine_states[machine_uuid] = state
+                state = None
+                try:
+                    state = get_machine_state(machine)
+                except Exception:
+                    logger.error(
+                        f"Exception occured when fetching machine state in get_machine_states_by_uuid function for machine with uuid={machine_uuid}"
+                    )
+                
+                machine_states[machine_uuid] = state    
+                
             
         return machine_states
     
