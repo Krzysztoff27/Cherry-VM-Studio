@@ -7,7 +7,7 @@ import { merge, toString } from "lodash";
 import { ERRORS } from "../config/errors.config.ts";
 import { Tokens } from "../types/api.types.ts";
 
-type RequestMethods = "GET" | "POST" | "PUT" | "DELETE";
+type RequestMethods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export interface useApiReturn {
     getPath: Function;

@@ -8,6 +8,7 @@ import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { useEffect, useState } from "react";
 import { Group as GroupType, UserInDB } from "../../../types/api.types";
+import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 
 const Placeholder = () => (
     <Stack className={classes.container}>
@@ -94,6 +95,11 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
         refresh();
     };
 
+    const renameGroup = async (new_name: string) => {
+        await sendRequest("PATCH", `group/rename/${uuid}`, { data: { name: new_name } });
+        refresh();
+    };
+
     return (
         <Modal
             opened={opened}
@@ -123,7 +129,12 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                         </Avatar>
                         {group && (
                             <Stack gap="0">
-                                <Title order={2}>{group?.name}</Title>
+                                <ModifiableText
+                                    value={group?.name}
+                                    className={classes.title}
+                                    editContainerClassName={classes.titleEdit}
+                                    onSave={renameGroup}
+                                />
                                 <Text c="dimmed">{tns("client-count", { count: group.users.length })}</Text>
                             </Stack>
                         )}
