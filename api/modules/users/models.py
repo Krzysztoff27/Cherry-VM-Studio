@@ -141,5 +141,8 @@ class Filters(BaseModel):
     role: UUID | None = None
         
         
-class ChangePasswordRequest(BaseModel):
+class ChangePasswordBody(BaseModel):
     password: str
+    
+class RenameGroupBody (BaseModel):
+    name: str
