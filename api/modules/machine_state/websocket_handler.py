@@ -37,7 +37,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
             command = MachineWebsocketSubscribeCommand.model_validate(json)
             validate_user_token(command.access_token, 'access')
             
-            for machine_uuid in command.target:
+            for machine_uuid in command.target.copy():
                 if not check_machine_membership(machine_uuid):
                     command.target.remove(machine_uuid)
                     logger.warning("Machine Websocket: Tried to subscribe to a machine not managed by Cherry VM Studio.")
