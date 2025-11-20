@@ -280,8 +280,8 @@ export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineM
         disks: values.disks.map((disk) => ({ name: disk.name, type: disk.type, size_bytes: toBytes(disk.size, disk.unit) })),
     });
 
-    const submitMachine = (values: CreateMachineFormValues) => {
-        sendRequest("POST", "/machine/create", { data: translateValues(values) });
+    const submitMachine = async (values: CreateMachineFormValues) => {
+        await sendRequest("POST", "/machine/create", { data: translateValues(values) });
 
         onClose();
         onSubmit?.();
