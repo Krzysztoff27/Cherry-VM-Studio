@@ -24,7 +24,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
     model: Type[MainModel]
     model_in_db: Type[DBModel]
     model_creation_args: Type[CreationModel]
-    transform_record: Callable[[DBModel], MainModel]
+    prepare_record: Callable[[DBModel], MainModel]
     
     
     @model_validator(mode="after")
@@ -41,7 +41,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         
         record = select_schema_one(self.model_in_db, f"SELECT * FROM {self.table_name} WHERE {field_name} = (%s)", (value,))
         
-        return self.transform_record(record) if record is not None else None
+        return self.prepare_record(record) if record is not None else None
         
         
     def get_record_by_uuid(self, uuid: UUID) -> Optional[MainModel]:
@@ -53,7 +53,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         records = select_schema_dict(self.model_in_db, "uuid", f"SELECT * FROM {self.table_name}")
         
         for uuid, record in records.items():
-            records[uuid] = self.transform_record(record)
+            records[uuid] = self.prepare_record(record)
             
         return records
     

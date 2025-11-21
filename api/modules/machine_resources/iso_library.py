@@ -1,13 +1,8 @@
 import logging
-from typing import Literal
-from uuid import UUID
 
-from modules.exceptions.models import RaisedException
-
-from .models import CreateIsoRecordArgs, CreateIsoRecordForm, IsoRecord, IsoRecordInDB
-from modules.postgresql import select_schema_dict, select_schema_one, pool
+from .models import CreateIsoRecordArgs, IsoRecord, IsoRecordInDB
 from modules.postgresql.simple_table_manager import SimpleTableManager
-from modules.users.users import get_administrator_by_field, get_administrators
+from modules.users.users import get_administrator_by_field
 
 logger = logging.getLogger(__name__)
 
@@ -31,5 +26,5 @@ IsoLibrary = SimpleTableManager(
     model=IsoRecord,
     model_in_db=IsoRecordInDB,
     model_creation_args=CreateIsoRecordArgs,
-    transform_record=prepare_from_database_record,
+    prepare_record=prepare_from_database_record,
 )
