@@ -66,6 +66,10 @@
             "title": "I'm a Teapot",
             "message": "This server is a teapot, not equipped to handle your request. Try a different server."
         },
+        "422": {
+            "title": "Unprocessable Request",
+            "message": "The data you submitted couldn’t be processed. Check the fields and try again."
+        },
         "429": {
             "title": "Too Many Requests",
             "message": "You have exceeded the request limit. Please slow down and try again after a short wait."

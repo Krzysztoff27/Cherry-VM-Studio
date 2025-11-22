@@ -13,11 +13,12 @@ import Dobre from "./pages/Dobre/Dobre";
 import Groups from "./pages/Accounts/Groups/Groups";
 import Users from "./pages/Accounts/Users/Users";
 import Machine from "./pages/Machine/Machine.tsx";
-import SnapshotLibrary from "./pages/SnapshotLibrary/SnapshotLibrary.tsx";
+import SnapshotLibrary from "./pages/TemplatesLibrary/TemplatesLibrary.tsx";
 import IsoLibrary from "./pages/IsoLibrary/IsoLibrary.tsx";
 import { AuthenticationProvider } from "./contexts/AuthenticationContext.tsx";
 import { PermissionsProvider } from "./contexts/PermissionsContext.tsx";
 import ReverseProtected from "./wrappers/ReverseProtected.tsx";
+import TemplatesLibrary from "./pages/TemplatesLibrary/TemplatesLibrary.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -38,14 +39,15 @@ const router = createBrowserRouter(
                 <Route element={<Protected/>}>
                     <Route element={<PanelLayout/>}>
                         <Route path='/home'                     element={<Home/>}/>
-                        {/* <Route path='/network-panel'            element={<NetworkPanel/>}/>     */}
+                        <Route path='/network-panel'            element={<NetworkPanel/>}/>    
                     </Route>
                     <Route element={<PanelLayout doubleNavbar/>}>
+                        <Route path='/machines/templates'       element={<TemplatesLibrary/>}/>
                         <Route path='/machines/snapshots'       element={<SnapshotLibrary/>}/>
                         <Route path='/machines/iso'             element={<IsoLibrary/>}/>
                         <Route path='/machines/all'             element={<MachinesPage global={true}/>}/>
                         <Route path='/machines/'                element={<MachinesPage/>}/>
-                        <Route path='/machines/:uuid'           element={<Machine/>}/>
+                        <Route path='/machines/machine/:uuid'   element={<Machine/>}/>
                         <Route path='/accounts'                 element={<Navigate to='/accounts/admins'/>}/>
                         <Route path='/accounts/admins'          element={<Users accountType="administrative"/>}/>
                         <Route path='/accounts/clients'         element={<Users accountType="client"/>}/>

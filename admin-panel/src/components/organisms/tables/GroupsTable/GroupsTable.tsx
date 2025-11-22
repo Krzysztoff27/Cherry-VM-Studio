@@ -4,12 +4,13 @@ import { prepareData } from "./data";
 import { Group } from "../../../../types/api.types";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
-import DeleteGroupsModal from "../../../../modals/account/DeleteGroupsModal/DeleteGroupsModal";
 import CreateGroupModal from "../../../../modals/account/CreateGroupModal/CreateGroupModal";
+import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
+import { AxiosError } from "axios";
 
 export interface GroupsTableProps {
     groups: Record<string, Group>;
-    error: Response | null;
+    error: AxiosError | null;
     loading: boolean;
     refresh: () => void;
     openGroupModal: (uuid: string) => void;
@@ -42,7 +43,11 @@ const GroupsTable = ({ groups, error, loading, refresh, openGroupModal }: Groups
                         props: { onSubmit: refresh },
                     },
                     delete: {
-                        component: DeleteGroupsModal,
+                        component: DeleteModal,
+                        props: {
+                            i18nextPrefix: "confirm.group-removal",
+                            path: "group/delete",
+                        },
                     },
                 },
                 translations: {

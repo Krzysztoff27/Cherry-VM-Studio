@@ -18,6 +18,7 @@
         "your-library": "Your library",
         "all-machines": "All machines",
         "snapshots": "Snapshot Library",
-        "iso": "Iso Library"
+        "iso": "Iso Library",
+        "templates": "Template Library"
     }
 }

@@ -164,7 +164,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
             >
                 <MachineConfigFieldset<MachineEditFormValues>
                     form={form}
-                    props={{ fieldset: { variant: "default", className: classes.fieldset } }}
+                    props={{ fieldset: { variant: "default", className: classes.fieldset }, scrollArea: { maw: "366px" } }}
                     disabled={disabled}
                     setConfigTemplate={() => {}}
                     configTemplate=""

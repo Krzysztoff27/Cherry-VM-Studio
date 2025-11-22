@@ -65,7 +65,7 @@
 }
 
 .detailLabel {
-    font-size: var(--mantine-font-size-md);
+    font-size: var(--mantine-font-size-sm);
     font-weight: 500;
 }
 

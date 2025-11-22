@@ -124,6 +124,16 @@
             "description_one": "Selected group will be removed. Are you sure you want to continue?",
             "description_other": "All {{count}} selected groups will be removed. Are you sure you want to continue?"
         },
+        "iso-removal": {
+            "title": "Iso File removal",
+            "description_one": "Selected ISO files will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected ISO files will be removed. Are you sure you want to continue?"
+        },
+        "template-removal": {
+            "title": "Machine Templates removal",
+            "description_one": "Selected templates will be removed. Are you sure you want to continue?",
+            "description_other": "All {{count}} selected templates will be removed. Are you sure you want to continue?"
+        },
         "np-loading-config": {
             "title": "Confirm loading configuration"
         },
@@ -150,7 +160,7 @@
         "title": "Import ISO File",
         "description": "Imported ISO file will be visible by all the administrators and modifiable by ones with proper permissions.",
         "name-note": "Note: File name must be unique",
-        "name": "Entry name",
+        "name": "Enter name",
         "import-type-note": "Select the import type",
         "url-note": "Enter the valid URL to the file",
         "url": "File URL",
@@ -165,18 +175,34 @@
             "file-too-large": "Cannot upload file over 10GB."
         }
     },
+    "create-template": {
+        "title": "Create Configuration Template",
+        "description": "You're creating a private configuration template that you can reuse when setting up new machines.",
+        "name-note": "Note: Template name must be unique",
+        "name": "Enter name",
+        "ram": "RAM",
+        "vcpu": "vCPU",
+        "ram-description": "Max value: {{count}} MiB",
+        "vcpu-description": "Max value: {{count}}",
+        "vcpu-description_zero": "Max value: {{count}} cores",
+        "vcpu-description_one": "Max value: {{count}} core",
+        "vcpu-description_other": "Max value: {{count}} cores",
+        "ram-unit": "MiB",
+        "vcpu-unit": "cores",
+        "vcpu-unit_zero": "cores",
+        "vcpu-unit_one": "core",
+        "vcpu-unit_other": "cores"
+    },
     "create-machine": {
         "title": "Create New Machine",
         "title-disks": "Create Disks For The Machine",
-        "machine-name": "Enter machine name here",
-        "machine-name-placeholder": "Machine name",
-        "machine-group": "Choose your machine's group",
-        "machine-group-placeholder": "Machine group",
+        "machine-name-placeholder": "Enter machine name here",
+        "machine-name": "Machine name",
         "machine-group-no": "No.",
-        "machine-tags": "Enter additional tags",
-        "machine-tags-placeholder": "Tags",
-        "assigned-clients-placeholder": "Assigned clients",
-        "assigned-clients": "Assign clients to the machine",
+        "machine-tags-placeholder": "Enter additional tags",
+        "machine-tags": "Machine tags",
+        "assigned-clients": "Assigned clients",
+        "assigned-clients-placeholder": "Assign clients to the machine",
         "source-type": "Select the source type",
         "source-type-description": "Choose between creating a new VM from an ISO file or restoring one from a snapshot.",
         "iso-file": "ISO file",
@@ -197,8 +223,8 @@
         "drive-name": "Drive name",
         "drive-size": "Drive size",
         "drive-type": "Drive type",
-        "machine-description": "Enter machine description",
-        "machine-description-placeholder": "Machine description",
+        "machine-description-placeholder": "Enter machine description",
+        "machine-description": "Machine description",
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
             "name-too-long": "Name length cannot exceed 50 characters.",

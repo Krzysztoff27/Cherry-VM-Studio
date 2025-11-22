@@ -55,12 +55,10 @@ const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element
                     />
                     <TextInput
                         description={tns("ip-address-port")}
-                        classNames={{
-                            input: "borderless",
-                        }}
+                        classNames={{ input: "borderless" }}
                         flex="1"
                         readOnly
-                        value="172.20.0.1:7000"
+                        value={machine.port && machine.port !== -1 ? `<ip-address>:${machine.port}` : "-"}
                     />
                 </Group>
                 <TextInput

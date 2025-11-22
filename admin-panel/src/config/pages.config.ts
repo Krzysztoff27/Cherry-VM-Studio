@@ -4,6 +4,7 @@ import {
     IconDeviceDesktop,
     IconHome,
     IconLibrary,
+    IconTemplate,
     IconTopologyStar,
     IconUserHexagon,
     IconUsers,
@@ -36,14 +37,20 @@ const PAGES: Page[] = [
                 permissions: PERMISSIONS.VIEW_ALL_VMS,
             },
             {
-                key: "snapshots",
-                path: "/machines/snapshots",
-                icon: IconLibrary,
-            },
-            {
                 key: "iso",
                 path: "/machines/iso",
                 icon: IconFileTypeIso,
+            },
+            {
+                key: "templates",
+                path: "/machines/templates",
+                icon: IconTemplate,
+            },
+            {
+                key: "snapshots",
+                path: "/machines/snapshots",
+                icon: IconLibrary,
+                disabled: true,
             },
         ],
     },

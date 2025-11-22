@@ -8,10 +8,11 @@ import TanstackTableBody from "../TanstackTableBody/TanstackTableBody";
 import TablePagination from "../../interactive/TablePagination/TablePagination";
 import { merge } from "lodash";
 import { TableControlsProps } from "../../interactive/TableControls/TableControls.types";
+import { AxiosError } from "axios";
 
 export interface TanstackTableProps {
     loading: boolean;
-    error: Response | null;
+    error: AxiosError | null;
     data: Array<any>;
     columns: Array<any>;
     headingProps: Omit<TableStateHeadingProps, "table" | "loading">;

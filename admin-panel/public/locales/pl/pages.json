@@ -70,8 +70,8 @@
         }
     },
     "login": {
-        "title": "Cherry Admin Panel",
-        "description": "Zaloguj się upoważnionym kontem CVMM",
+        "title": "Cherry VM Studio",
+        "description": "Zaloguj się upoważnionym kontem CVMS",
         "username-placeholder": "Wpisz swój login",
         "password-placeholder": "Wpisz swoje hasło"
     },

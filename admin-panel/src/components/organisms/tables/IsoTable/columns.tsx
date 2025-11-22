@@ -40,7 +40,7 @@ export const getColumns = (openIsoFileModal: (uuid: string) => void) => [
         header: t("iso.table.headers.size", { ns: "pages" }),
         cell: (props) => <Text c="dimmed">{formatBytesToRelevantUnit(props.getValue())}</Text>,
         minSize: 120,
-        maxSize: 120,
+        maxSize: 200,
     },
     {
         accessorKey: "last_used",

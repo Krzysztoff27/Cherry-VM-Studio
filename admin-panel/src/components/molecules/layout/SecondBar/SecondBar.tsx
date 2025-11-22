@@ -37,7 +37,7 @@ export default function SecondBar(): React.ReactElement {
                     variant="subtle"
                     className={`${classes.navButton} ${active === i ? classes.active : ""}`}
                     leftSection={<subpage.icon />}
-                    disabled={!hasPermissions(subpage?.permissions || 0)}
+                    disabled={!hasPermissions(subpage?.permissions || 0) || subpage.disabled}
                 >
                     {tns(`navbar.${subpage.key}`)}
                 </Button>

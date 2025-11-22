@@ -5,10 +5,11 @@ import { useRef, useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconDisc, IconFile, IconUpload, IconX } from "@tabler/icons-react";
 import { isEmpty, isNull, values } from "lodash";
-import classes from "./IsoFileImportModal.module.css";
 import useContinousFileUpload from "../../../hooks/useContinousFileUpload";
 import useFetch from "../../../hooks/useFetch";
 import { IsoRecord } from "../../../types/api.types";
+import classes from "./IsoFileImportModal.module.css";
+import cs from "classnames";
 
 type ImportTypes = "file" | "url";
 
@@ -99,6 +100,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                 { value: "file", label: "From File" },
                                 { value: "url", label: "From URL" },
                             ]}
+                            classNames={{ input: "borderless" }}
                             w={300}
                             allowDeselect={false}
                         />
@@ -109,6 +111,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                             key={form.key("name")}
                             maxLength={24}
                             minLength={3}
+                            classNames={{ input: "borderless" }}
                             {...form.getInputProps("name")}
                         />
                         {importType === "file" ? (
@@ -129,7 +132,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                                 {...props}
                                                 w={currentValues.file ? 264 : 150}
                                                 variant="default"
-                                                className={classes.fileButton}
+                                                className={cs("borderless", classes.fileButton)}
                                                 aria-selected={!isNull(currentValues.file)}
                                                 aria-invalid={!isEmpty(form.errors.file)}
                                                 leftSection={isNull(currentValues.file) ? <IconUpload size={18} /> : <IconFile size={18} />}
@@ -143,7 +146,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                             variant="default"
                                             onClick={clearFile}
                                             c={isEmpty(form.errors.file) ? undefined : "red.7"}
-                                            className={classes.resetFileButton}
+                                            className={cs("borderless", classes.resetFileButton)}
                                         >
                                             <IconX />
                                         </ActionIcon>

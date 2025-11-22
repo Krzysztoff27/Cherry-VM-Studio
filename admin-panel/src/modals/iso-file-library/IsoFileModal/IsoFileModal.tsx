@@ -9,6 +9,7 @@ import ModifiableText from "../../../components/atoms/interactive/ModifiableText
 import { formatBytesToRelevantUnit } from "../../../utils/files";
 import useFetch from "../../../hooks/useFetch";
 import { formatDate } from "../../../utils/dates";
+import IconFileTypeIso from "../../../components/atoms/icons/IconFileTypeIso/IconFileTypeIso";
 
 const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "iso");
@@ -30,8 +31,8 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                 <Box className={classes.topBox} />
                 <Stack className={classes.stack}>
                     <Group className={classes.header}>
-                        <IconDisc
-                            size={96}
+                        <IconFileTypeIso
+                            size={64}
                             className={classes.icon}
                         />
                         <Stack className={classes.headerText}>
@@ -41,14 +42,16 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                             >
                                 {file.name}
                             </Title>
-                            <Text className={classes.username}>{file.file_name.split("/").pop()} </Text>
+                            <Text className={classes.titleSmall}>{formatBytesToRelevantUnit(file.file_size_bytes)} </Text>
                         </Stack>
                     </Group>
 
                     <Stack className={classes.details}>
-                        <Text className={classes.detailLabel}>
-                            {tns("location")}:
-                            <br />
+                        <Group
+                            className={classes.detailLabel}
+                            gap="0"
+                        >
+                            {tns("location")}:&nbsp;
                             <ModifiableText
                                 onSave={() => {}}
                                 canEdit={file.remote === true} // important so that undefined doesnt ruin this
@@ -56,16 +59,7 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                                 viewProps={{ style: { color: "var(--mantine-color-dimmed)" } }} // when i use the class it breaks smh
                                 editButtonClassName={classes.editTextButton}
                             />
-                        </Text>
-                        <Text className={classes.detailLabel}>
-                            {tns("size")}:
-                            <Text
-                                span
-                                className={classes.detailValue}
-                            >
-                                {` ${formatBytesToRelevantUnit(file.file_size_bytes)}`}
-                            </Text>
-                        </Text>
+                        </Group>
                         <Text className={classes.detailLabel}>
                             {tns("last-used")}:
                             <Text
@@ -77,12 +71,11 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                         </Text>
 
                         <Group
-                            mt="lg"
                             w="100%"
-                            gap="xl"
+                            gap="100"
                             align="top"
                         >
-                            <Stack gap="sm">
+                            <Stack gap="md">
                                 <Text className={classes.detailLabel}>
                                     {tns("added-on")}:
                                     <br />
@@ -99,7 +92,7 @@ const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Elemen
                                     comment={`@${file.imported_by.username}`}
                                 />
                             </Stack>
-                            <Stack gap="sm">
+                            <Stack gap="md">
                                 <Text className={classes.detailLabel}>
                                     {tns("last-modified-on")}:
                                     <br />

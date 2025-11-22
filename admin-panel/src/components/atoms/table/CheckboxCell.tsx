@@ -5,8 +5,8 @@ const CheckboxCell = ({ row }): React.JSX.Element => (
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}
         onChange={row.getToggleSelectedHandler()}
-        color='cherry'
+        color="cherry"
     />
-)
+);
 
 export default CheckboxCell;

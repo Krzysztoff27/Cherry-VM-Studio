@@ -2,7 +2,7 @@
     "home": {
         "title": "Welcome to the Cherry Admin Panel!",
         "description1": "This web application is the management center for your Cherry VM Manager.\nIts purpose is to provide user-friendly experience in controling deployed machines.",
-        "description2": "For advanced configurations, you might want to enter the dependancy panels:",
+        "description2": "For advanced configurations, you might want to enter the dependency panels:",
         "cherry-admin-panel": {
             "start": "Here you can:",
             "feature1": "Monitor your Virtual Machines and their activity.",
@@ -110,8 +110,8 @@
         }
     },
     "login": {
-        "title": "Cherry Admin Panel",
-        "description": "Log in with an authorized CVMM account",
+        "title": "Cherry VM Studio",
+        "description": "Log in with an authorized CVMS account",
         "username-placeholder": "Enter your username",
         "password-placeholder": "Enter your password"
     },
@@ -241,6 +241,18 @@
                 "added-by": "Added by",
                 "last-used": "Last used"
             }
+        }
+    },
+    "templates": {
+        "controls": {
+            "all-templates": "All templates",
+            "selected-templates": "Selected templates",
+            "filtered-results": "Filtered results",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete",
+            "create-template": "Create Template"
         }
     }
 }

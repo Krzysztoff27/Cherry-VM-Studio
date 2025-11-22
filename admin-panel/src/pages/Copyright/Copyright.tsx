@@ -22,11 +22,50 @@ export default function Copyright() {
                     Certain elements within this web application may be protected by copyright. This includes third-party logos, dependencies, and other assets.
                     All rights reserved for respective owners.
                 </Text>
-                <Group gap="gap">
-                    <Image
-                        src="/icons/Cherry VM Studio Logo Small.webp"
-                        h={rem(64)}
-                    />
+                <Text
+                    xmlns:cc="http://creativecommons.org/ns#"
+                    xmlns:dct="http://purl.org/dc/terms/"
+                    ta="left"
+                >
+                    <a
+                        href="https://github.com/Krzysztoff27/Cherry-VM-Studio"
+                        property="dct:title"
+                        rel="cc:attributionURL"
+                    >
+                        <b>Cherry VM Studio</b>
+                    </a>
+                    <span> by </span>
+                    <span property="cc:attributionName">Tomasz Kośla and Krzysztof Kolasiński</span>
+                    <span> is licensed under </span>
+                    <a
+                        href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
+                        rel="license noopener noreferrer"
+                        className={classes.ccLink}
+                    >
+                        CC BY-NC-ND 4.0
+                        <img
+                            className={classes.ccIcon}
+                            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
+                            alt="Creative Commons icon"
+                        />
+                        <img
+                            className={classes.ccIcon}
+                            src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
+                            alt="By attribution Creative Commons icon"
+                        />
+                        <img
+                            className={classes.ccIcon}
+                            src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
+                            alt="Noncommercial Creative Commons icon"
+                        />
+                        <img
+                            className={classes.ccIcon}
+                            src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
+                            alt="Noderivatives Creative Commons icon"
+                        />
+                    </a>
+                </Text>
+                <Group gap="36">
                     <Text
                         xmlns:cc="http://creativecommons.org/ns#"
                         xmlns:dct="http://purl.org/dc/terms/"
@@ -34,7 +73,7 @@ export default function Copyright() {
                         flex="1"
                     >
                         <a
-                            href="/icons/Cherry VM Studio Logo Small.webp"
+                            href="/icons/Cherry VM Studio Logo.webp"
                             property="dct:title"
                             rel="cc:attributionURL"
                         >
@@ -71,12 +110,64 @@ export default function Copyright() {
                             />
                         </a>
                     </Text>
-                </Group>
-                <Group gap="gap">
                     <Image
-                        src="/icons/Cherry VM Studio Icon.webp"
-                        h={rem(64)}
+                        src="/icons/Cherry VM Studio Logo.webp"
+                        h={96}
+                        flex="0"
                     />
+                </Group>
+                <Group gap="36">
+                    <Text
+                        xmlns:cc="http://creativecommons.org/ns#"
+                        xmlns:dct="http://purl.org/dc/terms/"
+                        ta="left"
+                        flex="1"
+                    >
+                        <a
+                            href="/icons/Cherry VM Studio Logo Small.webp"
+                            property="dct:title"
+                            rel="cc:attributionURL"
+                        >
+                            <b>Cherry VM Studio Logo Small</b>
+                        </a>
+                        <span> by </span>
+                        <span property="cc:attributionName">Maja Cegłowska and Tomasz Kośla</span>
+                        <span> is licensed under </span>
+                        <a
+                            href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
+                            rel="license noopener noreferrer"
+                            className={classes.ccLink}
+                        >
+                            CC BY-NC-ND 4.0
+                            <img
+                                className={classes.ccIcon}
+                                src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
+                                alt="Creative Commons icon"
+                            />
+                            <img
+                                className={classes.ccIcon}
+                                src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
+                                alt="By attribution Creative Commons icon"
+                            />
+                            <img
+                                className={classes.ccIcon}
+                                src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
+                                alt="Noncommercial Creative Commons icon"
+                            />
+                            <img
+                                className={classes.ccIcon}
+                                src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
+                                alt="Noderivatives Creative Commons icon"
+                            />
+                        </a>
+                    </Text>
+                    <Image
+                        src="/icons/Cherry VM Studio Logo Small.webp"
+                        h={96}
+                        flex="0"
+                    />
+                </Group>
+                <Group gap="36">
                     <Text
                         xmlns:cc="http://creativecommons.org/ns#"
                         xmlns:dct="http://purl.org/dc/terms/"
@@ -121,6 +212,11 @@ export default function Copyright() {
                             />
                         </a>
                     </Text>
+                    <Image
+                        src="/icons/Cherry VM Studio Icon.webp"
+                        h={96}
+                        flex="0"
+                    />
                 </Group>
             </Stack>
         </Container>

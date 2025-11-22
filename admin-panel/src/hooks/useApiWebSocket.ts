@@ -1,10 +1,10 @@
 import { useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { v4 as uuidv4 } from "uuid";
-import { validPath } from "../utils/misc.js";
 import { useApiWebSocketReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
+import { validPath } from "../utils/path.ts";
 
 const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;

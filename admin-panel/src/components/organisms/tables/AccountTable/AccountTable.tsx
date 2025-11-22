@@ -10,10 +10,11 @@ import { User } from "../../../../types/api.types";
 import { AccountType } from "../../../../types/config.types";
 import { prepareData } from "./data";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
+import { AxiosError } from "axios";
 
 export interface AccountTableProps {
     loading: boolean;
-    error: Response | null;
+    error: AxiosError | null;
     accounts: Record<string, User>;
     accountType: AccountType;
     refresh: () => void;

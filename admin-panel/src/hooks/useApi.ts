@@ -1,11 +1,11 @@
 import useErrorHandler from "./useErrorHandler.ts";
-import { validPath } from "../utils/misc.js";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { merge, toString } from "lodash";
 import { ERRORS } from "../config/errors.config.ts";
 import { Tokens } from "../types/api.types.ts";
+import { validPath } from "../utils/path.ts";
 
 type RequestMethods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -17,7 +17,7 @@ export interface useApiReturn {
 export const useApi = (): useApiReturn => {
     const API_URL: string = urlConfig.api_requests;
     const { handleAxiosError } = useErrorHandler();
-    const { authHeaders, refreshHeaders, setAccessToken, setRefreshToken } = useAuthentication();
+    const { authHeaders, refreshHeaders, setAccessToken, setRefreshToken, logout } = useAuthentication();
 
     const baseApiRequestConfig = {
         headers: authHeaders,
@@ -40,10 +40,8 @@ export const useApi = (): useApiReturn => {
             })
             .catch((error: AxiosError) => {
                 if (error.response) {
-                    if (error.response.status === 401) {
-                        setAccessToken(null);
-                        setRefreshToken(null);
-                    } else console.error(error.response);
+                    if (error.response.status === 401) return logout();
+                    console.error(error.response);
                 } else console.error("Error occured during refreshing the tokens.", error);
             });
     };

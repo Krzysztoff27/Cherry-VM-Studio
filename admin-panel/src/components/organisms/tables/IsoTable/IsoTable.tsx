@@ -8,11 +8,13 @@ import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTabl
 import { getColumns } from "./columns";
 import PERMISSIONS from "../../../../config/permissions.config";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
+import { AxiosError } from "axios";
+import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
 
 export interface IsoTableProps {
     isoFiles: Record<string, IsoFile>;
     loading: boolean;
-    error: Response | null;
+    error: AxiosError | null;
     refresh: () => void;
     openIsoFileModal: (uuid: string) => void;
 }
@@ -47,7 +49,11 @@ const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTa
                         props: { onSubmit: refresh },
                     },
                     delete: {
-                        component: DeleteIsoModal,
+                        component: DeleteModal,
+                        props: {
+                            i18nextPrefix: "confirm.iso-removal",
+                            path: "iso/delete",
+                        },
                     },
                 },
                 translations: {

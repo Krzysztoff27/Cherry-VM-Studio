@@ -5,8 +5,8 @@ const CheckboxHeader = ({ table }): React.JSX.Element => (
         checked={table.getIsAllRowsSelected()}
         indeterminate={table.getIsSomeRowsSelected()}
         onChange={() => table.toggleAllRowsSelected()}
-        color='cherry'
+        color="cherry"
     />
-)
+);
 
 export default CheckboxHeader;
