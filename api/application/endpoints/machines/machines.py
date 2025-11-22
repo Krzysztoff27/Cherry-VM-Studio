@@ -10,7 +10,7 @@ from modules.users.permissions import verify_permissions, has_permissions
 from config.permissions_config import PERMISSIONS
 from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
 from .websocket import machine_broadcast_manager
 
 ################################
@@ -62,18 +62,18 @@ async def __async_create_machine__(machine_parameters: CreateMachineForm, curren
     return machine_uuid
 
 @app.post("/machine/create/bulk", response_model=list[UUID], tags=['Machine Creation'])
-async def __async_create_machine_bulk__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, machine_count: int) -> list[UUID]:
-    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, machine_count=machine_count)
-    if not machine_uuid:
-        raise HTTPException(500, f"Failed to create {machine_count} machines in bulk.")
-    return machine_uuid
+async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current_user: DependsOnAdministrativeAuthentication) -> list[UUID]:
+    machines_uuid = await create_machine_async_bulk(machines, current_user.uuid)
+    if not machines_uuid:
+        raise HTTPException(500, f"Failed to create machines in bulk.")
+    return machines_uuid
 
 @app.post("/machine/create/for-group", response_model=list[UUID], tags=['Machine Creation'])
-async def __async_create_machine_per_group__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
-    machine_uuid = await create_machine_async_bulk(machine_parameters, current_user.uuid, group_uuid=group_uuid)
-    if not machine_uuid:
+async def __async_create_machine_per_group__(machines: List[CreateMachineForm], current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
+    machines_uuid = await create_machine_async_for_group(machines, current_user.uuid, group_uuid)
+    if not machines_uuid:
         raise HTTPException(500, f"Machine creation for group {group_uuid} failed.")
-    return machine_uuid
+    return machines_uuid
 
 @app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
 async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:

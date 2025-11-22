@@ -5,12 +5,12 @@ import libvirt
 import asyncio
 import copy
 
-from typing import Union, Optional, overload
+from typing import Union, Optional, overload, List, Tuple, Dict, TypedDict
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_state.state_management import stop_machine
-from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm
+from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
 from modules.postgresql.main import async_pool
@@ -98,35 +98,53 @@ async def create_machine_async(machine: Union[MachineParameters, CreateMachineFo
                     await asyncio.to_thread(machine_disks_cleanup, machine)
                     raise Exception(f"Failed to define machine {machine.uuid}:\n{e}")
 
-@overload             
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, machine_count: int) -> list[UUID]:...
+async def create_machine_async_for_group(machines: List[CreateMachineForm], owner_uuid: UUID, group_uuid: UUID) -> list[UUID]:
+    """
+    Machine creation for every user from a given group.
+    """
+    machines_bulk_spec: list[MachineBulkSpec] = []
+    group_members: list[UUID] 
+    
+    group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
+    if not group_members:
+        raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
+    
+    machine_count = len(group_members)
+    
+    for machine in machines:
+        machines_bulk_spec.append(MachineBulkSpec(machine_config=machine, machine_count=machine_count))
+        
+    created_machines = await create_machine_async_bulk(machines_bulk_spec, owner_uuid=owner_uuid, group_uuid=group_uuid)
+    
+    return created_machines
 
-@overload
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, group_uuid: UUID) -> list[UUID]:...
+# @overload             
+# async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid: UUID) -> list[UUID]:...
+
+# @overload
+# async def create_machine_async_bulk(machines: List[CreateMachineForm], owner_uuid: UUID, group_uuid: UUID) -> list[UUID]:...
 
 
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, machine_count: Optional[int] = None, group_uuid: Optional[UUID] = None) -> list[UUID]:
+async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid: UUID, group_uuid: Optional[UUID] = None) -> list[UUID]:
     """
     Creates a number of machines transactionally in parallel.\n
     In the event of a failure, it rolls back DB changes and cleans up libvirt definitions for every machine.\n
-    Either **machine_count** or **group_uuid** must be specified.
     """
     
-    if (machine_count is None and group_uuid is None) or (machine_count is not None and group_uuid is not None):
-        raise ValueError("Valid arguments must contain either machine_count or group_uuid. Not both, not none.")
-    
-    if machine_count is not None and machine_count < 1:
-        raise ValueError("machine_count in async_create_machine_bulk() must be greater than or equal to 1!")
+    if not all(machine.machine_count > 0 for machine in machines):
+        raise ValueError("Every machine_count in MachineBulkSpec must be greater than or equal to 1.")
     
     group_members: list[UUID] = []
-    
     if group_uuid is not None:
         group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
         if not group_members:
             raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
-        
-    machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
     
+    machines_config: list[tuple[MachineParameters, int]] = []
+    
+    for machine in machines:
+        machines_config.append((translate_machine_form_to_machine_parameters(machine.machine_config), machine.machine_count))
+        
     insert_owner = """
         INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
         VALUES (%s, %s);
@@ -147,21 +165,22 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
     try:
         logger.debug("Creating machine clones.")
         
-        if machine_count is not None:
-            for machine_clone in range (machine_count):
-                machine_clone = copy.deepcopy(machine)
-                machine_clone.uuid = uuid4()
-                machine_clones.append(machine_clone)
-        
         if group_uuid is not None:
             for client_uuid in group_members:
-                machine_clone = copy.deepcopy(machine)
-                machine_clone.uuid = uuid4()
-                machine_clone.assigned_clients = {client_uuid}
-                machine_clones.append(machine_clone)
+                for machine, _ in machines_config:
+                    machine_clone = copy.deepcopy(machine)
+                    machine_clone.uuid = uuid4()
+                    machine_clone.assigned_clients = {client_uuid}
+                    machine_clones.append(machine_clone)
+        else:
+            for machine, machine_count in machines_config:
+                for machine_clone in range(machine_count):
+                    machine_clone = copy.deepcopy(machine)
+                    machine_clone.uuid = uuid4()
+                    machine_clones.append(machine_clone)
         
     except Exception as e:
-        raise Exception(f"Failed to create machine clones for bulk creation in the number of {machine_count}:\n{e}")
+        raise Exception(f"Failed to create machine clones for bulk creation.\n{e}")
         
     async with async_pool.connection() as connection:
         async with connection.cursor() as cursor:

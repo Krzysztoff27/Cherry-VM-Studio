@@ -1,6 +1,7 @@
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional, Literal, Union, ClassVar
+from uuid import UUID
+from pydantic import BaseModel, model_validator
+from typing import Optional, Literal, Union, TypedDict
+from dataclasses import dataclass
 
 ################################
 #   Machine creation models
@@ -105,3 +106,8 @@ class CreateMachineForm(BaseModel):
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
+    
+@dataclass
+class MachineBulkSpec(BaseModel):
+    machine_config: CreateMachineForm
+    machine_count: int
