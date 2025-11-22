@@ -97,6 +97,17 @@ CREATE TABLE iso_files (
     FOREIGN KEY(last_modified_by) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE machine_templates (
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_uuid UUID NOT NULL,
+    name VARCHAR(24) UNIQUE NOT NULL,
+    ram INT NOT NULL DEFAULT 0,
+    vcpu INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+
+);
+
 CREATE TABLE machine_snapshots (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_uuid UUID,
