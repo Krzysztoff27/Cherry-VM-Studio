@@ -141,8 +141,8 @@ def get_machine_state(machine: libvirt.virDomain) -> MachineState:
         'active': is_active,
         'loading': is_vm_loading(machine.UUID()),
         'active_connections': [],
-        'ram_max': (machine.info()[2]/1024),
-        'ram_used': (machine.info()[1]/1024) if is_active else 0,
+        'ram_max': (machine.info()[1]/1024),
+        'ram_used': (machine.info()[2]/1024) if is_active else 0,
         'uptime': 0
     })
     
