@@ -107,7 +107,7 @@ class CreateMachineForm(BaseModel):
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
     
-@dataclass
+    
 class MachineBulkSpec(BaseModel):
     machine_config: CreateMachineForm
     machine_count: int

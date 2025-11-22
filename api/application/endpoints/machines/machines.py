@@ -69,7 +69,7 @@ async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current
     return machines_uuid
 
 @app.post("/machine/create/for-group", response_model=list[UUID], tags=['Machine Creation'])
-async def __async_create_machine_per_group__(machines: List[CreateMachineForm], current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
+async def __async_create_machine_for_group__(machines: List[CreateMachineForm], current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
     machines_uuid = await create_machine_async_for_group(machines, current_user.uuid, group_uuid)
     if not machines_uuid:
         raise HTTPException(500, f"Machine creation for group {group_uuid} failed.")
