@@ -9,6 +9,8 @@ from dataclasses import dataclass
 DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
 StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
 
+ConnectionPermissions = Literal["READ", "UPDATE", "DELETE", "ADMINISTER"]
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
     tag: str
