@@ -21,6 +21,8 @@ services:
       - SYSTEM_WORKER_UID=${SYSTEM_WORKER_UID}
       - SYSTEM_WORKER_GID=${SYSTEM_WORKER_GID}
       - HOST_LIBVIRT_GID=${HOST_LIBVIRT_GID}
+      - NETWORK_RAS_NAME=${NETWORK_RAS_NAME}
+      - GUACD_HOSTNAME=${GUACD_HOSTNAME}
     secrets:
       - jwt_secret
     volumes:

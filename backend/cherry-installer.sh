@@ -435,6 +435,8 @@ configure_daemon_docker(){
 
             printf 'POOL_LIBVIRT_ISO_IMAGES=%\n' "$POOL_LIBVIRT_ISO_IMAGES"
 
+            printf 'NETWORK_RAS_NAME=%s\n' "$NETWORK_RAS_NAME" 
+
         } >> "${DIR_DOCKER_HOST}/.env" 2>>"$ERR_LOG"
 
     } 2>>"$ERR_LOG"
@@ -529,6 +531,15 @@ configure_daemon_libvirt(){
         virsh net-autostart "$NETWORK_VM_NAME"
 
     }
+
+     if systemctl -q is-active firewalld; then
+        printf 'Modifying libvirt firewalld zone.\n'
+        {
+            firewall-cmd --add-service=vnc-server --zone=libvirt --permanent
+            firewall-cmd --add-service=rdp --zone=libvirt --permanent
+            firewall-cmd --reload
+        } >/dev/null 2>>"$ERR_LOG"
+    fi
 }
 
 create_docker_networks(){
