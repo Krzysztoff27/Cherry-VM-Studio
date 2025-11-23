@@ -9,7 +9,6 @@ from typing import Optional, List
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machine_state.state_management import stop_machine
 from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
@@ -54,6 +53,10 @@ async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> 
         VALUES (%s, %s, %s);
     """
     
+    select_guacamole_entity_id = """
+        SELECT entity_id FROM guacamole_entity WHERE name = %s::varchar;
+    """
+    
     insert_guacamole_connection_parameter = """
         INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value)
         VALUES (%s, %s, %s)
@@ -94,18 +97,36 @@ async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> 
                     else:
                         raise Exception(f"Failed to retrieve connection_id from guacamole_connection insert query for {machine_parameters.uuid}.")
                     
+                    logger.debug(f"Fetching guacamole entity_id corresponding to owner_uuid.")
+                    await cursor.execute(select_guacamole_entity_id, (str(owner_uuid),))
+                    
+                    entity_id_result = await cursor.fetchone()
+                    if entity_id_result:
+                        owner_id = entity_id_result["entity_id"]
+                    else:
+                        raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {owner_uuid}.")
+                    
                     logger.debug(f"Inserting records(s) into guacamole_connection_permission for owner {owner_uuid}.")
                     for permission in ConnectionPermissions:
                         await cursor.execute(insert_guacamole_connection_permission, (
-                            owner_uuid,
-                            connection_id,
+                            int(owner_id),
+                            int(connection_id),
                             permission
                         ))
                     
                     for client in machine_parameters.assigned_clients:
+                        logger.debug(f"Fetching guacamole entity_id corresponding to client_uuid.")
+                        await cursor.execute(select_guacamole_entity_id, (str(client),))
+                        
+                        entity_id_result = await cursor.fetchone()
+                        if entity_id_result:
+                            client_id = entity_id_result["entity_id"]
+                        else:
+                            raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {client}.")
+                        
                         logger.debug(f"Inserting records(s) into guacamole_connection_permission for {client}.")
                         await cursor.execute(insert_guacamole_connection_permission, (
-                            client,
+                            client_id,
                             connection_id,
                             "READ"
                         ))
@@ -223,6 +244,10 @@ async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid:
         VALUES (%s, %s, %s);
     """
     
+    select_guacamole_entity_id = """
+        SELECT entity_id FROM guacamole_entity WHERE name = %s::varchar;
+    """
+    
     insert_guacamole_connection_parameter = """
         INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value)
         VALUES (%s, %s, %s)
@@ -289,18 +314,36 @@ async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid:
                         else:
                             raise Exception(f"Failed to retrieve connection_id from guacamole_connection insert query for {machine_clone.uuid}.")
                         
+                        logger.debug(f"Fetching guacamole entity_id corresponding to owner_uuid.")
+                        await cursor.execute(select_guacamole_entity_id, (str(owner_uuid),))
+                        
+                        entity_id_result = await cursor.fetchone()
+                        if entity_id_result:
+                            owner_id = entity_id_result["entity_id"]
+                        else:
+                            raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {owner_uuid}.")
+                        
                         logger.debug(f"Inserting records(s) into guacamole_connection_permission for owner {owner_uuid}.")
                         for permission in ConnectionPermissions:
                             await cursor.execute(insert_guacamole_connection_permission, (
-                                owner_uuid,
+                                owner_id,
                                 connection_id,
                                 permission
                             ))
                             
                         for client in machine_clone.assigned_clients:
+                            logger.debug(f"Fetching guacamole entity_id corresponding to client_uuid.")
+                            await cursor.execute(select_guacamole_entity_id, (str(client),))
+                            
+                            entity_id_result = await cursor.fetchone()
+                            if entity_id_result:
+                                client_id = entity_id_result["entity_id"]
+                            else:
+                                raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {client}.")
+                            
                             logger.debug(f"Inserting records(s) into guacamole_connection_permission for {client}.")
                             await cursor.execute(insert_guacamole_connection_permission, (
-                                client,
+                                client_id,
                                 connection_id,
                                 "READ"
                             ))
@@ -397,6 +440,7 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
     Because of this, it does not throw exceptions on single step failed but continues with components removal.\n
     Appropriate exceptions are thrown when the removal step fails.
     """
+    from modules.machine_state.state_management import stop_machine
     
     # Avoid machine_parameters from being unbound between different try statements
     machine_parameters = None
