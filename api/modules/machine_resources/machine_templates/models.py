@@ -1,6 +1,6 @@
+import datetime as dt
 from uuid import UUID
 from pydantic import BaseModel
-
 from modules.users.models import Administrator
 
 
@@ -10,6 +10,7 @@ class MachineTemplateInDB(BaseModel):
     name: str
     ram: int
     vcpu: int
+    created_at: dt.datetime | None = None
     
     
 class MachineTemplate(BaseModel):
@@ -18,6 +19,7 @@ class MachineTemplate(BaseModel):
     name: str
     ram: int
     vcpu: int
+    created_at: dt.datetime | None = None
     
     
 class CreateMachineTemplateForm(BaseModel):
