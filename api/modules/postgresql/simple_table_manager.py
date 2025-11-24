@@ -50,9 +50,12 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
                 logging.error(f"[SimpleTableManager:{self.table_name}] Invalid field name '{field_name}' passed to get_by_field(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
                 raise InvalidFieldNameException(field_name=field_name)
             
-        query = f"SELECT * FROM {self.table_name} WHERE {' AND '.join([f'{field} = (%s)' for field in fields.keys()])}"
+        query = f"""
+            SELECT * FROM {self.table_name} 
+            WHERE {' AND '.join([f'{field} = %({field})s' for field in fields.keys()])}
+        """
             
-        record = select_schema_one(self.model_in_db, query)
+        record = select_schema_one(self.model_in_db, query, fields)
         
         return self.transform_record(record) if record is not None else None
 
