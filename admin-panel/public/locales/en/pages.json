@@ -239,7 +239,11 @@
                 "size": "Size",
                 "added": "Added",
                 "added-by": "Added by",
-                "last-used": "Last used"
+                "last-used": "Last used",
+                "imported-at": "Imported at",
+                "last-modified-at": "Last modified at",
+                "imported-by": "Imported by",
+                "last-modified-by": "Last modified by"
             }
         }
     },
@@ -253,6 +257,19 @@
             "delete-selected": "Delete selected",
             "delete": "Delete",
             "create-template": "Create Template"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "ram": "RAM",
+                "vcpu": "vCPU",
+                "creation-date": "Created"
+            },
+            "ram-unit": "MiB",
+            "vcpu-unit": "cores",
+            "vcpu-unit_zero": "cores",
+            "vcpu-unit_one": "core",
+            "vcpu-unit_other": "cores"
         }
     }
 }

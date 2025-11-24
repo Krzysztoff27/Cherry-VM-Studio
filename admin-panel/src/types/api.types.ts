@@ -90,8 +90,6 @@ export interface MachineDiskForm {
 
 export interface MachineData {
     uuid: string;
-    group: string | null;
-    group_member_id: number | null;
     owner: UserInDB | null;
     assigned_clients: Record<string, UserInDB>;
     domain: string | null;
@@ -151,7 +149,6 @@ export interface IsoFile {
     uuid: string;
     name: string;
     remote: boolean | null;
-    file_name: string;
     file_location: string | null;
     file_size_bytes: number;
     last_used: string | null;
@@ -161,6 +158,14 @@ export interface IsoFile {
     last_modified_by: User | null;
 }
 
-export interface Snapshot {
+export interface MachineSnapshot {
     [x: string]: any;
+}
+
+export interface MachineTemplate {
+    name: string;
+    ram: number;
+    vcpu: number;
+    owner: UserInDB;
+    created_at: string;
 }

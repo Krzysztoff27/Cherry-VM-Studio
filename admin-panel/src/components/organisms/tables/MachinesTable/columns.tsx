@@ -15,6 +15,7 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             maxSize: 260,
             sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
             filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
+            enableHiding: false,
         },
 
         {
@@ -67,5 +68,6 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             ),
             minSize: 350,
             maxSize: 350,
+            enableHiding: false,
         },
     ].filter((e) => e);

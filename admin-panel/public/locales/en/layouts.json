@@ -17,8 +17,8 @@
         "groups": "Client groups",
         "your-library": "Your library",
         "all-machines": "All machines",
-        "snapshots": "Snapshot Library",
-        "iso": "Iso Library",
-        "templates": "Template Library"
+        "snapshots": "Your snapshots",
+        "iso": "Global ISO Library",
+        "templates": "Your templates"
     }
 }

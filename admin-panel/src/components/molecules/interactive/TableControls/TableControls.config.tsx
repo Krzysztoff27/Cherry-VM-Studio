@@ -1,13 +1,29 @@
 import { ActionIcon, Button } from "@mantine/core";
 import { TableControlsDefaultButtonsConfig, TableControlsIcons, TableControlsTranslations } from "./TableControls.types";
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
+import TableColumnsButton from "../../../atoms/interactive/TableColumnsButton/TableColumnsButton";
+import { Table } from "@tanstack/react-table";
 
 const getDefaultButtons = (
+    table: Table<any>,
     icons: TableControlsIcons,
     translations: TableControlsTranslations,
     viewMode: boolean,
     deleteMode: boolean
 ): TableControlsDefaultButtonsConfig => ({
+    columns: {
+        small: {
+            name: "columns",
+            component: TableColumnsButton,
+            props: {
+                size: "36",
+                variant: "default",
+                columns: table.getAllColumns(),
+                visibleColumns: table.getVisibleLeafColumns(),
+            },
+            children: <icons.columns size={20} />,
+        },
+    },
     filter: {
         small: {
             name: "filter",

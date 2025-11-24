@@ -15,10 +15,11 @@ export interface TanstackTableProps {
     error: AxiosError | null;
     data: Array<any>;
     columns: Array<any>;
+    defaultHiddenColumns?: Array<string>;
     headingProps: Omit<TableStateHeadingProps, "table" | "loading">;
     controlsProps: Omit<TableControlsProps, "table" | "onFilteringChange">;
-    refresh: () => void;
     RowComponent?: React.ComponentType<any>;
+    refresh: () => void;
     rowProps?: (uuid: string) => Record<string, any>;
 }
 
@@ -32,6 +33,7 @@ const TanstackTable = ({
     controlsProps,
     RowComponent,
     rowProps,
+    defaultHiddenColumns = [],
 }: TanstackTableProps): React.JSX.Element => {
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -39,6 +41,9 @@ const TanstackTable = ({
     const table = useReactTable({
         data,
         columns: columns,
+        initialState: {
+            columnVisibility: Object.fromEntries(defaultHiddenColumns.map((key) => [key, false])),
+        },
         state: {
             columnFilters,
             pagination,

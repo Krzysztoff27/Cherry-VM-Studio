@@ -58,5 +58,8 @@
     "progress": "Progress",
     "bulk-create": "Bulk create",
     "never": "Never",
-    "configuration": "Configuration"
+    "configuration": "Configuration",
+    "auto": "Auto",
+    "custom": "Custom",
+    "templates": "Templates"
 }

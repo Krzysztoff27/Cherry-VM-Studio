@@ -7,6 +7,10 @@ import { values } from "lodash";
 import useFetch from "../../../hooks/useFetch";
 import EnhancedSlider from "../../../components/atoms/interactive/EnhancedSlider/EnhancedSlider";
 import classes from "./CreateTemplateModal.module.css";
+import useApi from "../../../hooks/useApi";
+import { AxiosError, isAxiosError } from "axios";
+import useErrorHandler from "../../../hooks/useErrorHandler";
+import { ERRORS } from "../../../config/errors.config";
 
 export interface CreateTemplateModalFormValues {
     name: string;
@@ -16,9 +20,8 @@ export interface CreateTemplateModalFormValues {
 
 const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "create-template");
-    const { data: templates } = useFetch("/machine/template/all");
-
-    const takenNames = values(templates).map((template) => template.name);
+    const { sendRequest } = useApi();
+    const { handleAxiosError } = useErrorHandler();
 
     const maxRam = 4096;
     const maxVcpu = 8;
@@ -39,8 +42,6 @@ const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImp
                     ? tns("validation.name-too-short")
                     : val.length > 24
                     ? tns("validation.name-too-long")
-                    : takenNames.includes(val)
-                    ? tns("validation.name-duplicate")
                     : null,
         },
     });
@@ -50,11 +51,21 @@ const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImp
         onClose();
     };
 
-    const submitForm = form.onSubmit(async (values) => {
-        // POST
+    const onError = (error: AxiosError) => {
+        if (error.response?.status != ERRORS.HTTP_409_DUPLICATE_ERROR) {
+            handleAxiosError(error);
+            return error;
+        }
 
-        onSubmit?.();
+        form.setFieldError("name", tns("validation.name-duplicate"));
+        return error;
+    };
+
+    const submitForm = form.onSubmit(async (values) => {
+        const res = await sendRequest("POST", "machine/template/create", { data: values }, onError);
+        if (isAxiosError(res)) return;
         closeModal();
+        onSubmit?.();
     });
 
     return (

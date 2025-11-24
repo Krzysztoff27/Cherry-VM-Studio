@@ -20,12 +20,12 @@ export interface TableControlsModal {
     props?: { [key: string]: any };
 }
 
-export type TableControlsDefaultButtons = "create" | "delete" | "import" | "filter";
+export type TableControlsDefaultButtons = "create" | "delete" | "import" | "filter" | "columns";
 
 export type TableControlsDefaultButtonsConfig = {
     [K in TableControlsDefaultButtons]: {
-        small: TableControlsButton;
-        large: TableControlsButton;
+        small?: TableControlsButton;
+        large?: TableControlsButton;
     };
 };
 
@@ -61,5 +61,5 @@ export interface TableControlsProps {
     viewMode?: boolean;
     icons?: TableControlsIcons;
     searchColumnKey?: string;
-    onFilteringChange?: (callback: (prev: any) => any) => void;
+    onFilteringChange?: React.Dispatch<React.SetStateAction<any>>;
 }

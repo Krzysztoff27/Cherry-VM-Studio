@@ -56,6 +56,9 @@ const GroupsTable = ({ groups, error, loading, refresh, openGroupModal }: Groups
                     filter: tns("filters"),
                     import: tns("import"),
                 },
+                hiddenButtons: {
+                    columns: true,
+                },
             }}
         />
     );

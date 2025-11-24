@@ -1,24 +1,24 @@
 import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { getColumns } from "./columns";
-import { safeObjectValues } from "../../../../utils/misc";
-import { Snapshot } from "../../../../types/api.types";
-import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import { AxiosError } from "axios";
+import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
 import CreateTemplateModal from "../../../../modals/templates-library/CreateTemplateModal/CreateTemplateModal";
+import { MachineTemplate } from "../../../../types/api.types";
+import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
+import { prepareData } from "./data";
+import { getColumns } from "./columns";
 
-export interface SnapshotsTableProps {
-    snapshots: Record<string, Snapshot>;
+export interface TemplatesTableProps {
+    templates: Record<string, MachineTemplate>;
     loading: boolean;
     error: AxiosError | null;
     refresh: () => void;
-    openTemplateModal: (uuid: string) => void;
 }
 
-const TemplatesTable = ({ snapshots, loading, error, refresh, openTemplateModal }: SnapshotsTableProps): React.JSX.Element => {
+const TemplatesTable = ({ templates, loading, error, refresh }: TemplatesTableProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "templates.controls.");
-    const data = useMemo(() => safeObjectValues(snapshots), [snapshots]);
-    const columns = useMemo(() => getColumns(openTemplateModal), []);
+    const data = useMemo(() => prepareData(templates), [JSON.stringify(templates)]);
+    const columns = useMemo(() => getColumns(), []);
 
     return (
         <TanstackTable
@@ -36,7 +36,17 @@ const TemplatesTable = ({ snapshots, loading, error, refresh, openTemplateModal 
             }}
             controlsProps={{
                 modals: {
-                    create: { component: CreateTemplateModal },
+                    create: {
+                        component: CreateTemplateModal,
+                        props: { onSubmit: refresh },
+                    },
+                    delete: {
+                        component: DeleteModal,
+                        props: {
+                            i18nextPrefix: "confirm.template-removal",
+                            path: "machine/template/delete",
+                        },
+                    },
                 },
                 translations: {
                     import: tns("import"),

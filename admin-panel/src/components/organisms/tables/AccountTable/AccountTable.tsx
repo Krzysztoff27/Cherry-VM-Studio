@@ -61,6 +61,9 @@ const AccountTable = ({ accounts, accountType, loading, error, refresh, openAcco
                     import: tns("import"),
                     filter: tns("filters"),
                 },
+                hiddenButtons: {
+                    columns: true,
+                },
             }}
         />
     );

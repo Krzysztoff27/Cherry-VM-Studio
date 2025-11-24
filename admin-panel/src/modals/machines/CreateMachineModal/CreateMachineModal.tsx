@@ -43,7 +43,7 @@ export interface CreateMachineModalProps {
 export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMachineModalStackProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "create-machine");
 
-    const [configTemplate, setConfigTemplate] = useState<string>("");
+    const [configTemplate, setConfigTemplate] = useState<string>("custom");
 
     const stack = useModalsStack(["details-page", "source-page", "config-page", "disks-page"]);
 
@@ -102,13 +102,13 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     useEffect(() => {
         if (opened) {
             form.reset();
-            setConfigTemplate("");
+            setConfigTemplate("custom");
             stack.open("details-page");
         } else stack.closeAll();
     }, [opened]);
 
     useEffect(() => {
-        setConfigTemplate("");
+        setConfigTemplate("custom");
     }, [JSON.stringify(form.values.config)]);
 
     const resetSourcePage = () => {

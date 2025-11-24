@@ -19,6 +19,7 @@ export const getColumns = (
         header: CheckboxHeader,
         cell: CheckboxCell,
         maxSize: 50,
+        enableHiding: false,
     },
     {
         accessorKey: "details",
@@ -27,6 +28,7 @@ export const getColumns = (
         sortingFn: sortingFunction,
         filterFn: filterFunction,
         minSize: 130,
+        enableHiding: false,
     },
     {
         administrative: {
@@ -64,5 +66,6 @@ export const getColumns = (
             />
         ),
         maxSize: 50,
+        enableHiding: false,
     },
 ];

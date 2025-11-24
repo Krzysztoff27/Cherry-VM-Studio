@@ -2,7 +2,7 @@ import { Group } from "@mantine/core";
 import React, { useMemo, useCallback } from "react";
 import TableSearch from "../TableSearch/TableSearch";
 import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
-import { IconFileImport, IconFilter, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconFileImport, IconFilter, IconLayoutColumns, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { entries, isNull, merge } from "lodash";
 import { TableControlsButton, TableControlsProps } from "./TableControls.types";
@@ -29,6 +29,7 @@ const TableControls = ({
             delete: isLg ? "large" : "small",
             filter: isXl ? "large" : "small",
             import: isXl ? "large" : "small",
+            columns: "small",
         }),
         [isXl, isLg]
     );
@@ -39,6 +40,7 @@ const TableControls = ({
             delete: IconTrash,
             filter: IconFilter,
             import: IconFileImport,
+            columns: IconLayoutColumns,
             ...customIcons,
         }),
         [customIcons]
@@ -46,7 +48,7 @@ const TableControls = ({
 
     const anyRowsSelected = useCallback(() => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected(), [table]);
 
-    const defaultButtons = useMemo(() => getDefaultButtons(icons, translations, viewMode, anyRowsSelected()), [icons, translations, viewMode]);
+    const defaultButtons = getDefaultButtons(table, icons, translations, viewMode, anyRowsSelected());
 
     let buttons = useMemo(
         () =>

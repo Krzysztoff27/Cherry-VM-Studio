@@ -1,3 +1,5 @@
+import i18n from "../config/translation.config";
+
 export const timePassedRounded = (pastDate: Date) => {
     if (!pastDate) return [null, null];
 
@@ -29,12 +31,15 @@ export const timeSince = (pastDate: Date) => {
     return `${hours}:${minutes}:${seconds}`;
 };
 
-export const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat("en-GB", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    }).format(date);
+export const formatDate = (date: Date) => {
+    const locale = i18n.language;
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString(locale, { month: "short" });
+    const year = date.getFullYear();
+
+    const hour = date.getHours().toString().padStart(2, "0");
+    const minute = date.getMinutes().toString().padStart(2, "0");
+
+    return `${day} ${month} ${year}, ${hour}:${minute}`;
+};

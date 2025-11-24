@@ -37,11 +37,6 @@ const PAGES: Page[] = [
                 permissions: PERMISSIONS.VIEW_ALL_VMS,
             },
             {
-                key: "iso",
-                path: "/machines/iso",
-                icon: IconFileTypeIso,
-            },
-            {
                 key: "templates",
                 path: "/machines/templates",
                 icon: IconTemplate,
@@ -51,6 +46,11 @@ const PAGES: Page[] = [
                 path: "/machines/snapshots",
                 icon: IconLibrary,
                 disabled: true,
+            },
+            {
+                key: "iso",
+                path: "/machines/iso",
+                icon: IconFileTypeIso,
             },
         ],
     },

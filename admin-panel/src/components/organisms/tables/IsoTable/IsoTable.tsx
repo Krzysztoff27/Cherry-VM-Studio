@@ -1,32 +1,30 @@
 import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import DeleteIsoModal from "../../../../modals/iso-file-library/DeleteIsoModal/DeleteIsoModal";
 import IsoFileImportModal from "../../../../modals/iso-file-library/IsoFileImportModal/IsoFileImportModal";
 import { IsoFile } from "../../../../types/api.types";
-import { safeObjectValues } from "../../../../utils/misc";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import { getColumns } from "./columns";
 import PERMISSIONS from "../../../../config/permissions.config";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { AxiosError } from "axios";
 import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
+import { prepareData } from "./data";
 
 export interface IsoTableProps {
     isoFiles: Record<string, IsoFile>;
     loading: boolean;
     error: AxiosError | null;
     refresh: () => void;
-    openIsoFileModal: (uuid: string) => void;
 }
 
-const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTableProps): React.JSX.Element => {
+const IsoTable = ({ isoFiles, loading, error, refresh }: IsoTableProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "iso.controls.");
     const { hasPermissions } = usePermissions();
 
     const viewMode = !hasPermissions(PERMISSIONS.MANAGE_ISO_FILES);
 
-    const data = useMemo(() => safeObjectValues(isoFiles), [isoFiles]);
-    const columns = useMemo(() => getColumns(openIsoFileModal), []);
+    const data = useMemo(() => prepareData(isoFiles), [JSON.stringify(isoFiles)]);
+    const columns = useMemo(() => getColumns(), []);
 
     return (
         <TanstackTable
@@ -35,6 +33,7 @@ const IsoTable = ({ isoFiles, loading, error, refresh, openIsoFileModal }: IsoTa
             error={error}
             loading={loading}
             refresh={refresh}
+            defaultHiddenColumns={["file_location", "last_modified_at", "last_modified_by"]}
             headingProps={{
                 translations: {
                     all: tns("all-files"),
