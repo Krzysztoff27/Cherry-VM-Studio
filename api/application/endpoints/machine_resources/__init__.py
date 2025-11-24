@@ -1,2 +1,2 @@
-from iso_files import *
-from machine_templates import *
+from .iso_files import *
+from .machine_templates import *
