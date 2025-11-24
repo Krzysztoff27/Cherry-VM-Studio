@@ -82,6 +82,7 @@ class Role(RoleInDB):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Administrator
 class Administrator(BaseModel):
     uuid: UUID
+    password: str
     username: str
     email: str | None = None
     name: str | None = None
@@ -97,6 +98,7 @@ class Administrator(BaseModel):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Client
 class Client(BaseModel):
     uuid: UUID
+    password: str
     username: str
     email: str | None = None
     name: str | None = None
