@@ -419,11 +419,12 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
                         pool = get_required_xml_tag_attribute(source_element, "pool"), # type: ignore
                         volume = get_required_xml_tag_attribute(source_element, "volume")
                     )
-            else:     
-                boot_element = get_required_xml_tag(disk_element, "boot")
-                if get_required_xml_tag_attribute(boot_element, "order") == "1":
-                    system_disk = parse_machine_disk(disk_element)
-                else:
+            else:
+                try:    
+                    boot_element = get_required_xml_tag(disk_element, "boot")
+                    if get_required_xml_tag_attribute(boot_element, "order") == "1":
+                        system_disk = parse_machine_disk(disk_element)
+                except Exception:
                     additional_disks.append(parse_machine_disk(disk_element))
         
         if system_disk is None:

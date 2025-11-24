@@ -1,12 +1,15 @@
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional, Literal, Union, ClassVar
+from uuid import UUID
+from pydantic import BaseModel, model_validator
+from typing import Optional, Literal, Union, TypedDict
+from dataclasses import dataclass
 
 ################################
 #   Machine creation models
 ################################
 DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
 StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+
+ConnectionPermissions = ["READ", "UPDATE", "DELETE", "ADMINISTER"]
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
@@ -105,3 +108,8 @@ class CreateMachineForm(BaseModel):
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
+    
+    
+class MachineBulkSpec(BaseModel):
+    machine_config: CreateMachineForm
+    machine_count: int

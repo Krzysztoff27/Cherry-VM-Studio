@@ -5,31 +5,32 @@ import libvirt
 import asyncio
 import copy
 
-from typing import Union, Optional, overload
+from typing import Optional, List
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machine_state.state_management import stop_machine
-from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm
+from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
+from modules.machine_lifecycle.networks import get_network_bridge_ip
 from modules.postgresql.main import async_pool
 from modules.postgresql.simple_select import select_single_field
+from config.env_config import ENV_CONFIG
 
 logger = logging.getLogger(__name__)
 
 ################################
 #          Creation
 ################################
-async def create_machine_async(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID) -> UUID:
+async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> UUID:
     """
     Creates a single machine transactionally.\n
     In the event of a failure, it rolls back DB changes and cleans up libvirt definitions.
     """
     
-    machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
+    machine_parameters = translate_machine_form_to_machine_parameters(machine)
     
-    machine.uuid = uuid4()
+    machine_parameters.uuid = uuid4()
     
     insert_owner = """
         INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
@@ -41,35 +42,117 @@ async def create_machine_async(machine: Union[MachineParameters, CreateMachineFo
         VALUES (%s, %s);
     """
     
+    insert_guacamole_connection = """
+        INSERT INTO guacamole_connection (connection_name, protocol, proxy_port, proxy_hostname, proxy_encryption_method)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING connection_id;
+    """
+    
+    insert_guacamole_connection_permission = """
+        INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission)
+        VALUES (%s, %s, %s);
+    """
+    
+    select_guacamole_entity_id = """
+        SELECT entity_id FROM guacamole_entity WHERE name = %s::varchar;
+    """
+    
+    insert_guacamole_connection_parameter = """
+        INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value)
+        VALUES (%s, %s, %s)
+    """
+    
+    
     async with async_pool.connection() as connection:
         async with connection.cursor() as cursor:
             async with connection.transaction():
                 try:
+                    logger.debug("Retrieving cherry-ras network bridge IP.")
+                    ras_ip = await asyncio.to_thread(get_network_bridge_ip, ENV_CONFIG.NETWORK_RAS_NAME)
+                    connection_parameters = [("hostname", ras_ip), ("port", "0")]
+                    
                     # At this stage the records are not commited yet. They will remain in this state until the machine is sucessfully defined through the Libvirt API (when no exceptions occur).
                     # Insert record to deployed_machines_owners table.
-                    logger.debug(f"Inserting record into deployed_machines_owners for {machine.uuid}.")
-                    await cursor.execute(insert_owner, (machine.uuid, owner_uuid))
+                    logger.debug(f"Inserting record into deployed_machines_owners for {machine_parameters.uuid}.")
+                    await cursor.execute(insert_owner, (machine_parameters.uuid, owner_uuid))
                     
-                    logger.debug(f"Inserting record(s) into deployed_machines_clients for {machine.uuid}.")
+                    logger.debug(f"Inserting record(s) into deployed_machines_clients for {machine_parameters.uuid}.")
                     # Insert records to deployed_machines_clients table for every client assigned to a machine.
-                    for client_uuid in machine.assigned_clients:
-                        await cursor.execute(insert_client, (machine.uuid, client_uuid))
+                    for client_uuid in machine_parameters.assigned_clients:
+                        await cursor.execute(insert_client, (machine_parameters.uuid, client_uuid))
                     
                     
-                    logger.debug(f"Starting parallel disk creation for machine {machine.uuid}")
+                    logger.debug(f"Inserting record(s) into guacamole_connection for {machine_parameters.framebuffer.type}")
+                    await cursor.execute(insert_guacamole_connection, (
+                        f"{machine_parameters.uuid}_{machine_parameters.framebuffer.type}", 
+                        machine_parameters.framebuffer.type, 
+                        4822, 
+                        ENV_CONFIG.GUACD_HOSTNAME, 
+                        "NONE"
+                    ))
+                    
+                    insert_result = await cursor.fetchone()
+                    if insert_result is not None:
+                        connection_id = insert_result["connection_id"]
+                    else:
+                        raise Exception(f"Failed to retrieve connection_id from guacamole_connection insert query for {machine_parameters.uuid}.")
+                    
+                    logger.debug(f"Fetching guacamole entity_id corresponding to owner_uuid.")
+                    await cursor.execute(select_guacamole_entity_id, (str(owner_uuid),))
+                    
+                    entity_id_result = await cursor.fetchone()
+                    if entity_id_result:
+                        owner_id = entity_id_result["entity_id"]
+                    else:
+                        raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {owner_uuid}.")
+                    
+                    logger.debug(f"Inserting records(s) into guacamole_connection_permission for owner {owner_uuid}.")
+                    for permission in ConnectionPermissions:
+                        await cursor.execute(insert_guacamole_connection_permission, (
+                            int(owner_id),
+                            int(connection_id),
+                            permission
+                        ))
+                    
+                    for client in machine_parameters.assigned_clients:
+                        logger.debug(f"Fetching guacamole entity_id corresponding to client_uuid.")
+                        await cursor.execute(select_guacamole_entity_id, (str(client),))
+                        
+                        entity_id_result = await cursor.fetchone()
+                        if entity_id_result:
+                            client_id = entity_id_result["entity_id"]
+                        else:
+                            raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {client}.")
+                        
+                        logger.debug(f"Inserting records(s) into guacamole_connection_permission for {client}.")
+                        await cursor.execute(insert_guacamole_connection_permission, (
+                            client_id,
+                            connection_id,
+                            "READ"
+                        ))
+
+                    logger.debug(f"Inserting records into guacamole_connection_parameter for {machine_parameters.uuid}.")
+                    for parameter, value in connection_parameters:
+                        await cursor.execute(insert_guacamole_connection_parameter, (
+                            connection_id,
+                            parameter,
+                            value
+                        ))
+                    
+                    logger.debug(f"Starting parallel disk creation for machine {machine_parameters.uuid}")
                     # Creation tasks to be run concurrently in separate threads.
-                    disk_tasks = [asyncio.to_thread(create_machine_disk, disk) for disk in [machine.system_disk, *(machine.additional_disks or [])]]
+                    disk_tasks = [asyncio.to_thread(create_machine_disk, disk) for disk in [machine_parameters.system_disk, *(machine_parameters.additional_disks or [])]]
                     
                     created_disk_uuids = await asyncio.gather(*disk_tasks)
                     
                     # Assigned returned UUIDs to corresponding disk elements in machine model
-                    machine.system_disk.uuid = created_disk_uuids[0]
-                    if machine.additional_disks is not None:
-                        for index, disk in enumerate(machine.additional_disks, start = 1):
+                    machine_parameters.system_disk.uuid = created_disk_uuids[0]
+                    if machine_parameters.additional_disks is not None:
+                        for index, disk in enumerate(machine_parameters.additional_disks, start = 1):
                             disk.uuid = created_disk_uuids[index]
                     
                     # MachineParameters instance populated with disk UUIDs is passed on to be translated into a Libvirt accepted XML string.
-                    machine_xml = create_machine_xml(machine, machine.uuid)
+                    machine_xml = create_machine_xml(machine_parameters, machine_parameters.uuid)
                     
                     
                     # Async Libvirt machines definiton. By default Libvirt operations are synchronous.
@@ -77,56 +160,69 @@ async def create_machine_async(machine: Union[MachineParameters, CreateMachineFo
                         with LibvirtConnection("rw") as libvirt_connection:
                             # Before the machine is actually defined the machine_xml string is automatically validated against built-in schemas by Libvirt internally.
                             # This adds another layer of protection so as to catch any misconfiguration before machine definition or runtime.
-                            logger.debug(f"Defining machine {machine.uuid}.")
+                            logger.debug(f"Defining machine {machine_parameters.uuid}.")
                             libvirt_connection.defineXMLFlags(machine_xml, libvirt.VIR_DOMAIN_DEFINE_VALIDATE)
                     
-                    logger.debug(f"Awaiting {machine.uuid} machine definition.")
+                    logger.debug(f"Awaiting {machine_parameters.uuid} machine definition.")
                     # Synchronous Libvirt logic needs to be wrapped with asyncio.to_thread() to be run in a separate thread.
                     await asyncio.to_thread(define_machine)
                     
-                    logger.info(f"Machine {machine.uuid} created succesfully.")
-                    return machine.uuid
+                    logger.info(f"Machine {machine_parameters.uuid} created succesfully.")
+                    return machine_parameters.uuid
                 
                 
                 except libvirt.libvirtError as e:
                     # Run created disks cleanup.
                     # Same case as with define_machine() - machine_disks_cleanup() is synchronous and needs to be run using using asyncio in a separate thread.
-                    await asyncio.to_thread(machine_disks_cleanup, machine)
-                    raise Exception(f"Failed to define machine {machine.uuid} because of Libvirt error:\n{e}")
+                    await asyncio.to_thread(machine_disks_cleanup, machine_parameters)
+                    raise Exception(f"Failed to define machine {machine_parameters.uuid} because of Libvirt error:\n{e}")
                 
                 except Exception as e:
-                    await asyncio.to_thread(machine_disks_cleanup, machine)
-                    raise Exception(f"Failed to define machine {machine.uuid}:\n{e}")
-
-@overload             
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, machine_count: int) -> list[UUID]:...
-
-@overload
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, *, group_uuid: UUID) -> list[UUID]:...
+                    await asyncio.to_thread(machine_disks_cleanup, machine_parameters)
+                    raise Exception(f"Failed to define machine {machine_parameters.uuid}:\n{e}")
 
 
-async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMachineForm], owner_uuid: UUID, machine_count: Optional[int] = None, group_uuid: Optional[UUID] = None) -> list[UUID]:
+async def create_machine_async_for_group(machines: List[CreateMachineForm], owner_uuid: UUID, group_uuid: UUID) -> list[UUID]:
+    """
+    Machine creation for every user from a given group.
+    """
+    machines_bulk_spec: list[MachineBulkSpec] = []
+    group_members: list[UUID] 
+    
+    group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
+    if not group_members:
+        raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
+    
+    machine_count = len(group_members)
+    
+    for machine in machines:
+        machines_bulk_spec.append(MachineBulkSpec(machine_config=machine, machine_count=machine_count))
+        
+    created_machines = await create_machine_async_bulk(machines_bulk_spec, owner_uuid=owner_uuid, group_uuid=group_uuid)
+    
+    return created_machines
+
+
+async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid: UUID, group_uuid: Optional[UUID] = None) -> list[UUID]:
     """
     Creates a number of machines transactionally in parallel.\n
     In the event of a failure, it rolls back DB changes and cleans up libvirt definitions for every machine.\n
-    Either **machine_count** or **group_uuid** must be specified.
     """
     
-    if (machine_count is None and group_uuid is None) or (machine_count is not None and group_uuid is not None):
-        raise ValueError("Valid arguments must contain either machine_count or group_uuid. Not both, not none.")
-    
-    if machine_count is not None and machine_count < 1:
-        raise ValueError("machine_count in async_create_machine_bulk() must be greater than or equal to 1!")
+    if not all(machine.machine_count > 0 for machine in machines):
+        raise ValueError("Every machine_count in MachineBulkSpec must be greater than or equal to 1.")
     
     group_members: list[UUID] = []
-    
     if group_uuid is not None:
         group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
         if not group_members:
             raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
-        
-    machine = translate_machine_form_to_machine_parameters(machine) if isinstance(machine, CreateMachineForm) else machine
     
+    machines_config: list[tuple[MachineParameters, int]] = []
+    
+    for machine in machines:
+        machines_config.append((translate_machine_form_to_machine_parameters(machine.machine_config), machine.machine_count))
+        
     insert_owner = """
         INSERT INTO deployed_machines_owners (machine_uuid, owner_uuid)
         VALUES (%s, %s);
@@ -135,6 +231,26 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
     insert_client = """
         INSERT INTO deployed_machines_clients (machine_uuid, client_uuid)
         VALUES (%s, %s);
+    """
+    
+    insert_guacamole_connection = """
+        INSERT INTO guacamole_connection (connection_name, protocol, proxy_port, proxy_hostname, proxy_encryption_method)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING connection_id;
+    """
+    
+    insert_guacamole_connection_permission = """
+        INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission)
+        VALUES (%s, %s, %s);
+    """
+    
+    select_guacamole_entity_id = """
+        SELECT entity_id FROM guacamole_entity WHERE name = %s::varchar;
+    """
+    
+    insert_guacamole_connection_parameter = """
+        INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value)
+        VALUES (%s, %s, %s)
     """
     
     created_machines: list[UUID] = []
@@ -147,26 +263,31 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
     try:
         logger.debug("Creating machine clones.")
         
-        if machine_count is not None:
-            for machine_clone in range (machine_count):
-                machine_clone = copy.deepcopy(machine)
-                machine_clone.uuid = uuid4()
-                machine_clones.append(machine_clone)
-        
         if group_uuid is not None:
             for client_uuid in group_members:
-                machine_clone = copy.deepcopy(machine)
-                machine_clone.uuid = uuid4()
-                machine_clone.assigned_clients = {client_uuid}
-                machine_clones.append(machine_clone)
+                for machine, _ in machines_config:
+                    machine_clone = copy.deepcopy(machine)
+                    machine_clone.uuid = uuid4()
+                    machine_clone.assigned_clients = {client_uuid}
+                    machine_clones.append(machine_clone)
+        else:
+            for machine, machine_count in machines_config:
+                for machine_clone in range(machine_count):
+                    machine_clone = copy.deepcopy(machine)
+                    machine_clone.uuid = uuid4()
+                    machine_clones.append(machine_clone)
         
     except Exception as e:
-        raise Exception(f"Failed to create machine clones for bulk creation in the number of {machine_count}:\n{e}")
+        raise Exception(f"Failed to create machine clones for bulk creation.\n{e}")
         
     async with async_pool.connection() as connection:
         async with connection.cursor() as cursor:
             async with connection.transaction():
                 try:
+                    logger.debug("Retrieving cherry-ras network bridge IP.")
+                    ras_ip = await asyncio.to_thread(get_network_bridge_ip, ENV_CONFIG.NETWORK_RAS_NAME)
+                    connection_parameters = [("hostname", ras_ip), ("port", "0")]
+                    
                     # At this stage the records are not commited yet. They will remain in this state until all machines are sucessfully defined through the Libvirt API (when no exceptions occur).
                     for machine_clone in machine_clones:
                         # Insert record to deployed_machines_owners table for every machine clone.
@@ -177,9 +298,64 @@ async def create_machine_async_bulk(machine: Union[MachineParameters, CreateMach
                         logger.debug(f"Inserting record(s) into deployed_machines_clients for {machine_clone.uuid}.")
                         for client_uuid in machine_clone.assigned_clients:
                             await cursor.execute(insert_client, (machine_clone.uuid, client_uuid))
-                    
-                    
-                    
+                     
+                        logger.debug(f"Inserting record(s) into guacamole_connection for {machine_clone.framebuffer.type}")
+                        await cursor.execute(insert_guacamole_connection, (
+                            f"{machine_clone.uuid}_{machine_clone.framebuffer.type}", 
+                            machine_clone.framebuffer.type, 
+                            4822, 
+                            ENV_CONFIG.GUACD_HOSTNAME, 
+                            "NONE"
+                        ))
+                        
+                        insert_result = await cursor.fetchone()
+                        if insert_result is not None:
+                            connection_id = insert_result["connection_id"]
+                        else:
+                            raise Exception(f"Failed to retrieve connection_id from guacamole_connection insert query for {machine_clone.uuid}.")
+                        
+                        logger.debug(f"Fetching guacamole entity_id corresponding to owner_uuid.")
+                        await cursor.execute(select_guacamole_entity_id, (str(owner_uuid),))
+                        
+                        entity_id_result = await cursor.fetchone()
+                        if entity_id_result:
+                            owner_id = entity_id_result["entity_id"]
+                        else:
+                            raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {owner_uuid}.")
+                        
+                        logger.debug(f"Inserting records(s) into guacamole_connection_permission for owner {owner_uuid}.")
+                        for permission in ConnectionPermissions:
+                            await cursor.execute(insert_guacamole_connection_permission, (
+                                owner_id,
+                                connection_id,
+                                permission
+                            ))
+                            
+                        for client in machine_clone.assigned_clients:
+                            logger.debug(f"Fetching guacamole entity_id corresponding to client_uuid.")
+                            await cursor.execute(select_guacamole_entity_id, (str(client),))
+                            
+                            entity_id_result = await cursor.fetchone()
+                            if entity_id_result:
+                                client_id = entity_id_result["entity_id"]
+                            else:
+                                raise Exception(f"Failed to retrieve entity_id from guacamole_entity for {client}.")
+                            
+                            logger.debug(f"Inserting records(s) into guacamole_connection_permission for {client}.")
+                            await cursor.execute(insert_guacamole_connection_permission, (
+                                client_id,
+                                connection_id,
+                                "READ"
+                            ))
+                        
+                        logger.debug(f"Inserting records into guacamole_connection_parameter for {machine_clone.uuid}.")
+                        for parameter, value in connection_parameters:
+                            await cursor.execute(insert_guacamole_connection_parameter, (
+                                connection_id,
+                                parameter,
+                                value
+                            ))
+                        
                     # Async per machine disk creation
                     async def create_machine_disks_async(machine: MachineParameters):
                         logger.debug(f"Starting parallel disk creation for machine {machine.uuid}")
@@ -264,6 +440,7 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
     Because of this, it does not throw exceptions on single step failed but continues with components removal.\n
     Appropriate exceptions are thrown when the removal step fails.
     """
+    from modules.machine_state.state_management import stop_machine
     
     # Avoid machine_parameters from being unbound between different try statements
     machine_parameters = None
@@ -339,11 +516,34 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
             DELETE FROM deployed_machines_owners WHERE machine_uuid = %s;
         """
         
+        select_guacamole_connection_id = """
+            SELECT connection_id FROM guacamole_connection WHERE connection_name LIKE %s;
+        """
+        
+        select_pattern = f"{machine_uuid}_%"
+        
+        delete_guacamole_connection = """
+            DELETE FROM guacamole_connection WHERE connection_id = %s;
+        """
+        
         logger.debug(f"Deleting machine {machine_uuid} DB records.")
         async with async_pool.connection() as connection:
             async with connection.cursor() as cursor:
                 async with connection.transaction():
                     await cursor.execute(delete_machine, (machine_uuid,))
+                    
+                    await cursor.execute(select_guacamole_connection_id, (select_pattern,))
+                    results = await cursor.fetchall()
+                    
+                    if results:
+                        for row in results:
+                            connection_id = row["connection_id"]
+                            logger.debug(f"Deleting guacamole connection_id: {connection_id}.")
+                            await cursor.execute(delete_guacamole_connection, (connection_id,)) 
+                    else:
+                        raise Exception(f"Failed to retrieve connection_id from guacamole_connection for {machine_uuid}.")
+                    
+                    
     
     except Exception as e:
         logger.exception(f"Failed to delete all components associated with a machine {machine_uuid}: {e}")
