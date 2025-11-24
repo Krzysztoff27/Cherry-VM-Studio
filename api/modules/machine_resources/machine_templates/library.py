@@ -14,7 +14,7 @@ def prepare_from_database_record(record: MachineTemplateInDB) -> MachineTemplate
 
 MachineTemplatesLibrary = SimpleTableManager(
     table_name="machine_templates",
-    allowed_fields_for_select={"uuid", "name", "owner"},
+    allowed_fields_for_select={"uuid", "name", "owner_uuid"},
     model=MachineTemplate,
     model_in_db=MachineTemplateInDB,
     model_creation_args=CreateMachineTemplateArgs,

@@ -8,7 +8,7 @@ from application.app import app
 
 @app.get("/machine/templates", response_model=dict[UUID, MachineTemplate], tags=['Machine Templates'])
 async def __read_all_users_machine_templates__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, MachineTemplate]:
-    return MachineTemplatesLibrary.get_all_records_matching(field_name="owner", value=str(current_user.uuid))
+    return MachineTemplatesLibrary.get_all_records_matching(field_name="owner_uuid", value=str(current_user.uuid))
 
 
 @app.get("/machine/template/{uuid}", response_model=MachineTemplate, tags=['Machine Templates'])
@@ -23,7 +23,7 @@ async def __read_machine_template__(uuid: UUID, current_user: DependsOnAdministr
 
 @app.post("/machine/template/create", response_model=None, tags=['Machine Templates'])
 async def __create_machine_template__(data: CreateMachineTemplateForm, current_user: DependsOnAdministrativeAuthentication) -> None:
-    name_duplicate = MachineTemplatesLibrary.get_record_by_fields(fields={"name": data.name, "owner": str(current_user.uuid)})
+    name_duplicate = MachineTemplatesLibrary.get_record_by_fields(fields={"name": data.name, "owner_uuid": str(current_user.uuid)})
     
     if name_duplicate:
         raise HTTPException(
