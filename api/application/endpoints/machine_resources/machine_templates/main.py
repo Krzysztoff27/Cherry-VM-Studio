@@ -31,7 +31,7 @@ async def __create_machine_template__(data: CreateMachineTemplateForm, current_u
             detail=f'Machine template with name={data.name} already exists for this account.'
         )
     
-    MachineTemplatesLibrary.create_record(CreateMachineTemplateArgs(**data.model_dump(), owner=current_user.uuid))
+    MachineTemplatesLibrary.create_record(CreateMachineTemplateArgs(**data.model_dump(), owner_uuid=current_user.uuid))
     
 
 @app.delete("/machine/template/delete/{uuid}" , response_model=None, tags=['Machine Templates'])

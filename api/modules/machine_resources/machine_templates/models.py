@@ -26,5 +26,5 @@ class CreateMachineTemplateForm(BaseModel):
     vcpu: int
     
 class CreateMachineTemplateArgs(CreateMachineTemplateForm):
-    owner: UUID
+    owner_uuid: UUID
     
