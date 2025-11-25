@@ -3,7 +3,10 @@ from starlette.websockets import WebSocketDisconnect
 from json import JSONDecodeError
 from pydantic import ValidationError
 
+
 from .models import MachineWebsocketSubscribeCommand
+from config.permissions_config import PERMISSIONS
+from modules.users.permissions import has_permissions
 from modules.machine_state.data_retrieval import check_machine_access, check_machine_membership
 from modules.exceptions.models import CredentialsException
 from modules.websockets.subscription_manager import SubscriptionManager
@@ -41,7 +44,7 @@ class MachinesWebsocketHandler(WebSocketHandler):
                 if not check_machine_membership(machine_uuid):
                     command.target.remove(machine_uuid)
                     logger.warning("Machine Websocket: Tried to subscribe to a machine not managed by Cherry VM Studio.")
-                if not check_machine_access(machine_uuid, user):
+                if not has_permissions(user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_access(machine_uuid, user):
                     return await self.reject(json, f"You do not have necessary permissions to access resource with uuid={machine_uuid}")
             
             self.subscription_manager.set_subscriptions(self.websocket, command.target)
