@@ -1,0 +1,12 @@
+.container {
+    padding: 96px;
+    padding-top: 64px;
+    gap: 48px;
+    align-items: center;
+    text-align: center;
+}
+.description {
+    text-align: center;
+    font-size: var(--mantine-font-size-lg);
+    white-space: pre-line;
+}

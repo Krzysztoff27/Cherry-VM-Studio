@@ -1,15 +1,16 @@
 {
-    "home": {
-        "title": "Welcome to the Cherry Admin Panel!",
-        "description1": "This web application is the management center for your Cherry VM Manager.\nIts purpose is to provide user-friendly experience in controling deployed machines.",
+    "admin-home": {
+        "title": "Welcome back, {{fullname}}!",
+        "description1": "Welcome to the Cherry Admin Panel - the management center for your Cherry VM studio.\nIts primary goal is to offer a user-friendly experience for managing deployed machines.",
         "description2": "For advanced configurations, you might want to enter the dependency panels:",
         "cherry-admin-panel": {
             "start": "Here you can:",
-            "feature1": "Monitor your Virtual Machines and their activity.",
-            "feature2": "Manage their state remotely.",
-            "feature3": "Configure network connections between your machines.",
+            "feature1": "Monitor and control your virtual machines in real time.",
+            "feature2": "Configure network connections between deployed machines.",
+            "feature3": "Manage system accounts, roles and permissions",
             "feature-more": "... and more"
         },
+        "start-managing": "Start managing",
         "cards": {
             "guacamole": {
                 "title": "Apache Guacamole Panel",
@@ -22,6 +23,10 @@
                 "logo-alt": "Traefik Proxy Logo"
             }
         }
+    },
+    "client-home": {
+        "title": "Welcome back, {{fullname}}!",
+        "description1": "Your virtual workspace is ready. Access your machines, continue your projects, or check connection details - all from one place."
     },
     "machines": {
         "controls": {

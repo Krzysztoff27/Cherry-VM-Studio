@@ -61,5 +61,6 @@
     "configuration": "Configuration",
     "auto": "Auto",
     "custom": "Custom",
-    "templates": "Templates"
+    "templates": "Templates",
+    "start-creating": "Start creating"
 }

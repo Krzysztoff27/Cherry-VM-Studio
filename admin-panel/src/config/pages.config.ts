@@ -14,74 +14,85 @@ import { Page } from "../types/config.types";
 import PERMISSIONS from "./permissions.config";
 import IconFileTypeIso from "../components/atoms/icons/IconFileTypeIso/IconFileTypeIso";
 
-const PAGES: Page[] = [
+export const ADMIN_PANEL_PAGES: Page[] = [
     {
         key: "home",
-        path: "/home",
+        path: "/admin/home",
         icon: IconHome,
     },
     {
         key: "machines",
-        path: "/machines",
+        path: "/admin/machines",
         icon: IconDeviceDesktop,
         subpages: [
             {
                 key: "your-library",
-                path: "/machines",
+                path: "/admin/machines",
                 icon: IconCategory,
             },
             {
                 key: "all-machines",
-                path: "/machines/all",
+                path: "/admin/machines/all",
                 icon: IconDatabase,
                 permissions: PERMISSIONS.VIEW_ALL_VMS,
             },
             {
                 key: "templates",
-                path: "/machines/templates",
+                path: "/admin/machines/templates",
                 icon: IconTemplate,
             },
             {
                 key: "snapshots",
-                path: "/machines/snapshots",
+                path: "/admin/machines/snapshots",
                 icon: IconLibrary,
                 disabled: true,
             },
             {
                 key: "iso",
-                path: "/machines/iso",
+                path: "/admin/machines/iso",
                 icon: IconFileTypeIso,
             },
         ],
     },
     {
         key: "accounts",
-        path: "/accounts",
+        path: "/admin/accounts",
         icon: IconUsersGroup,
         subpages: [
             {
                 key: "administrators",
-                path: "/accounts/admins",
+                path: "/admin/accounts/admins",
                 icon: IconUserHexagon,
             },
             {
                 key: "clients",
-                path: "/accounts/clients",
+                path: "/admin/accounts/clients",
                 icon: IconUsers,
             },
             {
                 key: "groups",
-                path: "/accounts/groups",
+                path: "/admin/accounts/groups",
                 icon: IconUsersGroup,
             },
         ],
     },
     {
         key: "network-panel",
-        path: "/network-panel",
+        path: "/admin/network-panel",
         icon: IconTopologyStar,
         disabled: true,
     },
 ];
 
-export default PAGES;
+export const CLIENT_PANEL_PAGES: Page[] = [
+    {
+        key: "home",
+        path: "/client/home",
+        icon: IconHome,
+    },
+    {
+        key: "machines",
+        path: "/client/machines",
+        icon: IconDeviceDesktop,
+    },
+];

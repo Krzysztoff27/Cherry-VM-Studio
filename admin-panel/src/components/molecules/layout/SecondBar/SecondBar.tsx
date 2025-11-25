@@ -3,20 +3,23 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
 import classes from "./SecondBar.module.css";
-import PAGES from "../../../../config/pages.config.ts";
 import { Page } from "../../../../types/config.types.ts";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 
-export default function SecondBar(): React.ReactElement {
+export interface SecondBarProps {
+    pages: Page[];
+}
+
+export default function SecondBar({ pages }: SecondBarProps): React.ReactElement {
     const { tns } = useNamespaceTranslation("layouts");
     const { hasPermissions } = usePermissions();
-    const location = useLocation();
     const [page, setPage] = useState<Page>();
     const [active, setActive] = useState<number>();
+    const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const page = PAGES.find((p) => location.pathname.startsWith(p.path));
+        const page = pages.find((p) => location.pathname.startsWith(p.path));
         setActive(page?.subpages?.findIndex((subpage) => location.pathname == subpage.path) ?? -1);
         setPage(page);
     }, [location.pathname]);

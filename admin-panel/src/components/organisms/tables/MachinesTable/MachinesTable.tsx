@@ -56,7 +56,7 @@ const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }):
                         : [],
                 }}
                 RowComponent={Link}
-                rowProps={(uuid) => ({ to: `/machines/machine/${uuid}` })}
+                rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}` })}
             />
         </>
     );

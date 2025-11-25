@@ -6,17 +6,21 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.t
 import LanguageSwitch from "../../interactive/LanguageSwitch/LanguageSwitch.jsx";
 import TooltipIconButton from "../../interactive/TooltipIconButton/TooltipNavButton.tsx";
 import classes from "./Navbar.module.css";
-import PAGES from "../../../../config/pages.config.ts";
 import { useAuthentication } from "../../../../contexts/AuthenticationContext.tsx";
+import { Page } from "../../../../types/config.types.ts";
 
-export default function Navbar(): React.ReactElement {
+export interface NavbarProps {
+    pages: Page[];
+}
+
+export default function Navbar({ pages }: NavbarProps): React.ReactElement {
     const { t, tns } = useNamespaceTranslation("layouts");
     const { logout } = useAuthentication();
     const navigate = useNavigate();
     const location = useLocation();
     const [active, setActive] = useState<number>();
 
-    useEffect(() => setActive(PAGES.findIndex((cat) => location.pathname.startsWith(cat.path))), [location.pathname]);
+    useEffect(() => setActive(pages.findIndex((cat) => location.pathname.startsWith(cat.path))), [location.pathname]);
 
     const onClickLogout = () => {
         logout();
@@ -26,7 +30,7 @@ export default function Navbar(): React.ReactElement {
     return (
         <Stack className={classes.navbar}>
             <Stack gap="md">
-                {PAGES.map((category, i) => (
+                {pages.map((category, i) => (
                     <TooltipIconButton
                         key={i}
                         component={Link}
