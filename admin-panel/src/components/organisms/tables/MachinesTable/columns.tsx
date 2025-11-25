@@ -3,7 +3,7 @@ import MachineDetailsCell from "../../../atoms/table/MachineDetailsCell";
 import MachineStateCell from "../../../atoms/table/MachineStateCell";
 import ProgressWithPercentage from "../../../atoms/feedback/ProgressWithPercentage/ProgressWithPercentage";
 import MachineControlsCell from "../../../atoms/table/MachineControlsCell";
-import MachineAssignedUserCell from "../../../atoms/table/MachineAssignedUserCell";
+import MachineAssignedUserCell, { filterFunction, sortingFunction } from "../../../atoms/table/MachineAssignedUserCell";
 
 export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: string) => void) =>
     [
@@ -47,6 +47,8 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             cell: MachineAssignedUserCell,
             minSize: 100,
             maxSize: 500,
+            sortingFn: sortingFunction,
+            filterFn: filterFunction,
         },
         {
             accessorKey: "clients",
@@ -54,6 +56,8 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             cell: MachineAssignedUserCell,
             minSize: 180,
             maxSize: 500,
+            sortingFn: sortingFunction,
+            filterFn: filterFunction,
         },
         {
             accessorKey: "options",

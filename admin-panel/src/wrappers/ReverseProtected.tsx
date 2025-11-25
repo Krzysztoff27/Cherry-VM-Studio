@@ -7,7 +7,7 @@ export const ReverseProtected = (): React.JSX.Element => {
 
     if (loading) return <Loading />;
     if (error && (error?.code === "ETIMEDOUT" || error.response?.status >= 500)) throw error;
-    if (user) return <Navigate to="/machines" />;
+    if (user) return <Navigate to="/client/home" />;
 
     return <Outlet />;
 };
