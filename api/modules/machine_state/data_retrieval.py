@@ -1,10 +1,10 @@
 import logging
 from typing import Optional
 from xml.etree import ElementTree
-from api.modules.users.permissions import is_admin, is_client
 import libvirt
 from fastapi import HTTPException
 from uuid import UUID
+from modules.users.permissions import is_admin, is_client
 from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineData, MachineState
 from modules.libvirt_socket import LibvirtConnection
