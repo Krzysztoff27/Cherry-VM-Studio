@@ -13,7 +13,7 @@ import { isNull, keys } from "lodash";
 import MachineDetailsFieldset from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface MachineEditFormValues {
     title: string;
@@ -37,6 +37,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
     const { data: loggedInUser, loading, error } = useFetch<User>("user");
     const { data: users } = useFetch<Record<string, User>>("users?account_type=client");
     const { canManageMachine } = usePermissions();
+    const [configTemplate, setConfigTemplate] = useState("custom");
 
     const state: SimpleState = { fetching: machine?.active === undefined, loading: machine?.loading, active: machine?.active };
 
@@ -166,8 +167,8 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                     form={form}
                     props={{ fieldset: { variant: "default", className: classes.fieldset }, scrollArea: { maw: "366px" } }}
                     disabled={disabled}
-                    setConfigTemplate={() => {}}
-                    configTemplate=""
+                    setConfigTemplate={setConfigTemplate}
+                    configTemplate={configTemplate}
                 />
             </Tabs.Panel>
             <Tabs.Panel

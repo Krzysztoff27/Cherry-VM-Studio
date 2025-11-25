@@ -3,7 +3,7 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { Modal, Stack, Text, useModalsStack } from "@mantine/core";
 import { useEffect, useState } from "react";
 import classes from "./CreateMachineModal.module.css";
-import { CreateMachineBody, MachineDiskForm } from "../../../types/api.types";
+import { CreateMachineBody, MachineDisk, MachineDiskForm } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
 import { toBytes } from "../../../utils/files";
 import MachineDetailsFieldset from "../../../components/molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
@@ -28,10 +28,14 @@ export interface CreateMachineFormValues {
     os_disk: number;
 }
 
+export interface CreateMachineFormSubmitValues extends Omit<CreateMachineFormValues, "disks"> {
+    disks: MachineDisk[];
+}
+
 export interface CreateMachineModalStackProps {
     opened: boolean;
     onClose: () => void;
-    onSubmit: (values: CreateMachineFormValues) => void;
+    onSubmit: (values: CreateMachineFormSubmitValues) => void;
 }
 
 export interface CreateMachineModalProps {
@@ -139,6 +143,18 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     const validateDisksForm = () => {
         form.values.disks.forEach((disk, i) => keys(disk).forEach((key) => form.validateField(`disks.${i}.${key}`)));
         return form.values.disks.every((disk, i) => keys(disk).every((key) => form.isValid(`disks.${i}.${key}`)));
+    };
+
+    const handleSubmit = (values: CreateMachineFormValues) => {
+        const transformedValues: CreateMachineFormSubmitValues = {
+            ...values,
+            disks: values.disks.map((disk) => ({
+                name: disk.name,
+                type: disk.type,
+                size_bytes: toBytes(disk.size, disk.unit),
+            })),
+        };
+        onSubmit(transformedValues);
     };
 
     return (
@@ -255,7 +271,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                     onSubmit={() => {
                         if (validateDisksForm) {
                             stack.close("disks-page");
-                            onSubmit(form.values);
+                            handleSubmit(form.values);
                         }
                     }}
                     classNames={{
@@ -275,13 +291,8 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineModalProps): React.JSX.Element => {
     const { sendRequest } = useApi();
 
-    const translateValues = (values: CreateMachineFormValues): CreateMachineBody => ({
-        ...values,
-        disks: values.disks.map((disk) => ({ name: disk.name, type: disk.type, size_bytes: toBytes(disk.size, disk.unit) })),
-    });
-
-    const submitMachine = async (values: CreateMachineFormValues) => {
-        await sendRequest("POST", "/machine/create", { data: translateValues(values) });
+    const submitMachine = async (values: CreateMachineFormSubmitValues) => {
+        await sendRequest("POST", "/machine/create", { data: values });
 
         onClose();
         onSubmit?.();

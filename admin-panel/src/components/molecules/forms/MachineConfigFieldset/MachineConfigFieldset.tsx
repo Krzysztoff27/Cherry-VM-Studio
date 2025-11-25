@@ -96,6 +96,7 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
                         color="cyan.7"
                         thumbSize="12"
                         max={4096}
+                        step={128}
                         styles={{ thumb: { border: "none" } }}
                         key={form.key("config.ram")}
                         disabled={disabled}

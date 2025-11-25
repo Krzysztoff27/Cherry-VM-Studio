@@ -31,8 +31,11 @@ const TableColumnsButton = ({ columns, visibleColumns, ...props }: TableColumnsB
                     <Stack>
                         {columns
                             .filter((col) => col.getCanHide() && isString(col.columnDef.header))
-                            .map((col, key) => (
-                                <Box className={classes.item}>
+                            .map((col, i) => (
+                                <Box
+                                    className={classes.item}
+                                    key={i}
+                                >
                                     <Checkbox
                                         classNames={{ input: classes.input }}
                                         label={col.columnDef.header as string}

@@ -8,7 +8,7 @@ import useNamespaceTranslation from "./useNamespaceTranslation";
 import { useAuthentication } from "../contexts/AuthenticationContext";
 
 const useFileUpload = (path: string) => {
-    const { authOptions } = useAuthentication();
+    const { authHeaders } = useAuthentication();
     const { getPath } = useApi();
     const fullPath = getPath(path);
     const { tns, t } = useNamespaceTranslation("notifications", "file");
@@ -20,7 +20,7 @@ const useFileUpload = (path: string) => {
         formData.append("data", JSON.stringify(data));
         formData.append("file", file);
 
-        const headers = new AxiosHeaders(authOptions.headers as Record<string, string>);
+        const headers = authHeaders;
         headers.set("Content-Type", "multipart/form-data");
         headers.set("filename", encodeURIComponent(file.name));
 

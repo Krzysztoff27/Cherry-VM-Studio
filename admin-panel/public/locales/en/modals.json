@@ -251,6 +251,24 @@
         "number-warning_other": "{{count}} machines will be created.",
         "validation": {
             "group-not-selected": "You must select a client group."
+        },
+        "creating": {
+            "title": "Creating Machines",
+            "description": "Creating {{count}} machines.",
+            "description_one": "Creating {{count}} machine.",
+            "description_other": "Creating {{count}} machines."
+        },
+        "creating-error": {
+            "title": "Bulk Machine Creation Failed",
+            "description": "An error occurred during machines creation. Please try again.",
+            "description_one": "An error occurred during machine creation. Please try again.",
+            "description_other": "An error occurred during machines creation. Please try again."
+        },
+        "creating-success": {
+            "title": "Machines Created Successfully",
+            "description": "{{count}} machines have been successfully created.",
+            "description_one": "{{count}} machine has been successfully created.",
+            "description_other": "{{count}} machines have been successfully created."
         }
     }
 }

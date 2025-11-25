@@ -2,17 +2,21 @@ import { Button, Checkbox, Group, Modal, NumberInput, Paper, Pill, PillGroup, Sc
 import classes from "./CreateMachinesInBulkModal.module.css";
 import ListInput from "../../../components/atoms/interactive/ListInput/ListInput";
 import { useForm } from "@mantine/form";
-import { CreateMachineFormValues, CreateMachineModalStack } from "../CreateMachineModal/CreateMachineModal";
-import { useEffect, useState } from "react";
+import { CreateMachineFormSubmitValues, CreateMachineModalStack } from "../CreateMachineModal/CreateMachineModal";
+import { useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconAlertCircle, IconDeviceDesktop } from "@tabler/icons-react";
 import { values } from "lodash";
 import useFetch from "../../../hooks/useFetch";
 import { Group as GroupType } from "../../../types/api.types";
+import useApi from "../../../hooks/useApi";
+import { notifications } from "@mantine/notifications";
+import { AxiosError, isAxiosError } from "axios";
+import useErrorHandler from "../../../hooks/useErrorHandler";
 
 interface MachinesField {
-    machine: CreateMachineFormValues;
-    count: number;
+    machine_config: CreateMachineFormSubmitValues;
+    machine_count: number;
 }
 
 export interface CreateMachinesInBulkFormValues {
@@ -29,6 +33,8 @@ export interface CreateMachinesInBulkModalProps {
 
 const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachinesInBulkModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "create-machines-in-bulk");
+    const { handleAxiosError } = useErrorHandler();
+    const { sendRequest } = useApi();
     const { data: groups }: { data: Record<string, GroupType> } = useFetch("/groups");
 
     const [supportModalOpened, setSupportModalOpened] = useState(false);
@@ -52,8 +58,8 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
         setSupportModalOpened(false);
     };
 
-    const addMachine = (machine: CreateMachineFormValues) => {
-        form.setFieldValue("machines", (prev) => [...prev, { machine, count: 1 }]);
+    const addMachine = (machine: CreateMachineFormSubmitValues) => {
+        form.setFieldValue("machines", (prev) => [...prev, { machine_config: machine, machine_count: 1 }]);
         onSupportModalClosed();
     };
 
@@ -66,18 +72,63 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
         onClose();
     };
 
-    const submit = form.onSubmit(async (values) => {
-        // send request
-
-        close();
-        onSubmit?.();
-    });
+    const getNumberOfMachines = (values: CreateMachinesInBulkFormValues) =>
+        values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) * (values.create_for_group_mode ? groups[values.group]?.users?.length ?? 1 : 1);
 
     const groupsInSelect = values(groups).map((group: GroupType) => ({ label: group.name, value: group.uuid }));
 
-    const numberOfMachines =
-        form.values.machines.reduce((prev, curr) => prev + curr.count, 0) *
-        (form.values.create_for_group_mode ? groups[form.values.group]?.users?.length ?? 1 : 1);
+    const numberOfMachines = getNumberOfMachines(form.values);
+
+    const submit = form.onSubmit(async (values) => {
+        const count = getNumberOfMachines(values);
+
+        const notification = notifications.show({
+            color: "yellow",
+            title: tns("creating.title"),
+            message: tns("creating.description", { count }),
+            autoClose: false,
+            loading: true,
+            withCloseButton: true,
+        });
+
+        const onError = (error: AxiosError) => {
+            handleAxiosError(error);
+
+            notifications.update({
+                id: notification,
+                loading: false,
+                color: "red",
+                title: tns("creating-error.title"),
+                message: tns("creating-error.description", { count }),
+                autoClose: false,
+                withCloseButton: true,
+            });
+
+            return error;
+        };
+
+        close();
+
+        let res = null;
+
+        console.log(values.machines);
+
+        if (values.create_for_group_mode) {
+        } else res = await sendRequest("POST", "machine/create/bulk", { data: values.machines }, onError);
+
+        if (!isAxiosError(res)) {
+            notifications.update({
+                id: notification,
+                loading: false,
+                color: "lime",
+                title: tns("creating-success.title"),
+                message: tns("creating-success.description", { count }),
+                autoClose: 3000,
+            });
+        }
+
+        onSubmit?.();
+    });
 
     return (
         <Group>
@@ -116,9 +167,9 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
                                                 <Group className={classes.rowGroup}>
                                                     <Group className={classes.machineDetail}>
                                                         <IconDeviceDesktop size={18} />
-                                                        <Text size="sm">{value.machine.title}</Text>
+                                                        <Text size="sm">{value.machine_config.title}</Text>
                                                         <PillGroup>
-                                                            {value.machine.tags.map((tag) => (
+                                                            {value.machine_config.tags.map((tag) => (
                                                                 <Pill>{tag}</Pill>
                                                             ))}
                                                         </PillGroup>
@@ -129,15 +180,15 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
                                                             c="dimmed"
                                                             tt="capitalize"
                                                         >
-                                                            {value.machine.source_type}
+                                                            {value.machine_config.source_type}
                                                         </Text>
                                                     </Group>
                                                 </Group>
                                                 <NumberInput
                                                     classNames={{ input: "borderless" }}
                                                     w="70px"
-                                                    key={form.key(`machines.${index}.count`)}
-                                                    {...form.getInputProps(`machines.${index}.count`)}
+                                                    key={form.key(`machines.${index}.machine_count`)}
+                                                    {...form.getInputProps(`machines.${index}.machine_count`)}
                                                 />
                                             </>
                                         )}
