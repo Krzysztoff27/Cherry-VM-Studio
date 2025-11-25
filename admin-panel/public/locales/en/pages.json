@@ -1,6 +1,6 @@
 {
     "admin-home": {
-        "title": "Welcome back, {{fullname}}!",
+        "title": "Hello, {{fullname}}!",
         "description1": "Welcome to the Cherry Admin Panel - the management center for your Cherry VM studio.\nIts primary goal is to offer a user-friendly experience for managing deployed machines.",
         "description2": "For advanced configurations, you might want to enter the dependency panels:",
         "cherry-admin-panel": {
@@ -25,7 +25,7 @@
         }
     },
     "client-home": {
-        "title": "Welcome back, {{fullname}}!",
+        "title": "Hello, {{fullname}}!",
         "description1": "Your virtual workspace is ready. Access your machines, continue your projects, or check connection details - all from one place."
     },
     "machines": {

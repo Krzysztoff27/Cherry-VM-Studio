@@ -1,7 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider } from "react-router-dom";
 import Protected from "./wrappers/Protected";
 import ErrorBoundary from "./components/organisms/display/ErrorBoundary/ErrorBoundary";
-import HomeLayout from "./components/templates/HomeLayout/HomeLayout";
 import PanelLayout from "./components/templates/PanelLayout/PanelLayout";
 import LoginPage from "./pages/global/LoginPage/LoginPage.tsx";
 import { AuthenticationProvider } from "./contexts/AuthenticationContext.tsx";
@@ -13,7 +12,6 @@ import DobrePage from "./pages/global/DobrePage/DobrePage.tsx";
 import CreditsPage from "./pages/global/CreditsPage/CreditsPage.tsx";
 import CopyrightPage from "./pages/global/CopyrightPage/CopyrightPage.tsx";
 import AdminHomePage from "./pages/administrative/main/AdminHomePage/AdminHomePage.tsx";
-import NetworkPanelPage from "./pages/administrative/networks/NetworkPanelPage/NetworkPanelPage.jsx";
 import TemplatesLibraryPage from "./pages/administrative/machines/TemplatesLibraryPage/TemplatesLibraryPage.tsx";
 import IsoLibraryPage from "./pages/administrative/machines/IsoLibraryPage/IsoLibraryPage.tsx";
 import UsersPage from "./pages/administrative/accounts/UsersPage/UsersPage.tsx";
@@ -31,10 +29,8 @@ const router = createBrowserRouter(
         }>
             <Route errorElement={<ErrorBoundary/>} >
                 <Route path='/'                                 element={<Navigate to='/login'/>}/>
-                <Route element={<HomeLayout/>}>
-                    <Route path='/credits'                      element={<CreditsPage/>}/>
-                    <Route path='/copyright'                    element={<CopyrightPage/>}/>
-                </Route>
+                <Route path='/credits'                          element={<CreditsPage/>}/>
+                <Route path='/copyright'                        element={<CopyrightPage/>}/>
                 <Route path="/admin" element={<Protected accountType="administrative" wrongAccountTypeFallback="/client/home"/>}>
                     <Route element={<PanelLayout account_type="administrative"/>}>
                         <Route path='home'                      element={<AdminHomePage/>}/>

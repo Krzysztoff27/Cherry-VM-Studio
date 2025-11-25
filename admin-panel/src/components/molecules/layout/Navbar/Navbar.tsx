@@ -1,5 +1,5 @@
 import { Stack } from "@mantine/core";
-import { IconLogout } from "@tabler/icons-react";
+import { IconBook2, IconBrandGithub, IconLogout } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
@@ -8,6 +8,8 @@ import TooltipIconButton from "../../interactive/TooltipIconButton/TooltipNavBut
 import classes from "./Navbar.module.css";
 import { useAuthentication } from "../../../../contexts/AuthenticationContext.tsx";
 import { Page } from "../../../../types/config.types.ts";
+import NavButton from "../../../atoms/interactive/NavButton/NavButton.tsx";
+import { projectLinks } from "../../../../config/project.config.ts";
 
 export interface NavbarProps {
     pages: Page[];
@@ -43,6 +45,16 @@ export default function Navbar({ pages }: NavbarProps): React.ReactElement {
                 ))}
             </Stack>
             <Stack>
+                <NavButton
+                    component="a"
+                    href={projectLinks.documentation}
+                    icon={<IconBook2 />}
+                />
+                <NavButton
+                    component="a"
+                    href={projectLinks.github}
+                    icon={<IconBrandGithub />}
+                />
                 <LanguageSwitch />
                 <TooltipIconButton
                     onClick={onClickLogout}

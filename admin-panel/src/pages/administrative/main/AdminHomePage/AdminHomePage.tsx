@@ -8,6 +8,7 @@ import useFetch from "../../../../hooks/useFetch";
 import { User } from "../../../../types/api.types";
 import { getFullUserName } from "../../../../utils/users";
 import { isNull } from "lodash";
+import HomeHeader from "../../../../components/organisms/layout/HomeHeader/HomeHeader";
 
 const panels = [
     {
@@ -66,64 +67,66 @@ function AdminHomePage() {
     ));
 
     return (
-        <ScrollArea w="100%">
-            <Stack className={classes.container}>
-                <Stack align="center">
-                    <Title>{tns("title", { fullname: isNull(user) ? "" : getFullUserName(user) })}</Title>
-                    <Text className={classes.description}>{tns("description1")}</Text>
+        <>
+            <ScrollArea w="100%">
+                <Stack className={classes.container}>
+                    <Stack align="center">
+                        <Title>{tns("title", { fullname: isNull(user) ? "" : getFullUserName(user) })}</Title>
+                        <Text className={classes.description}>{tns("description1")}</Text>
+                    </Stack>
+                    <Card
+                        className={`${classes.card} ${classes.main}`}
+                        shadow="sm"
+                        withBorder
+                    >
+                        <Group>
+                            <Image
+                                src="/icons/Cherry VM Studio Logo Small.webp"
+                                fit="contain"
+                                mah={200}
+                                flex={1}
+                            />
+                            <Stack gap="0">
+                                <Text>
+                                    {tns("cherry-admin-panel.start", {
+                                        ns: "pages",
+                                    })}
+                                </Text>
+                                <List mt={rem(4)}>
+                                    <List.Item>{tns("cherry-admin-panel.feature1")}</List.Item>
+                                    <List.Item>{tns("cherry-admin-panel.feature2")}</List.Item>
+                                    <List.Item>{tns("cherry-admin-panel.feature3")}</List.Item>
+                                    <List.Item>
+                                        <Text c="dimmed">{tns("cherry-admin-panel.feature-more")}</Text>
+                                    </List.Item>
+                                </List>
+                                <Button
+                                    component={Link}
+                                    to="/admin/machines"
+                                    color="cherry.11"
+                                    radius="md"
+                                    mt="md"
+                                    fullWidth
+                                >
+                                    {tns("start-managing")}
+                                </Button>
+                            </Stack>
+                        </Group>
+                    </Card>
+                    <Text className={classes.description}>
+                        {tns("description2", {
+                            ns: "pages",
+                        })}
+                    </Text>
+                    <SimpleGrid
+                        cols={2}
+                        w={800}
+                    >
+                        {...cards}
+                    </SimpleGrid>
                 </Stack>
-                <Card
-                    className={`${classes.card} ${classes.main}`}
-                    shadow="sm"
-                    withBorder
-                >
-                    <Group>
-                        <Image
-                            src="/icons/Cherry VM Studio Logo Small.webp"
-                            fit="contain"
-                            mah={200}
-                            flex={1}
-                        />
-                        <Stack gap="0">
-                            <Text>
-                                {tns("cherry-admin-panel.start", {
-                                    ns: "pages",
-                                })}
-                            </Text>
-                            <List mt={rem(4)}>
-                                <List.Item>{tns("cherry-admin-panel.feature1")}</List.Item>
-                                <List.Item>{tns("cherry-admin-panel.feature2")}</List.Item>
-                                <List.Item>{tns("cherry-admin-panel.feature3")}</List.Item>
-                                <List.Item>
-                                    <Text c="dimmed">{tns("cherry-admin-panel.feature-more")}</Text>
-                                </List.Item>
-                            </List>
-                            <Button
-                                component={Link}
-                                to="/admin/machines"
-                                color="cherry.11"
-                                radius="md"
-                                mt="md"
-                                fullWidth
-                            >
-                                {tns("start-managing")}
-                            </Button>
-                        </Stack>
-                    </Group>
-                </Card>
-                <Text className={classes.description}>
-                    {tns("description2", {
-                        ns: "pages",
-                    })}
-                </Text>
-                <SimpleGrid
-                    cols={2}
-                    w={800}
-                >
-                    {...cards}
-                </SimpleGrid>
-            </Stack>
-        </ScrollArea>
+            </ScrollArea>
+        </>
     );
 }
 
