@@ -4,7 +4,7 @@ from json import JSONDecodeError
 from pydantic import ValidationError
 
 from .models import MachineWebsocketSubscribeCommand
-from modules.machine_state.data_retrieval import check_machine_membership
+from modules.machine_state.data_retrieval import check_machine_access, check_machine_membership
 from modules.exceptions.models import CredentialsException
 from modules.websockets.subscription_manager import SubscriptionManager
 from modules.websockets.websocket_handler import WebSocketHandler
@@ -35,12 +35,14 @@ class MachinesWebsocketHandler(WebSocketHandler):
     async def handle_command(self, json: dict) -> None:
         try:
             command = MachineWebsocketSubscribeCommand.model_validate(json)
-            validate_user_token(command.access_token, 'access')
+            user = validate_user_token(command.access_token, 'access')
             
             for machine_uuid in command.target.copy():
                 if not check_machine_membership(machine_uuid):
                     command.target.remove(machine_uuid)
                     logger.warning("Machine Websocket: Tried to subscribe to a machine not managed by Cherry VM Studio.")
+                if not check_machine_access(machine_uuid, user):
+                    return await self.reject(json, f"You do not have necessary permissions to access resource with uuid={machine_uuid}")
             
             self.subscription_manager.set_subscriptions(self.websocket, command.target)
             

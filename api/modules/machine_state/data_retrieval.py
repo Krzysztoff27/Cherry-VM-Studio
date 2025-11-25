@@ -1,13 +1,14 @@
 import logging
 from typing import Optional
 from xml.etree import ElementTree
+from api.modules.users.permissions import is_admin, is_client
 import libvirt
 from fastapi import HTTPException
 from uuid import UUID
 from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineData, MachineState
 from modules.libvirt_socket import LibvirtConnection
-from modules.users.models import AdministratorInDB, ClientInDB
+from modules.users.models import AdministratorInDB, AnyUser, ClientInDB
 from modules.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
@@ -31,16 +32,26 @@ def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, ClientInDB
         WHERE deployed_machines_clients.machine_uuid = %s
     """, (machine_uuid,))
     
-    
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_machine_uuids
-def get_user_machine_uuids(owner_uuid: UUID) -> list[UUID]:
+# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_owner_machine_uuids
+def get_owner_machine_uuids(owner_uuid: UUID) -> list[UUID]:
     return select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE owner_uuid = %s", (owner_uuid,))
 
+def get_client_machine_uuids(client_uuid: UUID) -> list[UUID]:
+    return select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_clients WHERE client_uuid = %s", (client_uuid,))
+    
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_ownership
-def check_machine_ownership(machine_uuid: UUID, user_uuid: UUID) -> bool:
+def check_machine_ownership(machine_uuid: UUID, user: AnyUser) -> bool:
     machine_owner = get_machine_owner(machine_uuid)
-    return machine_owner is not None and machine_owner.uuid == user_uuid
+    return machine_owner is not None and machine_owner.uuid == user.uuid
+
+
+def check_machine_access(machine_uuid: UUID, user: AnyUser) -> bool:
+    if is_admin(user):
+        return check_machine_ownership(machine_uuid, user)
+    if is_client(user):
+        assigned_clients = get_clients_assigned_to_machine(machine_uuid)
+        return user.uuid in assigned_clients
+    return False
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_element_from_machine_xml
@@ -121,10 +132,16 @@ def get_all_machines() -> dict[UUID, MachineData]:
 
             
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_machines
-def get_user_machines(owner_uuid: UUID) -> dict[UUID, MachineData]:
+def get_user_machines(user: AnyUser) -> dict[UUID, MachineData]:
     user_machines = {}
     
-    for machine_uuid in get_user_machine_uuids(owner_uuid):
+    machine_uuids = []
+    if is_admin(user): 
+        machine_uuids = get_owner_machine_uuids(user.uuid)
+    elif is_client(user): 
+        machine_uuids = get_client_machine_uuids(user.uuid)
+    
+    for machine_uuid in machine_uuids:
         machine = get_machine_data_by_uuid(machine_uuid)
         if machine is not None:
             user_machines.update({machine_uuid: machine})
