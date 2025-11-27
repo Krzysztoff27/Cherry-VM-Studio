@@ -53,7 +53,10 @@ class SubscriptionManager(BaseModel):
         if self.broadcasting: return # if already broadcasting no need to double it
         self.broadcasting = True
         while self.broadcasting and self.broadcast_data is not None:
-            await self.broadcast_data(self.subscriptions)
+            try: 
+                await self.broadcast_data(self.subscriptions)
+            except Exception:
+                logger.exception("Exception occured during data broadcast in the SubscriptionManager.")
             await asyncio.sleep(intervalInSeconds)
             
             

@@ -7,11 +7,22 @@ from modules.websockets.models import DataResponse, SubscriptionsDict
 
 logger = logging.getLogger(__name__)
 
-async def broadcast_machine_state(subscriptions: SubscriptionsDict):   
+async def broadcast_machine_state(subscriptions: SubscriptionsDict):  
+    dead_subscriptions = [] 
 
-    for subscription in subscriptions.values():
-        if subscription.websocket.application_state != WebSocketState.CONNECTED or subscription.websocket.client_state != WebSocketState.CONNECTED: 
+    for key, subscription in subscriptions.items():
+        ws = subscription.websocket
+
+        if ws.application_state != WebSocketState.CONNECTED or ws.client_state != WebSocketState.CONNECTED: 
+            dead_subscriptions.append(key)
             continue
         
-        body = get_machine_states_by_uuids(subscription.resources)
-        await subscription.websocket.send_json(jsonable_encoder(DataResponse(body = body)))    
+        try: 
+            body = get_machine_states_by_uuids(subscription.resources)
+            await ws.send_json(jsonable_encoder(DataResponse(body = body)))    
+
+        except (WebSocketDisconnect, RuntimeError):
+            dead_subscriptions.append(key)
+    
+    for key in dead_subscriptions:
+        subscriptions.pop(key, None)
