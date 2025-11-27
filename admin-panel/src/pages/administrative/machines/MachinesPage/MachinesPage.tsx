@@ -6,6 +6,8 @@ import useMantineNotifications from "../../../../hooks/useMantineNotifications";
 import { safeObjectKeys } from "../../../../utils/misc";
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachinesPage.module.css";
+import { isNull, merge, omitBy } from "lodash";
+import { MachineData } from "../../../../types/api.types";
 
 export interface MachinesPageProps {
     global?: boolean;
@@ -23,7 +25,7 @@ const MachinesPage = ({ global = false }: MachinesPageProps): React.JSX.Element 
 
 const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Element => {
     const { sendErrorNotification } = useMantineNotifications();
-    const { loading, error, data: machinesData, refresh } = useFetch(global ? "machines/global" : "machines");
+    const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>(global ? "machines/global" : "machines");
     const { machinesState, setMachinesState } = useMachineState(safeObjectKeys(machinesData));
 
     if (error) {
@@ -41,7 +43,8 @@ const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Ele
         });
     };
 
-    const machines = loading ? {} : { ...machinesData, ...machinesState };
+    const machines = loading ? {} : merge({}, machinesData, omitBy(machinesState, isNull));
+
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
