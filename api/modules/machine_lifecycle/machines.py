@@ -182,27 +182,6 @@ async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> 
                     raise Exception(f"Failed to define machine {machine_parameters.uuid}:\n{e}")
 
 
-async def create_machine_async_for_group(machines: List[CreateMachineForm], owner_uuid: UUID, group_uuid: UUID) -> list[UUID]:
-    """
-    Machine creation for every user from a given group.
-    """
-    machines_bulk_spec: list[MachineBulkSpec] = []
-    group_members: list[UUID] 
-    
-    group_members = select_single_field("client_uuid", "SELECT client_uuid FROM clients_groups WHERE group_uuid = %s", (group_uuid, ))
-    if not group_members:
-        raise Exception(f"No users found in group {group_uuid}. Cannot create machines.")
-    
-    machine_count = len(group_members)
-    
-    for machine in machines:
-        machines_bulk_spec.append(MachineBulkSpec(machine_config=machine, machine_count=machine_count))
-        
-    created_machines = await create_machine_async_bulk(machines_bulk_spec, owner_uuid=owner_uuid, group_uuid=group_uuid)
-    
-    return created_machines
-
-
 async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid: UUID, group_uuid: Optional[UUID] = None) -> list[UUID]:
     """
     Creates a number of machines transactionally in parallel.\n
@@ -265,11 +244,13 @@ async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid:
         
         if group_uuid is not None:
             for client_uuid in group_members:
-                for machine, _ in machines_config:
-                    machine_clone = copy.deepcopy(machine)
-                    machine_clone.uuid = uuid4()
-                    machine_clone.assigned_clients = {client_uuid}
-                    machine_clones.append(machine_clone)
+                for machine, machine_count in machines_config:
+                    for _ in range(machine_count):
+                        machine_clone = copy.deepcopy(machine)
+                        machine_clone.uuid = uuid4()
+                        machine_clone.assigned_clients = {client_uuid}
+                        machine_clones.append(machine_clone)
+              
         else:
             for machine, machine_count in machines_config:
                 for machine_clone in range(machine_count):
