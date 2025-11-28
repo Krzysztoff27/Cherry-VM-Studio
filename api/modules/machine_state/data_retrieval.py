@@ -217,7 +217,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
         'vcpu': (machine.info()[3]),
         'ram_max': (machine.info()[1]/1024),
         'ram_used': (machine.info()[2]/1024) if is_active else 0,
-        'boot_timestamp': 0,
+        'boot_timestamp': get_machine_boot_timestamp(machine_uuid),
         'disks_dynamic': machine_disks
     })
     
