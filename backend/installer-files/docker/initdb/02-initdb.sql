@@ -54,6 +54,7 @@ CREATE TABLE clients_groups (
 CREATE TABLE deployed_machines_owners (
     machine_uuid UUID PRIMARY KEY,
     owner_uuid UUID,
+    started_at TIMESTAMP,
     FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
