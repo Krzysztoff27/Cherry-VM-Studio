@@ -17,7 +17,7 @@ class MachineData(BaseModel):
     owner: AdministratorInDB | None = None          
     assigned_clients: dict[UUID, ClientInDB] = {}   
     port: int | None = None                         
-    domain: str | None = None                       
+    domain: str | None = None # Possibly obsolete - to be removed in favor of remote access URLs list                  
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
 class MachineState(MachineData):                    

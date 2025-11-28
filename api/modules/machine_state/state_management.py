@@ -68,12 +68,14 @@ async def start_machine_async(uuid: UUID):
             select_guacamole_connection_id = """
                 SELECT connection_id FROM guacamole_connection WHERE connection_name ~ %s;
             """
-
+            
             # Either <machine_uuid>_rdp or <machine_uuid>_vnc
             regex_pattern = f"^{uuid}_(vnc|rdp)$"
             
             update_guacamole_connection_parameter = """
-                UPDATE guacamole_connection_parameter SET 'parameter_value' = %s WHERE ('parameter_name' = 'port') AND (connection_id = %s);
+                UPDATE guacamole_connection_parameter 
+                SET parameter_value = %s 
+                WHERE parameter_name = %s AND connection_id = %s;
             """
             
             async with async_pool.connection() as connection:
@@ -86,7 +88,7 @@ async def start_machine_async(uuid: UUID):
                             
                             if result:
                                 connection_id = result["connection_id"]
-                                await cursor.execute(update_guacamole_connection_parameter, (framebuffer_port, connection_id))
+                                await cursor.execute(update_guacamole_connection_parameter, (framebuffer_port, "port", connection_id))
                             else:
                                 raise Exception(f"Failed to retrieve connection_id from guacamole_connection for {uuid}.")
                         except Exception:
@@ -165,7 +167,9 @@ async def stop_machine_async(uuid: UUID):
     regex_pattern = f"^{uuid}_(vnc|rdp)$"
         
     update_guacamole_connection_parameter = """
-        UPDATE guacamole_connection_parameter SET 'parameter_value' = %s WHERE ('parameter_name' = 'port') AND (connection_id = %s);
+        UPDATE guacamole_connection_parameter 
+        SET parameter_value = %s 
+        WHERE parameter_name = %s AND connection_id = %s;
     """
         
     async with async_pool.connection() as connection:
@@ -178,7 +182,7 @@ async def stop_machine_async(uuid: UUID):
                     
                     if result:
                         connection_id = result["connection_id"]
-                        await cursor.execute(update_guacamole_connection_parameter, (0, connection_id))
+                        await cursor.execute(update_guacamole_connection_parameter, (0, "port", connection_id))
                     else:
                         raise Exception(f"Failed to retrieve connection_id from guacamole_connection for {uuid}.")
                 except Exception:

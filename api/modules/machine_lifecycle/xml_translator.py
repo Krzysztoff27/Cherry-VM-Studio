@@ -67,7 +67,8 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
         uuid = uuid4(),
         title = machine_form.title,
         description = machine_form.description,
-        metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))],
+        metadata = [MachineMetadata(tag = "tags", value = tag) for tag in machine_form.tags] if machine_form.tags else [],
+        # metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))] if machine_form.tags else [],
         ram = machine_form.config.ram,
         vcpu = machine_form.config.vcpu,
         system_disk = system_disk,
@@ -386,10 +387,10 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         metadata = []
         metadata_el = get_required_xml_tag(domain, "metadata/vm:info", {"vm": "http://example.com/virtualization"})
         
-        for child in metadata_el:
-            tag = child.tag.split("}", 1)[-1]  # strip namespace element
-            if child.text is not None:
-                metadata.append(MachineMetadata(tag=tag, value=child.text))
+        for child_metadata in metadata_el:
+            tag = child_metadata.tag.split("}", 1)[-1]  # strip namespace element
+            if child_metadata.text is not None:
+                metadata.append(MachineMetadata(tag=tag, value=child_metadata.text))
 
 
         ram = int(get_required_xml_tag_text(domain, "memory"))
