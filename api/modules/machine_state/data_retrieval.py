@@ -1,17 +1,20 @@
 import logging
+import libvirt
+
 from typing import Optional
 from xml.etree import ElementTree
-import libvirt
 from fastapi import HTTPException
 from uuid import UUID
+from datetime import datetime
+
 from modules.users.permissions import is_admin, is_client
 from modules.machine_state.state_management import is_vm_loading
-from modules.machine_state.models import MachineData, MachineState
+from modules.machine_state.models import MachineData, MachineState, StaticDiskInfo, DynamicDiskInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AdministratorInDB, AnyUser, ClientInDB
-from modules.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
+from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
-from modules.machine_lifecycle.models import MachineParameters
+from modules.machine_lifecycle.disks import get_machine_disk_occupancy
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
 
@@ -80,6 +83,11 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
     
+    machine_disks = [StaticDiskInfo(system=True, name=machine.system_disk.name, size_bytes=machine.system_disk.size, type=machine.system_disk.type)]
+    
+    if machine.additional_disks:
+        machine_disks.extend(StaticDiskInfo(system=False, name=disk.name, size_bytes=disk.size, type=disk.type) for disk in machine.additional_disks)
+    
     return MachineData(
         uuid = machine_uuid,
         title = machine.title,
@@ -87,7 +95,8 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
         description = machine.description,
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_clients_assigned_to_machine(machine_uuid),
-        port = machine.framebuffer.port if isinstance(machine.framebuffer.port, int) else -1
+        ras_port = machine.framebuffer.port if isinstance(machine.framebuffer.port, int) else -1,
+        disks_static = machine_disks
     )
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_membership
@@ -145,24 +154,71 @@ def get_user_machines(user: AnyUser) -> dict[UUID, MachineData]:
             user_machines.update({machine_uuid: machine})
             
     return user_machines
-        
 
+def get_active_connections(machine_uuid: UUID) -> list[UUID]:
+    
+    # Either <machine_uuid>_rdp or <machine_uuid>_vnc
+    regex_pattern = f"^{machine_uuid}_(vnc|rdp)$"
+    
+    select_connected_uuids = """
+        SELECT DISTINCT gch.username 
+        FROM guacamole_connection_history gch
+        JOIN guacamole_connection gc ON gch.connection_id = gc.connection_id
+        WHERE gc.connection_name ~ %s
+        AND gch.end_date IS NULL;
+    """
+    
+    connected_uuids = select_single_field("username", select_connected_uuids, (regex_pattern, ))
+   
+    return connected_uuids
+
+def get_machine_boot_timestamp(machine_uuid: UUID) -> datetime | None:
+    select_machine_boot_timestamp = """
+        SELECT started_at FROM deployed_machines_owners WHERE machine_uuid = %s;
+    """
+    
+    boot_timestamp = select_single_field("started_at", select_machine_boot_timestamp, (machine_uuid,))[0]
+        
+    return datetime.fromisoformat(boot_timestamp) if boot_timestamp else None
+    
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_state
 def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
-        libvirt_connection.getAllDomainStats(libvirt.VIR_DOMAIN_STATS_STATE)
+        
+    machine_parameters = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
             
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
+    
+    if machine_parameters.system_disk.uuid is None:
+        raise Exception("Supplied an inprocessable MachineDisk model without a valid UUID!")
+    
+    machine_disks = [DynamicDiskInfo(system=True, name=machine_parameters.system_disk.name, size_bytes=machine_parameters.system_disk.size, type=machine_parameters.system_disk.type, occupied_bytes=get_machine_disk_occupancy(machine_parameters.system_disk.uuid, "cvms-disk-images"))]
+    
+    if machine_parameters.additional_disks:
+        for disk in machine_parameters.additional_disks:
+            if disk.uuid is None:
+                raise Exception("Supplied an inprocessable MachineDisk model without a valid UUID!")
+        
+        machine_disks.extend(
+            DynamicDiskInfo(
+                system=False, 
+                name=disk.name, 
+                size_bytes=disk.size, 
+                type=disk.type, 
+                occupied_bytes=get_machine_disk_occupancy(disk.uuid, "cvms-disk-images") # type: ignore
+                ) for disk in machine_parameters.additional_disks)
     
     return MachineState.model_validate ({
         **get_machine_data(machine_uuid).model_dump(),
         'active': is_active,
         'loading': is_vm_loading(machine.UUID()),
-        'active_connections': [], # Retrieve from guacamole
+        'active_connections': get_active_connections(machine_uuid),
+        'vcpu': (machine.info()[3]),
         'ram_max': (machine.info()[1]/1024),
         'ram_used': (machine.info()[2]/1024) if is_active else 0,
-        'uptime': 0
+        'boot_timestamp': 0,
+        'disks_dynamic': machine_disks
     })
     
     

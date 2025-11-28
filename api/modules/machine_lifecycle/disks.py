@@ -150,3 +150,37 @@ def get_machine_disk_size(disk_uuid: UUID, pool: str) -> int:
         
         except libvirt.libvirtError as e:
             raise Exception(f"Failed to fetch machine disk (volume) size: {e}.")
+        
+def get_machine_disk_occupancy(disk_uuid: UUID, pool: str) -> int:
+    storage_pool: libvirt.virStoragePool
+    volume: libvirt.virStorageVol
+    
+    volume_prefix = str(disk_uuid)
+    volume_occupancy = 0
+    
+    with LibvirtConnection("ro") as libvirt_connection:
+        try:
+            storage_pool = libvirt_connection.storagePoolLookupByName(pool)
+                
+            if storage_pool is None:
+                raise Exception(f"Could not find {pool} storage pool")
+
+            if not storage_pool.isActive():
+                storage_pool.create()
+            
+            volumes = storage_pool.listAllVolumes()
+            if volumes is None:
+                raise Exception(f"Could not find volumes in {pool} storage pool.")
+            
+            matched_volumes = [volume for volume in volumes if volume.name().startswith(volume_prefix)]
+            
+            if matched_volumes is None:
+                raise Exception(f"No volume in pool {pool} matches UUID {disk_uuid}.")
+            
+            for volume in matched_volumes:
+                volume_occupancy = volume.info()[2]
+
+            return volume_occupancy
+        
+        except libvirt.libvirtError as e:
+            raise Exception(f"Failed to fetch machine disk (volume) occupancy: {e}.")

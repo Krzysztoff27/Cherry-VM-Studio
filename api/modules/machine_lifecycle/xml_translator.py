@@ -68,14 +68,13 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
         title = machine_form.title,
         description = machine_form.description,
         metadata = [MachineMetadata(tag = "tags", value = tag) for tag in machine_form.tags] if machine_form.tags else [],
-        # metadata = [MachineMetadata(tag = "tags", value = str(machine_form.tags))] if machine_form.tags else [],
         ram = machine_form.config.ram,
         vcpu = machine_form.config.vcpu,
         system_disk = system_disk,
         additional_disks = additional_disks,
         iso_image = (StoragePool(pool = "cvms-iso-images", volume = f"{str(machine_form.source_uuid)}.iso") if machine_form.source_type == "iso" else None),
         # Add snapshot as source type,
-        framebuffer = MachineGraphicalFramebuffer(type = "vnc", port = "auto", listen_type = "network", listen_network = "cherry-ras"),
+        framebuffer = MachineGraphicalFramebuffer(type = "vnc", autoport = True, listen_type = "network", listen_network = "cherry-ras"),
         assigned_clients = machine_form.assigned_clients
     )
 
@@ -117,10 +116,12 @@ def create_machine_network_interface_xml(root_element: ET.Element, network_inter
 
 
 def create_machine_graphics_xml(root_element: ET.Element, framebuffer: MachineGraphicalFramebuffer) -> ET.Element:
-    if framebuffer.port == "auto":
+    if framebuffer.autoport:
         graphics = ET.SubElement(root_element, "graphics", type=framebuffer.type, autoport="yes")
-    else:
+    elif framebuffer.port is not None:
         graphics = ET.SubElement(root_element, "graphics", type=framebuffer.type, autoport="no", port=framebuffer.port)
+    else:
+        raise ValueError("If autoport is set to False, the port must be specified manually with framebuffer.port")
     
     if framebuffer.listen_type == "network":
         assert framebuffer.listen_network is not None
@@ -339,35 +340,36 @@ def parse_machine_graphics(graphics_element: ET.Element) -> MachineGraphicalFram
     Parse <graphics> element back into MachineGraphicalFramebuffer model.
     """
     allowed_types = ["rdp", "vnc"]
+    allowed_listen_types = ["network", "address"]
+    
     type = get_required_xml_tag_attribute(graphics_element, "type")
     
     if type not in allowed_types:
         raise ValueError(f"Graphical framebuffer must be either 'rdp' or 'vnc' and not {type}.")
-    autoport = get_required_xml_tag_attribute(graphics_element, "autoport")
     
-    if autoport == "yes":
-        port = "auto"
-    else:
-        port = autoport
+    autoport = get_required_xml_tag_attribute(graphics_element, "autoport")
+
+    port = graphics_element.get("port")
 
     listen_network = None
     listen_address = None
 
     listen_el = get_required_xml_tag(graphics_element, "listen")
     listen_type = get_required_xml_tag_attribute(listen_el, "type")
-    if listen_type == "network":
-        listen_network = listen_el.get("network")
-    elif listen_type == "address":
-        listen_address = listen_el.get("address")
-    else:
+    
+    if listen_type not in allowed_listen_types:
         raise ValueError(f"listen_type must be either 'network' or 'address' and not {listen_type}.")
+    
+    listen_network = listen_el.get("network")
+    listen_address = listen_el.get("address")
 
     return MachineGraphicalFramebuffer(
-        type=type, # type: ignore
-        port=port,
-        listen_type=listen_type,
-        listen_network=listen_network,
-        listen_address=listen_address,
+        type = type, # type: ignore
+        port = port,
+        autoport = True if autoport == "yes" else False,
+        listen_type = listen_type, # type: ignore
+        listen_network = listen_network,
+        listen_address = listen_address,
     )
 
 

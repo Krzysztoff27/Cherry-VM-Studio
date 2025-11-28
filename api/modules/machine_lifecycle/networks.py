@@ -45,4 +45,7 @@ def get_machine_framebuffer_port(machine_uuid: UUID) -> str:
         
         framebuffer_port = machine_parameters.framebuffer.port
         
+        if framebuffer_port is None:
+            raise Exception(f"Failed to extract framebuffer port of {machine_uuid}")
+        
         return framebuffer_port

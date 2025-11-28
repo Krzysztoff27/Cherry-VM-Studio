@@ -125,4 +125,3 @@ async def __get_machine_disk_size___(disk_uuid: UUID, storage_pool: str, current
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     disk_size = get_machine_disk_size(disk_uuid, storage_pool)
     return disk_size
-    

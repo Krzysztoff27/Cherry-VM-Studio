@@ -63,6 +63,12 @@ async def start_machine_async(uuid: UUID):
         
         if result == "running":
 
+            update_boot_timestamp = """
+                UPDATE deployed_machines_owners
+                SET started_at = LOCALTIMESTAMP
+                WHERE machine_uuid = %s
+            """
+
             framebuffer_port = get_machine_framebuffer_port(uuid)
             
             select_guacamole_connection_id = """
@@ -82,6 +88,8 @@ async def start_machine_async(uuid: UUID):
                 async with connection.cursor() as cursor:
                     async with connection.transaction():
                         try:
+                            await cursor.execute(update_boot_timestamp, (uuid,))
+                            
                             # Find connection_id associated with machine's rdp/vnc connection
                             await cursor.execute(select_guacamole_connection_id, (regex_pattern,))
                             result = await cursor.fetchone()
@@ -158,7 +166,13 @@ async def stop_machine_async(uuid: UUID):
         except libvirt.libvirtError as e:
             logging.error(f"Failed to stop VM: {e}")
             raise libvirt.libvirtError(str(e))
-        
+    
+    update_boot_timestamp = """
+        UPDATE deployed_machines_owners
+        SET started_at = NULL
+        WHERE machine_uuid = %s
+    """
+    
     select_guacamole_connection_id = """
         SELECT connection_id FROM guacamole_connection WHERE connection_name ~ %s;
     """
@@ -176,6 +190,8 @@ async def stop_machine_async(uuid: UUID):
         async with connection.cursor() as cursor:
             async with connection.transaction():
                 try:
+                    await cursor.execute(update_boot_timestamp, (uuid,))
+                    
                     # Find connection_id associated with machine's rdp/vnc connection
                     await cursor.execute(select_guacamole_connection_id, (regex_pattern,))
                     result = await cursor.fetchone()

@@ -44,7 +44,8 @@ class MachineNetworkInterface(BaseModel):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineGraphicalFramebuffer
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
-    port: Union[Literal["auto"], str] 
+    port: str | None = None
+    autoport: bool
     listen_type: Literal["network", "address"]
     listen_network: str | None = None
     listen_address: str | None = None
