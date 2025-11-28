@@ -1,4 +1,4 @@
-import { ActionIcon, Group } from "@mantine/core";
+import { ActionIcon, Group, MantineSize } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import React from "react";
 import { MachineData, MachineState, SimpleState } from "../../../../types/api.types";
@@ -6,14 +6,17 @@ import useApi from "../../../../hooks/useApi";
 import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { isNull } from "lodash";
+import { MantineActionIconAllProps } from "../../../../types/mantine.types";
 
 export interface MachineControlsProps {
     machine: MachineData | MachineState;
     state: SimpleState;
-    size?: string | number | null | undefined;
+    size?: MantineSize | number | string;
+    gap?: MantineSize | number | string;
+    buttonProps?: MantineActionIconAllProps;
 }
 
-const MachineControls = ({ machine, state, size = "lg" }: MachineControlsProps): React.JSX.Element => {
+const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps }: MachineControlsProps): React.JSX.Element => {
     const { sendRequest } = useApi();
     const { data: user, loading, error } = useFetch("user");
     const { canManageMachine } = usePermissions();
@@ -30,13 +33,14 @@ const MachineControls = ({ machine, state, size = "lg" }: MachineControlsProps):
 
     return (
         <Group
-            gap="sm"
+            gap={gap}
             wrap="nowrap"
         >
             <ActionIcon
                 variant="light"
                 size={size}
                 color="suse-green.9"
+                {...buttonProps}
                 disabled={disable || state?.active}
                 onClick={startMachine}
             >
@@ -46,6 +50,7 @@ const MachineControls = ({ machine, state, size = "lg" }: MachineControlsProps):
                 variant="light"
                 size={size}
                 color="red.9"
+                {...buttonProps}
                 disabled={disable || !state?.active}
                 onClick={stopMachine}
             >

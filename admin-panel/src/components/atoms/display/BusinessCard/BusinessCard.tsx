@@ -1,11 +1,33 @@
-import { Avatar, Group, Stack, Text } from "@mantine/core";
+import { Avatar, Group, MantineSize, Stack, Text } from "@mantine/core";
 import React from "react";
-import { BusinessCardProps } from "../../../../types/components.types";
+import classes from "./BusinessCard.module.css";
 
-const BusinessCard = ({ imageSrc, alt, name, comment, link, withAvatar = true, size = "md", gap = "md" }: BusinessCardProps): React.JSX.Element => {
+export interface BusinessCardProps {
+    imageSrc?: string;
+    name: string;
+    alt?: string;
+    comment?: string;
+    link?: string;
+    withAvatar?: boolean;
+    size?: MantineSize | string;
+    avatarSize?: MantineSize | string;
+    gap?: string | number;
+}
+
+const BusinessCard = ({
+    imageSrc,
+    alt,
+    name,
+    comment,
+    link,
+    withAvatar = true,
+    size = "md",
+    avatarSize = "md",
+    gap = "md",
+}: BusinessCardProps): React.JSX.Element => {
     return (
         <Group
-            wrap="nowrap"
+            className={classes.container}
             gap={gap}
         >
             {withAvatar && (
@@ -13,12 +35,17 @@ const BusinessCard = ({ imageSrc, alt, name, comment, link, withAvatar = true, s
                     src={imageSrc}
                     alt={alt || name}
                     name={name}
-                    size={size}
+                    size={avatarSize}
                     color={name && "initials"}
                 />
             )}
-            <Stack gap="0">
-                <Text size={size}>{name}</Text>
+            <Stack className={classes.textContainer}>
+                <Text
+                    size={size}
+                    className={classes.text}
+                >
+                    {name}
+                </Text>
                 <Text
                     {...(link
                         ? {
@@ -28,6 +55,7 @@ const BusinessCard = ({ imageSrc, alt, name, comment, link, withAvatar = true, s
                         : {})}
                     c="dimmed"
                     size={size}
+                    className={classes.text}
                 >
                     {comment}
                 </Text>

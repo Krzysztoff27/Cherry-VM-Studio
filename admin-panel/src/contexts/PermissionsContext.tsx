@@ -6,7 +6,8 @@ import PERMISSIONS from "../config/permissions.config";
 
 interface PermissionsContextValue {
     hasPermissions: (required: number) => boolean;
-    canManageMachine: (user: User, machine: MachineData) => boolean;
+    canManageMachine: (user: User, machine: Partial<MachineData>) => boolean;
+    canConnectToMachine: (user: User, machine: Partial<MachineData>) => boolean;
 }
 
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
@@ -30,10 +31,13 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         [permissions]
     );
 
-    const canManageMachine = (user: User, machine: MachineData) =>
+    const canManageMachine = (user: User, machine: Partial<MachineData>) =>
         (user && machine.owner && user.uuid === machine.owner.uuid) || hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
-    return <PermissionsContext.Provider value={{ hasPermissions, canManageMachine }}>{children}</PermissionsContext.Provider>;
+    const canConnectToMachine = (user: User, machine: Partial<MachineData>) =>
+        user && (canManageMachine(user, machine) || machine.assigned_clients.hasOwnProperty(user.uuid));
+
+    return <PermissionsContext.Provider value={{ hasPermissions, canManageMachine, canConnectToMachine }}>{children}</PermissionsContext.Provider>;
 };
 
 export const usePermissions = () => {

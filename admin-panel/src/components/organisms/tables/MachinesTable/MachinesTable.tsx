@@ -7,9 +7,40 @@ import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTabl
 import CreateMachineSplitButton from "../../../molecules/interactive/CreateMachineSplitButton/CreateMachineSplitButton";
 import { getColumns } from "./columns";
 import { parseData } from "./data";
+import { IconLayoutGrid } from "@tabler/icons-react";
+import MachinesGrid from "../../../molecules/display/MachinesGrid/MachinesGrid";
+import { MachineState, SimpleState, User } from "../../../../types/api.types";
+import { AxiosError } from "axios";
 
-const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("pages", "machines.controls.");
+export interface MachinesTableDataRow {
+    uuid: string;
+    details: {
+        name: string;
+        state: SimpleState;
+        tags: string[];
+    };
+    state: SimpleState;
+    cpu: number;
+    ram: number;
+    owner: User[];
+    clients: User[];
+    options: {
+        state: SimpleState;
+        uuid: string;
+    };
+}
+
+export interface MachinesTableProps {
+    machines: Record<string, MachineState>;
+    loading: boolean;
+    error: AxiosError | null;
+    refresh: () => void;
+    global: boolean;
+    onRemove: (uuid: string) => void;
+}
+
+const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }: MachinesTableProps): React.JSX.Element => {
+    const { t, tns } = useNamespaceTranslation("pages", "machines.controls.");
     const { hasPermissions } = usePermissions();
 
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);

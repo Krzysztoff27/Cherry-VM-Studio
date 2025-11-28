@@ -5,11 +5,12 @@ import { IconChevronDown } from "@tabler/icons-react";
 import { useElementSize } from "@mantine/hooks";
 import { useState } from "react";
 import { MantineButtonAllProps } from "../../../../types/mantine.types";
+
 export interface SplitButtonProps extends MantineButtonAllProps {
     className?: string;
     sideButtonProps?: MantineButtonAllProps;
-    menuButtonsProps: MantineButtonAllProps[];
-    menuProps: MenuProps;
+    menuButtonsProps?: MantineButtonAllProps[];
+    menuProps?: MenuProps;
 }
 
 const SplitButton = ({ children, className, sideButtonProps, menuButtonsProps, menuProps, ...props }: SplitButtonProps): React.JSX.Element => {
@@ -26,9 +27,9 @@ const SplitButton = ({ children, className, sideButtonProps, menuButtonsProps, m
                 width={width || "target"}
                 {...menuProps}
                 classNames={{
-                    ...menuProps.classNames,
+                    ...menuProps?.classNames,
                     // @ts-ignore
-                    dropdown: cs(classes.menuDropdown, menuProps.classNames.dropdown),
+                    dropdown: cs(classes.menuDropdown, menuProps?.classNames?.dropdown),
                 }}
                 opened={opened}
                 onChange={setOpened}

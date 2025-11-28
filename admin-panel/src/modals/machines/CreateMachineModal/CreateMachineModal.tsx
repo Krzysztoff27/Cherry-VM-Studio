@@ -63,7 +63,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 ram: 1024,
                 vcpu: 1,
             },
-            disks: [{ name: "sda", size: 1024, unit: "MiB", type: "raw" }],
+            disks: [{ name: "sda", size: 5, unit: "GiB", type: "raw" }],
             os_disk: 0,
         },
         validate: {

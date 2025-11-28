@@ -4,13 +4,13 @@ import { useMediaQuery } from "@mantine/hooks";
 import { getFullUserName } from "../../../utils/users";
 
 const BusinessCardCell = ({ getValue }): React.JSX.Element => {
-    const { avatar, email, name, surname, username } = getValue() || {};
+    const user = getValue() || {};
 
     return (
         <BusinessCard
-            imageSrc={avatar}
-            comment={email}
-            name={name || surname ? `${name} ${surname}` : username}
+            imageSrc={user.avatar}
+            comment={`@${user.username}`}
+            name={getFullUserName(user)}
             withAvatar={useMediaQuery(`(min-width: 1200px)`)}
         />
     );

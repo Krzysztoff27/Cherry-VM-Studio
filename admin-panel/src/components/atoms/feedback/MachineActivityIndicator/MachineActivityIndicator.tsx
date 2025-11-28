@@ -17,13 +17,13 @@ const MachineActivityIndicator = ({ state, iconProps, ...props }: MachineActivit
         <Indicator
             position="bottom-end"
             color={state.fetching ? "orange.6" : state.loading ? "yellow" : state.active ? "suse-green.7" : "cherry"}
-            withBorder={true}
-            size="12"
+            withBorder={false}
+            size="8"
+            zIndex={3}
             {...props}
         >
             <IconComponent
                 size={28}
-                color={!state.active ? "var(--mantine-color-dark-1)" : undefined}
                 {...iconProps}
             />
         </Indicator>

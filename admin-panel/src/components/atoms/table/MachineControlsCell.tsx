@@ -3,8 +3,9 @@ import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTra
 import React, { MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import useApi from "../../../hooks/useApi";
-import { SimpleState } from "../../../types/api.types";
+import { MachineData, SimpleState } from "../../../types/api.types";
 import classes from "./MachineControlsCell.module.css";
+import ConnectToMachineSplitButton from "../interactive/ConnectToMachineSplitButton/ConnectToMachineSplitButton";
 
 export interface MachineControlsCellProps {
     uuid: string;
@@ -17,14 +18,11 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
     const { t } = useTranslation();
     const { sendRequest } = useApi();
 
-    const startMachine = (e: MouseEvent) => {
-        e.preventDefault(); // required to prevent entering the machine page
-        sendRequest("POST", `/machine/start/${uuid}`);
-    };
+    const toggleState = (e) => {
+        e.preventDefault();
 
-    const stopMachine = (e: MouseEvent) => {
-        e.preventDefault(); // required to prevent entering the machine page
-        sendRequest("POST", `/machine/stop/${uuid}`);
+        if (state.active) sendRequest("POST", `/machine/stop/${uuid}`);
+        else sendRequest("POST", `/machine/start/${uuid}`);
     };
 
     const deleteMachine = async (e: MouseEvent) => {
@@ -38,8 +36,9 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
             gap="xs"
             justify="end"
             flex="1"
+            onClick={(e) => e.preventDefault()}
         >
-            <Button
+            {/* <Button
                 variant="light"
                 color="cherry"
                 size="xs"
@@ -48,30 +47,20 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
                 className={classes.button}
             >
                 {t("connect")}
-            </Button>
+            </Button> */}
+
             <ActionIcon
                 variant="light"
-                size="md"
-                color="suse-green.9"
-                disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={startMachine}
-                className={classes.button}
+                size="36"
+                color={state.active ? "red.9" : "suse-green.6"}
+                disabled={disabled || state.fetching || state.loading}
+                onClick={toggleState}
             >
-                <IconPlayerPlayFilled size={"28"} />
+                {state.fetching || state.loading || !state.active ? <IconPlayerPlayFilled size={22} /> : <IconPlayerStopFilled size={22} />}
             </ActionIcon>
             <ActionIcon
                 variant="light"
-                size="md"
-                color="red.9"
-                disabled={disabled || state.fetching || state?.loading || !state?.active}
-                onClick={stopMachine}
-                className={classes.button}
-            >
-                <IconPlayerStopFilled size={"28"} />
-            </ActionIcon>
-            <ActionIcon
-                variant="light"
-                size="md"
+                size="36"
                 color="red.9"
                 disabled={disabled || state.fetching || state?.loading || state?.active}
                 onClick={deleteMachine}

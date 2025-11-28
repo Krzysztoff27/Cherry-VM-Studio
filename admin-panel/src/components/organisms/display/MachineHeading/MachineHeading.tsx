@@ -23,6 +23,7 @@ const MachineHeading = ({ machine }: MachineHeadingProps): React.JSX.Element => 
                     {machine?.title ?? "Unnamed Machine"}
                 </Title>
             </Group>
+
             <MachineControls
                 machine={machine}
                 state={state}

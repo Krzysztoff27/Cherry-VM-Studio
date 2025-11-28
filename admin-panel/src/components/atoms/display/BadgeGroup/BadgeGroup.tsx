@@ -1,16 +1,23 @@
-import { Badge, Group, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import { Badge, BadgeProps, Group, GroupProps, MantineSize, ScrollArea, Stack, StackProps, Text, Title } from "@mantine/core";
 import classes from "./BadgeGroup.module.css";
 import { ReactNode } from "react";
+import cs from "classnames";
 
-export interface BadgeGroupProps {
+export interface BadgeGroupProps extends StackProps {
     items: ReactNode[];
     label?: ReactNode;
     emptyMessage?: ReactNode;
+    size?: MantineSize | (string & {});
+    badgeProps?: BadgeProps;
+    badgeGroupProps?: GroupProps;
 }
 
-const BadgeGroup = ({ items, label, emptyMessage = "" }: BadgeGroupProps) => {
+const BadgeGroup = ({ items, label, emptyMessage = "", size, badgeProps, badgeGroupProps, ...props }: BadgeGroupProps) => {
     return (
-        <Stack className={classes.container}>
+        <Stack
+            {...props}
+            className={cs(props.className, classes.container)}
+        >
             {label && (
                 <Title
                     order={5}
@@ -22,13 +29,13 @@ const BadgeGroup = ({ items, label, emptyMessage = "" }: BadgeGroupProps) => {
 
             <ScrollArea
                 type="always"
-                scrollbarSize="0.65rem"
+                scrollbarSize="0.525rem"
                 className={classes.scrollArea}
                 scrollbars="y"
             >
                 <Group
-                    align="start"
-                    className={classes.badgeGroup}
+                    {...badgeGroupProps}
+                    className={cs(classes.badgeGroup, badgeGroupProps?.className)}
                 >
                     {items.length ? (
                         items.map((item: string, index: number) => (
@@ -36,9 +43,10 @@ const BadgeGroup = ({ items, label, emptyMessage = "" }: BadgeGroupProps) => {
                                 key={index}
                                 variant="light"
                                 color="gray"
-                                size="lg"
+                                size={size || "lg"}
                                 fw={500}
-                                className={classes.badge}
+                                {...badgeProps}
+                                className={cs(badgeProps?.className, classes.badge)}
                             >
                                 {item}
                             </Badge>

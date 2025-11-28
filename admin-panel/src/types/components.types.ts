@@ -135,17 +135,6 @@ export interface SnapshotSelectProps {
     forceSnapshotDataUpdate: boolean;
 }
 
-export interface BusinessCardProps {
-    imageSrc?: string;
-    name: string;
-    alt?: string;
-    comment?: string;
-    link?: string;
-    withAvatar?: boolean;
-    size?: string;
-    gap?: string | number;
-}
-
 export interface CellProps {
     getValue: () => any;
     renderValue: () => any;
@@ -174,21 +163,6 @@ export interface ExpandingButtonProps extends ButtonProps {
     ease: string;
     duration: number;
     w: number;
-}
-
-export interface SizeSelectProps {
-    sizes: number[];
-    value: number;
-    setValue: (prev: number | string) => any;
-}
-
-export interface TablePaginationProps {
-    pagination: {
-        pageIndex: number;
-        pageSize: number;
-    };
-    setPagination: (prev: any) => void;
-    getPageCount: () => number | null | undefined;
 }
 
 export interface IsoFileImportModalProps extends ModalProps {

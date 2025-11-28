@@ -94,6 +94,9 @@ export interface MachineData {
     assigned_clients: Record<string, UserInDB>;
     domain: string | null;
     port: number | null;
+    title: string;
+    tags: string[];
+    description: string;
 }
 
 export interface MachineState extends MachineData {

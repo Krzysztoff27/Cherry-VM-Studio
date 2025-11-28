@@ -12,7 +12,7 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             header: t("machines.table.headers.name", { ns: "pages" }),
             cell: MachineDetailsCell,
             minSize: 200,
-            maxSize: 260,
+            maxSize: 400,
             sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
             filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
             enableHiding: false,
@@ -24,7 +24,7 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             enableSorting: false,
             cell: MachineStateCell,
             minSize: 100,
-            maxSize: 230,
+            maxSize: 180,
         },
         !global && {
             accessorKey: "ram",
@@ -55,7 +55,6 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             header: t("machines.table.headers.assigned-clients", { ns: "pages" }),
             cell: MachineAssignedUserCell,
             minSize: 180,
-            maxSize: 500,
             sortingFn: sortingFunction,
             filterFn: filterFunction,
         },
@@ -70,8 +69,8 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
                     {...getValue()}
                 />
             ),
-            minSize: 350,
-            maxSize: 350,
+            minSize: 50,
+            maxSize: 120,
             enableHiding: false,
         },
     ].filter((e) => e);

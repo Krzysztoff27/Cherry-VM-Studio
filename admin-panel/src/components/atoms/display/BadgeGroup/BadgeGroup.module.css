@@ -11,15 +11,22 @@
 
 .scrollArea {
     width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .badgeGroup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 4px;
-    align-items: start;
 }
 
 .badge {
-    margin-bottom: var(--mantine-spacing-xs);
+    width: max-content;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .emptyMessage {

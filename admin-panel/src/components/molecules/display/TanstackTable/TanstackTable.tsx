@@ -1,14 +1,23 @@
 import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useState } from "react";
+import { ComponentType, useState } from "react";
 import classes from "./TanstackTable.module.css";
 import { Group, Stack } from "@mantine/core";
 import TableStateHeading, { TableStateHeadingProps } from "../../feedback/TableStateHeading/TableStateHeading";
 import TableControls from "../../interactive/TableControls/TableControls";
 import TanstackTableBody from "../TanstackTableBody/TanstackTableBody";
-import TablePagination from "../../interactive/TablePagination/TablePagination";
 import { merge } from "lodash";
 import { TableControlsProps } from "../../interactive/TableControls/TableControls.types";
 import { AxiosError } from "axios";
+import { IconTable, TablerIcon } from "@tabler/icons-react";
+import TableFooter from "../../interactive/TableFooter/TableFooter";
+import { useTranslation } from "react-i18next";
+
+export interface TanstackTableLayout {
+    component: ComponentType<any>;
+    props?: Record<string, any>;
+    icon: TablerIcon;
+    name: string;
+}
 
 export interface TanstackTableProps {
     loading: boolean;
@@ -21,6 +30,7 @@ export interface TanstackTableProps {
     RowComponent?: React.ComponentType<any>;
     refresh: () => void;
     rowProps?: (uuid: string) => Record<string, any>;
+    alternativeLayouts?: TanstackTableLayout[];
 }
 
 const TanstackTable = ({
@@ -34,9 +44,21 @@ const TanstackTable = ({
     RowComponent,
     rowProps,
     defaultHiddenColumns = [],
+    alternativeLayouts = [],
 }: TanstackTableProps): React.JSX.Element => {
+    const { t } = useTranslation();
     const [columnFilters, setColumnsFilters] = useState([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [currentLayout, setCurrentLayout] = useState(0);
+
+    const layouts: TanstackTableLayout[] = [
+        { component: TanstackTableBody, props: { RowComponent, rowProps }, icon: IconTable, name: t("table") },
+        ...alternativeLayouts,
+    ];
+
+    const layout = layouts[currentLayout];
+
+    const LayoutComponent = layout.component;
 
     const table = useReactTable({
         data,
@@ -87,14 +109,17 @@ const TanstackTable = ({
                     />
                 </Group>
             </Stack>
-            <TanstackTableBody
+            <LayoutComponent
                 table={table}
                 loading={loading}
                 error={error}
-                RowComponent={RowComponent}
-                rowProps={rowProps}
+                data={data}
+                {...layout?.props}
             />
-            <TablePagination
+            <TableFooter
+                layouts={layouts}
+                currentLayout={currentLayout}
+                setCurrentLayout={setCurrentLayout}
                 pagination={pagination}
                 setPagination={setPagination}
                 getPageCount={table.getPageCount}

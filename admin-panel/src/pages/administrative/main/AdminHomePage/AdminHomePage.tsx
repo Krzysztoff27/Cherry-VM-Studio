@@ -9,6 +9,7 @@ import { User } from "../../../../types/api.types";
 import { getFullUserName } from "../../../../utils/users";
 import { isNull } from "lodash";
 import HomeHeader from "../../../../components/organisms/layout/HomeHeader/HomeHeader";
+import GreetingTitle from "../../../../components/atoms/display/GreetingTitle/GreetingTitle";
 
 const panels = [
     {
@@ -26,7 +27,6 @@ const panels = [
 ];
 
 function AdminHomePage() {
-    const { data: user, loading, error } = useFetch<User>("user");
     const { t, tns } = useNamespaceTranslation("pages", "admin-home");
 
     const cards = panels.map((panel, i) => (
@@ -71,7 +71,7 @@ function AdminHomePage() {
             <ScrollArea w="100%">
                 <Stack className={classes.container}>
                     <Stack align="center">
-                        <Title>{tns("title", { fullname: isNull(user) ? "" : getFullUserName(user) })}</Title>
+                        <GreetingTitle />
                         <Text className={classes.description}>{tns("description1")}</Text>
                     </Stack>
                     <Card

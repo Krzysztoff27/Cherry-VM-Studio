@@ -1,23 +1,31 @@
-import { Badge, Group, Stack, Text } from "@mantine/core";
+import { Group, Stack, Text } from "@mantine/core";
 import React from "react";
 import MachineActivityIndicator from "../feedback/MachineActivityIndicator/MachineActivityIndicator";
+import BadgeGroup from "../display/BadgeGroup/BadgeGroup";
 
 const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
     const { state, name, tags } = getValue();
 
     return (
-        <Group gap="md">
-            <MachineActivityIndicator state={state} />
-            <Stack gap="0">
+        <Group
+            gap="lg"
+            align="start"
+        >
+            <MachineActivityIndicator
+                state={state}
+                pt="xs"
+            />
+            <Stack gap="2">
                 <Text
                     tt="capitalize"
-                    size="xl"
+                    size="lg"
                 >
-                    {name}
+                    {name ?? "Unnamed Machine"}
                 </Text>
-                {tags?.map?.((tag: string) => (
-                    <Badge variant="Light">{tag}</Badge>
-                ))}
+                <BadgeGroup
+                    size="sm"
+                    items={[tags]}
+                />
             </Stack>
         </Group>
     );

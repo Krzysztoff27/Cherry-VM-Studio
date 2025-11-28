@@ -227,7 +227,7 @@
         "machine-description": "Machine description",
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
-            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-long": "Name length cannot exceed 24 characters.",
             "name-too-short": "Name must be at least 3 characters long.",
             "name-invalid-first": "Name must start with a letter.",
             "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",

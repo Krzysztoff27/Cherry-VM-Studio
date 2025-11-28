@@ -26,7 +26,11 @@
     },
     "client-home": {
         "title": "Hello, {{fullname}}!",
-        "description1": "Your virtual workspace is ready. Access your machines, continue your projects, or check connection details - all from one place."
+        "description1": "Your virtual workspace is ready.",
+        "machine-overview": "Machine Overview",
+        "description2": "Quickly access your virtual machines.",
+        "view-all": "View all",
+        "your-profile": "Your Profile"
     },
     "machines": {
         "controls": {
@@ -46,8 +50,13 @@
                 "ram": "RAM",
                 "cpu": "CPU",
                 "assigned-clients": "Assigned Clients",
+                "assignees": "Assignees",
                 "controls": "Controls",
-                "owner": "Owner"
+                "owner": "Owner",
+                "ip-address-port": "IP Address : Port",
+                "domain-path": "Domain",
+                "uuid": "Unique Identifier",
+                "description": "Machine Description"
             }
         },
         "panel": {
@@ -85,6 +94,7 @@
         "machine-tags-placeholder": "Tags",
         "machine-description-placeholder": "Description",
         "machine-description": "Description",
+        "machine-uuid": "Unique Identifier",
         "ram": "RAM",
         "vcpu": "vCPU",
         "ram-unit": "MiB",
@@ -98,7 +108,7 @@
         "drive-type": "Drive type",
         "machine-configuration": "Machine configuration",
         "domain-path": "Domain path",
-        "ip-address-port": "IP Address : Port",
+        "machine-port": "Port",
         "state": "Machine state",
         "active-connections": "Active connections",
         "hardware-specifications": "Hardware Specifications",

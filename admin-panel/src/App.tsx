@@ -17,6 +17,7 @@ import IsoLibraryPage from "./pages/administrative/machines/IsoLibraryPage/IsoLi
 import UsersPage from "./pages/administrative/accounts/UsersPage/UsersPage.tsx";
 import GroupsPage from "./pages/administrative/accounts/GroupsPage/GroupsPage.tsx";
 import ClientHomePage from "./pages/client/main/ClientHomePage/ClientHomePage.tsx";
+import ClientMachinesPage from "./pages/client/machines/ClientMachinesPage/ClientMachinesPage.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -52,7 +53,7 @@ const router = createBrowserRouter(
                 <Route path="/client" element={<Protected accountType="client" wrongAccountTypeFallback="/admin/home"/>}>
                     <Route element={<PanelLayout account_type="client"/>}>
                         <Route path='home'                      element={<ClientHomePage/>}/>    
-                        <Route path='machines'/>
+                        <Route path='machines'                  element={<ClientMachinesPage/>}/>
                     </Route>
                 </Route>
                 <Route element={<ReverseProtected/>}>

@@ -3,7 +3,7 @@ import { ComponentType } from "react";
 
 export interface TableControlsButtonOptions {
     component?: ComponentType<any>;
-    props?: { [key: string]: any };
+    props?: Record<string, any>;
     children?: any;
 }
 
@@ -11,7 +11,7 @@ export interface TableControlsButton {
     name: string;
     component: ComponentType<any>;
     position?: number;
-    props?: { [key: string]: any };
+    props?: Record<string, any>;
     children?: any;
 }
 

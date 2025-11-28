@@ -62,5 +62,13 @@
     "auto": "Auto",
     "custom": "Custom",
     "templates": "Templates",
-    "start-creating": "Start creating"
+    "start-creating": "Start creating",
+    "grid": "Grid",
+    "table": "Table",
+    "connect-via-ssh": "Connect via SSH",
+    "connect-via-rdp": "Connect via RDP",
+    "connect-via-vnc": "Connect via VNC",
+    "greeting-empty": "Hello!",
+    "greeting": "Hello, {{fullname}}!",
+    "loading-machines": "Loading machines"
 }

@@ -1,5 +1,4 @@
 import { values } from "lodash";
-import { Machine } from "../../../../pages/NetworkPanel/NetworkPanel";
 import { MachineState } from "../../../../types/api.types";
 
 export const parseData = (machines: Record<string, MachineState>) =>
