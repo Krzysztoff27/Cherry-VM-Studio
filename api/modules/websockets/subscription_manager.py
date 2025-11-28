@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from typing import Callable, Any
@@ -6,6 +7,7 @@ from modules.exceptions import RaisedException
 from .models import Subscription, SubscriptionsDict
 import asyncio
 
+logger = logging.getLogger(__name__)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#SubscriptionManager
 class SubscriptionManager(BaseModel):
@@ -46,7 +48,7 @@ class SubscriptionManager(BaseModel):
             
     def remove_subscription_from_all(self, resource_uuid: UUID):
         for subscription in self.subscriptions.values():
-            subscription.resources.remove(resource_uuid)
+            subscription.resources.discard(resource_uuid)
         
     async def run_continuous_broadcast(self, intervalInSeconds):
         """ start running the broadcast data function for the subscriptions every interval """
