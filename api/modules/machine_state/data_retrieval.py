@@ -186,7 +186,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
         
-    machine_parameters = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
+    machine_parameters = parse_machine_xml(machine.XMLDesc())
             
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
