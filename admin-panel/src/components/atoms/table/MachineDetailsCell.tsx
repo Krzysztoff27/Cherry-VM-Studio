@@ -24,7 +24,7 @@ const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
                 </Text>
                 <BadgeGroup
                     size="sm"
-                    items={[tags]}
+                    items={tags ?? []}
                 />
             </Stack>
         </Group>
