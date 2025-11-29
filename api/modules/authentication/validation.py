@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import Depends, HTTPException
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 
-from .models import Token, TokenTypes
+from .models import DecodedTokenPayload, Token, TokenTypes
 from .tokens import is_token_of_type
 from .passwords import verify_password
 from application.env import SECRET_KEY
@@ -20,6 +20,16 @@ from modules.users.models import Administrator, AnyUser
 from modules.postgresql import select_one
 
 logger = logging.getLogger(__name__)
+
+def decode_token(token: Token) -> DecodedTokenPayload:
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTHENTICATION_CONFIG.algorithm])
+    
+    return DecodedTokenPayload(
+        subject=payload.get("sub"),
+        expiration_date=payload.get("exp"),
+        token_type=payload.get("token_type"),
+    )
+        
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#validate_user_token
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUser:

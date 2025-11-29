@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from application.app import app
-from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines, get_user_machines, get_machine_data_by_uuid
+from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid
 from modules.machine_state.models import MachineData
 from modules.machine_state.state_management import start_machine, stop_machine
 from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
@@ -12,7 +12,7 @@ from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from .websocket import machine_broadcast_manager
+from .websockets import subscribed_machines_broadcast_manager
 
 ################################
 #         Production
@@ -20,11 +20,11 @@ from .websocket import machine_broadcast_manager
 @app.get("/machines/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     verify_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS)
-    return get_all_machines()
+    return get_all_machines_data()
 
 @app.get("/machines", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
-    return get_user_machines(current_user)
+    return get_user_machines_data(current_user)
 
 @app.get("/machine/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
 async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:
@@ -85,7 +85,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
         raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
-    machine_broadcast_manager.remove_subscription_from_all(uuid)
+    subscribed_machines_broadcast_manager.remove_subscription_from_all(uuid)
 
 ################################
 #           Debug
