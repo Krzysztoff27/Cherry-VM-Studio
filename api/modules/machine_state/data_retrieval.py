@@ -180,7 +180,13 @@ def get_machine_boot_timestamp(machine_uuid: UUID) -> datetime | None:
     boot_timestamp = select_single_field("started_at", select_machine_boot_timestamp, (machine_uuid,))[0]
         
     return datetime.fromisoformat(boot_timestamp) if boot_timestamp else None
+
+def get_machine_connections(machine_uuid: UUID) -> dict[str, Any]:
+    select_connection = """
+        SELECT connection_name FROM guacamole_connection WHERE
+    """
     
+ 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_state
 def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:

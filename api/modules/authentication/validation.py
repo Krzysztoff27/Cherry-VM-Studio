@@ -77,25 +77,12 @@ DependsOnAuthentication = Annotated[AnyUser, Depends(get_authenticated_user)]
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonrefreshtoken
 DependsOnRefreshToken = Annotated[AnyUser, Depends(get_user_from_refresh_token)]
 
-def encode_guacamole_connection_string(user_uuid: UUID, machine_uuid: UUID, connection_type: str):
+def encode_guacamole_connection_string(machine_uuid: UUID, connection_type: str):
     """
     Generate encoded Apache Guacamole connection string used for machine remote desktop access.
     """
     
     identity_source = "postgres"
-    
-    select_entity_id = """
-        SELECT entity_id 
-        FROM guacamole_entity
-        WHERE name = %s::varchar;
-    """
-    
-    entity_id = select_one(select_entity_id, (user_uuid,))
-    
-    if entity_id is None:
-        raise Exception(f"Could not encode guacamole connection string for non-existant user {user_uuid} to machine {machine_uuid}.")
-    
-    entity_id = entity_id.get("entity_id")
     
     regex_pattern = f"^{machine_uuid}_{connection_type}$"
     
@@ -112,7 +99,6 @@ def encode_guacamole_connection_string(user_uuid: UUID, machine_uuid: UUID, conn
     
     connection_id = connection_id.get("connection_id")
     
-    
-    raw_connection_string = f"{entity_id}\0c\0{identity_source}".encode("utf-8")
+    raw_connection_string = f"{connection_id}\0c\0{identity_source}".encode("utf-8")
     
     return base64.urlsafe_b64encode(raw_connection_string).rstrip(b"=").decode("ascii")

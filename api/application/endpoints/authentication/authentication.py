@@ -38,7 +38,7 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()], machin
     
     # 2. Validate guacamole connection headers - if not present, return X-Guacamole-User header only - for future universal forwardauth
     if machine_uuid and connection_type:
-        guacamole_connection_string = encode_guacamole_connection_string(user.uuid, UUID(machine_uuid), connection_type)
+        guacamole_connection_string = encode_guacamole_connection_string(UUID(machine_uuid), connection_type)
         headers["X-Guacamole-String"] = guacamole_connection_string
     
     # Different services relying on forwardauth process responses in their own way.
