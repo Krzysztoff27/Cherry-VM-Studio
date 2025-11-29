@@ -18,7 +18,7 @@ const MachinesOverview = (): React.JSX.Element => {
     const navigate = useNavigate();
 
     const { loading, error, data: machinesData, refresh } = useFetch<MachineData>("machines");
-    const { machinesState, setMachinesState } = useMachineState(keys(machinesData));
+    const { machinesState, setMachinesState } = useMachineState("account");
 
     if (error) {
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);

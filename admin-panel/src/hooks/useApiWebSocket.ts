@@ -7,14 +7,17 @@ import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
 import { validPath } from "../utils/path.ts";
 
 const useApiWebSocket = (path: string): useApiWebSocketReturn => {
+    const { tokens } = useAuthentication();
+
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
-    const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}`;
+    const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}?access_token=${tokens.access_token}`;
 
     const [socketUrl, setSocketUrl] = useState(getUrl(path));
     const setUrl = (path: string) => setSocketUrl(getUrl(path));
 
-    const { tokens } = useAuthentication();
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl);
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl, {
+        shouldReconnect: () => true,
+    });
 
     const connectionStatus: string = {
         [ReadyState.CONNECTING]: "CONNECTING",

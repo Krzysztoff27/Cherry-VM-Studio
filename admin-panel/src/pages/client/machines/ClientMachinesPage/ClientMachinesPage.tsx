@@ -10,7 +10,7 @@ import MachinesGrid from "../../../../components/molecules/display/MachinesGrid/
 const ClientMachinesPage = (): React.JSX.Element => {
     const { sendErrorNotification } = useMantineNotifications();
     const { loading, error, data: machinesData, refresh } = useFetch("machines");
-    const { machinesState, setMachinesState } = useMachineState(keys(machinesData));
+    const { machinesState, setMachinesState } = useMachineState("account");
 
     if (error) {
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
