@@ -210,7 +210,6 @@ def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "v
 def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
-        machine.fsInfo()
         
     machine_parameters = parse_machine_xml(machine.XMLDesc())
     
