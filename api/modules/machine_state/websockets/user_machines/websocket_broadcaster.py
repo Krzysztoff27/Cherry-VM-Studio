@@ -27,6 +27,7 @@ async def broadcast_user_machines_state(subscriptions: SubscriptionsDict):
             await ws.send_json(jsonable_encoder(DataResponse(body=body)))
             
         except (WebSocketDisconnect, RuntimeError):
+            logging.exception("Error occured during /ws/machines/account data broadcast.")
             dead_subscriptions.append(key)
             
     for key in dead_subscriptions:

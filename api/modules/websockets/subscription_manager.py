@@ -23,6 +23,8 @@ class SubscriptionManager(BaseModel):
         if websocket_id not in self.subscriptions:
             self.subscriptions[websocket_id] = Subscription(websocket=websocket, resources=set())
         self.subscriptions[websocket_id].resources.add(resource_uuid)
+
+        logging.debug(self.subscriptions)
         
         
     def unsubscribe(self, websocket: WebSocket, resource_uuid: UUID):
