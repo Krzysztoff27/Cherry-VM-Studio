@@ -50,7 +50,8 @@ class SubscribedMachinesWebsocketHandler(WebSocketHandler):
             
             await self.acknowledge(command.model_dump())
             
-        except ValidationError:
+        except ValidationError as e:
+            logging.debug(e)
             await self.reject(json, "Command validation error. Ensure that sent commands follow the expected structure.")
         except CredentialsException:
             await self.reject(json, "Authentication failed - invalid credentials.")

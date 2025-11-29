@@ -8,7 +8,7 @@ from modules.users.models import AnyUser
 from modules.exceptions.models import CredentialsException
 from modules.authentication.validation import decode_token, get_authenticated_user
 from modules.exceptions import RaisedException
-from .models import AcknowledgeResponse, RejectResponse
+from .models import AcknowledgeResponse, RejectResponse, CommandData
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +55,10 @@ class WebSocketHandler(BaseModel):
         return self.websocket.application_state == WebSocketState.CONNECTED and self.websocket.client_state == WebSocketState.CONNECTED
 
     async def acknowledge(self, command: dict = {}) -> None:
-        acknowledge = AcknowledgeResponse(command = dict)
+        acknowledge = AcknowledgeResponse(command = CommandData.model_validate(command))
         await self.websocket.send_json(jsonable_encoder(acknowledge.model_dump()))
 
-    async def reject(self, command: dict = {}, reason: Exception | RaisedException | str | None = None) -> None:     
-        reject = RejectResponse(command = command, reason = str(reason))
+    async def reject(self, command: dict = {}, reason: Exception | RaisedException | str | None = None) -> None: 
+
+        reject = RejectResponse(command = CommandData.model_validate(command), reason = str(reason))
         await self.websocket.send_json(jsonable_encoder(reject.model_dump()))
