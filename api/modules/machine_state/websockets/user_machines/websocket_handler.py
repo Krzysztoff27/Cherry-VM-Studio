@@ -12,6 +12,8 @@ class UserMachinesWebsocketHandler(WebSocketHandler):
     @override
     async def accept(self, access_token: str):
         await super().accept(access_token)
+
+        logging.debug(f"Connected: {self.is_connected()}, User: {self.user}")
         
         if self.is_connected() and self.user is not None:
             self.subscription_manager.subscribe(self.websocket, self.user.uuid)

@@ -12,7 +12,7 @@ async def broadcast_subscribed_machines_state(subscriptions: SubscriptionsDict):
     for key, subscription in subscriptions.items():
         ws = subscription.websocket
 
-        if ws.application_state != WebSocketState.CONNECTED or ws.client_state != WebSocketState.CONNECTED: 
+        if ws.application_state != WebSocketState.CONNECTED or ws.client_state != WebSocketState.CONNECTED or not subscription.resources: 
             dead_subscriptions.append(key)
             continue
         

@@ -15,6 +15,8 @@ class AllMachinesWebsocketHandler(WebSocketHandler):
     async def accept(self, access_token):
         await super().accept(access_token)
         
+        logging.debug(f"Connected: {self.is_connected()}, User: {self.user}")
+
         if self.user is None or not has_permissions(self.user, PERMISSIONS.VIEW_ALL_VMS):
             return self.close(4403, "You do not have the necessary permissions to access this resource.")
         
