@@ -154,9 +154,7 @@ def get_all_machines_data() -> dict[UUID, MachineData]:
         if check_machine_membership(machine_uuid):
             managed_machines[machine_uuid] = get_machine_data(machine_uuid)
                 
-        return managed_machines
-    
-    raise HTTPException(status_code=503, detail="API could not connect to Libvirt service.")
+    return managed_machines
 
             
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_machines
