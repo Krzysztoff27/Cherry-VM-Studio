@@ -128,8 +128,8 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
         description = machine.description,
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_clients_assigned_to_machine(machine_uuid),
-        ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else -1,
-        disks_static = machine_disks,
+        ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else None,
+        disks = machine_disks,
         connections = get_machine_connections(machine_uuid)
     )
     
@@ -248,10 +248,11 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
                 size_bytes=disk.size, 
                 type=disk.type, 
                 occupied_bytes=0
-                ) for disk in machine_parameters.additional_disks)
+            ) for disk in machine_parameters.additional_disks
+        )
     
-    return MachineState.model_validate ({
-        **get_machine_data(machine_uuid).model_dump(),
+    return MachineState.model_validate({
+        **get_machine_data(machine_uuid).model_dump(exclude={"disks"}),
         'active': is_active,
         'loading': is_vm_loading(machine.UUID()),
         'active_connections': get_active_connections(machine_uuid),
@@ -259,7 +260,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
         'ram_max': (machine.info()[1]/1024),
         'ram_used': (machine.info()[2]/1024) if is_active else 0,
         'boot_timestamp': get_machine_boot_timestamp(machine_uuid),
-        'disks_dynamic': machine_disks
+        'disks': machine_disks
     })
     
     

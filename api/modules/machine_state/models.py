@@ -29,7 +29,7 @@ class MachineData(BaseModel):
     ras_ip: str | None = None   
     ras_port: int | None = None
     connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None
-    disks_static: list[StaticDiskInfo] | None = None                                          
+    disks: list[StaticDiskInfo] | None = None                                          
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
 class MachineState(MachineData):                    
@@ -40,7 +40,7 @@ class MachineState(MachineData):
     ram_max: int | None = None                      
     ram_used: int | None = None                     
     boot_timestamp: datetime | None = None   
-    disks_dynamic: list[DynamicDiskInfo] | None = None  
+    disks: list[DynamicDiskInfo] | None = None  
 
 class MachineWebsocketSubscribeCommand(Command):
     method: Literal["SUBSCRIBE"]
