@@ -1,9 +1,11 @@
+import logging
 from fastapi import WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
 from modules.machine_state.data_retrieval import get_all_machine_states
 from modules.websockets.models import DataResponse, SubscriptionsDict
 
+logger = logging.getLogger(__name__)
 
 async def broadcast_all_machines_state(subscriptions: SubscriptionsDict):
     if not len(subscriptions):
@@ -23,7 +25,7 @@ async def broadcast_all_machines_state(subscriptions: SubscriptionsDict):
             await ws.send_json(jsonable_encoder(DataResponse(body=body)))
             
         except (WebSocketDisconnect, RuntimeError):
-            logging.exception("Error occured during /ws/machines/global data broadcast.")
+            logger.exception("Error occured during /ws/machines/global data broadcast.")
             dead_subscriptions.append(key)
             
     for key in dead_subscriptions:
