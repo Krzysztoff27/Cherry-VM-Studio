@@ -1,7 +1,7 @@
 from fastapi import WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
-from api.modules.machine_state.data_retrieval import get_all_machine_states
+from modules.machine_state.data_retrieval import get_all_machine_states
 from modules.websockets.models import DataResponse, SubscriptionsDict
 
 
