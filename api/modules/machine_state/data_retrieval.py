@@ -1,7 +1,7 @@
 import logging
 import libvirt
 
-from typing import Optional
+from typing import Optional, Any, Literal
 from xml.etree import ElementTree
 from fastapi import HTTPException
 from uuid import UUID
@@ -15,6 +15,7 @@ from modules.users.models import AdministratorInDB, AnyUser, ClientInDB
 from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
 from modules.machine_lifecycle.disks import get_machine_disk_occupancy
+from config import ENV_CONFIG
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
 
@@ -96,7 +97,8 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_clients_assigned_to_machine(machine_uuid),
         ras_port = machine.framebuffer.port if isinstance(machine.framebuffer.port, int) else -1,
-        disks_static = machine_disks
+        disks_static = machine_disks,
+        connections = get_machine_connections(machine_uuid)
     )
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_membership
@@ -172,6 +174,7 @@ def get_active_connections(machine_uuid: UUID) -> list[UUID]:
    
     return connected_uuids
 
+
 def get_machine_boot_timestamp(machine_uuid: UUID) -> datetime | None:
     select_machine_boot_timestamp = """
         SELECT started_at FROM deployed_machines_owners WHERE machine_uuid = %s;
@@ -181,11 +184,24 @@ def get_machine_boot_timestamp(machine_uuid: UUID) -> datetime | None:
         
     return datetime.fromisoformat(boot_timestamp) if boot_timestamp else None
 
-def get_machine_connections(machine_uuid: UUID) -> dict[str, Any]:
+
+def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "vnc"], str]:
+    
+    regex_pattern = f"^{machine_uuid}_.*$"
+    
     select_connection = """
-        SELECT connection_name FROM guacamole_connection WHERE
+        SELECT protocol FROM guacamole_connection WHERE connection_name ~ %s
     """
     
+    available_protocols = select_single_field("protocol", select_connection, (regex_pattern,))
+
+    connections: dict[Literal["ssh", "rdp", "vnc"], str] = {}
+    
+    for protocol in available_protocols:
+        connections[protocol] = f"https://session.{ENV_CONFIG.DOMAIN_NAME}/{protocol}/{machine_uuid}"
+        
+    return connections
+ 
  
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_state
 def get_machine_state(machine_uuid: UUID) -> MachineState:

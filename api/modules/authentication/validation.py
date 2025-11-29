@@ -77,14 +77,14 @@ DependsOnAuthentication = Annotated[AnyUser, Depends(get_authenticated_user)]
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonrefreshtoken
 DependsOnRefreshToken = Annotated[AnyUser, Depends(get_user_from_refresh_token)]
 
-def encode_guacamole_connection_string(machine_uuid: UUID, connection_type: str):
+def encode_guacamole_connection_string(machine_uuid_str: str, connection_type: str):
     """
     Generate encoded Apache Guacamole connection string used for machine remote desktop access.
     """
     
     identity_source = "postgres"
     
-    regex_pattern = f"^{machine_uuid}_{connection_type}$"
+    regex_pattern = f"^{machine_uuid_str}_{connection_type}$"
     
     select_connection_id = """
         SELECT connection_id 
@@ -95,7 +95,7 @@ def encode_guacamole_connection_string(machine_uuid: UUID, connection_type: str)
     connection_id = select_one(select_connection_id, (regex_pattern, ))
     
     if connection_id is None:
-        raise Exception(f"Could not encode guacamole connection string for non-existant {connection_type} connection to machine {machine_uuid}.")
+        raise Exception(f"Could not encode guacamole connection string for non-existant {connection_type} connection to machine {machine_uuid_str}.")
     
     connection_id = connection_id.get("connection_id")
     

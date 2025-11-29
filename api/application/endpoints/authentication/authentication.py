@@ -24,7 +24,7 @@ async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Token
     return get_user_tokens(current_user)
 
 @app.get("/forwardauth", response_model=dict[str, str], tags=['Authentication'])
-async def __forwardauth__(authorization: Annotated[str | None, Header()], machine_uuid: Annotated[str | None, Header(alias="X-Guacamole-Machine")] = None, connection_type: Annotated[str | None, Header(alias="X-Guacamole-ConnType")] = None) -> JSONResponse:
+async def __forwardauth__(authorization: Annotated[str | None, Header()], machine_uuid_str: Annotated[str | None, Header(alias="X-Guacamole-Machine")] = None, connection_type: Annotated[str | None, Header(alias="X-Guacamole-ConnType")] = None) -> JSONResponse:
     # 1. Validate Authorization header
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
@@ -37,8 +37,8 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()], machin
     headers = {"X-Guacamole-User": str(user.uuid)}
     
     # 2. Validate guacamole connection headers - if not present, return X-Guacamole-User header only - for future universal forwardauth
-    if machine_uuid and connection_type:
-        guacamole_connection_string = encode_guacamole_connection_string(UUID(machine_uuid), connection_type)
+    if machine_uuid_str and connection_type:
+        guacamole_connection_string = encode_guacamole_connection_string(machine_uuid_str, connection_type)
         headers["X-Guacamole-String"] = guacamole_connection_string
     
     # Different services relying on forwardauth process responses in their own way.

@@ -9,10 +9,6 @@ from datetime import datetime
 ################################
 # Machine data retrieval models
 ################################
-class ConnectionEntry(BaseModel):
-    protocol: Literal["ssh", "rdp", "vnc"]
-    url: str
-
 class StaticDiskInfo(BaseModel):
     system: bool
     name: str
@@ -32,7 +28,7 @@ class MachineData(BaseModel):
     assigned_clients: dict[UUID, ClientInDB] = {}
     ras_ip: str | None = None   
     ras_port: int | None = None
-    connections: list[ConnectionEntry] | None = None
+    connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None
     disks_static: list[StaticDiskInfo] | None = None                                          
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
