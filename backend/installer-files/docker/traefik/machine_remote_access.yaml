@@ -7,12 +7,13 @@ http:
       tls: {}
       middlewares:
         - strip-incoming-header
+        - add-guacamole-metadata
         - forward-auth
         - rewrite-path
       service:
         cherry-guacamole-service
     
-    # This router exists only for devlopment purposes in order to block /api/forwardauth endpoint
+    # This router exists only for development purposes in order to block /api/forwardauth endpoint access from outside of internal network
     api-forwardauth:
       rule: 'Host(`{{ env "DOMAIN_NAME" }}`) && Path(`/api/forwardauth`)'
       entryPoints:
@@ -23,29 +24,43 @@ http:
         cherry-api-service
 
   middlewares:
-    # 0) API forwardauth endpoint access is restricted to internal use - drop request if it comes from outside the internal Docker network
+    # forwardauth endpoint access is restricted to internal use - drop the request if it comes from outside the internal Docker network
     forward-auth-whitelist:
       ipWhiteList:
           sourceRange:
             - '{{ env "NETWORK_DOCKER_INTERNAL_SUBNET" }}'
+
     # 1) Strip any rogue X-Guacamole-User header
     strip-incoming-header:
       headers:
         customRequestHeaders:
           X-Guacamole-User: ""
-    # 2) Call API to validate session (access) token
-    # If token validation succeds, trusted X-Guacamole-User header is returned
+
+    # 2) Inject guacamole connection metadata to forwardauth
+    add-guacamole-metadata:
+      headers:
+        customRequestHeaders:
+          X-Guacamole-ConnType: "{1}"
+          X-Guacamole-Machine: "{2}"
+
+    # 3) Call API to validate session (access) token
+    # If token validation succeds, trusted X-Guacamole-User and X-Guacamole-String header is returned
     forward-auth:
       forwardAuth: 
         address: "http://cherry-api:8000/api/forwardauth"
-        trustForwardHeader: true 
+        trustForwardHeader: true
+        authRequestHeaders:
+          - "X-Guacamole-ConnType"
+          - "X-Guacamole-Machine"
         authResponseHeaders:
           - "X-Guacamole-User"
-    # 3) Rewrite initial path to a valid Guacamole connection URL
+          - "X-Guacamole-String"
+
+    # 4) Rewrite initial path to a valid Guacamole connection URL
     rewrite-path:
       replacePathRegex:
         regex: "^/(rdp|vnc|ssh)/([0-9a-fA-F-]+)$"
-        replacement: "/guacamole/#/client/${2}?protocol=${1}" 
+        replacement: "/guacamole/#/client/{header:X-Guacamole-String}" 
 
 services:
     cherry-guacamole-service:
