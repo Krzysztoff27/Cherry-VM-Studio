@@ -1,10 +1,12 @@
 import logging
+import jwt
+import re
+import base64
+
 from typing import Annotated
 from uuid import UUID
 from fastapi import Depends, HTTPException
-import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
-import base64
 
 from .models import Token, TokenTypes
 from .tokens import is_token_of_type
@@ -15,7 +17,7 @@ from modules.exceptions import CredentialsException
 from modules.users.permissions import is_admin
 from modules.users.users import get_user_by_username, get_user_by_uuid, update_user_last_active
 from modules.users.models import Administrator, AnyUser
-from modules.postgresql import select_single_field, select_one
+from modules.postgresql import select_one
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +86,7 @@ def encode_guacamole_connection_string(machine_uuid_str: str, connection_type: s
     
     identity_source = "postgres"
     
-    regex_pattern = f"^{machine_uuid_str}_{connection_type}$"
+    regex_pattern = f"^{re.escape(machine_uuid_str)}_{re.escape(connection_type)}$"
     
     select_connection_id = """
         SELECT connection_id 
