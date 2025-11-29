@@ -1,5 +1,6 @@
 import json
 import logging
+from fastapi import WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
 from modules.machine_state.data_retrieval import get_machine_states_by_uuids
