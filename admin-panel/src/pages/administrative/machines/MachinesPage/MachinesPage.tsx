@@ -8,6 +8,7 @@ import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachinesPage.module.css";
 import { isNull, merge, omitBy } from "lodash";
 import { MachineData } from "../../../../types/api.types";
+import { useEffect } from "react";
 
 export interface MachinesPageProps {
     global?: boolean;
@@ -28,11 +29,12 @@ const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Ele
     const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>(global ? "machines/global" : "machines");
     const { machinesState, setMachinesState } = useMachineState(global ? "global" : "account");
 
-    if (error) {
+    useEffect(() => {
+        if (!error) return;
+
         sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
         console.error(error);
-        return null;
-    }
+    }, [error]);
 
     const onRemove = (uuid: string) => {
         refresh();

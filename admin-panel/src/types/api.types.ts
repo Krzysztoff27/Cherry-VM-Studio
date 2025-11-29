@@ -68,7 +68,7 @@ export interface User extends UserInDB {
     account_type: AccountType;
     roles?: RoleInDB[];
     groups?: GroupInDB[];
-    permissions: number;
+    permissions?: number;
 }
 
 // machines
@@ -81,6 +81,14 @@ export interface MachineDisk {
     type: MachineDiskTypes;
 }
 
+export interface MachineDiskStaticData extends MachineDisk {
+    system: boolean;
+}
+
+export interface MachineDiskDynamicData extends MachineDiskStaticData {
+    occupied_bytes: number;
+}
+
 export interface MachineDiskForm {
     name: string;
     size: number;
@@ -90,13 +98,20 @@ export interface MachineDiskForm {
 
 export interface MachineData {
     uuid: string;
-    owner: UserInDB | null;
-    assigned_clients: Record<string, UserInDB>;
-    domain: string | null;
-    port: number | null;
     title: string;
     tags: string[];
     description: string;
+    owner: UserInDB | null;
+    assigned_clients: Record<string, UserInDB>;
+    domain: string | null;
+    ras_ip: string | null;
+    ras_port: number | null;
+    connections: {
+        vnc?: string;
+        rdp?: string;
+        ssh?: string;
+    };
+    disks: MachineDiskStaticData[];
 }
 
 export interface MachineState extends MachineData {
@@ -106,7 +121,8 @@ export interface MachineState extends MachineData {
     cpu?: number;
     ram_used?: number;
     ram_max?: number;
-    uptime: number | null;
+    boot_timestamp: string | null;
+    disks: MachineDiskDynamicData[];
 }
 
 export interface SimpleState {
