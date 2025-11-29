@@ -13,9 +13,8 @@ from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineData, MachineState, StaticDiskInfo, DynamicDiskInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AdministratorInDB, AnyUser, ClientInDB
-from modules.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
+from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
-from modules.machine_lifecycle.disks import get_machine_disk_occupancy
 from config import ENV_CONFIG
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
@@ -211,6 +210,7 @@ def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "v
 def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
+        machine.fsInfo()
         
     machine_parameters = parse_machine_xml(machine.XMLDesc())
     
@@ -219,7 +219,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
     if machine_parameters.system_disk.uuid is None:
         raise Exception("Supplied an inprocessable MachineDisk model without a valid UUID!")
     
-    machine_disks = [DynamicDiskInfo(system=True, name=machine_parameters.system_disk.name, size_bytes=machine_parameters.system_disk.size, type=machine_parameters.system_disk.type, occupied_bytes=get_machine_disk_occupancy(machine_parameters.system_disk.uuid, "cvms-disk-images"))]
+    machine_disks = [DynamicDiskInfo(system=True, name=machine_parameters.system_disk.name, size_bytes=machine_parameters.system_disk.size, type=machine_parameters.system_disk.type, occupied_bytes=0)]
     
     if machine_parameters.additional_disks:
         for disk in machine_parameters.additional_disks:
@@ -232,7 +232,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
                 name=disk.name, 
                 size_bytes=disk.size, 
                 type=disk.type, 
-                occupied_bytes=get_machine_disk_occupancy(disk.uuid, "cvms-disk-images") # type: ignore
+                occupied_bytes=0
                 ) for disk in machine_parameters.additional_disks)
     
     return MachineState.model_validate ({

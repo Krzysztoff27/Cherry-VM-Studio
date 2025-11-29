@@ -11,6 +11,7 @@ from config.permissions_config import PERMISSIONS
 from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
+from modules.machine_lifecycle.disks import get_machine_disk_size
 from .websocket import machine_broadcast_manager
 
 ################################
