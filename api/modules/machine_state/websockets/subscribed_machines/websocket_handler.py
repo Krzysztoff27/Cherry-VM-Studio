@@ -3,11 +3,10 @@ from starlette.websockets import WebSocketDisconnect
 from json import JSONDecodeError
 from pydantic import ValidationError
 
-
-from .models import MachineWebsocketSubscribeCommand
+from ...models import MachineWebsocketSubscribeCommand
+from ...data_retrieval import check_machine_access, check_machine_membership
 from config.permissions_config import PERMISSIONS
 from modules.users.permissions import has_permissions
-from modules.machine_state.data_retrieval import check_machine_access, check_machine_membership
 from modules.exceptions.models import CredentialsException
 from modules.websockets.subscription_manager import SubscriptionManager
 from modules.websockets.websocket_handler import WebSocketHandler
@@ -15,7 +14,7 @@ from modules.authentication.validation import validate_user_token
 
 logger = logging.getLogger(__name__)
 
-class MachinesWebsocketHandler(WebSocketHandler):
+class SubscribedMachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager
     
     async def listen(self):
@@ -68,6 +67,3 @@ class MachinesWebsocketHandler(WebSocketHandler):
                 """,
                 exc_info=True
             )
-
-    
-        
