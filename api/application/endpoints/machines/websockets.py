@@ -23,10 +23,10 @@ asyncio.create_task(subscribed_all_machines_broadcast_manager.run_continuous_bro
 
 @app.websocket('/ws/machines/subscribed')
 async def __subscribed_machines_state_websocket__(websocket: WebSocket, access_token: str):
-    websocketHandler = SubscribedMachinesWebsocketHandler(websocket=websocket, subscription_manager=subscribed_machines_broadcast_manager)
+    websocket_handler = SubscribedMachinesWebsocketHandler(websocket=websocket, subscription_manager=subscribed_machines_broadcast_manager)
     
-    await websocketHandler.accept(access_token)
-    await websocketHandler.listen()
+    await websocket_handler.accept(access_token)
+    await websocket_handler.listen()
     
     
 @app.websocket('/ws/machines/account')
@@ -34,6 +34,8 @@ async def __user_machines_state_websocket__(websocket: WebSocket, access_token: 
     websocket_handler = UserMachinesWebsocketHandler(websocket=websocket, subscription_manager=subscribed_accounts_manager)
     
     await websocket_handler.accept(access_token)
+    await websocket_handler.listen()
+
     
     
 @app.websocket('/ws/machines/global')
@@ -41,6 +43,8 @@ async def __all_machines_state_websocket__(websocket: WebSocket, access_token: s
     websocket_handler = AllMachinesWebsocketHandler(websocket=websocket, subscription_manager=subscribed_all_machines_broadcast_manager)
     
     await websocket_handler.accept(access_token)
+    await websocket_handler.listen()
+
     
     
 
