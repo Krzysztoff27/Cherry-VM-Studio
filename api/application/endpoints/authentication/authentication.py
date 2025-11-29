@@ -2,9 +2,10 @@ from fastapi import Depends, Header
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from typing import Annotated
+from uuid import UUID
 
 from application.app import app
-from modules.authentication.validation import DependsOnRefreshToken, authenticate_user, get_authenticated_user
+from modules.authentication.validation import DependsOnRefreshToken, authenticate_user, get_authenticated_user, encode_guacamole_connection_string
 from modules.authentication.tokens import get_user_tokens
 from modules.authentication.models import Tokens
 from modules.exceptions import HTTPUnauthorizedException
@@ -23,7 +24,8 @@ async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Token
     return get_user_tokens(current_user)
 
 @app.get("/forwardauth", response_model=dict[str, str], tags=['Authentication'])
-async def __forwardauth__(authorization: Annotated[str | None, Header()]) -> JSONResponse:
+async def __forwardauth__(authorization: Annotated[str | None, Header()], machine_uuid: Annotated[str | None, Header(alias="X-Guacamole-Machine")] = None, connection_type: Annotated[str | None, Header(alias="X-Guacamole-ConnType")] = None) -> JSONResponse:
+    # 1. Validate Authorization header
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
     
@@ -33,6 +35,12 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()]) -> JSO
         raise HTTPUnauthorizedException(detail="Invalid session token.")
     
     headers = {"X-Guacamole-User": str(user.uuid)}
+    
+    # 2. Validate guacamole connection headers - if not present, return X-Guacamole-User header only - for future universal forwardauth
+    if machine_uuid and connection_type:
+        guacamole_connection_string = encode_guacamole_connection_string(user.uuid, UUID(machine_uuid), connection_type)
+        headers["X-Guacamole-String"] = guacamole_connection_string
+    
     # Different services relying on forwardauth process responses in their own way.
     # For the sake of compatibility, the headers are sent in both content and headers section of the response.
     return JSONResponse(content=headers, headers=headers)
