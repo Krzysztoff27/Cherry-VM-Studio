@@ -11,12 +11,7 @@ class Command(BaseModel, extra='allow'):
     method: str
     access_token: str = ""
     uuid: UUID = Field(default_factory=uuid4)
-    
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CommandData
-class CommandData(BaseModel):
-    method: str
-    uuid: UUID = Field(default_factory=uuid4)
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#ResponseMethods
@@ -32,14 +27,14 @@ class Response(BaseModel):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#AcknowledgeResponse
 class AcknowledgeResponse(Response):
     method: Literal["ACKNOWLEDGE"] = "ACKNOWLEDGE"
-    command: CommandData
+    command: dict
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#RejectResponse
 class RejectResponse(Response):
     method: Literal["REJECT"] = "REJECT"
     reason: str
-    command: CommandData
+    command: dict
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#DataResponse

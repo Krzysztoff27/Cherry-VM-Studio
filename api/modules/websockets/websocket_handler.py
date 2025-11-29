@@ -59,5 +59,5 @@ class WebSocketHandler(BaseModel):
         await self.websocket.send_json(jsonable_encoder(acknowledge.model_dump()))
 
     async def reject(self, command: dict = {}, reason: Exception | RaisedException | str | None = None) -> None:     
-        reject = RejectResponse(command = CommandData(**command), reason = str(reason))
+        reject = RejectResponse(command = command, reason = str(reason))
         await self.websocket.send_json(jsonable_encoder(reject.model_dump()))
