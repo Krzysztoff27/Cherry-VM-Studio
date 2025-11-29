@@ -32,9 +32,8 @@ export interface CreateMachinesInBulkModalProps {
 }
 
 const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachinesInBulkModalProps): React.JSX.Element => {
-    const { tns, t } = useNamespaceTranslation("modals", "create-machines-in-bulk");
-    const { handleAxiosError } = useErrorHandler();
     const { sendRequest } = useApi();
+    const { tns, t } = useNamespaceTranslation("modals", "create-machines-in-bulk");
     const { data: groups }: { data: Record<string, GroupType> } = useFetch("/groups");
 
     const [supportModalOpened, setSupportModalOpened] = useState(false);
@@ -80,6 +79,8 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
     const numberOfMachines = getNumberOfMachines(form.values);
 
     const submit = form.onSubmit(async (values) => {
+        close();
+
         const count = getNumberOfMachines(values);
 
         const notification = notifications.show({
@@ -91,9 +92,10 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
             withCloseButton: true,
         });
 
-        const onError = (error: AxiosError) => {
-            handleAxiosError(error);
+        const endpoint = values.create_for_group_mode ? `/machine/create/for-group?group_uuid=${values.group}` : `/machine/create/bulk`;
+        const res = await sendRequest("POST", endpoint, { data: values.machines });
 
+        if (isAxiosError(res)) {
             notifications.update({
                 id: notification,
                 loading: false,
@@ -103,20 +105,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
                 autoClose: false,
                 withCloseButton: true,
             });
-
-            return error;
-        };
-
-        close();
-
-        let res = null;
-
-        console.log(values.machines);
-
-        if (values.create_for_group_mode) {
-        } else res = await sendRequest("POST", "machine/create/bulk", { data: values.machines }, onError);
-
-        if (!isAxiosError(res)) {
+        } else {
             notifications.update({
                 id: notification,
                 loading: false,

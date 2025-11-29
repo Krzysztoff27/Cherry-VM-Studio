@@ -50,7 +50,7 @@ export const useApi = (): useApiReturn => {
         method: RequestMethods,
         path: string,
         config: AxiosRequestConfig = {},
-        errorCallback: (error: AxiosError) => void = handleAxiosError
+        errorCallback: ((error: AxiosError) => void) | null = handleAxiosError
     ): Promise<T> => {
         const mergedConfig = merge(baseApiRequestConfig, config);
 
@@ -61,11 +61,11 @@ export const useApi = (): useApiReturn => {
             .catch(async (error: AxiosError) => {
                 if (error.code !== "ETIMEDOUT" && error.code !== "ERR_NETWORK")
                     if (error.response) {
-                        if (error.response.status !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback(error);
+                        if (error.response.status !== ERRORS.HTTP_401_UNAUTHORIZED) return errorCallback?.(error);
 
                         // handle expired access token - try to refresh tokens
                         const tokens = await refreshTokens();
-                        if (!tokens?.access_token) return errorCallback(error);
+                        if (!tokens?.access_token) return errorCallback?.(error);
 
                         // after succesfull refresh send the original request again for seamless UX
                         mergedConfig.headers["Authorization"] = `Bearer ${tokens.access_token}`;
@@ -73,7 +73,7 @@ export const useApi = (): useApiReturn => {
                             .then((response) => response.data)
                             .catch(errorCallback);
                     }
-                if (error.request) return errorCallback(error);
+                if (error.request) return errorCallback?.(error);
 
                 console.error("Unhandled error occured during fetch.", error);
             });

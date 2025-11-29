@@ -4,7 +4,7 @@ import { ERROR_VARIANTS_MAP, ErrorCode, ExpandedErrorCode } from "../config/erro
 
 export interface ErrorHandlerReturn {
     handleError: (error: ErrorCode | ExpandedErrorCode) => Promise<void>;
-    handleAxiosError: (error: AxiosError) => Promise<void>;
+    handleAxiosError: (error: AxiosError) => Promise<AxiosError>;
 }
 
 const useErrorHandler = (): ErrorHandlerReturn => {
@@ -21,6 +21,7 @@ const useErrorHandler = (): ErrorHandlerReturn => {
         const variant = ERROR_VARIANTS_MAP[code]?.[detail];
 
         sendErrorNotification([code, variant] as ErrorCode | ExpandedErrorCode);
+        return error;
     };
 
     return { handleError, handleAxiosError };
