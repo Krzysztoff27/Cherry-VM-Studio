@@ -6,13 +6,14 @@ from xml.etree import ElementTree
 from fastapi import HTTPException
 from uuid import UUID
 from datetime import datetime
+from devtools import pprint
 
 from modules.users.permissions import is_admin, is_client
 from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineData, MachineState, StaticDiskInfo, DynamicDiskInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AdministratorInDB, AnyUser, ClientInDB
-from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
+from modules.postgresql import select_schema_dict, select_schema_one, select_single_field, select_one
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
 from modules.machine_lifecycle.disks import get_machine_disk_occupancy
 from config import ENV_CONFIG
@@ -96,7 +97,7 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
         description = machine.description,
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_clients_assigned_to_machine(machine_uuid),
-        ras_port = machine.framebuffer.port if isinstance(machine.framebuffer.port, int) else -1,
+        ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else -1,
         disks_static = machine_disks,
         connections = get_machine_connections(machine_uuid)
     )
@@ -181,8 +182,11 @@ def get_machine_boot_timestamp(machine_uuid: UUID) -> datetime | None:
     """
     
     boot_timestamp = select_single_field("started_at", select_machine_boot_timestamp, (machine_uuid,))[0]
-        
-    return datetime.fromisoformat(boot_timestamp) if boot_timestamp else None
+
+    if boot_timestamp is not None:
+        return datetime.fromisoformat(str(boot_timestamp))
+    
+    return None
 
 
 def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "vnc"], str]:
@@ -209,7 +213,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
         
     machine_parameters = parse_machine_xml(machine.XMLDesc())
-            
+    
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
     if machine_parameters.system_disk.uuid is None:
@@ -253,9 +257,10 @@ def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[U
             state = None
             try:
                 state = get_machine_state(machine_uuid)
-            except Exception:
+            except Exception as e:
                 logger.error(f"Exception occured when fetching machine state in get_machine_states_by_uuid function for machine with uuid={machine_uuid}")
-            
+                logger.debug(pprint(e))
+                
             machine_states[machine_uuid] = state    
             
     return machine_states
