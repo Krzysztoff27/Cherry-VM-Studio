@@ -10,8 +10,8 @@ class UserMachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager
     
     @override
-    async def accept(self):
-        await super().accept()
+    async def accept(self, access_token: str):
+        await super().accept(access_token)
         
         if self.is_connected() and self.user is not None:
             self.subscription_manager.subscribe(self.websocket, self.user.uuid)

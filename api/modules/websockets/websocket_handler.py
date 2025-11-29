@@ -20,13 +20,8 @@ class WebSocketHandler(BaseModel):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    async def accept(self) -> None:
-        try: 
-            access_token = self.websocket.headers.get("authorization")
-        
-            if access_token is None:
-                raise CredentialsException
-            
+    async def accept(self, access_token: str) -> None:
+        try:             
             self.user = get_authenticated_user(access_token)
             await self.websocket.accept()
             
