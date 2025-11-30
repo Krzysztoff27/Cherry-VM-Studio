@@ -6,23 +6,27 @@
         },
         "400": {
             "title": "Nieprawidłowe zapytanie",
-            "message": "Twoje żądanie nie mogło zostać przetworzone z powodu błędu. Sprawdź poprawność przesłanych danych."
-        },
-        "400-CANNOT-REMOVE-USER": {
-            "title": "Nie można usunąć użytkownika",
-            "message": "Nie można usunąć użytkownika, ponieważ pozostawiłoby to uprawnienie bez przypisanego właściciela. Przypisz uprawnienia innemu użytkownikowi przed usunięciem."
+            "message": "Twoje żądanie nie mogło zostać przetworzone z powodu błędu. Sprawdź poprawność przesłanych danych.",
+            "variants": {
+                "CANNOT-REMOVE-USER": {
+                    "title": "Nie można usunąć użytkownika",
+                    "message": "Nie można usunąć użytkownika, ponieważ pozostawiłoby to uprawnienie bez przypisanego właściciela. Przypisz uprawnienia innemu użytkownikowi przed usunięciem."
+                }
+            }
         },
         "401": {
             "title": "Nieautoryzowany dostęp",
-            "message": "Aby uzyskać dostęp do żądanego zasobu, musisz się zalogować."
-        },
-        "401-LOGIN": {
-            "title": "Logowanie nie powiodło się",
-            "message": "Nieprawidłowa nazwa użytkownika lub hasło."
-        },
-        "401-SESSION": {
-            "title": "Sesja wygasła",
-            "message": "Zaloguj się ponownie, aby kontynuować."
+            "message": "Aby uzyskać dostęp do żądanego zasobu, musisz się zalogować.",
+            "variants": {
+                "INVALID-CREDENTIALS": {
+                    "title": "Logowanie nie powiodło się",
+                    "message": "Nieprawidłowa nazwa użytkownika lub hasło."
+                },
+                "SESSION-EXPIRED": {
+                    "title": "Sesja wygasła",
+                    "message": "Zaloguj się ponownie, aby kontynuować."
+                }
+            }
         },
         "403": {
             "title": "Dostęp zabroniony",
@@ -30,23 +34,21 @@
         },
         "404": {
             "title": "Nie znaleziono {{resource, capitalize}}",
-            "message": "Szukany {{resource, lowercase}} nie został odnaleziony."
-        },
-        "404-NO-LONGER": {
-            "title": "Nie znaleziono {{resource, capitalize}}",
-            "message": "Szukany {{resource, lowercase}} już nie istnieje."
-        },
-        "404-PAGE": {
-            "title": "Nie znaleziono strony",
-            "message": "Strona, której szukasz, nie istnieje. Upewnij się, że wprowadziłeś poprawny adres URL."
-        },
-        "404-SNAPSHOT": {
-            "title": "Nie znaleziono migawki",
-            "message": "Szukana migawka nie istnieje."
-        },
-        "404-PRESET": {
-            "title": "Nie znaleziono profilu",
-            "message": "Szukany profil konfiguracji nie istnieje."
+            "message": "Szukany {{resource, lowercase}} nie został odnaleziony.",
+            "variants": {
+                "PAGE": {
+                    "title": "Nie znaleziono strony",
+                    "message": "Strona, której szukasz, nie istnieje. Upewnij się, że wprowadziłeś poprawny adres URL."
+                },
+                "SNAPSHOT": {
+                    "title": "Nie znaleziono migawki",
+                    "message": "Szukana migawka nie istnieje."
+                },
+                "PRESET": {
+                    "title": "Nie znaleziono profilu",
+                    "message": "Szukany profil konfiguracji nie istnieje."
+                }
+            }
         },
         "408": {
             "title": "Przekroczono czas oczekiwania",
@@ -63,6 +65,10 @@
         "418": {
             "title": "Jestem czajnikiem",
             "message": "Ten serwer jest czajnikiem i nie może przetworzyć Twojego żądania."
+        },
+        "422": {
+            "title": "Nieprzetwarzalne żądanie",
+            "message": "Dane, które przesłałeś, nie mogły zostać przetworzone. Sprawdź pola i spróbuj ponownie."
         },
         "429": {
             "title": "Zbyt wiele żądań",
@@ -90,23 +96,25 @@
         },
         "651": {
             "title": "Nie udało się załadować profilu",
-            "message": "{{message}}"
-        },
-        "651-undefined": {
-            "title": "Nie udało się załadować profilu",
-            "message": "Klucz {{key}} jest nieokreślony lub pusty."
-        },
-        "651-CORE-FUNCTION": {
-            "title": "Nie udało się załadować profilu",
-            "message": "Wystąpił błąd składniowy w podstawowej funkcji profilu \"{{key}}\"."
-        },
-        "651-VARIABLE": {
-            "title": "Nie udało się załadować profilu",
-            "message": "Wystąpił błąd podczas obliczania zmiennej \"{{key}}\"."
-        },
-        "651-CUSTOM-FUNCTION": {
-            "title": "Nie udało się załadować profilu",
-            "message": "Wystąpił błąd podczas obliczania funkcji \"{{key}}\"."
+            "message": "{{message}}",
+            "variants": {
+                "NOT-DEFINED": {
+                    "title": "Nie udało się załadować profilu",
+                    "message": "Klucz {{key}} jest nieokreślony lub pusty."
+                },
+                "CORE-FUNCTION": {
+                    "title": "Nie udało się załadować profilu",
+                    "message": "Wystąpił błąd składniowy w podstawowej funkcji profilu \"{{key}}\"."
+                },
+                "VARIABLE": {
+                    "title": "Nie udało się załadować profilu",
+                    "message": "Wystąpił błąd podczas obliczania zmiennej \"{{key}}\"."
+                },
+                "CUSTOM-FUNCTION": {
+                    "title": "Nie udało się załadować profilu",
+                    "message": "Wystąpił błąd podczas obliczania funkcji \"{{key}}\"."
+                }
+            }
         }
     },
     "account": {
@@ -173,6 +181,18 @@
         "preset-loaded": {
             "title": "Profil załadowany",
             "message": "Pomyślnie wygenerowano odpowiednią konfigurację sieci."
+        }
+    },
+    "file": {
+        "uploading": {
+            "title": "Przesyłanie Pliku"
+        },
+        "upload-success": {
+            "title": "Plik został pomyślnie przesłany"
+        },
+        "upload-error": {
+            "title": "Błąd przesyłania pliku",
+            "message": "Nie udało się przesłać pliku {{name}}"
         }
     }
 }

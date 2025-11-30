@@ -7,7 +7,7 @@
             "start": "Here you can:",
             "feature1": "Monitor and control your virtual machines in real time.",
             "feature2": "Configure network connections between deployed machines.",
-            "feature3": "Manage system accounts, roles and permissions",
+            "feature3": "Manage CVMS accounts, roles and permissions",
             "feature-more": "... and more"
         },
         "start-managing": "Start managing",
@@ -58,19 +58,6 @@
                 "uuid": "Unique Identifier",
                 "description": "Machine Description"
             }
-        },
-        "panel": {
-            "create": "Create machine",
-            "create-multiple": "Create multiple machines",
-            "refresh": "Refresh machines",
-            "group-by": "Group by"
-        },
-        "groups": {
-            "expand": "Expand the virtual machine group.",
-            "collapse": "Collapse the virtual machine group."
-        },
-        "cards": {
-            "connect": "Connect to this machine"
         }
     },
     "machine": {

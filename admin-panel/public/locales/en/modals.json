@@ -125,13 +125,13 @@
             "description_other": "All {{count}} selected groups will be removed. Are you sure you want to continue?"
         },
         "iso-removal": {
-            "title": "Iso File removal",
-            "description_one": "Selected ISO files will be removed. Are you sure you want to continue?",
+            "title": "Iso file removal",
+            "description_one": "Selected ISO file will be removed. Are you sure you want to continue?",
             "description_other": "All {{count}} selected ISO files will be removed. Are you sure you want to continue?"
         },
         "template-removal": {
-            "title": "Machine Templates removal",
-            "description_one": "Selected templates will be removed. Are you sure you want to continue?",
+            "title": "Machine template removal",
+            "description_one": "Selected template will be removed. Are you sure you want to continue?",
             "description_other": "All {{count}} selected templates will be removed. Are you sure you want to continue?"
         },
         "np-loading-config": {
@@ -165,6 +165,7 @@
         "url-note": "Enter the valid URL to the file",
         "url": "File URL",
         "save-locally": "Save as a local copy.",
+        "upload-file": "Upload File",
         "validation": {
             "name-too-long": "Name length cannot exceed 24 characters.",
             "name-too-short": "Name must be at least 3 characters long.",
@@ -262,9 +263,7 @@
         },
         "creating-error": {
             "title": "Bulk Machine Creation Failed",
-            "description": "An error occurred during machines creation. Please try again.",
-            "description_one": "An error occurred during machine creation. Please try again.",
-            "description_other": "An error occurred during machines creation. Please try again."
+            "description": "An error occurred during machines creation. Please try again."
         },
         "creating-success": {
             "title": "Machines Created Successfully",

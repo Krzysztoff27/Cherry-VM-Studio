@@ -16,6 +16,9 @@
         "clients": "Konta klienckie",
         "groups": "Grupy klientów",
         "your-library": "Twoja biblioteka",
-        "all-machines": "Wszystkie maszyny"
+        "all-machines": "Wszystkie maszyny",
+        "snapshots": "Twoje migawki",
+        "iso": "Globalne pliki ISO",
+        "templates": "Twoje szablony"
     }
 }

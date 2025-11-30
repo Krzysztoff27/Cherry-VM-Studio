@@ -74,6 +74,6 @@
     "loading-table": "Loading table records",
     "error-machines": "Error occurred while loading machines.",
     "error-users": "Error occurred while loading users.",
-    "error-table": "Error occurred while loading table records",
+    "error-table": "Error occurred while loading table records.",
     "empty": "Empty"
 }
