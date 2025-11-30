@@ -95,12 +95,18 @@ class CreateMachineFormConfig(BaseModel):
     ram: int
     vcpu: int
       
+      
+class CreateMachineFormConnectionProtocols(BaseModel):
+    vnc: bool
+    rdp: bool
+    ssh: bool
     
 class CreateMachineForm(BaseModel):
     title: str
     description: str
     tags: set[str]
     
+    connection_protocols: CreateMachineFormConnectionProtocols
     assigned_clients: set[UUID]
     
     source_type: Literal["iso", "snapshot"]
@@ -109,6 +115,7 @@ class CreateMachineForm(BaseModel):
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
+    
     
     
 class MachineBulkSpec(BaseModel):
