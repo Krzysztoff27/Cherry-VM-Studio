@@ -8,9 +8,9 @@ import { AccountType } from "../../../../types/config.types";
 import classes from "./UsersPage.module.css";
 
 const UsersPage = ({ accountType }: { accountType: AccountType }): React.JSX.Element => {
-    const { data, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`);
+    const { data, error, loading, refresh } = useFetch(`/users?account_type=${accountType}`, undefined, true);
     const [currentUuid, setCurrentUuid] = useState<string>("");
-    const [accountModalMode, setAccountModalMode] = useState<boolean>(false);
+    const [accountModalInEditMode, setAccountModalInEditMode] = useState<boolean>(false);
     const [modalsOpened, setModalsOpened] = useState({
         account: false,
         password: false,
@@ -24,7 +24,7 @@ const UsersPage = ({ accountType }: { accountType: AccountType }): React.JSX.Ele
     const closePasswordModal = () => setModalsOpened((prev) => ({ ...prev, password: false }));
 
     const openAccountModal = (uuid: string, mode: boolean) => {
-        setAccountModalMode(mode);
+        setAccountModalInEditMode(mode);
         setCurrentUuid(uuid);
         setModalsOpened((prev) => ({ ...prev, account: true }));
     };
@@ -41,16 +41,17 @@ const UsersPage = ({ accountType }: { accountType: AccountType }): React.JSX.Ele
                         onClose={closePasswordModal}
                     />
                 </Portal>
-                {currentUuid && (
-                    <AccountModal
-                        mode={accountModalMode}
-                        opened={modalsOpened.account}
-                        refreshTable={refresh}
-                        onClose={closeAccountModal}
-                        openPasswordModal={openPasswordModal}
-                        uuid={currentUuid}
-                    />
-                )}
+
+                <AccountModal
+                    inEditMode={accountModalInEditMode}
+                    setInEditMode={setAccountModalInEditMode}
+                    opened={modalsOpened.account}
+                    refreshTable={refresh}
+                    onClose={closeAccountModal}
+                    openPasswordModal={openPasswordModal}
+                    uuid={currentUuid}
+                />
+
                 <AccountTable
                     accountType={accountType}
                     accounts={data}

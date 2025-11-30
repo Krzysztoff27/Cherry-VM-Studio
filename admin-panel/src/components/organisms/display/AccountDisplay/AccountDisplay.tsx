@@ -49,12 +49,14 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                         label={`${tns("roles")}:`}
                         items={user?.roles.map((role) => role.name)}
                         emptyMessage={`${t("none")}`}
+                        ml="md"
                     />
                 ) : (
                     <BadgeGroup
                         label={`${tns("assigned-groups")}:`}
                         items={user?.groups.map((group) => group.name)}
                         emptyMessage={`${t("none")}`}
+                        ml="md"
                     />
                 )}
                 <Group className={classes.buttonGroup}>

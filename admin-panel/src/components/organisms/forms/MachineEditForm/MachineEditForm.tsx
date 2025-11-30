@@ -1,4 +1,4 @@
-import { Fieldset, Group, ScrollArea, Stack, Tabs, TagsInput, Textarea, TextInput, Title } from "@mantine/core";
+import { Fieldset, Group, Loader, ScrollArea, Stack, Tabs, TagsInput, Text, Textarea, TextInput, Title } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
 import { MachineData, MachineDiskForm, MachineState, SimpleState, User } from "../../../../types/api.types";
@@ -14,6 +14,8 @@ import MachineDetailsFieldset, { MachineConnectionProtocolsFormValues } from "..
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { useEffect, useMemo, useState } from "react";
+import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
+import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
 
 export interface MachineEditFormValues {
     title: string;
@@ -34,9 +36,9 @@ export interface MachineEditFormProps {
 }
 
 const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("pages", "machine");
+    const { t, tns } = useNamespaceTranslation("pages", "machine");
     const { data: loggedInUser, loading, error } = useFetch<User>("user");
-    const { data: users } = useFetch<Record<string, User>>("users?account_type=client");
+    const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, User>>("users?account_type=client");
     const { canManageMachine } = usePermissions();
     const [configTemplate, setConfigTemplate] = useState("custom");
 
@@ -47,7 +49,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
             ({
                 title: machine.title ?? "Unnamed Machine",
                 tags: machine?.tags ?? [],
-                description: machine.description.trim(),
+                description: machine.description?.trim(),
                 config: {
                     ram: machine.ram_max,
                     vcpu: 1,
@@ -126,7 +128,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
 
     const removeMember = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
     const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
-    const assignedUsers = form.values.assigned_clients.map((uuid) => users[uuid]);
+    const assignedUsers = form.values.assigned_clients.map((uuid) => users?.[uuid]);
 
     return (
         <Tabs
@@ -201,22 +203,34 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                     className={classes.fieldset}
                     disabled={disabled}
                 >
-                    <Stack
-                        pt="xs"
-                        gap="42"
-                        h="100%"
-                    >
-                        <AddMembersField
-                            alreadyAddedUuids={form.values.assigned_clients}
-                            onSubmit={addAssignedClients}
-                            multiselectProps={{ classNames: { input: "borderless" } }}
-                            buttonProps={{ className: "borderless" }}
+                    {usersError ? (
+                        <ResourceError
+                            icon={IconUsers}
+                            message={t("error-users")}
                         />
-                        <MembersTable
-                            usersData={assignedUsers}
-                            removeMember={removeMember}
+                    ) : usersLoading ? (
+                        <ResourceLoading
+                            icon={IconUsers}
+                            message={t("loading-users")}
                         />
-                    </Stack>
+                    ) : (
+                        <Stack
+                            pt="xs"
+                            gap="42"
+                            h="100%"
+                        >
+                            <AddMembersField
+                                alreadyAddedUuids={form.values.assigned_clients}
+                                onSubmit={addAssignedClients}
+                                multiselectProps={{ classNames: { input: "borderless" } }}
+                                buttonProps={{ className: "borderless" }}
+                            />
+                            <MembersTable
+                                usersData={assignedUsers}
+                                removeMember={removeMember}
+                            />
+                        </Stack>
+                    )}
                 </Fieldset>
             </Tabs.Panel>
         </Tabs>

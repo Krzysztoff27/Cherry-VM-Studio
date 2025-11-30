@@ -22,7 +22,7 @@ export const useApi = (): useApiReturn => {
     const baseApiRequestConfig = {
         headers: authHeaders,
         transitional: { clarifyTimeoutError: true },
-        timeout: 3000,
+        timeout: 10000,
         timeoutErrorMessage: "No response from the API service.",
     } as AxiosRequestConfig;
 

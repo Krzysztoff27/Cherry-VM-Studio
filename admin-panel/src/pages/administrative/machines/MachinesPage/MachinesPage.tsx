@@ -3,7 +3,6 @@ import MachinesTable from "../../../../components/organisms/tables/MachinesTable
 import { ERRORS } from "../../../../config/errors.config";
 import useMachineState from "../../../../hooks/useMachineState";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications";
-import { safeObjectKeys } from "../../../../utils/misc";
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachinesPage.module.css";
 import { isNull, merge, omitBy } from "lodash";
@@ -53,7 +52,7 @@ const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Ele
                 <MachinesTable
                     machines={machines}
                     refresh={refresh}
-                    loading={loading}
+                    loading={loading && isNull(machinesData)}
                     error={error}
                     global={global}
                     onRemove={onRemove}

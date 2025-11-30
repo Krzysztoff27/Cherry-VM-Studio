@@ -40,7 +40,6 @@
     "surname": "Surname",
     "email": "Email",
     "nothing-found": "Nothing found...",
-    "error-users": "Error occured while loading users...",
     "administrator": "Administrator",
     "client": "Client",
     "client-account": "Client Account",
@@ -70,5 +69,11 @@
     "connect-via-vnc": "Connect via VNC",
     "greeting-empty": "Hello!",
     "greeting": "Hello, {{fullname}}!",
-    "loading-machines": "Loading machines"
+    "loading-machines": "Loading machines",
+    "loading-users": "Loading users",
+    "loading-table": "Loading table records",
+    "error-machines": "Error occurred while loading machines.",
+    "error-users": "Error occurred while loading users.",
+    "error-table": "Error occurred while loading table records",
+    "empty": "Empty"
 }

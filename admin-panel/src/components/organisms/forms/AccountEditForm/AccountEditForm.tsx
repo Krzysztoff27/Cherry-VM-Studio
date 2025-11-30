@@ -130,11 +130,13 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 key={form.key("name")}
                                 {...form.getInputProps("name")}
                                 className={classes.input}
+                                classNames={{ input: "borderless" }}
                             />
                             <TextInput
                                 className={classes.input}
                                 key={form.key("surname")}
                                 {...form.getInputProps("surname")}
+                                classNames={{ input: "borderless" }}
                             />
                         </Group>
 
@@ -145,6 +147,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 key={form.key("username")}
                                 {...form.getInputProps("username")}
                                 className={classes.input}
+                                classNames={{ input: "borderless" }}
                             />
                         </Group>
                         <Group className={classes.inputGroup}>
@@ -154,6 +157,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 key={form.key("email")}
                                 {...form.getInputProps("email")}
                                 className={classes.input}
+                                classNames={{ input: "borderless" }}
                             />
                         </Group>
                         <Group className={classes.inputGroup}>
@@ -165,6 +169,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 flex="1"
                                 onClick={() => openPasswordModal(user.uuid)}
                                 disabled={!canChangePassword}
+                                className="borderless"
                             >
                                 {tns("change-password")}
                             </Button>
@@ -184,6 +189,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 </Title>
                                 <RoleMultiselect
                                     className={classes.input}
+                                    classNames={{ input: "borderless" }}
                                     comboboxProps={{ position: "top" }}
                                     key={form.key("roles")}
                                     {...form.getInputProps("roles")}
@@ -199,6 +205,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
                                 </Title>
                                 <GroupMultiselect
                                     className={classes.input}
+                                    classNames={{ input: "borderless" }}
                                     comboboxProps={{ position: "top" }}
                                     key={form.key("groups")}
                                     {...form.getInputProps("groups")}

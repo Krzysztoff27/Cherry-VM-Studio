@@ -83,7 +83,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
                         c="dimmed"
                         size="sm"
                     >
-                        {machine.description}
+                        {machine.description.trim() || "-"}
                     </Text>
                 </Stack>
 
@@ -158,6 +158,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
             <Group
                 mt="auto"
                 justify="space-between"
+                wrap="nowrap"
             >
                 <Box w="36" />
                 <ConnectToMachineSplitButton

@@ -77,6 +77,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
                             placeholder={tns("name")}
                             w={300}
                             bd="none"
+                            classNames={{ input: "borderless" }}
                             key={form.key("name")}
                             {...form.getInputProps("name")}
                         />
@@ -84,6 +85,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
                             placeholder={tns("select-clients")}
                             nothingFoundMessage={loading ? t("loading") : error ? t("error-clients") : false}
                             users={safeObjectValues(users)}
+                            classNames={{ input: "borderless" }}
                             key={form.key("users")}
                             {...form.getInputProps("users")}
                         />

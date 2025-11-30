@@ -1,9 +1,12 @@
 import { ActionIcon, Box, ScrollArea } from "@mantine/core";
-import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled } from "@tabler/icons-react";
+import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconList } from "@tabler/icons-react";
 import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
 import classes from "./TanstackTableBody.module.css";
 import cs from "classnames";
+import { useTranslation } from "react-i18next";
+import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
+import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
 
 export interface TanstackTableBodyProps {
     table: Table<any>;
@@ -14,14 +17,16 @@ export interface TanstackTableBodyProps {
 }
 
 const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): React.JSX.Element => {
+    const { t } = useTranslation();
     RowComponent = RowComponent || Box;
 
     return (
         <ScrollArea
             className={cs(classes.table)}
-            classNames={{ content: "auto-width" }}
+            classNames={{ content: "auto-width full-height" }}
             scrollbars="xy"
             offsetScrollbars
+            pos="relative"
         >
             {table.getHeaderGroups().map((headerGroup) => (
                 <Box
@@ -62,7 +67,19 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
                 </Box>
             ))}
 
-            {!error &&
+            {error ? (
+                <ResourceError
+                    icon={IconList}
+                    message={t("error-table")}
+                    mt="-64px"
+                />
+            ) : loading ? (
+                <ResourceLoading
+                    icon={IconList}
+                    message={t("loading-table")}
+                    mt="-64px"
+                />
+            ) : (
                 table.getRowModel().rows.map((row) => (
                     <RowComponent
                         className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
@@ -85,7 +102,8 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
                             </Box>
                         ))}
                     </RowComponent>
-                ))}
+                ))
+            )}
         </ScrollArea>
     );
 };

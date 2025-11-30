@@ -3,54 +3,49 @@ import useFetch from "../../../hooks/useFetch";
 import { Modal } from "@mantine/core";
 import AccountDisplay from "../../../components/organisms/display/AccountDisplay/AccountDisplay";
 import AccountEditForm from "../../../components/organisms/forms/AccountEditForm/AccountEditForm";
+import AccountModalPlaceholder from "../../../components/organisms/display/AccountDisplay/AccountDisplayPlaceholder";
 
-const AccountModal = ({ mode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
-    const [editMode, setEditMode] = useState<boolean>(mode);
-    const { data, error, loading, refresh: refreshUser } = useFetch(`/user/${uuid}`);
+const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
+    const { data, error, loading, refresh: refreshUser } = useFetch(`/user/${uuid}`, undefined, true);
 
-    const toggle = () => setEditMode(prev => !prev);
+    const toggle = () => setInEditMode((prev) => !prev);
     const refresh = () => {
         refreshTable();
         refreshUser();
     };
 
-    useEffect(() => {
-        setEditMode(mode);
-    }, [mode]);
+    const close = () => {
+        setInEditMode(false);
+        onClose();
+    };
 
     return (
         <>
             <Modal
                 opened={opened}
-                onClose={onClose}
+                onClose={close}
                 size="lg"
-                styles={{
-                    body: {
-                        padding: 0,
-                    },
-                }}
+                styles={{ body: { padding: 0 } }}
                 withCloseButton={false}
             >
-                {!loading && !error && data ? (
-                    editMode ? (
-                        <AccountEditForm
-                            user={data}
-                            onCancel={toggle}
-                            onSubmit={() => {
-                                toggle();
-                                refresh();
-                            }}
-                            openPasswordModal={openPasswordModal}
-                        />
-                    ) : (
-                        <AccountDisplay
-                            user={data}
-                            onClose={onClose}
-                            onEdit={toggle}
-                        />
-                    )
+                {loading || error || !data ? (
+                    <AccountModalPlaceholder onClose={onClose} />
+                ) : inEditMode ? (
+                    <AccountEditForm
+                        user={data}
+                        onCancel={toggle}
+                        onSubmit={() => {
+                            toggle();
+                            refresh();
+                        }}
+                        openPasswordModal={openPasswordModal}
+                    />
                 ) : (
-                    ""
+                    <AccountDisplay
+                        user={data}
+                        onClose={onClose}
+                        onEdit={toggle}
+                    />
                 )}
             </Modal>
         </>
