@@ -63,7 +63,7 @@ const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element
                             classNames={{ input: "borderless" }}
                             flex="1"
                             readOnly
-                            value={machine.active && machine.port !== -1 ? machine.port : "-"}
+                            value={machine.active && machine.ras_port ? `${machine.ras_port}` : "-"}
                         />
                     </Group>
 

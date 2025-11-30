@@ -114,6 +114,8 @@
         "hardware-specifications": "Hardware Specifications",
         "machine-details": "Machine Details",
         "config-template": "Configuration Templates",
+        "machine-connection-types": "Connection types",
+
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
             "name-too-long": "Name length cannot exceed 50 characters.",

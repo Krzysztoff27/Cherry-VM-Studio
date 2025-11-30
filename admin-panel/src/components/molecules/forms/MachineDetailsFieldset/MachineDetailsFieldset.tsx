@@ -4,6 +4,8 @@ import {
     Group,
     ScrollArea,
     ScrollAreaProps,
+    Select,
+    SelectProps,
     Stack,
     TagsInput,
     TagsInputProps,
@@ -19,11 +21,14 @@ import useFetch from "../../../../hooks/useFetch";
 import { UserInDB } from "../../../../types/api.types";
 import { UseFormReturnType } from "@mantine/form";
 
+export type MachineConnectionProtocolsFormValues = "rdp" | "vnc" | "ssh" | "rdp+ssh" | "vnc+ssh";
+
 export interface MachineDetailsFormRequiredValues {
     title: string;
     tags: string[];
     assigned_clients: string[];
     description: string;
+    connection_protocols: MachineConnectionProtocolsFormValues;
 }
 
 export interface MachineDetailsFormProps<T = {}> {
@@ -37,6 +42,7 @@ export interface MachineDetailsFormProps<T = {}> {
         inputTags?: Partial<TagsInputProps>;
         inputAssignedClients?: Partial<UserMultiselectProps>;
         inputDescription?: Partial<TextareaProps>;
+        inputConnectionProtocols?: Partial<SelectProps>;
     };
     i18nextNamespace?: string;
     i18nextPrefix?: string;
@@ -96,6 +102,16 @@ const MachineDetailsFieldset = <T extends Record<string, any> = {}>({
                         classNames={merge({ input: "borderless" }, props?.inputTags?.classNames)}
                         readOnly={disabled}
                     />
+                    <Textarea
+                        placeholder={tns("machine-description-placeholder")}
+                        description={tns("machine-description")}
+                        w={366}
+                        key={form.key("description")}
+                        {...form.getInputProps("description")}
+                        {...props?.inputDescription}
+                        classNames={merge({ input: "borderless" }, props?.inputDescription?.classNames)}
+                        readOnly={disabled}
+                    />
                     {!withoutAssignedClients && (
                         <UserMultiselect
                             placeholder={form.values.assigned_clients.length ? "" : tns("assigned-clients-placeholder")}
@@ -109,14 +125,21 @@ const MachineDetailsFieldset = <T extends Record<string, any> = {}>({
                             readOnly={disabled}
                         />
                     )}
-                    <Textarea
-                        placeholder={tns("machine-description-placeholder")}
-                        description={tns("machine-description")}
+                    <Select
+                        description={tns("machine-connection-types")}
+                        allowDeselect={false}
+                        data={[
+                            { label: "VNC + SSH", value: "vnc+ssh" },
+                            { label: "RDP + SSH", value: "rdp+ssh" },
+                            { label: "VNC", value: "vnc" },
+                            { label: "RDP", value: "rdp" },
+                            { label: "SSH", value: "ssh" },
+                        ]}
                         w={366}
-                        key={form.key("description")}
-                        {...form.getInputProps("description")}
-                        {...props?.inputDescription}
-                        classNames={merge({ input: "borderless" }, props?.inputDescription?.classNames)}
+                        key={form.key("connection_protocols")}
+                        {...form.getInputProps("connection_protocols")}
+                        {...props?.inputConnectionProtocols}
+                        classNames={merge({ input: "borderless" }, props?.inputConnectionProtocols?.classNames)}
                         readOnly={disabled}
                     />
                 </Stack>

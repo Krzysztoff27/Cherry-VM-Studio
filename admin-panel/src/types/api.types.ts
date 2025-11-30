@@ -96,6 +96,8 @@ export interface MachineDiskForm {
     type: MachineDiskTypes;
 }
 
+export type MachineConnectionProtocols = "vnc" | "ssh" | "rdp";
+
 export interface MachineData {
     uuid: string;
     title: string;

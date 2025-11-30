@@ -201,6 +201,7 @@
         "machine-group-no": "No.",
         "machine-tags-placeholder": "Enter additional tags",
         "machine-tags": "Machine tags",
+        "machine-connection-types": "Connection types",
         "assigned-clients": "Assigned clients",
         "assigned-clients-placeholder": "Assign clients to the machine",
         "source-type": "Select the source type",
@@ -232,7 +233,8 @@
             "name-invalid-first": "Name must start with a letter.",
             "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
             "tags-invalid-first": "Tag must start with a letter.",
-            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+            "source-uuid-empty": "No source selected."
         }
     },
     "create-machines-in-bulk": {

@@ -3,10 +3,12 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { Modal, Stack, Text, useModalsStack } from "@mantine/core";
 import { useEffect, useState } from "react";
 import classes from "./CreateMachineModal.module.css";
-import { CreateMachineBody, MachineDisk, MachineDiskForm } from "../../../types/api.types";
+import { MachineDisk, MachineDiskForm } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
 import { toBytes } from "../../../utils/files";
-import MachineDetailsFieldset from "../../../components/molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
+import MachineDetailsFieldset, {
+    MachineConnectionProtocolsFormValues,
+} from "../../../components/molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
 import FormControlButtons from "../../../components/atoms/interactive/FormControlButtons/FormControlButtons";
 import MachineConfigFieldset from "../../../components/molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineSourceFieldset from "../../../components/molecules/forms/MachineSourceFieldset/MachineSourceFieldset";
@@ -26,10 +28,16 @@ export interface CreateMachineFormValues {
     };
     disks: MachineDiskForm[];
     os_disk: number;
+    connection_protocols: MachineConnectionProtocolsFormValues;
 }
 
-export interface CreateMachineFormSubmitValues extends Omit<CreateMachineFormValues, "disks"> {
+export interface CreateMachineFormSubmitValues extends Omit<CreateMachineFormValues, "disks" | "connection_protocols"> {
     disks: MachineDisk[];
+    connection_protocols: {
+        vnc: boolean;
+        rdp: boolean;
+        ssh: boolean;
+    };
 }
 
 export interface CreateMachineModalStackProps {
@@ -65,6 +73,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
             },
             disks: [{ name: "sda", size: 5, unit: "GiB", type: "raw" }],
             os_disk: 0,
+            connection_protocols: "vnc",
         },
         validate: {
             title: (val) =>
@@ -85,22 +94,26 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                         return null;
                     })
                     .find((e) => e) || null,
-            source_uuid: isNotEmpty("validation.source-uuid-empty"),
+            source_uuid: isNotEmpty(tns("validation.source-uuid-empty")),
             disks: {
                 name: (val) =>
                     /\s/.test(val)
                         ? tns("validation.name-spaces")
-                        : !/^[\w.-]+$/.test(val)
-                        ? tns("validation.name-invalid-characters")
-                        : !/[a-zA-Z]/.test(val[0])
-                        ? tns("validation.name-invalid-first")
                         : val.length < 3
                         ? tns("validation.name-too-short")
                         : val.length > 24
                         ? tns("validation.name-too-long")
+                        : !/^[\w.-]+$/.test(val)
+                        ? tns("validation.name-invalid-characters")
+                        : !/[a-zA-Z]/.test(val[0])
+                        ? tns("validation.name-invalid-first")
                         : null,
             },
         },
+        transformValues: (values) => ({
+            ...values,
+            description: values.description.trim(),
+        }),
     });
 
     useEffect(() => {
@@ -121,7 +134,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     };
 
     const resetConfigPage = () => {
-        setConfigTemplate("");
+        setConfigTemplate("custom");
         form.resetField("config");
     };
 
@@ -141,6 +154,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     };
 
     const validateDisksForm = () => {
+        console.log(form.values.disks);
         form.values.disks.forEach((disk, i) => keys(disk).forEach((key) => form.validateField(`disks.${i}.${key}`)));
         return form.values.disks.every((disk, i) => keys(disk).every((key) => form.isValid(`disks.${i}.${key}`)));
     };
@@ -153,6 +167,11 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 type: disk.type,
                 size_bytes: toBytes(disk.size, disk.unit),
             })),
+            connection_protocols: {
+                vnc: values.connection_protocols.includes("vnc"),
+                rdp: values.connection_protocols.includes("rdp"),
+                ssh: values.connection_protocols.includes("ssh"),
+            },
         };
         onSubmit(transformedValues);
     };
@@ -269,7 +288,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                         stack.close("disks-page");
                     }}
                     onSubmit={() => {
-                        if (validateDisksForm) {
+                        if (validateDisksForm()) {
                             stack.close("disks-page");
                             handleSubmit(form.values);
                         }

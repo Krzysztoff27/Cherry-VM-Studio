@@ -3,9 +3,10 @@ import SplitButton, { SplitButtonProps } from "../SplitButton/SplitButton";
 import classes from "./ConnectToMachineSplitButton.module.css";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { MachineData, SimpleState } from "../../../../types/api.types";
+import { MachineConnectionProtocols, MachineData, SimpleState } from "../../../../types/api.types";
 import useFetch from "../../../../hooks/useFetch";
-import { merge } from "lodash";
+import { isNull, keys, merge } from "lodash";
+import { Link } from "react-router-dom";
 
 export interface ConnectToMachineSplitButtonProps extends SplitButtonProps {
     machine: MachineData;
@@ -19,18 +20,24 @@ const ConnectToMachineSplitButton = ({ machine, state, ...props }: ConnectToMach
 
     const canConnect = canConnectToMachine(user, machine) && !state.fetching && !state.loading && state.active;
 
+    const connectionKeys = keys(machine.connections).sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0)) as MachineConnectionProtocols[];
+    const mainKey = connectionKeys.shift() as MachineConnectionProtocols;
+
+    const openSession = (key: MachineConnectionProtocols) => window.open(machine.connections[key], "_blank", "noopener,noreferrer");
+
     return (
         <SplitButton
+            onClick={() => openSession(mainKey)}
             variant="light"
             color="gray"
-            disabled={!canConnect}
+            disabled={!canConnect || !mainKey}
             className={classes.connectButton}
             leftSection={<IconDeviceDesktop size={18} />}
             {...props}
             sideButtonProps={merge(
                 {
                     className: classes.connectButton,
-                    disabled: !canConnect,
+                    disabled: !canConnect || !connectionKeys.length,
                     variant: "light",
                     color: "gray",
                 },
@@ -43,29 +50,17 @@ const ConnectToMachineSplitButton = ({ machine, state, ...props }: ConnectToMach
                 },
                 props?.menuProps
             )}
-            menuButtonsProps={merge(
-                [
-                    {
-                        children: t("connect-via-vnc"),
-                        leftSection: <IconDeviceDesktop size={18} />,
-                        justify: "left",
-                        className: classes.menuButton,
-                        variant: "light",
-                        color: "gray",
-                    },
-                    {
-                        children: t("connect-via-ssh"),
-                        leftSection: <IconTerminal2 size={18} />,
-                        justify: "left",
-                        className: classes.menuButton,
-                        variant: "light",
-                        color: "gray",
-                    },
-                ],
-                props?.menuButtonsProps
-            )}
+            menuButtonsProps={connectionKeys.map((key) => ({
+                children: t(`connect-via-${key}`),
+                onClick: () => openSession(key),
+                leftSection: <IconDeviceDesktop size={18} />,
+                justify: "left",
+                className: classes.menuButton,
+                variant: "light",
+                color: "gray",
+            }))}
         >
-            {t("connect-via-rdp")}
+            {t(mainKey ? `connect-via-${mainKey}` : "connect")}
         </SplitButton>
     );
 };

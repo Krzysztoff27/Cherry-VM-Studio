@@ -10,7 +10,7 @@ import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachineEditForm.module.css";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { isNull, keys } from "lodash";
-import MachineDetailsFieldset from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
+import MachineDetailsFieldset, { MachineConnectionProtocolsFormValues } from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { useEffect, useMemo, useState } from "react";
@@ -26,6 +26,7 @@ export interface MachineEditFormValues {
     disks: MachineDiskForm[];
     os_disk: number;
     assigned_clients: string[];
+    connection_protocols: MachineConnectionProtocolsFormValues;
 }
 
 export interface MachineEditFormProps {
@@ -44,19 +45,29 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
     const initialValues = useMemo(
         () =>
             ({
-                // title: machine.title,
-                title: "Unnamed Machine",
-                // tags: machine.tags,
-                tags: ["Dummy", "Placeholder"],
-                // description: machine.description,
-                description: "",
+                title: machine.title ?? "Unnamed Machine",
+                tags: machine?.tags ?? [],
+                description: machine.description.trim(),
                 config: {
                     ram: machine.ram_max,
-                    vcpu: machine.cpu,
+                    vcpu: 1,
+                    // vcpu: machine.cpu,
                 },
-                disks: [],
+                disks:
+                    machine.disks?.map?.(
+                        (disk) =>
+                            ({
+                                name: disk.name,
+                                type: disk.type,
+                                unit: "MiB",
+                                size: disk.size_bytes / (1024 * 1024),
+                            } as MachineDiskForm)
+                    ) ?? [],
                 os_disk: 0,
                 assigned_clients: keys(machine.assigned_clients),
+                connection_protocols: keys(machine.connections)
+                    .sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0))
+                    .join("+"),
             } as MachineEditFormValues),
         [JSON.stringify(machine)]
     );
