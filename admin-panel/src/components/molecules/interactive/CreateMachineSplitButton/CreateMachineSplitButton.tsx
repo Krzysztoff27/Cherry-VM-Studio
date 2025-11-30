@@ -41,6 +41,7 @@ const CreateMachineSplitButton = ({ children, disabled, onSubmit, ...props }: Cr
                         ),
                         children: <>{tns("create-multiple")} </>,
                         className: classes.menuButton,
+                        styles: { label: { flex: 1 } },
                         justify: "start",
                         onClick: () => setBulkModalOpened(true),
                     },

@@ -1,9 +1,12 @@
 import { t } from "i18next";
 import MachineDetailsCell from "../../../atoms/table/MachineDetailsCell";
-import MachineStateCell from "../../../atoms/table/MachineStateCell";
 import ProgressWithPercentage from "../../../atoms/feedback/ProgressWithPercentage/ProgressWithPercentage";
 import MachineControlsCell from "../../../atoms/table/MachineControlsCell";
-import MachineAssignedUserCell, { filterFunction, sortingFunction } from "../../../atoms/table/MachineAssignedUserCell";
+import MachineStateCell, { sortingFunction as machineStateCellSoringFn } from "../../../atoms/table/MachineStateCell";
+import MachineAssignedUserCell, {
+    filterFunction as assignedUsersCellFilterFn,
+    sortingFunction as assignedUsersCellSortingFn,
+} from "../../../atoms/table/MachineAssignedUserCell";
 
 export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: string) => void) =>
     [
@@ -21,10 +24,10 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
         {
             accessorKey: "state",
             header: t("machines.table.headers.state", { ns: "pages" }),
-            enableSorting: false,
             cell: MachineStateCell,
             minSize: 100,
             maxSize: 180,
+            sortingFn: machineStateCellSoringFn,
         },
         !global && {
             accessorKey: "ram",
@@ -47,16 +50,16 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             cell: MachineAssignedUserCell,
             minSize: 100,
             maxSize: 500,
-            sortingFn: sortingFunction,
-            filterFn: filterFunction,
+            sortingFn: assignedUsersCellSortingFn,
+            filterFn: assignedUsersCellFilterFn,
         },
         {
             accessorKey: "clients",
             header: t("machines.table.headers.assigned-clients", { ns: "pages" }),
             cell: MachineAssignedUserCell,
             minSize: 180,
-            sortingFn: sortingFunction,
-            filterFn: filterFunction,
+            sortingFn: assignedUsersCellSortingFn,
+            filterFn: assignedUsersCellFilterFn,
         },
         {
             accessorKey: "options",

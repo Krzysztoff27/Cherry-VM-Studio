@@ -41,7 +41,7 @@
             "filters": "Filtruj",
             "import": "Zaimportuj",
             "create-machine": "Stwórz maszynę",
-            "create-multiple": "Stwórz maszyny hurtowo"
+            "create-multiple": "Hurtowe tworzenie"
         },
         "table": {
             "headers": {

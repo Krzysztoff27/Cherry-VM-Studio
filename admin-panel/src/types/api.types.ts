@@ -121,6 +121,7 @@ export interface MachineState extends MachineData {
     loading: boolean;
     active_connections?: Array<string> | null;
     cpu?: number;
+    vcpu: number;
     ram_used?: number;
     ram_max?: number;
     boot_timestamp: string | null;

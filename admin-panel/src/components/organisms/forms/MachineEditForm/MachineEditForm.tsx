@@ -52,8 +52,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                 description: machine.description?.trim(),
                 config: {
                     ram: machine.ram_max,
-                    vcpu: 1,
-                    // vcpu: machine.cpu,
+                    vcpu: machine.vcpu,
                 },
                 disks:
                     machine.disks?.map?.(
@@ -168,7 +167,8 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                 <MachineDetailsFieldset<MachineEditFormValues>
                     form={form}
                     props={{ fieldset: { variant: "default", className: classes.fieldset } }}
-                    disabled={disabled}
+                    // disabled={disabled}
+                    disabled={true} // ? readonly for now
                     withoutAssignedClients
                 />
             </Tabs.Panel>
@@ -179,7 +179,8 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                 <MachineConfigFieldset<MachineEditFormValues>
                     form={form}
                     props={{ fieldset: { variant: "default", className: classes.fieldset }, scrollArea: { maw: "366px" } }}
-                    disabled={disabled}
+                    // disabled={disabled}
+                    disabled={true} // ? readonly for now
                     setConfigTemplate={setConfigTemplate}
                     configTemplate={configTemplate}
                 />
@@ -191,7 +192,8 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                 <MachineDisksFieldset<MachineEditFormValues>
                     form={form}
                     props={{ fieldset: { variant: "default", className: classes.fieldset } }}
-                    disabled={disabled}
+                    // disabled={disabled}
+                    disabled={true} // ? readonly for now
                     osDiskReadonly={true}
                 />
             </Tabs.Panel>

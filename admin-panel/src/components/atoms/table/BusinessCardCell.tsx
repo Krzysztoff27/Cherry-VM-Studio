@@ -16,9 +16,9 @@ const BusinessCardCell = ({ getValue }): React.JSX.Element => {
     );
 };
 
-export const sortingFunction = (rowA: any, rowB: any, columndId: string) => {
-    const detailsA = rowA.getValue(columndId);
-    const detailsB = rowB.getValue(columndId);
+export const sortingFunction = (rowA: any, rowB: any, columnId: string) => {
+    const detailsA = rowA.getValue(columnId);
+    const detailsB = rowB.getValue(columnId);
 
     return getFullUserName(detailsB).localeCompare(getFullUserName(detailsA));
 };
