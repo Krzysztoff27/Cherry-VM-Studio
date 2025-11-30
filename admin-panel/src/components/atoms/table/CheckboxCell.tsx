@@ -6,6 +6,7 @@ const CheckboxCell = ({ row }): React.JSX.Element => (
         disabled={!row.getCanSelect()}
         onChange={row.getToggleSelectedHandler()}
         color="cherry"
+        onClick={(e) => e.stopPropagation()}
     />
 );
 

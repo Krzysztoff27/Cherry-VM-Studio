@@ -80,7 +80,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
                     mt="-64px"
                 />
             ) : (
-                table.getRowModel().rows.map((row) => (
+                table.getRowModel().rows.map((row: any, i: number) => (
                     <RowComponent
                         className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
                         key={row.id}

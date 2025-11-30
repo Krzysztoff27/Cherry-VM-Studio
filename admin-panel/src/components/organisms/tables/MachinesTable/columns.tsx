@@ -7,9 +7,19 @@ import MachineAssignedUserCell, {
     filterFunction as assignedUsersCellFilterFn,
     sortingFunction as assignedUsersCellSortingFn,
 } from "../../../atoms/table/MachineAssignedUserCell";
+import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
+import CheckboxCell from "../../../atoms/table/CheckboxCell";
 
 export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: string) => void) =>
     [
+        // {
+        //     accessorKey: "selection",
+        //     enableSorting: false,
+        //     header: CheckboxHeader,
+        //     cell: CheckboxCell,
+        //     maxSize: 50,
+        //     enableHiding: false,
+        // },
         {
             accessorKey: "details",
             header: t("machines.table.headers.name", { ns: "pages" }),

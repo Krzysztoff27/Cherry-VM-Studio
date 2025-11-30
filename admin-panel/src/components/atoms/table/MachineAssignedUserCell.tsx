@@ -12,7 +12,7 @@ const MachineAssignedUserCell = ({ getValue }): React.JSX.Element => {
         return (
             <BusinessCard
                 name={getFullUserName(users[0])}
-                comment={users[0].email}
+                comment={`@${users[0].username}`}
                 size="md"
             />
         );
