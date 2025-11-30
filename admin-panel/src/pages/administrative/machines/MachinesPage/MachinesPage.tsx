@@ -37,15 +37,15 @@ const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Ele
     }, [error]);
 
     const onRemove = (uuid: string) => {
-        refresh();
         setMachinesState((prev) => {
             const states = prev;
             delete states[uuid];
             return states;
         });
+        refresh();
     };
 
-    const machines = loading ? {} : merge({}, machinesData, omitBy(machinesState, isNull));
+    const machines = merge({}, machinesData ?? {}, omitBy(machinesState, isNull));
 
     return (
         <Stack w="100%">

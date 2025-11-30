@@ -62,8 +62,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): R
                 </Box>
             ))}
 
-            {!loading &&
-                !error &&
+            {!error &&
                 table.getRowModel().rows.map((row) => (
                     <RowComponent
                         className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}

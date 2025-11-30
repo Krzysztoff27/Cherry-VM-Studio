@@ -129,7 +129,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
                 classNames={{ title: classes.title }}
             >
                 <ScrollArea
-                    h="400px"
+                    h="500px"
                     mb="lg"
                     type="always"
                     offsetScrollbars
