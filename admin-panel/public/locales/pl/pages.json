@@ -1,8 +1,8 @@
 {
     "admin-home": {
         "title": "Witaj w Wiśniowym Panelu Kontrolnym!",
-        "description1": "Znajdujesz się w panelu kontrolnym stworzonym do zarządzania Twoim Cherry VM Managerem.\n Jego głównym celem jest zapewnienie intuicyjnego interfejsu do kontrolowania wdrożonych maszyn.",
-        "description2": "W celu tworzenia bardziej zaawansowane konfiguracje, skorzystaj z paneli serwisów, na których bazuje CVMM:",
+        "description1": "Znajdujesz się w panelu kontrolnym stworzonym do zarządzania Twoim Cherry VM Studio.\n Jego głównym celem jest zapewnienie intuicyjnego interfejsu do kontrolowania wdrożonych maszyn.",
+        "description2": "W celu tworzenia bardziej zaawansowane konfiguracje, skorzystaj z paneli serwisów, na których bazuje CVMS:",
         "cherry-admin-panel": {
             "start": "Panel umożliwia:",
             "feature1": "Monitorowanie maszyn wirtualnych i ich aktywności.",
