@@ -30,7 +30,7 @@ async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Token
     return get_user_tokens(current_user)
 
 @app.get("/forwardauth", response_model=dict[str, str], tags=['Authentication'])
-async def __forwardauth__(authorization: Annotated[str | None, Header()], x_forwarded_uri: Annotated[str | None, Header()]) -> JSONResponse:
+async def __forwardauth__(authorization: Annotated[str | None, Header()]) -> JSONResponse:
     
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
@@ -41,21 +41,6 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()], x_forw
         raise HTTPUnauthorizedException(detail="Invalid session token.")
     
     headers = {"X-Guacamole-User": str(user.uuid)}
-    
-    if not x_forwarded_uri:
-        raise HTTPUnauthorizedException(detail="Missing X-Forwarded-Uri header.")
-    
-    PATH_REGEX = re.compile(r"^/(rdp|vnc|ssh)/([0-9a-fA-F-]+)")
-    path_match = PATH_REGEX.search(x_forwarded_uri)
-    if not path_match:
-        raise HTTPUnauthorizedException(detail="Invalid URI format.")
-    
-    connection_type = path_match.group(1)
-    machine_uuid_str = path_match.group(2)
-    
-    if machine_uuid_str and connection_type:
-        guacamole_connection_string = encode_guacamole_connection_string(machine_uuid_str, connection_type)
-        headers["X-Guacamole-String"] = guacamole_connection_string
     
     # Different services relying on forwardauth process responses in their own way.
     # For the sake of compatibility, the headers are sent in both content and headers section of the response.

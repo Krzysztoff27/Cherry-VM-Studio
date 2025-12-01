@@ -15,6 +15,7 @@ from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import Administrator, AdministratorInDB, AnyUser, Client, ClientInDB
 from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
+from modules.authentication.validation import encode_guacamole_connection_string
 from config import ENV_CONFIG
 
 XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"} 
@@ -215,7 +216,10 @@ def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "v
     connections: dict[Literal["ssh", "rdp", "vnc"], str] = {}
     
     for protocol in available_protocols:
-        connections[protocol] = f"https://session.{ENV_CONFIG.DOMAIN_NAME}/{protocol}/{machine_uuid}"
+        encoded_connection_string = encode_guacamole_connection_string(machine_uuid, protocol)
+        # connections[protocol] = f"https://session.{ENV_CONFIG.DOMAIN_NAME}/{protocol}/{machine_uuid}"
+        connections[protocol] = f"http://{ENV_CONFIG.DOMAIN_NAME}/guacamole/#/client/{encoded_connection_string}"
+        
         
     return connections
  

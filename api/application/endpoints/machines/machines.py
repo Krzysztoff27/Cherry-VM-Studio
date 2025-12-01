@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from application.app import app
-from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid
+from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid, get_machine_connections
 from modules.machine_state.models import MachineData
 from modules.machine_state.state_management import start_machine, stop_machine
 from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
@@ -126,3 +126,7 @@ async def __get_machine_disk_size___(disk_uuid: UUID, storage_pool: str, current
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     disk_size = get_machine_disk_size(disk_uuid, storage_pool)
     return disk_size
+
+@app.get("/debug/machine/connections/{machine_uuid}", response_model=None, tags=['Debug'])
+async def __get_machine_connections__(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "vnc"], str]:
+    return get_machine_connections(machine_uuid)
