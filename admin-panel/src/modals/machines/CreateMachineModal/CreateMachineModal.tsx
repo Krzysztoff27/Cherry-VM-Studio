@@ -71,9 +71,9 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 ram: 1024,
                 vcpu: 1,
             },
-            disks: [{ name: "sda", size: 5, unit: "GiB", type: "raw" }],
+            disks: [{ name: "System", size: 10, unit: "GiB", type: "qcow2" }],
             os_disk: 0,
-            connection_protocols: "vnc",
+            connection_protocols: "vnc+ssh",
         },
         validate: {
             title: (val) =>
