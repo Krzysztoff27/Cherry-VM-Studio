@@ -1,7 +1,7 @@
 import logging
 import re
 
-from fastapi import Depends, Header
+from fastapi import Depends, Header, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from typing import Annotated
@@ -30,14 +30,25 @@ async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Token
     return get_user_tokens(current_user)
 
 @app.get("/forwardauth", response_model=dict[str, str], tags=['Authentication'])
-async def __forwardauth__(authorization: Annotated[str | None, Header()]) -> JSONResponse:
+async def __forwardauth__(authorization: Annotated[str | None, Header()] = None, access_token: Annotated[str | None, Cookie()] = None) -> JSONResponse:
     
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
+    if not authorization and not access_token:
+        raise HTTPUnauthorizedException(detail="Neither authorization header nor access_token cookie was provided! Unable to authenticate.")
     
-    token = authorization.removeprefix("Bearer ").strip()
+    token = ""
+    
+    if authorization:
+        if not authorization.startswith("Bearer "):
+            raise HTTPUnauthorizedException(detail="Missing or invalid Authorization header.")
+    
+        token = authorization.removeprefix("Bearer ").strip()
+
+    elif access_token:
+        token = access_token
+        
     user = get_authenticated_user(token)
     if not user:
+        logger.error(f"Forwardauth failed: No user found for token {token}.")
         raise HTTPUnauthorizedException(detail="Invalid session token.")
     
     headers = {"X-Guacamole-User": str(user.uuid)}
