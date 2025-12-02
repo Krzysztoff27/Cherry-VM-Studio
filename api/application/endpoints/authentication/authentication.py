@@ -49,9 +49,6 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()] = None,
         elif access_token:
             token = access_token
         
-        logger.info(token)
-        logger.info(type(token))
-        
         if token is not None:
             try:
                 user = get_authenticated_user(token)
