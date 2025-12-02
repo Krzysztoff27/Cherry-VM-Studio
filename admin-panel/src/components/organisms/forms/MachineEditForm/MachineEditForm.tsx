@@ -1,6 +1,6 @@
-import { Fieldset, Group, Loader, ScrollArea, Stack, Tabs, TagsInput, Text, Textarea, TextInput, Title } from "@mantine/core";
+import { Button, Fieldset, Group, Loader, ScrollArea, Stack, Tabs, TagsInput, Text, Textarea, TextInput, Title } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
+import { IconCheck, IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
 import { MachineData, MachineDiskForm, MachineState, SimpleState, User } from "../../../../types/api.types";
 import EnhancedSlider from "../../../atoms/interactive/EnhancedSlider/EnhancedSlider";
 import { useForm } from "@mantine/form";
@@ -9,13 +9,15 @@ import AddMembersField from "../../../molecules/interactive/AddMembersField/AddM
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachineEditForm.module.css";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { isNull, keys } from "lodash";
+import { isEqual, isNull, keys, sortBy } from "lodash";
 import MachineDetailsFieldset, { MachineConnectionProtocolsFormValues } from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { useEffect, useMemo, useState } from "react";
 import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
 import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
+import AddClientsSelect from "../../../molecules/interactive/AddClientsSelect/AddClientsSelect";
+import useApi from "../../../../hooks/useApi";
 
 export interface MachineEditFormValues {
     title: string;
@@ -33,10 +35,12 @@ export interface MachineEditFormValues {
 
 export interface MachineEditFormProps {
     machine: MachineState;
+    refresh: () => void;
 }
 
-const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element => {
+const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machine");
+    const { sendRequest } = useApi();
     const { data: loggedInUser, loading, error } = useFetch<User>("user");
     const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, User>>("users?account_type=client");
     const { canManageMachine } = usePermissions();
@@ -117,17 +121,23 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
         form.reset();
     };
 
+    const submitChanges = async () => {
+        await sendRequest("PATCH", `machine/modify/${machine.uuid}`, { data: { assigned_clients: form.values.assigned_clients } });
+    };
+
     useEffect(() => {
         reloadForm();
     }, [state.fetching]);
 
-    const addAssignedClients = (newClients: string[]) => {
-        form.setFieldValue("assigned_clients", (prev) => [...prev, ...newClients]);
+    const addAssignedClient = (newClient: string) => {
+        form.setFieldValue("assigned_clients", (prev) => [...prev, newClient]);
     };
 
     const removeMember = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
     const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
-    const assignedUsers = form.values.assigned_clients.map((uuid) => users?.[uuid]);
+    const assignedClients = form.values.assigned_clients.map((uuid) => users?.[uuid]);
+
+    const assignedClientsChanged = !isEqual(sortBy(form.values.assigned_clients), sortBy(initialValues.assigned_clients));
 
     return (
         <Tabs
@@ -205,34 +215,43 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
                     className={classes.fieldset}
                     disabled={disabled}
                 >
-                    {usersError ? (
-                        <ResourceError
-                            icon={IconUsers}
-                            message={t("error-users")}
-                        />
-                    ) : usersLoading ? (
-                        <ResourceLoading
-                            icon={IconUsers}
-                            message={t("loading-users")}
-                        />
-                    ) : (
+                    <Stack h="100%">
                         <Stack
                             pt="xs"
                             gap="42"
-                            h="100%"
+                            mih="0"
+                            flex="1"
                         >
-                            <AddMembersField
-                                alreadyAddedUuids={form.values.assigned_clients}
-                                onSubmit={addAssignedClients}
-                                multiselectProps={{ classNames: { input: "borderless" } }}
-                                buttonProps={{ className: "borderless" }}
+                            <AddClientsSelect
+                                onSubmit={addAssignedClient}
+                                excludedClients={form.values.assigned_clients}
+                                classNames={{ input: "borderless" }}
                             />
+
                             <MembersTable
-                                usersData={assignedUsers}
+                                usersData={assignedClients}
                                 removeMember={removeMember}
+                                error={error}
+                                loading={loading}
                             />
                         </Stack>
-                    )}
+                        <Button
+                            variant="light"
+                            m="auto"
+                            color="lime"
+                            leftSection={
+                                <IconCheck
+                                    size={18}
+                                    stroke={3}
+                                />
+                            }
+                            disabled={!assignedClientsChanged}
+                            onClick={submitChanges}
+                            h="36"
+                        >
+                            {t(assignedClientsChanged ? "save-changes" : "no-changes")}
+                        </Button>
+                    </Stack>
                 </Fieldset>
             </Tabs.Panel>
         </Tabs>

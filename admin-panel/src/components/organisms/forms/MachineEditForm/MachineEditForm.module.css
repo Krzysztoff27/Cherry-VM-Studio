@@ -16,6 +16,7 @@
 .fieldset {
     margin-top: var(--mantine-spacing-sm);
     padding-top: var(--mantine-spacing-md);
-    height: 100%;
+    min-height: 0;
+    flex: 1;
     border: none;
 }

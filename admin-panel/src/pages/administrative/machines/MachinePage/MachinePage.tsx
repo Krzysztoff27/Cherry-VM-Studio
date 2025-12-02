@@ -13,7 +13,7 @@ import useFetch from "../../../../hooks/useFetch.ts";
 
 function MachinePage() {
     const { uuid } = useParams();
-    const { data: machineData, loading, error } = useFetch<MachineData>(`machine/${uuid}`);
+    const { data: machineData, loading, error, refresh } = useFetch<MachineData>(`machine/${uuid}`);
     const { machinesState } = useMachineState("subscribed", [uuid]);
     const { handleAxiosError } = useErrorHandler();
     const machine: MachineState = { ...machineData, ...machinesState[uuid] };
@@ -45,7 +45,10 @@ function MachinePage() {
                 span={6}
                 h="55%"
             >
-                <MachineEditForm machine={machine} />
+                <MachineEditForm
+                    machine={machine}
+                    refresh={refresh}
+                />
             </Column>
             <Column
                 span={6}

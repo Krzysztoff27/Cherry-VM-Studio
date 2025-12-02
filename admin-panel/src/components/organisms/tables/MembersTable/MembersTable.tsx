@@ -1,13 +1,15 @@
 import React, { useMemo } from "react";
 import BusinessCardCell from "../../../atoms/table/BusinessCardCell";
 import { Box, Button, ScrollArea, Stack } from "@mantine/core";
-import { IconLinkOff } from "@tabler/icons-react";
+import { IconLinkOff, IconUsers } from "@tabler/icons-react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
+import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
 
-const MembersTable = ({ usersData, removeMember }): React.JSX.Element => {
-    const { tns } = useNamespaceTranslation("modals", "group");
+const MembersTable = ({ usersData, removeMember, error, loading }): React.JSX.Element => {
+    const { t, tns } = useNamespaceTranslation("modals", "group");
     const data = useMemo(
         () =>
             usersData.map(({ uuid, name, surname, username, email }) => ({
@@ -66,24 +68,35 @@ const MembersTable = ({ usersData, removeMember }): React.JSX.Element => {
                         ))}
                     </Box>
                 ))}
-
-                <ScrollArea scrollbars="y">
-                    {table.getRowModel().rows.map((row) => (
-                        <Box
-                            className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                            key={row.id}
-                        >
-                            {row.getVisibleCells().map((cell) => (
-                                <Box
-                                    className={classes.td}
-                                    key={cell.id}
-                                >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Box>
-                            ))}
-                        </Box>
-                    ))}
-                </ScrollArea>
+                {error ? (
+                    <ResourceError
+                        icon={IconUsers}
+                        message={t("error-users")}
+                    />
+                ) : loading ? (
+                    <ResourceLoading
+                        icon={IconUsers}
+                        message={t("loading-users")}
+                    />
+                ) : (
+                    <ScrollArea scrollbars="y">
+                        {table.getRowModel().rows.map((row) => (
+                            <Box
+                                className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
+                                key={row.id}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <Box
+                                        className={classes.td}
+                                        key={cell.id}
+                                    >
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </Box>
+                                ))}
+                            </Box>
+                        ))}
+                    </ScrollArea>
+                )}
             </Box>
         </Stack>
     );
