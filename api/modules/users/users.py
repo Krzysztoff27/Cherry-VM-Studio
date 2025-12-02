@@ -232,6 +232,8 @@ def create_user(user_data: CreateUserForm) -> AnyUser:
                         INSERT INTO guacamole_entity (name, type)
                         VALUES (%(uuid)s, 'USER')
                         """, {"uuid": user_data.uuid})
+                
+                
         
     # we're assuming here that user will exist after being created
     # surely it won't break :)
