@@ -1,10 +1,10 @@
-import { ActionIcon, Box, Card, CardProps, ColorSwatch, Grid, Group, Loader, Stack, Text, Textarea, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Card, CardProps, Grid, Group, Stack, Text } from "@mantine/core";
 import classes from "./MachineCard.module.css";
 import cs from "classnames";
 import BadgeGroup from "../BadgeGroup/BadgeGroup";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import AccountAvatarGroup from "../AccountAvatarGroup/AccountAvatarGroup";
-import { IconCircleFilled, IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import { MachineState, User } from "../../../../types/api.types";
 import { values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
@@ -14,7 +14,7 @@ import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import ConnectToMachineSplitButton from "../../interactive/ConnectToMachineSplitButton/ConnectToMachineSplitButton";
 import MachineActivityIndicator from "../../feedback/MachineActivityIndicator/MachineActivityIndicator";
-import ProgressWithPercentage from "../../feedback/ProgressWithPercentage/ProgressWithPercentage";
+import { useThrottledCallback } from "@mantine/hooks";
 
 interface MachineCardProps extends CardProps {
     machine: MachineState;
@@ -31,10 +31,10 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
 
     const canConnect = canConnectToMachine(user, machine);
 
-    const toggleState = () => {
+    const toggleState = useThrottledCallback(() => {
         if (state.active) sendRequest("POST", `/machine/stop/${machine.uuid}`);
         else sendRequest("POST", `/machine/start/${machine.uuid}`);
-    };
+    }, 2000);
 
     return (
         <Card className={cs(classes.card, className)}>

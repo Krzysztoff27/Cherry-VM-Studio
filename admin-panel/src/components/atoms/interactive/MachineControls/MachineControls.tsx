@@ -7,6 +7,7 @@ import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { isNull } from "lodash";
 import { MantineActionIconAllProps } from "../../../../types/mantine.types";
+import { useThrottledCallback } from "@mantine/hooks";
 
 export interface MachineControlsProps {
     machine: MachineData | MachineState;
@@ -21,13 +22,13 @@ const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps 
     const { data: user, loading, error } = useFetch("user");
     const { canManageMachine } = usePermissions();
 
-    const startMachine = () => {
+    const startMachine = useThrottledCallback(() => {
         sendRequest("POST", `/machine/start/${machine.uuid}`);
-    };
+    }, 2000);
 
-    const stopMachine = () => {
+    const stopMachine = useThrottledCallback(() => {
         sendRequest("POST", `/machine/stop/${machine.uuid}`);
-    };
+    }, 2000);
 
     const disable = !machine || loading || !isNull(error) || !canManageMachine(user, machine) || state?.fetching || state?.loading;
 

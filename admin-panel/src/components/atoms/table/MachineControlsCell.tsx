@@ -1,11 +1,11 @@
-import { ActionIcon, Button, Group } from "@mantine/core";
-import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettingsFilled, IconTrashXFilled } from "@tabler/icons-react";
+import { ActionIcon, Group } from "@mantine/core";
+import { IconPlayerPlayFilled, IconPlayerStopFilled, IconTrashXFilled } from "@tabler/icons-react";
 import React, { MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import useApi from "../../../hooks/useApi";
-import { MachineData, SimpleState } from "../../../types/api.types";
+import { SimpleState } from "../../../types/api.types";
 import classes from "./MachineControlsCell.module.css";
-import ConnectToMachineSplitButton from "../interactive/ConnectToMachineSplitButton/ConnectToMachineSplitButton";
+import { useThrottledCallback } from "@mantine/hooks";
 
 export interface MachineControlsCellProps {
     uuid: string;
@@ -15,21 +15,20 @@ export interface MachineControlsCellProps {
 }
 
 const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React.JSX.Element => {
-    const { t } = useTranslation();
     const { sendRequest } = useApi();
 
-    const toggleState = (e) => {
+    const toggleState = useThrottledCallback((e) => {
         e.preventDefault();
 
         if (state.active) sendRequest("POST", `/machine/stop/${uuid}`);
         else sendRequest("POST", `/machine/start/${uuid}`);
-    };
+    }, 2000);
 
-    const deleteMachine = async (e: MouseEvent) => {
+    const deleteMachine = useThrottledCallback(async (e: MouseEvent) => {
         e.preventDefault(); // required to prevent entering the machine page
         await sendRequest("DELETE", `/machine/delete/${uuid}`);
         onRemove(uuid);
-    };
+    }, 2000);
 
     return (
         <Group
