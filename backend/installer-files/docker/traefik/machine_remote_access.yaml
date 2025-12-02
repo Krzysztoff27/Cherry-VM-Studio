@@ -7,7 +7,6 @@ http:
       tls: {}
       middlewares:
         - strip-incoming-header
-        - add-guacamole-metadata
         - forward-auth
         - rewrite-path
       service:
@@ -36,13 +35,6 @@ http:
         customRequestHeaders:
           X-Guacamole-User: ""
 
-    # 2) Inject guacamole connection metadata to forwardauth
-    add-guacamole-metadata:
-      headers:
-        customRequestHeaders:
-          X-Guacamole-ConnType: "{1}"
-          X-Guacamole-Machine: "{2}"
-
     # 3) Call API to validate session (access) token
     # If token validation succeds, trusted X-Guacamole-User and X-Guacamole-String header is returned
     forward-auth:
@@ -50,17 +42,9 @@ http:
         address: "http://cherry-api:8000/api/forwardauth"
         trustForwardHeader: true
         authRequestHeaders:
-          - "X-Guacamole-ConnType"
-          - "X-Guacamole-Machine"
+          - "Authorization"
         authResponseHeaders:
           - "X-Guacamole-User"
-          - "X-Guacamole-String"
-
-    # 4) Rewrite initial path to a valid Guacamole connection URL
-    rewrite-path:
-      replacePathRegex:
-        regex: "^/(rdp|vnc|ssh)/([0-9a-fA-F-]+)$"
-        replacement: "/guacamole/#/client/{header:X-Guacamole-String}" 
 
 services:
     cherry-guacamole-service:
