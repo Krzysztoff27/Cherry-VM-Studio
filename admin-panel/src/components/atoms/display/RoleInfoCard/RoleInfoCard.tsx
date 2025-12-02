@@ -30,9 +30,11 @@ export default function RoleInfoCard({ role }: { role: RoleInDB }) {
             { mask: PERMISSIONS.CHANGE_CLIENT_PASSWORD, label: "permissions.modify-clients-credentials" },
             { mask: PERMISSIONS.CHANGE_ADMIN_PASSWORD, label: "permissions.modify-administrators-credentials" },
         ],
+        [{ mask: PERMISSIONS.MANAGE_ISO_FILES, label: "permissions.manage-iso-files" }],
+        [{ mask: PERMISSIONS.MANAGE_SYSTEM_RESOURCES, label: "permissions.manage-system-resources" }],
     ];
 
-    groupedPermissionKeys.forEach(group => {
+    groupedPermissionKeys.forEach((group) => {
         const found = group.find(({ mask }) => roleHasPermission(mask));
         if (found) {
             matched.push(tns(found.label));
