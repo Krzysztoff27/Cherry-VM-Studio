@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from fastapi import HTTPException
-from api.modules.machine_resources.iso_files.library import update_iso_last_used
 from application.app import app
 from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid, get_machine_connections
 from modules.machine_state.models import MachineData
@@ -9,6 +8,7 @@ from modules.machine_state.state_management import start_machine, stop_machine
 from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
 from modules.users.permissions import is_client, verify_permissions, has_permissions
 from config.permissions_config import PERMISSIONS
+from modules.machine_resources.iso_files.library import update_iso_last_used
 from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
