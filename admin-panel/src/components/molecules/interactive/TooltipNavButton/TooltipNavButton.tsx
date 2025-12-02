@@ -2,14 +2,19 @@ import { Tooltip } from "@mantine/core";
 import React from "react";
 import NavButton, { NavButtonProps } from "../../../atoms/interactive/NavButton/NavButton";
 
-const TooltipIconButton = ({ label, icon, active, ...props }: NavButtonProps) => (
+const TooltipNavButton = ({ label, icon, active, ...props }: Partial<NavButtonProps>) => (
     <Tooltip
         label={label}
         hidden={!label}
         position="right"
         color="#3b3b3b"
-        offset={{ mainAxis: 8 }}
-        transitionProps={{ transition: "scale-x", duration: 200 }}
+        offset={{
+            mainAxis: 8,
+        }}
+        transitionProps={{
+            transition: "scale-x",
+            duration: 200,
+        }}
     >
         <NavButton
             icon={icon}
@@ -20,4 +25,4 @@ const TooltipIconButton = ({ label, icon, active, ...props }: NavButtonProps) =>
     </Tooltip>
 );
 
-export default TooltipIconButton;
+export default TooltipNavButton;

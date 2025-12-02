@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../contexts/AuthenticationContext";
 import useApi from "../../../hooks/useApi";
 import { TokenRequestForm } from "../../../types/api.types.ts";
+import LanguageSwitch from "../../../components/molecules/interactive/LanguageSwitch/LanguageSwitch.jsx";
+import { projectLinks } from "../../../config/project.config.ts";
+import TooltipNavButton from "../../../components/molecules/interactive/TooltipNavButton/TooltipNavButton.tsx";
+import { IconBook2, IconBrandGithub } from "@tabler/icons-react";
 
 export default function LoginPage() {
     const { t } = useTranslation();
@@ -42,6 +46,29 @@ export default function LoginPage() {
 
     return (
         <form onSubmit={onSubmit}>
+            <Group
+                pos="absolute"
+                p="md"
+                pr="lg"
+                justify="end"
+                gap="xs"
+                w="100%"
+            >
+                <LanguageSwitch
+                    withTooltip={false}
+                    position="bottom"
+                />
+                <TooltipNavButton
+                    component="a"
+                    href={projectLinks.documentation}
+                    icon={<IconBook2 />}
+                />
+                <TooltipNavButton
+                    component="a"
+                    href={projectLinks.github}
+                    icon={<IconBrandGithub />}
+                />
+            </Group>
             <Center h={"100vh"}>
                 <Fieldset w="400">
                     <Group pt="xs">

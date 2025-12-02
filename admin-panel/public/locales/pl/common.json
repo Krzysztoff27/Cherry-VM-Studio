@@ -75,5 +75,8 @@
     "loading-table": "Ładowanie danych tabeli",
     "error-machines": "Wystąpił bład podczas ładowania maszyn.",
     "error-table": "Wystąpił bład podczas ładowania danych.",
-    "empty": "Pustka"
+    "empty": "Pustka",
+    "github-repository": "Repozytorium GitHub",
+    "documentation": "Dokumentacja",
+    "change-language": "Zmień język"
 }

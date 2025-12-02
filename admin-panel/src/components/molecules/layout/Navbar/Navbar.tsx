@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
 import LanguageSwitch from "../../interactive/LanguageSwitch/LanguageSwitch.jsx";
-import TooltipIconButton from "../../interactive/TooltipIconButton/TooltipNavButton.tsx";
+import TooltipNavButton from "../../interactive/TooltipNavButton/TooltipNavButton.tsx";
 import classes from "./Navbar.module.css";
 import { useAuthentication } from "../../../../contexts/AuthenticationContext.tsx";
 import { Page } from "../../../../types/config.types.ts";
@@ -33,7 +33,7 @@ export default function Navbar({ pages }: NavbarProps): React.ReactElement {
         <Stack className={classes.navbar}>
             <Stack gap="md">
                 {pages.map((category, i) => (
-                    <TooltipIconButton
+                    <TooltipNavButton
                         key={i}
                         component={Link}
                         to={category.path}
@@ -45,18 +45,20 @@ export default function Navbar({ pages }: NavbarProps): React.ReactElement {
                 ))}
             </Stack>
             <Stack>
-                <NavButton
+                <TooltipNavButton
                     component="a"
+                    label={t("documentation")}
                     href={projectLinks.documentation}
                     icon={<IconBook2 />}
                 />
-                <NavButton
+                <TooltipNavButton
                     component="a"
+                    label={t("github-repository")}
                     href={projectLinks.github}
                     icon={<IconBrandGithub />}
                 />
                 <LanguageSwitch />
-                <TooltipIconButton
+                <TooltipNavButton
                     onClick={onClickLogout}
                     label={t("log-out")}
                     icon={<IconLogout stroke={1.5} />}
