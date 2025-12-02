@@ -9,7 +9,8 @@ from typing import Optional, List
 from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions
+from modules.machine_lifecycle.remote_access import update_machine_clients
+from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions, ModifyMachineForm
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
 from modules.machine_lifecycle.networks import get_network_bridge_ip
@@ -554,3 +555,18 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
         logger.warning(f"Failed to delete machine {machine_uuid}.\n Manual cleanup required!")
 
     return success
+
+
+def modify_machine(machine_uuid: UUID, form: ModifyMachineForm):
+    if form.title is not None:
+        pass
+    if form.description is not None:
+        pass
+    if form.tags is not None:
+        pass
+    if form.assigned_clients is not None:
+        update_machine_clients(machine_uuid, form.assigned_clients)
+    if form.config is not None:
+        pass
+    if form.disks is not None:
+        pass

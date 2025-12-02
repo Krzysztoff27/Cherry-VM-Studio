@@ -116,8 +116,17 @@ class CreateMachineForm(BaseModel):
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
     
-    
-    
 class MachineBulkSpec(BaseModel):
     machine_config: CreateMachineForm
     machine_count: int
+    
+    
+class ModifyMachineForm(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    tags: set[str] | None = None
+    
+    assigned_clients: set[UUID] | None = None
+    
+    config: CreateMachineFormConfig | None = None
+    disks: list[CreateMachineFormDisk] | None = None

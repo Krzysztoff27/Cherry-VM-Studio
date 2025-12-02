@@ -1,13 +1,12 @@
 import logging
 
 from uuid import UUID
-from typing import List
 from modules.postgresql import pool, select_one, select_single_field
 from modules.machine_state.data_retrieval import get_machine_owner
 
 logger = logging.getLogger(__name__)
 
-def update_machine_clients(machine_uuid: UUID, clients_uuid: List[UUID]):
+def update_machine_clients(machine_uuid: UUID, clients_uuid: set[UUID]):
     
     # SELECT
     
