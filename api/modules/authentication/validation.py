@@ -96,7 +96,7 @@ def encode_guacamole_connection_string(machine_uuid: UUID, connection_type: str)
     
     machine_uuid_str = str(machine_uuid)
     
-    identity_source = "postgres"
+    identity_source = "postgresql"
     
     regex_pattern = f"^{re.escape(machine_uuid_str)}_{re.escape(connection_type)}$"
     
