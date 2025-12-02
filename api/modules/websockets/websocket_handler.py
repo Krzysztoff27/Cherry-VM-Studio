@@ -30,8 +30,8 @@ class WebSocketHandler(BaseModel):
         except CredentialsException:
             return await self.close(4401, "Could not validate credentials.")
         except Exception:
-            await self.websocket.close(1011, "Internal server error.")
-            logger.exception("Exception occured in the WebsocketHandler")
+            await self.close(1011, "Internal server error.")
+            logger.exception("Exception occured in the WebsocketHandler's accept method")
         
     async def __close_at_token_expiration__(self, access_token):
         try:
@@ -41,15 +41,21 @@ class WebSocketHandler(BaseModel):
             if expiration_delay > 0:
                 await asyncio.sleep(expiration_delay)
             
-            await self.websocket.close(4401, "Access token expired.")
+            await self.close(4401, "Access token expired.")
+        except asyncio.CancelledError:
+            pass
         except Exception:
-            await self.websocket.close(4401, "Invalid token.")
+            logger.exception("Exception occured in the WebsocketHandler's __close_at_token_expiration__ method")
         
     async def close(self, code: int = 1000, reason: str | None = None) -> None:
         if self.closer is not None:
             self.closer.cancel()
-        if self.is_connected():
-            await self.websocket.close(code, reason)
+        try:
+            if self.is_connected():
+                await self.websocket.close(code, reason)
+        except RuntimeError:
+            # WebSocket already closed
+            pass
 
     def is_connected(self) -> bool:
         return self.websocket.application_state == WebSocketState.CONNECTED and self.websocket.client_state == WebSocketState.CONNECTED
