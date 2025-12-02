@@ -23,7 +23,7 @@ const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImp
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();
 
-    const maxRam = 4096;
+    const maxRam = 6144;
     const maxVcpu = 8;
 
     const form = useForm<CreateTemplateModalFormValues>({

@@ -24,11 +24,11 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
         else sendRequest("POST", `/machine/start/${uuid}`);
     }, 2000);
 
-    const deleteMachine = useThrottledCallback(async (e: MouseEvent) => {
+    const deleteMachine = async (e: MouseEvent) => {
         e.preventDefault(); // required to prevent entering the machine page
         await sendRequest("DELETE", `/machine/delete/${uuid}`);
         onRemove(uuid);
-    }, 2000);
+    };
 
     return (
         <Group
