@@ -192,7 +192,13 @@
         "vcpu-unit": "cores",
         "vcpu-unit_zero": "cores",
         "vcpu-unit_one": "core",
-        "vcpu-unit_other": "cores"
+        "vcpu-unit_other": "cores",
+        "validation": {
+            "name-too-long": "Name length cannot exceed 24 characters.",
+            "name-too-short": "Name must be at least 3 characters long.",
+            "name-invalid-first": "Name must start with a letter.",
+            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+        }
     },
     "create-machine": {
         "title": "Create New Machine",

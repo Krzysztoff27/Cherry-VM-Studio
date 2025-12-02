@@ -176,7 +176,7 @@
             "name-too-long": "Nazwa nie może mieć więcej niż 24 znaków.",
             "name-too-short": "Nazwa musi mieć co najmniej 3 znaki.",
             "name-invalid-first": "Nazwa musi zaczynać się od litery.",
-            "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
+            "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, spacje, podkreślenia, myślniki i kropki.",
             "name-duplicate": "Rekord ISO o tej nazwie już istnieje.",
             "file-invalid-extension": "Wybrany plik musi mieć rozszerzenie .iso.",
             "file-too-large": "Nie można przesłać pliku większego niż 10 GB."
@@ -200,7 +200,13 @@
         "vcpu-unit_zero": "rdzeni",
         "vcpu-unit_one": "rdzeń",
         "vcpu-unit_few": "rdzenie",
-        "vcpu-unit_many": "rdzeni"
+        "vcpu-unit_many": "rdzeni",
+        "validation": {
+            "name-too-long": "Nazwa nie może mieć więcej niż 24 znaków.",
+            "name-too-short": "Nazwa musi mieć co najmniej 3 znaki.",
+            "name-invalid-first": "Nazwa musi zaczynać się od litery.",
+            "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, spacje, podkreślenia, myślniki i kropki."
+        }
     },
     "create-machine": {
         "title": "Stwórz Nową Maszynę",
