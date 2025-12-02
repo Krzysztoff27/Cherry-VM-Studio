@@ -190,7 +190,7 @@ def delete_user_by_uuid(uuid: UUID):
                 connection.rollback()
                 raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
             
-            cursor.execute(f"DELETE FROM guacamole_entity WHERE name = %s", (uuid,))
+            cursor.execute(f"DELETE FROM guacamole_entity WHERE name = %s::varchar", (uuid,))
             
             connection.commit()
     
