@@ -45,7 +45,7 @@ export const useMantineNotifications = () => {
         const [code, variant] = isArray(error) ? error : [error, undefined];
 
         const notificationId = getUniqueId([code, variant].filter((e) => e).join("-"));
-        const key = variant ? `${code}.variant.${variant}` : code;
+        const key = variant ? `${code}.variants.${variant}` : `${code}`;
 
         notifications.show({
             id: notificationId,
