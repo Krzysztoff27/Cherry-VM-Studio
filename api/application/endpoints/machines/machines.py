@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException
+from api.modules.machine_resources.iso_files.library import update_iso_last_used
 from application.app import app
 from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid, get_machine_connections
 from modules.machine_state.models import MachineData
@@ -60,6 +61,8 @@ async def __async_create_machine__(machine_parameters: CreateMachineForm, curren
     machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
     if not machine_uuid:
         raise HTTPException(500, "Machine creation failed.")
+    if machine_parameters.source_type == 'iso':
+        update_iso_last_used(machine_parameters.source_uuid)
     return machine_uuid
 
 @app.post("/machine/create/bulk", response_model=list[UUID], tags=['Machine Creation'])
@@ -67,6 +70,9 @@ async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current
     machines_uuid = await create_machine_async_bulk(machines, current_user.uuid)
     if not machines_uuid:
         raise HTTPException(500, f"Failed to create machines in bulk.")
+    for machine_spec in machines:
+        if machine_spec.machine_config.source_type == 'iso':
+            update_iso_last_used(machine_spec.machine_config.source_uuid)
     return machines_uuid
 
 @app.post("/machine/create/for-group", response_model=list[UUID], tags=['Machine Creation'])
@@ -74,6 +80,9 @@ async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], cu
     machines_uuid = await create_machine_async_bulk(machines, current_user.uuid, group_uuid)
     if not machines_uuid:
         raise HTTPException(500, f"Machine creation for group {group_uuid} failed.")
+    for machine_spec in machines:
+        if machine_spec.machine_config.source_type == 'iso':
+            update_iso_last_used(machine_spec.machine_config.source_uuid)
     return machines_uuid
 
 @app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Creation'])
