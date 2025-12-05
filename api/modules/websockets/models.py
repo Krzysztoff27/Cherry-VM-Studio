@@ -15,8 +15,8 @@ class Command(BaseModel, extra='allow'):
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#CommandData
 class CommandData(BaseModel):
-    method: str
-    uuid: UUID = Field(default_factory=uuid4)
+    method: str | None = None
+    uuid: UUID = Field(default_factory=uuid4) 
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#ResponseMethods

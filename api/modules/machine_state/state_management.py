@@ -1,9 +1,13 @@
 import logging
 import libvirt
 import asyncio
+
 from uuid import UUID
+
 from modules.libvirt_socket import LibvirtConnection
-from config import MACHINES_CONFIG
+from modules.postgresql.main import async_pool
+from config.machines_config import MACHINES_CONFIG
+from modules.machine_lifecycle.networks import get_machine_framebuffer_port
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +49,60 @@ async def start_machine_async(uuid: UUID):
     """
     Final async wrapper - starting VM and waiting for state feedback
     """
+    
     with LibvirtConnection("rw") as libvirt_read_write_connection:
         try:
             machine = libvirt_read_write_connection.lookupByUUID(uuid.bytes) 
             logging.debug(f"Trying to start {machine}")
             machine.create()
-            result = await wait_for_machine_state(machine)
-            return result
+            result = await wait_for_machine_state(machine)   
+                
         except libvirt.libvirtError as e:
             logging.error(f"Failed to start VM: {e}")
             raise libvirt.libvirtError(str(e))
+        
+        if result == "running":
+
+            update_boot_timestamp = """
+                UPDATE deployed_machines_owners
+                SET started_at = LOCALTIMESTAMP
+                WHERE machine_uuid = %s
+            """
+
+            framebuffer_port = get_machine_framebuffer_port(uuid)
+            
+            select_guacamole_connection_id = """
+                SELECT connection_id FROM guacamole_connection WHERE connection_name ~ %s;
+            """
+            
+            # Either <machine_uuid>_rdp or <machine_uuid>_vnc
+            regex_pattern = f"^{uuid}_(vnc|rdp)$"
+            
+            update_guacamole_connection_parameter = """
+                UPDATE guacamole_connection_parameter 
+                SET parameter_value = %s 
+                WHERE parameter_name = %s AND connection_id = %s;
+            """
+            
+            async with async_pool.connection() as connection:
+                async with connection.cursor() as cursor:
+                    async with connection.transaction():
+                        try:
+                            await cursor.execute(update_boot_timestamp, (uuid,))
+                            
+                            # Find connection_id associated with machine's rdp/vnc connection
+                            await cursor.execute(select_guacamole_connection_id, (regex_pattern,))
+                            result = await cursor.fetchone()
+                            
+                            if result:
+                                connection_id = result["connection_id"]
+                                await cursor.execute(update_guacamole_connection_parameter, (framebuffer_port, "port", connection_id))
+                            else:
+                                raise Exception(f"Failed to retrieve connection_id from guacamole_connection for {uuid}.")
+                        except Exception:
+                            logger.exception(f"Failed to update {uuid} connection parameters - port {framebuffer_port}.")
+        
+    return result
 
 
 async def start_machine(uuid: UUID):
@@ -114,12 +162,49 @@ async def stop_machine_async(uuid: UUID):
             logging.warning("Failed to stop VM gracefully. Forcing destroy.")
             machine.destroy()
             result = await wait_for_machine_state(machine)
-            
-            return result
              
         except libvirt.libvirtError as e:
             logging.error(f"Failed to stop VM: {e}")
             raise libvirt.libvirtError(str(e))
+    
+    update_boot_timestamp = """
+        UPDATE deployed_machines_owners
+        SET started_at = NULL
+        WHERE machine_uuid = %s
+    """
+    
+    select_guacamole_connection_id = """
+        SELECT connection_id FROM guacamole_connection WHERE connection_name ~ %s;
+    """
+
+    # Either <machine_uuid>_rdp or <machine_uuid>_vnc
+    regex_pattern = f"^{uuid}_(vnc|rdp)$"
+        
+    update_guacamole_connection_parameter = """
+        UPDATE guacamole_connection_parameter 
+        SET parameter_value = %s 
+        WHERE parameter_name = %s AND connection_id = %s;
+    """
+        
+    async with async_pool.connection() as connection:
+        async with connection.cursor() as cursor:
+            async with connection.transaction():
+                try:
+                    await cursor.execute(update_boot_timestamp, (uuid,))
+                    
+                    # Find connection_id associated with machine's rdp/vnc connection
+                    await cursor.execute(select_guacamole_connection_id, (regex_pattern,))
+                    result = await cursor.fetchone()
+                    
+                    if result:
+                        connection_id = result["connection_id"]
+                        await cursor.execute(update_guacamole_connection_parameter, (0, "port", connection_id))
+                    else:
+                        raise Exception(f"Failed to retrieve connection_id from guacamole_connection for {uuid}.")
+                except Exception:
+                    logger.exception(f"Failed to update {uuid} connection parameters - port 0.")
+            
+    return result
 
 async def stop_machine(uuid: UUID):
     if not is_vm_running(uuid):

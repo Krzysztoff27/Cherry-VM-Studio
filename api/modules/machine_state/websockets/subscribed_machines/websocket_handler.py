@@ -3,8 +3,10 @@ from starlette.websockets import WebSocketDisconnect
 from json import JSONDecodeError
 from pydantic import ValidationError
 
-from .models import MachineWebsocketSubscribeCommand
-from modules.machine_state.data_retrieval import check_machine_membership
+from ...models import MachineWebsocketSubscribeCommand
+from ...data_retrieval import check_machine_access, check_machine_membership
+from config.permissions_config import PERMISSIONS
+from modules.users.permissions import has_permissions
 from modules.exceptions.models import CredentialsException
 from modules.websockets.subscription_manager import SubscriptionManager
 from modules.websockets.websocket_handler import WebSocketHandler
@@ -12,7 +14,7 @@ from modules.authentication.validation import validate_user_token
 
 logger = logging.getLogger(__name__)
 
-class MachinesWebsocketHandler(WebSocketHandler):
+class SubscribedMachinesWebsocketHandler(WebSocketHandler):
     subscription_manager: SubscriptionManager
     
     async def listen(self):
@@ -35,18 +37,21 @@ class MachinesWebsocketHandler(WebSocketHandler):
     async def handle_command(self, json: dict) -> None:
         try:
             command = MachineWebsocketSubscribeCommand.model_validate(json)
-            validate_user_token(command.access_token, 'access')
+            user = validate_user_token(command.access_token, 'access')
             
-            for machine_uuid in command.target:
+            for machine_uuid in command.target.copy():
                 if not check_machine_membership(machine_uuid):
                     command.target.remove(machine_uuid)
                     logger.warning("Machine Websocket: Tried to subscribe to a machine not managed by Cherry VM Studio.")
+                if not has_permissions(user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_access(machine_uuid, user):
+                    return await self.reject(json, f"You do not have necessary permissions to access resource with uuid={machine_uuid}")
             
             self.subscription_manager.set_subscriptions(self.websocket, command.target)
             
             await self.acknowledge(command.model_dump())
             
-        except ValidationError:
+        except ValidationError as e:
+            logging.debug(e)
             await self.reject(json, "Command validation error. Ensure that sent commands follow the expected structure.")
         except CredentialsException:
             await self.reject(json, "Authentication failed - invalid credentials.")
@@ -63,6 +68,3 @@ class MachinesWebsocketHandler(WebSocketHandler):
                 """,
                 exc_info=True
             )
-
-    
-        

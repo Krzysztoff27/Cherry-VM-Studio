@@ -13,8 +13,8 @@ from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
 from modules.users.permissions import verify_permissions
 from modules.file_upload.models import UploadAlreadyExists, UploadHeadersError, UploadNotExistent, UploadTooLargeException
-from modules.machine_resources.models import CreateIsoRecordArgs, CreateIsoRecordForm
-from modules.machine_resources.iso_library import IsoLibrary
+from modules.machine_resources.iso_files.models import CreateIsoRecordArgs, CreateIsoRecordForm
+from modules.machine_resources.iso_files.library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
 from modules.file_upload.upload_handler import UploadHandler
 

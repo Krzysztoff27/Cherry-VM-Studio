@@ -1,8 +1,8 @@
 from uuid import UUID
 from fastapi import HTTPException
 from application.app import app
-from modules.users.models import CreateGroupFrom,  Group
-from modules.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid, join_user_to_group, remove_user_from_group
+from modules.users.models import CreateGroupFrom,  Group, RenameGroupBody
+from modules.users.groups import create_group, delete_group_by_uuid, get_all_groups, get_group_by_uuid, join_user_to_group, remove_user_from_group, rename_group
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
 
 @app.get("/group/{uuid}", response_model=Group, tags=['Client Groups'])
@@ -33,3 +33,7 @@ async def __join_user_to_group__(uuid: UUID, users: list[UUID], current_user: De
 async def __remove_user_from_group__(uuid: UUID, users: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
     for user in users:
         remove_user_from_group(uuid, user)
+        
+@app.patch("/group/rename/{uuid}", response_model=None, tags=['Client Groups'])
+async def __rename_group__(uuid: UUID, form: RenameGroupBody, current_user: DependsOnAdministrativeAuthentication) -> None:
+    rename_group(uuid, form.name)

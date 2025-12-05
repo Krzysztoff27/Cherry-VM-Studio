@@ -43,6 +43,22 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         
         return self.prepare_record(record) if record is not None else None
         
+    def get_record_by_fields(self, fields: dict[str, str]) -> Optional[MainModel]:
+        
+        for field_name in fields.keys():
+            if field_name not in self.allowed_fields_for_select:
+                logging.error(f"[SimpleTableManager:{self.table_name}] Invalid field name '{field_name}' passed to get_by_field(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
+                raise InvalidFieldNameException(field_name=field_name)
+            
+        query = f"""
+            SELECT * FROM {self.table_name} 
+            WHERE {' AND '.join([f'{field} = %({field})s' for field in fields.keys()])}
+        """
+            
+        record = select_schema_one(self.model_in_db, query, fields)
+        
+        return self.transform_record(record) if record is not None else None
+
         
     def get_record_by_uuid(self, uuid: UUID) -> Optional[MainModel]:
         return self.get_record_by_field("uuid", str(uuid))
@@ -57,6 +73,18 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             
         return records
     
+    def get_all_records_matching(self, field_name: str, value: str) -> dict[UUID, MainModel]:
+        
+        if field_name not in self.allowed_fields_for_select:
+            logging.error(f"[SimpleTableManager:{self.table_name}] Invalid field name '{field_name}' passed to get_all_records_matching(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
+            raise InvalidFieldNameException(field_name=field_name)
+        
+        records = select_schema_dict(self.model_in_db, "uuid", f"SELECT * FROM {self.table_name} WHERE {field_name} = (%s)", (value,))
+        
+        for key, record in records.items():
+            records[key] = self.transform_record(record)
+        
+        return records
     
     def create_record(self, form: CreationModel):
         

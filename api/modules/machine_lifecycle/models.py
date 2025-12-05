@@ -1,12 +1,15 @@
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional, Literal, Union, ClassVar
+from uuid import UUID
+from pydantic import BaseModel, model_validator
+from typing import Optional, Literal, Union, TypedDict
+from dataclasses import dataclass
 
 ################################
 #   Machine creation models
 ################################
 DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", "vhdx"]
 StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
+
+ConnectionPermissions = ["READ", "UPDATE", "DELETE", "ADMINISTER"]
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
 class MachineMetadata(BaseModel):
@@ -41,7 +44,8 @@ class MachineNetworkInterface(BaseModel):
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineGraphicalFramebuffer
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
-    port: Union[Literal["auto"], str] 
+    port: str | None = None
+    autoport: bool
     listen_type: Literal["network", "address"]
     listen_network: str | None = None
     listen_address: str | None = None
@@ -91,12 +95,18 @@ class CreateMachineFormConfig(BaseModel):
     ram: int
     vcpu: int
       
+      
+class CreateMachineFormConnectionProtocols(BaseModel):
+    vnc: bool
+    rdp: bool
+    ssh: bool
     
 class CreateMachineForm(BaseModel):
     title: str
     description: str
     tags: set[str]
     
+    connection_protocols: CreateMachineFormConnectionProtocols
     assigned_clients: set[UUID]
     
     source_type: Literal["iso", "snapshot"]
@@ -105,3 +115,18 @@ class CreateMachineForm(BaseModel):
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
+    
+class MachineBulkSpec(BaseModel):
+    machine_config: CreateMachineForm
+    machine_count: int
+    
+    
+class ModifyMachineForm(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    tags: set[str] | None = None
+    
+    assigned_clients: set[UUID] | None = None
+    
+    config: CreateMachineFormConfig | None = None
+    disks: list[CreateMachineFormDisk] | None = None

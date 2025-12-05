@@ -5,9 +5,9 @@ from fastapi import HTTPException
 from config.permissions_config import PERMISSIONS
 from config.files_config import FILES_CONFIG
 from modules.users.permissions import verify_permissions
-from modules.machine_resources.iso_library import IsoLibrary
+from modules.machine_resources.iso_files.library import IsoLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication
-from modules.machine_resources.models import IsoRecord
+from modules.machine_resources.iso_files.models import IsoRecord
 from application.app import app
 
 @app.get("/iso", response_model=dict[UUID, IsoRecord], tags=['ISO Library'])

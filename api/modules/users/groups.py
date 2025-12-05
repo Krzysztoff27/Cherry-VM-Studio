@@ -123,3 +123,14 @@ def remove_user_from_group(group_uuid, client_uuid) -> None:
             connection.commit()
 
     
+def rename_group(group_uuid: UUID, new_name: str) -> None:
+    group = get_group_by_uuid(group_uuid)
+    
+    if not group:
+        raise HTTPException(400, f"Group with uuid={group_uuid} does not exist.")
+    
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE groups SET name = (%s) WHERE uuid = (%s)", (new_name, group_uuid))
+            connection.commit()
+    

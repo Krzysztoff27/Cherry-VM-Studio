@@ -190,7 +190,7 @@ def delete_user_by_uuid(uuid: UUID):
                 connection.rollback()
                 raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
             
-            cursor.execute(f"DELETE FROM guacamole_entity WHERE name = %s", (uuid,))
+            cursor.execute(f"DELETE FROM guacamole_entity WHERE name = %s::varchar", (uuid,))
             
             connection.commit()
     
@@ -224,14 +224,26 @@ def create_user(user_data: CreateUserForm) -> AnyUser:
                     for group_uuid in user_data.groups:
                         cursor.execute(f"""
                             INSERT INTO clients_groups (client_uuid, group_uuid)
-                            VALUES (%(client_uuid)s, %(group_uuid)s)               
+                            VALUES (%(client_uuid)s, %(group_uuid)s)              
                         """, {"client_uuid": user_data.uuid, "group_uuid": group_uuid})  
                 
                 # Record in guacamole dedicated table that allows for SSO and one-to-one user mapping
                 cursor.execute(f"""
                         INSERT INTO guacamole_entity (name, type)
                         VALUES (%(uuid)s, 'USER')
+                        RETURNING entity_id
                         """, {"uuid": user_data.uuid})
+                
+                entity_insert_result = cursor.fetchone()
+                if entity_insert_result is not None:
+                    entity_id = entity_insert_result["entity_id"]
+                else:
+                    raise Exception(f"Failed to retrieve entity_id from guacamole_user insert query for {user_data.uuid}.")
+                
+                cursor.execute(f"""
+                        INSERT INTO guacamole_user (entity_id, password_hash, password_date, disabled, expired)
+                        VALUES (%(entity_id)s, '', NOW(), FALSE, FALSE) 
+                               """, {"entity_id": entity_id})
         
     # we're assuming here that user will exist after being created
     # surely it won't break :)

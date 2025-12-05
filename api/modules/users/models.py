@@ -80,14 +80,32 @@ class Role(RoleInDB):
     
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Administrator
-class Administrator(AdministratorInDB):
+class Administrator(BaseModel):
+    uuid: UUID
+    password: str
+    username: str
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    creation_date: dt.date = dt.date.today()
+    last_active: dt.datetime | None = None
+    disabled: bool = False
     account_type: Literal["administrative"] = "administrative"
     roles: list[RoleInDB] = []
     permissions: int = 0
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#Client
-class Client(ClientInDB):
+class Client(BaseModel):
+    uuid: UUID
+    password: str
+    username: str
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    creation_date: dt.date = dt.date.today()
+    last_active: dt.datetime | None = None
+    disabled: bool = False
     account_type: Literal["client"] = "client"
     groups: list[GroupInDB] = []
     
@@ -141,5 +159,8 @@ class Filters(BaseModel):
     role: UUID | None = None
         
         
-class ChangePasswordRequest(BaseModel):
+class ChangePasswordBody(BaseModel):
     password: str
+    
+class RenameGroupBody (BaseModel):
+    name: str

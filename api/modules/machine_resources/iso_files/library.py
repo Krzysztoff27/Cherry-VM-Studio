@@ -1,6 +1,8 @@
 import logging
+from uuid import UUID
 
 from .models import CreateIsoRecordArgs, IsoRecord, IsoRecordInDB
+from modules.postgresql import pool
 from modules.postgresql.simple_table_manager import SimpleTableManager
 from modules.users.users import get_administrator_by_field
 
@@ -18,6 +20,11 @@ def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
         last_modified_by=last_modified_by,
         file_location=file_location
     )
+
+def update_iso_last_used(iso_uuid: UUID):   
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(f"UPDATE iso_files SET last_used = CURRENT_TIMESTAMP WHERE uuid = %s", (iso_uuid,))
 
 
 IsoLibrary = SimpleTableManager(
