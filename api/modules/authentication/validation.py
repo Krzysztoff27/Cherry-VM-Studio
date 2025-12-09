@@ -15,7 +15,7 @@ from application.env import SECRET_KEY
 from config.authentication_config import AUTHENTICATION_CONFIG
 from modules.exceptions import CredentialsException
 from modules.users.permissions import is_admin
-from modules.users.users import get_user_by_username, get_user_by_uuid, update_user_last_active
+from api.modules.users.users import get_user_by_username, get_user_by_uuid, update_user_last_active
 from modules.users.models import Administrator, AnyUser
 from modules.postgresql import select_one
 

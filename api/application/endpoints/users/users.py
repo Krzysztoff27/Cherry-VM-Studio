@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from application.app import app
 from modules.exceptions.models import RaisedException
-from modules.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
+from api.modules.users.users import change_user_password, create_user, get_user_by_uuid, get_filtered_users, delete_user_by_uuid, modify_user
 from modules.users.permissions import is_admin, verify_can_change_password, verify_can_manage_user
 from modules.users.models import AnyUser, ChangePasswordBody, CreateUserForm, Filters, AccountTypes, Administrator, Client, ModifyUserForm
 from modules.users.validation import validate_creation_details, validate_modification_details

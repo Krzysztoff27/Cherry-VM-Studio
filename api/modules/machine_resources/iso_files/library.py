@@ -4,7 +4,7 @@ from uuid import UUID
 from .models import CreateIsoRecordArgs, IsoRecord, IsoRecordInDB
 from modules.postgresql import pool
 from modules.postgresql.simple_table_manager import SimpleTableManager
-from modules.users.users import get_administrator_by_field
+from api.modules.users.users import get_administrator_by_field
 
 logger = logging.getLogger(__name__)
 

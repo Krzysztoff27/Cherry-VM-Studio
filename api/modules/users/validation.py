@@ -2,7 +2,7 @@ import re
 from uuid import UUID
 from fastapi import HTTPException
 from modules.users.models import CreateUserForm, ModifyUserForm
-from modules.users.users import get_user_by_email, get_user_by_username
+from api.modules.users.users import get_user_by_email, get_user_by_username
 from config.regex_config import REGEX_CONFIG
 
 def validate_creation_details(user_data: CreateUserForm):    

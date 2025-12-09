@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Generic, Optional, Type, TypeVar
+from typing import Any, Callable, Generic, Optional, Type, TypeVar
 from uuid import UUID
 from pydantic import BaseModel, model_validator
 from psycopg import sql
@@ -23,7 +23,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
     allowed_fields_for_select: set[str]
     model: Type[MainModel]
     model_in_db: Type[DBModel]
-    model_creation_args: Type[CreationModel]
+    model_creation_args: Type[CreationModel] | None = None
     prepare_record: Callable[[DBModel], MainModel]
     
     
@@ -33,7 +33,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         return self
     
     
-    def get_record_by_field(self, field_name: str, value: str) -> Optional[MainModel]:
+    def get_record_by_field(self, field_name: str, value: Any) -> Optional[MainModel]:
         
         if field_name not in self.allowed_fields_for_select:
             logging.error(f"[SimpleTableManager:{self.table_name}] Invalid field name '{field_name}' passed to get_by_field(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
@@ -42,6 +42,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         record = select_schema_one(self.model_in_db, f"SELECT * FROM {self.table_name} WHERE {field_name} = (%s)", (value,))
         
         return self.prepare_record(record) if record is not None else None
+        
         
     def get_record_by_fields(self, fields: dict[str, str]) -> Optional[MainModel]:
         
@@ -57,7 +58,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             
         record = select_schema_one(self.model_in_db, query, fields)
         
-        return self.transform_record(record) if record is not None else None
+        return self.prepare_record(record) if record is not None else None
 
         
     def get_record_by_uuid(self, uuid: UUID) -> Optional[MainModel]:
@@ -71,22 +72,40 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         for uuid, record in records.items():
             records[uuid] = self.prepare_record(record)
             
+            
         return records
     
-    def get_all_records_matching(self, field_name: str, value: str) -> dict[UUID, MainModel]:
+    def get_all_records_matching(self, field_name: str, value: Any | list[Any]) -> dict[UUID, MainModel]:
         
         if field_name not in self.allowed_fields_for_select:
             logging.error(f"[SimpleTableManager:{self.table_name}] Invalid field name '{field_name}' passed to get_all_records_matching(). Allowed fields: {sorted(self.allowed_fields_for_select)}")
             raise InvalidFieldNameException(field_name=field_name)
         
-        records = select_schema_dict(self.model_in_db, "uuid", f"SELECT * FROM {self.table_name} WHERE {field_name} = (%s)", (value,))
+        if isinstance(value, list):
+            base_query = "SELECT from {table} WHERE {field} IN ({placeholders})"
+            placeholders=sql.SQL(', ').join(sql.Placeholder() * len(value))
+        else:
+            base_query = "SELECT FROM {table} WHERE {field} = {placeholders}"
+            placeholders=sql.Identifier(value)
+        
+        query = sql.SQL(base_query).format(
+            table=sql.Identifier(self.table_name),
+            field=sql.Identifier(field_name),
+            placeholders=placeholders
+        )
+        
+        records = select_schema_dict(self.model_in_db, "uuid", query)
         
         for key, record in records.items():
-            records[key] = self.transform_record(record)
+            records[key] = self.prepare_record(record)
         
         return records
     
+    
     def create_record(self, form: CreationModel):
+        if self.model_creation_args is None:
+            logging.error(f"[SimpleTableManager:{self.table_name}] Tried to create a record in a SimpleTableManager instance without a creation model.")
+            return RuntimeError
         
         fields = sorted(form.model_fields_set)
         fields_sql = sql.SQL(', ').join(map(sql.Identifier, fields))
