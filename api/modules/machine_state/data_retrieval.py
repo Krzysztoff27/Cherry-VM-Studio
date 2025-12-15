@@ -8,12 +8,14 @@ from uuid import UUID
 from datetime import datetime
 from devtools import pprint
 
+from modules.users.sublibraries.client_library import ClientLibrary
+from modules.users.sublibraries.administrator_library import AdministratorLibrary
 from modules.users.permissions import is_admin, is_client
 from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineData, MachineState, StaticDiskInfo, DynamicDiskInfo
 from modules.libvirt_socket import LibvirtConnection
-from modules.users.models import Administrator, AdministratorInDB, AnyUser, Client, ClientInDB
-from modules.postgresql import select_schema_dict, select_schema_one, select_single_field
+from modules.users.models import Administrator, AnyUser, Client
+from modules.postgresql import select_single_field
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
 from modules.authentication.validation import encode_guacamole_connection_string
 from config import ENV_CONFIG
@@ -23,21 +25,31 @@ XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"}
 logger = logging.getLogger(__name__)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_owner
-def get_machine_owner(machine_uuid: UUID) -> AdministratorInDB | None:
-    return select_schema_one(AdministratorInDB, """
-        SELECT administrators.* FROM administrators
+def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
+    owner_uuids =  select_single_field("uuid", """
+        SELECT administrators.uuid FROM administrators
         RIGHT JOIN deployed_machines_owners ON administrators.uuid = deployed_machines_owners.owner_uuid
         WHERE deployed_machines_owners.machine_uuid = %s
     """, (machine_uuid,))
+        
+    if owner_uuids:
+        if len(owner_uuids) > 1:
+            logger.error(f"Machine with uuid={machine_uuid} has multiple owners. This may lead to unexpected behavior!")
+            
+        return AdministratorLibrary.get_record_by_uuid(owner_uuids[0])
+        
+        
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_clients_assigned_to_machine
-def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, ClientInDB]:
-    return select_schema_dict(ClientInDB, "uuid", """
-        SELECT clients.* FROM clients
+def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, Client]:
+    assigned_client_uuids = select_single_field("uuid", """
+        SELECT clients.uuid FROM clients
         RIGHT JOIN deployed_machines_clients ON clients.uuid = deployed_machines_clients.client_uuid
         WHERE deployed_machines_clients.machine_uuid = %s
     """, (machine_uuid,))
+    
+    return ClientLibrary.get_all_records_matching("uuid", assigned_client_uuids)
 
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_owner_machine_uuids

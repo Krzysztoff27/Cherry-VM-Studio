@@ -1,15 +1,16 @@
 import re
 from uuid import UUID
 from fastapi import HTTPException
-from modules.users.models import CreateUserForm, ModifyUserForm
-from api.modules.users.users import get_user_by_email, get_user_by_username
+from .models import CreateAnyUserForm, CreateGroupForm, ModifyUserForm
 from config.regex_config import REGEX_CONFIG
 
-def validate_creation_details(user_data: CreateUserForm):    
-    if get_user_by_username(user_data.username) is not None:
+def validate_user_creation(user_data: CreateAnyUserForm):   
+    from .users import UsersManager
+     
+    if UsersManager.get_user_by_username(user_data.username) is not None:
         raise HTTPException(status_code=409, detail="User with this username already exists.")
     
-    if user_data.email is not None and get_user_by_email(user_data.email) is not None:
+    if user_data.email is not None and UsersManager.get_user_by_email(user_data.email) is not None:
         raise HTTPException(status_code=409, detail="User with this email already exists.")
     
     if not re.match(REGEX_CONFIG.username, user_data.username):
@@ -25,22 +26,40 @@ def validate_creation_details(user_data: CreateUserForm):
         raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
     
     
-def validate_modification_details(uuid: str | UUID, user_data: ModifyUserForm):
-    user_found_by_username = get_user_by_username(user_data.username) if user_data.username else None
-    user_found_by_email    = get_user_by_email(user_data.email)       if user_data.email    else None
+def validate_group_creation(group_data: CreateGroupForm):
+    from .sublibraries.group_library import GroupLibrary
     
-    if user_found_by_username is not None and str(user_found_by_username.uuid) != str(uuid): # theres already a different user with this new username
-        raise HTTPException(status_code=409, detail="User with this username already exists.")
+    if GroupLibrary.get_record_by_field("name", group_data.name) is not None:
+        raise HTTPException(status_code=409, detail="Group with this name already exists")
     
-    if user_found_by_email is not None and str(user_found_by_email.uuid) != str(uuid) :
-        raise HTTPException(status_code=409, detail="User with this email already exists.")
+    if len(group_data.name) > 50:
+        raise HTTPException(status_code=400, detail="Name field cannot contain more than 50 characters.") 
+
+        
     
-    if user_data.username is not None and not re.match(REGEX_CONFIG.username, user_data.username):
-        raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
+def validate_user_modification(uuid: UUID, form: ModifyUserForm):
+    from .users import UsersManager
     
-    if user_data.name is not None and len(user_data.name) > 50:
+    if form.username is not None:
+        user_found_by_username = UsersManager.get_user_by_username(form.username)
+        
+        if user_found_by_username is not None and user_found_by_username.uuid != uuid:
+            # If another user already exists with the same username (excluding the modified user), reject the update
+            raise HTTPException(status_code=409, detail="User with this username already exists.")
+        
+        if not not re.match(REGEX_CONFIG.username, form.username):
+            raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
+    
+    if form.email is not None:
+        user_found_by_email = UsersManager.get_user_by_email(form.email)
+        
+        if user_found_by_email is not None and user_found_by_email.uuid != uuid:
+            # If another user already exists with the same email (excluding the modified user), reject the update
+            raise HTTPException(status_code=409, detail="User with this email already exists.")
+    
+    if form.name is not None and len(form.name) > 50:
         raise HTTPException(status_code=400, detail="Name field cannot contain more than 50 characters.")
     
-    if user_data.surname is not None and len(user_data.surname) > 50:
+    if form.surname is not None and len(form.surname) > 50:
         raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
     

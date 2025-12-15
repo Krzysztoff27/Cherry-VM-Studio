@@ -1,8 +1,8 @@
 import jwt
 from datetime import datetime, timedelta, timezone
+from modules.users.models import AnyUser
 from application.env import SECRET_KEY
 from config.authentication_config import AUTHENTICATION_CONFIG
-from modules.users import AnyUser
 from .models import Token, TokenTypes, Tokens
 
 

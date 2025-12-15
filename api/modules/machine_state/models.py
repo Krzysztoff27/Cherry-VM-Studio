@@ -2,7 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from typing import Literal
 from modules.websockets.models import Command
-from modules.users.models import ClientInDB, AdministratorInDB
+from modules.users.models import Administrator, Client
 from modules.machine_lifecycle.models import DiskType
 from datetime import datetime
 
@@ -24,8 +24,8 @@ class MachineData(BaseModel):
     title: str | None = None
     tags: list[str] | None = None
     description: str | None = None        
-    owner: AdministratorInDB | None = None          
-    assigned_clients: dict[UUID, ClientInDB] = {}
+    owner: Administrator | None = None          
+    assigned_clients: dict[UUID, Client] = {}
     ras_ip: str | None = None   
     ras_port: int | None = None
     connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None

@@ -1,5 +1,4 @@
 from fastapi.encoders import jsonable_encoder
-from modules.users.permissions import verify_permissions
 from application.app import app
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
 from modules.network_configuration.models import NetworkConfiguration, IntnetConfiguration, Positions, Snapshot

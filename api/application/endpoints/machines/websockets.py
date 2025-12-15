@@ -37,7 +37,6 @@ async def __user_machines_state_websocket__(websocket: WebSocket, access_token: 
     await websocket_handler.listen()
 
     
-    
 @app.websocket('/ws/machines/global')
 async def __all_machines_state_websocket__(websocket: WebSocket, access_token: str):
     websocket_handler = AllMachinesWebsocketHandler(websocket=websocket, subscription_manager=subscribed_all_machines_broadcast_manager)

@@ -106,6 +106,11 @@ class GroupExtended(Group):
 #   FORMS
 # 
 
+class GetUsersFilters(BaseModel):
+    account_type: AccountType | None = None
+    role: UUID | None = None
+    group: UUID | None = None
+
 class CreateAdministratorForm(BaseModel):
     password: str
     username: str
@@ -136,13 +141,19 @@ class ModifyUserForm(BaseModel):
     email: str | None = None
     name: str | None = None
     surname: str | None = None
-    roles: list[UUID] | None = None
+    roles: set[UUID] | None = None
     groups: list[UUID] | None = None
+    disabled: bool | None = None
+    
+class ModifyUserArgs(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    disabled: bool | None = None
 
 class CreateAdministratorArgs(CreateAdministratorForm):
-    uuid: UUID | None = None
-    creation_date: dt.date = dt.date.today()
-    last_active = None
+    uuid: UUID = uuid4()
     
     @model_validator(mode="after")
     def __randomize_uuid__(self):
@@ -150,9 +161,7 @@ class CreateAdministratorArgs(CreateAdministratorForm):
         return self
     
 class CreateClientArgs(CreateClientForm):
-    uuid: UUID | None = None
-    creation_date: dt.date = dt.date.today()
-    last_active = None
+    uuid: UUID = uuid4()
     
     @model_validator(mode="after")
     def __randomize_uuid__(self):
@@ -160,7 +169,7 @@ class CreateClientArgs(CreateClientForm):
         return self
     
 class CreateGroupArgs(CreateGroupForm):
-    uuid: UUID | None = None
+    uuid: UUID = uuid4()
     
     @model_validator(mode="after")
     def __randomize_uuid__(self):
