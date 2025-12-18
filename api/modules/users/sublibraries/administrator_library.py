@@ -20,7 +20,7 @@ def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
     administrator = Administrator.model_validate(record.model_dump())
     
     role_rows = select_rows("""
-        SELECT roles.uuid, roles.permissions, FROM roles
+        SELECT roles.uuid, roles.permissions FROM roles
         JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid
         JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid
         WHERE administrators.uuid = %s
