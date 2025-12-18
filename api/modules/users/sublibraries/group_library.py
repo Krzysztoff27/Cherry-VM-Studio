@@ -16,7 +16,7 @@ def prepare_from_database_record(record: GroupInDB) -> Group:
     
     group.users = select_single_field("uuid", """
         SELECT clients.uuid FROM clients
-        JOIN clients_groups ON clients.uuid = clients_groups.administrator_uuid
+        JOIN clients_groups ON clients.uuid = clients_groups.client_uuid
         JOIN groups ON clients_groups.group_uuid = groups.uuid                          
         WHERE groups.uuid = %s
         """, (group.uuid, )   
