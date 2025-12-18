@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def prepare_from_database_record(record: ClientInDB) -> Client:
-    client = Client.model_validate(record)
+    client = Client.model_validate(record.model_dump())
     
     client.groups = select_single_field("uuid",
         f"SELECT groups.uuid FROM groups"

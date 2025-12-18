@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def prepare_from_database_record(record: GroupInDB) -> Group:
-    group = Group.model_validate(record)
+    group = Group.model_validate(record.model_dump())
     
     group.users = select_single_field("uuid",
         f"SELECT clients.uuid FROM clients"

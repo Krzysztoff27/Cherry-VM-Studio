@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def prepare_from_database_record(record: RoleInDB) -> Role:
-    role = Role.model_validate(record)
+    role = Role.model_validate(record.model_dump())
     
     role.users = select_single_field("uuid",
         f"SELECT administrators.uuid FROM administrators"
