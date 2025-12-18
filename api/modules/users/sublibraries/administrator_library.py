@@ -97,7 +97,7 @@ class AdministratorTableManager(SimpleTableManager):
             raise HTTPException(403, "You do not have necessary permissions to assign the attached set of roles to another user.")
         
         assigned_roles_query_placeholders = [
-            sql.SQL("({}, {})").format(sql.Literal(role_uuid), sql.Literal(args.uuid))
+            sql.SQL("({}, {})").format(sql.Literal(args.uuid), sql.Literal(role_uuid))
             for role_uuid in args.roles
         ]
         

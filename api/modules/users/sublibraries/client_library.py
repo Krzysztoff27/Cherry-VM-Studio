@@ -78,7 +78,7 @@ class ClientTableManager(SimpleTableManager):
             raise HTTPException(400, f"The following groups do not exist in the system: {', '.join(map(str, not_existing))}")
         
         assigned_groups_query_placeholder = [
-            sql.SQL("({}, {})").format(sql.Literal(group_uuid), sql.Literal(args.uuid))
+            sql.SQL("({}, {})").format(sql.Literal(args.uuid), sql.Literal(group_uuid))
             for group_uuid in args.groups
         ]
         
