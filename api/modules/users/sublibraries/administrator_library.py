@@ -7,7 +7,7 @@ from psycopg import sql
 from modules.users.permissions import has_permissions
 from modules.postgresql import pool
 from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs
-from modules.postgresql.simple_select import select_one, select_single_field
+from modules.postgresql.simple_select import select_one, select_rows, select_single_field
 from modules.users.guacamole_synchronization import create_entity, delete_entity
 from modules.postgresql.simple_table_manager import SimpleTableManager
 from modules.authentication.passwords import hash_password
@@ -19,13 +19,23 @@ logger = logging.getLogger(__name__)
 def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
     administrator = Administrator.model_validate(record.model_dump())
     
-    administrator.roles = select_single_field("uuid", """
-        SELECT roles.uuid FROM roles
+    role_rows = select_rows("""
+        SELECT roles.uuid, roles.permissions, FROM roles
         JOIN administrators_roles ON roles.uuid = administrators_roles.role_uuid
         JOIN administrators ON administrators_roles.administrator_uuid = administrators.uuid
         WHERE administrators.uuid = %s
         """, (administrator.uuid,)
     )
+    
+    permissions = administrator.permissions
+    roles: list[UUID] = []
+    
+    for row in role_rows:
+        permissions |= row["permissions"]
+        roles.append(row["uuid"])
+        
+    administrator.permissions = permissions
+    administrator.roles = roles
         
     return administrator
     
