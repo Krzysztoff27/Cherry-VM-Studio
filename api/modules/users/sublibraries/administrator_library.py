@@ -112,7 +112,7 @@ class AdministratorTableManager(SimpleTableManager):
                 with connection.transaction():
                     cursor.execute("""
                         INSERT INTO administrators (uuid, username, password, email, name, surname, disabled)
-                        VALUES (%(uuid), %(username), %(password), %(email), %(name), %(surname), %(disabled))
+                        VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)
                     """, args.model_dump())
                     cursor.execute(assign_roles_query)
                     
