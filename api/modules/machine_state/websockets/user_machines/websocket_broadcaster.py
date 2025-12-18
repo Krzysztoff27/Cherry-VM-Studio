@@ -3,7 +3,7 @@ from fastapi import WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
 from modules.machine_state.data_retrieval import get_machine_states_by_user
-from modules.users.users import get_user_by_uuid
+from modules.users.users import UsersManager
 from modules.websockets.models import DataResponse, SubscriptionsDict
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ async def broadcast_user_machines_state(subscriptions: SubscriptionsDict):
 
         try:
             user_uuid = next(iter(subscription.resources))
-            user = get_user_by_uuid(user_uuid)
+            user = UsersManager.get_user(user_uuid)
             
             if user is None:
                 raise RuntimeError
