@@ -29,9 +29,9 @@ def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
     return administrator
     
 class AdministratorTableManager(SimpleTableManager):
+    model_extended = AdministratorExtended
     
     def __init__(self):
-        self.model_extended = AdministratorExtended
         super().__init__(
             table_name="administrators",
             allowed_fields_for_select={"uuid","username","email"},

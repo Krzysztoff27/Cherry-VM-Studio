@@ -30,9 +30,9 @@ def prepare_from_database_record(record: ClientInDB) -> Client:
 
 
 class ClientTableManager(SimpleTableManager):
+    model_extended = ClientExtended
     
     def __init__(self):
-        self.model_extended = ClientExtended
         super().__init__(
             table_name="clients",
             allowed_fields_for_select={"uuid","username","email"},

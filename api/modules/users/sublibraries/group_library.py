@@ -28,9 +28,9 @@ def prepare_from_database_record(record: GroupInDB) -> Group:
 
 
 class GroupTableManager(SimpleTableManager):
+    model_extended = GroupExtended
     
     def __init__(self):
-        self.model_extended = GroupExtended
         super().__init__(
             table_name="groups",
             allowed_fields_for_select={"uuid", "name"},

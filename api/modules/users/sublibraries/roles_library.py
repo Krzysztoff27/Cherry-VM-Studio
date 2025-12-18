@@ -28,9 +28,9 @@ def prepare_from_database_record(record: RoleInDB) -> Role:
     return role
 
 class RoleTableManager(SimpleTableManager):
+    model_extended = RoleExtended
     
     def __init__(self):
-        self.model_extended = RoleExtended
         super().__init__(
             table_name="roles",
             allowed_fields_for_select={"uuid", "name"},
