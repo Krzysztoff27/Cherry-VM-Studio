@@ -81,6 +81,9 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             raise InvalidFieldNameException(field_name=field_name)
         
         if isinstance(value, list):
+            if not len(value):
+                return {}
+            
             base_query = "SELECT * FROM {table} WHERE {field} IN ({placeholders})"
             placeholders=sql.SQL(', ').join(sql.Placeholder() * len(value))
             params = value
