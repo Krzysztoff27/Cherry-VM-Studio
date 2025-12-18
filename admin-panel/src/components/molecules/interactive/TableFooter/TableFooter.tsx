@@ -47,13 +47,13 @@ const TableFooter = ({ layouts, currentLayout, setCurrentLayout, pagination, set
             <Flex
                 className={classes.item}
                 justify="center"
+                flex="2"
             >
                 <Pagination
                     value={pagination.pageIndex + 1}
                     onChange={(val) => setPagination((prev) => ({ ...prev, pageIndex: val - 1 }))}
                     total={getPageCount() || 1}
-                    siblings={2}
-                    withEdges
+                    siblings={1}
                     classNames={{ control: classes.paginationControl }}
                 />
             </Flex>

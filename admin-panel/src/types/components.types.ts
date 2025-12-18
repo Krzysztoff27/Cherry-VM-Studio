@@ -147,14 +147,6 @@ export interface TableSearchProps {
     [x: string]: any;
 }
 
-export interface ModalButtonProps {
-    ModalComponent: ComponentType<{ opened: boolean; onClose: () => void }>;
-    ButtonComponent?: ComponentType<any>;
-    modalProps?: any;
-    buttonProps?: any;
-    children: any;
-}
-
 export interface ExpandingButtonProps extends ButtonProps {
     ButtonComponent?: ComponentType<any>;
     parentGap: string; // the gap property in the parent flex container

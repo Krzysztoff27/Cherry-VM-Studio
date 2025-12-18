@@ -5,9 +5,12 @@ import { useApiWebSocketReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
 import { validPath } from "../utils/path.ts";
+import useApi from "./useApi.ts";
+import { isEmpty } from "lodash";
 
 const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const { tokens } = useAuthentication();
+    const { refreshTokens } = useApi();
 
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
     const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}?access_token=${tokens.access_token}`;
@@ -16,7 +19,12 @@ const useApiWebSocket = (path: string): useApiWebSocketReturn => {
     const setUrl = (path: string) => setSocketUrl(getUrl(path));
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl, {
-        shouldReconnect: () => true,
+        shouldReconnect: (event) => {
+            if (event.code !== 4401) return false;
+
+            refreshTokens();
+            return true;
+        },
     });
 
     const connectionStatus: string = {

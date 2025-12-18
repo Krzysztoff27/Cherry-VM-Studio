@@ -10,7 +10,8 @@ import { validPath } from "../utils/path.ts";
 type RequestMethods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export interface useApiReturn {
-    getPath: Function;
+    getPath: (path: string) => string;
+    refreshTokens: () => Promise<Tokens>;
     sendRequest: <T = any>(method: RequestMethods, path: string, config?: AxiosRequestConfig, errorCallback?: (error: AxiosError) => void) => Promise<T>;
 }
 
@@ -79,7 +80,7 @@ export const useApi = (): useApiReturn => {
             });
     };
 
-    return { getPath, sendRequest };
+    return { getPath, refreshTokens, sendRequest };
 };
 
 export default useApi;

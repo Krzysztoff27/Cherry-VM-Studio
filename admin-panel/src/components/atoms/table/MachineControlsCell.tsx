@@ -1,20 +1,22 @@
 import { ActionIcon, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconTrashXFilled } from "@tabler/icons-react";
 import React, { MouseEvent } from "react";
-import { useTranslation } from "react-i18next";
 import useApi from "../../../hooks/useApi";
 import { SimpleState } from "../../../types/api.types";
 import classes from "./MachineControlsCell.module.css";
 import { useThrottledCallback } from "@mantine/hooks";
+import ModalButton from "../interactive/ModalButton/ModalButton";
+import DeleteModal from "../../../modals/base/DeleteModal/DeleteModal";
 
 export interface MachineControlsCellProps {
     uuid: string;
     state: SimpleState;
     disabled: boolean;
-    onRemove: (uuid: string) => void;
+    onStateToggle?: () => void;
+    onRemove?: (uuid: string) => void;
 }
 
-const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React.JSX.Element => {
+const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onRemove }: MachineControlsCellProps): React.JSX.Element => {
     const { sendRequest } = useApi();
 
     const toggleState = useThrottledCallback((e) => {
@@ -22,13 +24,9 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
 
         if (state.active) sendRequest("POST", `/machine/stop/${uuid}`);
         else sendRequest("POST", `/machine/start/${uuid}`);
-    }, 2000);
 
-    const deleteMachine = async (e: MouseEvent) => {
-        e.preventDefault(); // required to prevent entering the machine page
-        await sendRequest("DELETE", `/machine/delete/${uuid}`);
-        onRemove(uuid);
-    };
+        onStateToggle();
+    }, 2000);
 
     return (
         <Group
@@ -57,16 +55,25 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onRemove }): React
             >
                 {state.fetching || state.loading || !state.active ? <IconPlayerPlayFilled size={22} /> : <IconPlayerStopFilled size={22} />}
             </ActionIcon>
-            <ActionIcon
-                variant="light"
-                size="36"
-                color="red.9"
-                disabled={disabled || state.fetching || state?.loading || state?.active}
-                onClick={deleteMachine}
-                className={classes.button}
+            <ModalButton
+                ButtonComponent={ActionIcon}
+                buttonProps={{
+                    variant: "light",
+                    size: "36",
+                    color: "red.9",
+                    disabled: disabled || state.fetching || state?.loading || state?.active,
+                    className: classes.button,
+                }}
+                ModalComponent={DeleteModal}
+                modalProps={{
+                    path: "/machine/delete",
+                    uuids: [uuid],
+                    i18nextPrefix: "confirm.machine-removal",
+                    onSubmit: () => onRemove(uuid),
+                }}
             >
                 <IconTrashXFilled size={"24"} />
-            </ActionIcon>
+            </ModalButton>
         </Group>
     );
 };

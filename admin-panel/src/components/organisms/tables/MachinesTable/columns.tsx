@@ -75,7 +75,7 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             accessorKey: "options",
             header: "",
             enableSorting: false,
-            cell: ({ getValue }) => (
+            cell: ({ getValue, row }) => (
                 <MachineControlsCell
                     disabled={viewMode}
                     onRemove={onRemove}

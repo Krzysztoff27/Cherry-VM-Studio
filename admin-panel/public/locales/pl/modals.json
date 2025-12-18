@@ -116,6 +116,12 @@
             "title": "Uwaga",
             "description": "Wykonanie tej akcji odrzuci wszystkie niezapisane zmiany. Czy jesteś pewien, że chcesz kontynuować?"
         },
+        "machine-removal": {
+            "title": "Usunięcie maszyny",
+            "description_one": "Wybrana maszyna zostanie usunięte. Czy jesteś pewien, że chcesz kontynuować?",
+            "description_few": "Wszystkie {{count}} wybrane maszyny zostaną usunięte. Czy jesteś pewien, że chcesz kontynuować?",
+            "description_many": "Wszystkie {{count}} wybranych maszyn zostanie usuniętych. Czy jesteś pewien, że chcesz kontynuować?"
+        },
         "account-removal": {
             "title": "Usunięcie konta",
             "description_one": "Wybrane konto zostanie usunięte. Czy jesteś pewien, że chcesz kontynuować?",
