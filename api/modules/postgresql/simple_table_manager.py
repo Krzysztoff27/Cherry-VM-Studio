@@ -81,11 +81,13 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             raise InvalidFieldNameException(field_name=field_name)
         
         if isinstance(value, list):
-            base_query = "SELECT from {table} WHERE {field} IN ({placeholders})"
+            base_query = "SELECT * FROM {table} WHERE {field} IN ({placeholders})"
             placeholders=sql.SQL(', ').join(sql.Placeholder() * len(value))
+            params = value
         else:
-            base_query = "SELECT FROM {table} WHERE {field} = {placeholders}"
-            placeholders=sql.Identifier(value)
+            base_query = "SELECT * FROM {table} WHERE {field} = {placeholders}"
+            placeholders=sql.Placeholder(value)
+            params = [value]
         
         query = sql.SQL(base_query).format(
             table=sql.Identifier(self.table_name),
@@ -93,7 +95,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             placeholders=placeholders
         )
         
-        records = select_schema_dict(self.model_in_db, "uuid", query)
+        records = select_schema_dict(self.model_in_db, "uuid", query, params)
         
         for key, record in records.items():
             records[key] = self.prepare_record(record)
