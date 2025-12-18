@@ -9,13 +9,21 @@ import useErrorHandler from "../../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { ErrorCallbackFunction } from "../../../../types/hooks.types";
 import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading";
 import RoleMultiselect from "../../../atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../atoms/interactive/GroupMultiselect/GroupMultiselect";
 import { AxiosError } from "axios";
+import { UserExtended } from "../../../../types/api.types";
+import { values } from "lodash";
 
-const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
+export interface AccountEditFormProps {
+    onCancel: () => void;
+    onSubmit: () => void;
+    openPasswordModal: (uuid: string) => void;
+    user: UserExtended;
+}
+
+const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: AccountEditFormProps) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();
@@ -61,8 +69,8 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
             surname: user?.surname ?? "",
             username: user?.username ?? "",
             email: user?.email ?? "",
-            roles: user?.roles?.map((role) => role.uuid) ?? [],
-            groups: user?.groups?.map((group) => group.uuid) ?? [],
+            roles: user.account_type === "administrative" ? values(user.roles).map((role) => role.uuid) : [],
+            groups: user.account_type === "client" ? values(user.groups).map((group) => group.uuid) : [],
         });
 
     useEffect(() => {
@@ -76,6 +84,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
         if (error.response?.status === 400 && detail.includes("permission unassigned")) {
             const match = detail.match(/UUID=([a-f0-9-]+)/i);
             const roleUuid = match ? match[1] : null;
+            // @ts-ignore
             const roleName = user.roles[roleUuid].name;
 
             form.resetField("roles");
@@ -94,6 +103,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }) => {
     };
 
     const onFormSubmit = form.onSubmit(async (values) => {
+        console.log(values);
         const res = await sendRequest("PUT", `user/modify/${user?.uuid}`, { data: values }, onPostError);
         if (!res) return;
 

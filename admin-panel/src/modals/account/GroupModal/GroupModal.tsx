@@ -1,4 +1,4 @@
-import { Avatar, Group, Modal, Skeleton, Stack, Text, Title } from "@mantine/core";
+import { Avatar, Group, Modal, Stack, Text } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/tables/MembersTable/MembersTable";
@@ -6,10 +6,11 @@ import classes from "./GroupModal.module.css";
 import AddMembersField from "../../../components/molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { useEffect, useState } from "react";
-import { Group as GroupType, UserInDB } from "../../../types/api.types";
+import { Client, Group as GroupType } from "../../../types/api.types";
 import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 import GroupModalPlaceholder from "./GroupModalPlaceholder";
+import { values } from "lodash";
+import AddClientsSelect from "../../../components/molecules/interactive/AddClientsSelect/AddClientsSelect";
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
     const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/group/${uuid}` : undefined);
@@ -26,8 +27,8 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
         refresh();
     };
 
-    const addMembers = async (members: string[]) => {
-        await sendRequest("PUT", `group/join/${uuid}`, { data: members });
+    const addMember = async (member: string) => {
+        await sendRequest("PUT", `group/join/${uuid}`, { data: [member] });
         refresh();
     };
 
@@ -81,12 +82,13 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                         gap="42"
                         mih="0"
                     >
-                        <AddMembersField
-                            alreadyAddedUuids={(group?.users || []).map((user: UserInDB) => user.uuid)}
-                            onSubmit={addMembers}
+                        <AddClientsSelect
+                            excludedClients={values(group?.users).map((user: Client) => user.uuid)}
+                            onSubmit={addMember}
+                            classNames={{ input: "borderless" }}
                         />
                         <MembersTable
-                            usersData={group?.users || []}
+                            usersData={values(group?.users)}
                             removeMember={removeMember}
                             loading={loading}
                             error={error}

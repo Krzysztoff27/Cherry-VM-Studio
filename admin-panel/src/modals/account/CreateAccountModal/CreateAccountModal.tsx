@@ -10,7 +10,8 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
+import { isEmpty } from "lodash";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
@@ -46,7 +47,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                     : val.length > 24
                     ? tns("validation.username-too-long")
                     : null,
-            email: isEmail(tns("validation.email-invalid")),
+            email: (val) => (val.length && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null),
             password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")
@@ -89,7 +90,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         else if (accountType === "client") delete body.roles;
 
         const res = await sendRequest("POST", "user/create", { data: body }, onPostError);
-        if (!res) return;
+        if (isAxiosError(res)) return;
 
         sendNotification("account.created", undefined, { username: res.username });
         closeModal();

@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
 import classes from "./UserMultiselect.module.css";
 import { useElementSize } from "@mantine/hooks";
-import { UserInDB } from "../../../../types/api.types";
+import { User } from "../../../../types/api.types";
 
 export interface UserMultiselectProps extends MultiSelectProps {
-    users: UserInDB[];
+    users: User[];
     classNames?: { [key: string]: any };
 }
 

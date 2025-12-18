@@ -38,7 +38,7 @@ export interface ErrorResponseBody {
 
 // users related
 
-export interface UserInDB {
+export interface Administrator {
     uuid: string;
     username: string;
     email: string;
@@ -47,29 +47,56 @@ export interface UserInDB {
     creation_date: string;
     last_active: string;
     disabled: boolean;
-}
-
-export interface GroupInDB {
-    uuid: string;
-    name: string;
-}
-
-export interface RoleInDB {
-    uuid: string;
-    name: string;
+    account_type: "administrative";
+    roles: string[];
     permissions: number;
 }
 
-export interface Group extends GroupInDB {
-    users: UserInDB[];
+export interface Client {
+    uuid: string;
+    username: string;
+    email: string;
+    name: string;
+    surname: string;
+    creation_date: string;
+    last_active: string;
+    disabled: boolean;
+    account_type: "client";
+    groups: string[];
 }
 
-export interface User extends UserInDB {
-    account_type: AccountType;
-    roles?: RoleInDB[];
-    groups?: GroupInDB[];
-    permissions?: number;
+export interface Group {
+    uuid: string;
+    name: string;
+    users: string[];
 }
+
+export interface Role {
+    uuid: string;
+    name: string;
+    permissions: number;
+    users: string[];
+}
+
+export interface AdministratorExtended extends Omit<Administrator, "roles"> {
+    roles: Record<string, Role>;
+}
+
+export interface ClientExtended extends Omit<Client, "groups"> {
+    groups: Record<string, Group>;
+}
+
+export interface GroupExtended extends Omit<Group, "users"> {
+    users: Record<string, Client>;
+}
+
+export interface RoleExtended extends Omit<Role, "users"> {
+    users: Record<string, Role>;
+}
+
+export type User = Administrator | Client;
+
+export type UserExtended = AdministratorExtended | ClientExtended;
 
 // machines
 
@@ -103,8 +130,8 @@ export interface MachineData {
     title: string;
     tags: string[];
     description: string;
-    owner: UserInDB | null;
-    assigned_clients: Record<string, UserInDB>;
+    owner: Administrator | null;
+    assigned_clients: Record<string, Client>;
     domain: string | null;
     ras_ip: string | null;
     ras_port: number | null;
@@ -188,6 +215,6 @@ export interface MachineTemplate {
     name: string;
     ram: number;
     vcpu: number;
-    owner: UserInDB;
+    owner: Administrator;
     created_at: string;
 }

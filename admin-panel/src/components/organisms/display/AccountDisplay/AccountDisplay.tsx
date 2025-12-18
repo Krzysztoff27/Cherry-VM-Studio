@@ -6,8 +6,16 @@ import AccountHeading from "../../../atoms/display/AccountHeading/AccountHeading
 import BadgeGroup from "../../../atoms/display/BadgeGroup/BadgeGroup";
 import PermissionsList from "../../../atoms/display/PermissionsList/PermissionsList";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
+import { UserExtended } from "../../../../types/api.types";
+import { values } from "lodash";
 
-const AccountDisplay = ({ onClose, onEdit, user }) => {
+export interface AccountDisplayProps {
+    onClose: () => void;
+    onEdit: () => void;
+    user: UserExtended;
+}
+
+const AccountDisplay = ({ onClose, onEdit, user }: AccountDisplayProps) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { hasPermissions } = usePermissions();
 
@@ -47,14 +55,14 @@ const AccountDisplay = ({ onClose, onEdit, user }) => {
                 {user?.account_type === "administrative" ? (
                     <BadgeGroup
                         label={`${tns("roles")}:`}
-                        items={user?.roles.map((role) => role.name)}
+                        items={values(user.roles).map((r) => r.name)}
                         emptyMessage={`${t("none")}`}
                         ml="md"
                     />
                 ) : (
                     <BadgeGroup
                         label={`${tns("assigned-groups")}:`}
-                        items={user?.groups.map((group) => group.name)}
+                        items={values(user.groups).map((g) => g.name)}
                         emptyMessage={`${t("none")}`}
                         ml="md"
                     />

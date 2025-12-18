@@ -18,8 +18,8 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import UserMultiselect, { UserMultiselectProps } from "../../interactive/UserMultiselect/UserMultiselect";
 import { merge, values } from "lodash";
 import useFetch from "../../../../hooks/useFetch";
-import { UserInDB } from "../../../../types/api.types";
 import { UseFormReturnType } from "@mantine/form";
+import { Client } from "../../../../types/api.types";
 
 export type MachineConnectionProtocolsFormValues = "rdp" | "vnc" | "ssh" | "rdp+ssh" | "vnc+ssh";
 
@@ -116,7 +116,7 @@ const MachineDetailsFieldset = <T extends Record<string, any> = {}>({
                         <UserMultiselect
                             placeholder={form.values.assigned_clients.length ? "" : tns("assigned-clients-placeholder")}
                             description={tns("assigned-clients")}
-                            users={values(users) ?? ([] as UserInDB[])}
+                            users={values(users) ?? ([] as Client[])}
                             w={366}
                             key={form.key("assigned_clients")}
                             {...form.getInputProps("assigned_clients")}

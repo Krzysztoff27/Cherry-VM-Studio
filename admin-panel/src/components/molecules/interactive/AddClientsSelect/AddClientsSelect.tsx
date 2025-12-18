@@ -4,17 +4,18 @@ import { User } from "../../../../types/api.types";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
 import { omit, values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
-import { Select, SelectProps } from "@mantine/core";
+import { Select, SelectProps, SelectStylesNames } from "@mantine/core";
 import cs from "classnames";
 import classes from "./AddClientsSelect.module.css";
 import { useMemo, useState } from "react";
 
-export interface AddClientsSelectProps extends SelectProps {
-    onSubmit: () => {};
+export interface AddClientsSelectProps extends Omit<SelectProps, "onSubmit"> {
+    onSubmit: (uuid: string) => {};
     excludedClients: string[];
+    classNames?: Partial<Record<SelectStylesNames, string>>;
 }
 
-const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }): React.JSX.Element => {
+const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }: AddClientsSelectProps): React.JSX.Element => {
     const { t } = useTranslation();
     const [value, setValue] = useState(null);
 
@@ -52,7 +53,6 @@ const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }): 
                 ...classNames,
                 dropdown: cs("border", classNames?.dropdown),
                 input: cs(classes.clientsInput, classNames?.input),
-                pill: cs(classes.pill, classNames?.pill),
                 option: cs(classes.option, classNames?.option),
             }}
             comboboxProps={{

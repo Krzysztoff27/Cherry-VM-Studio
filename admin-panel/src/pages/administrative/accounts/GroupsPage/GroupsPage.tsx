@@ -5,9 +5,10 @@ import GroupsTable from "../../../../components/organisms/tables/GroupsTable/Gro
 import useFetch from "../../../../hooks/useFetch";
 import GroupModal from "../../../../modals/account/GroupModal/GroupModal";
 import classes from "./GroupsPage.module.css";
+import { GroupExtended } from "../../../../types/api.types";
 
 const GroupsPage = (): React.JSX.Element => {
-    const { data: groupData, error, loading, refresh } = useFetch(`/groups`);
+    const { data: groupData, error, loading, refresh } = useFetch<Record<string, GroupExtended>>(`/groups`);
     const [currentUuid, setCurrentUuid] = useState<string>("");
     const [opened, { open, close }] = useDisclosure();
 

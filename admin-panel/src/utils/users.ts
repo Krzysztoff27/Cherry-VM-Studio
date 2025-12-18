@@ -1,3 +1,3 @@
-import { UserInDB } from "../types/api.types";
+import { User } from "../types/api.types";
 
-export const getFullUserName = (user: UserInDB) => (user.name || user.surname ? `${user.name} ${user.surname}`.trim() : user.username);
+export const getFullUserName = (user: User) => (user.name || user.surname ? `${user.name} ${user.surname}`.trim() : user.username);

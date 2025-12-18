@@ -1,11 +1,11 @@
 import { values } from "lodash";
-import { GroupInDB, RoleInDB, User } from "../../../../types/api.types";
+import { UserExtended } from "../../../../types/api.types";
 
-export const prepareData = (accounts: Record<string, User>) =>
+export const prepareData = (accounts: Record<string, UserExtended>) =>
     values(accounts).map((user) => ({
         uuid: user.uuid,
-        roles: user?.roles?.map((role: RoleInDB) => role.name),
-        groups: user?.groups?.map((group: GroupInDB) => group.name),
+        roles: user.account_type === "administrative" ? values(user.roles).map((r) => r.name) : [],
+        groups: user.account_type === "client" ? values(user.groups).map((g) => g.name) : [],
         lastActive: user.last_active,
         details: {
             username: user.username,

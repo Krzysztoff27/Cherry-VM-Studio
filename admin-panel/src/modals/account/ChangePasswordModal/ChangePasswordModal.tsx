@@ -41,75 +41,73 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
         closeModal();
     });
 
-    // not using actual <form> element here
-    // because when both "Change Password" and "Edit Account" modals are opened
-    // buttons of type = submit mess with each other forms submition
-
     return (
         <Modal
             opened={opened}
             onClose={onClose}
             title={tns("change-password")}
         >
-            <Stack
-                gap="sm"
-                pt="4"
-            >
-                <PasswordInput
-                    label={tns("new-password")}
-                    placeholder={tns("new-password-placeholder")}
-                    styles={{
-                        input: {
-                            fontWeight: "500",
-                            color: "var(--mantine-color-dimmed)",
-                            border: "none",
-                        },
-                        innerInput: {
-                            padding: "16px",
-                        },
-                    }}
-                    key={form.key("password")}
-                    {...form.getInputProps("password")}
-                    withAsterisk
-                />
-                <PasswordInput
-                    label={tns("confirm-password")}
-                    placeholder={tns("confirm-password-placeholder")}
-                    styles={{
-                        input: {
-                            fontWeight: "500",
-                            color: "var(--mantine-color-dimmed)",
-                            border: "none",
-                        },
-                        innerInput: {
-                            padding: "16px",
-                        },
-                    }}
-                    key={form.key("confirmPassword")}
-                    {...form.getInputProps("confirmPassword")}
-                    withAsterisk
-                />
-                <Group
-                    w="100%"
-                    justify="center"
-                    pt="md"
+            <form onSubmit={onSubmit}>
+                <Stack
+                    gap="sm"
+                    pt="4"
                 >
-                    <Button
-                        variant="default"
-                        bd="none"
-                        onClick={closeModal}
+                    <PasswordInput
+                        label={tns("new-password")}
+                        placeholder={tns("new-password-placeholder")}
+                        styles={{
+                            input: {
+                                fontWeight: "500",
+                                color: "var(--mantine-color-dimmed)",
+                                border: "none",
+                            },
+                            innerInput: {
+                                padding: "16px",
+                            },
+                        }}
+                        key={form.key("password")}
+                        {...form.getInputProps("password")}
+                        withAsterisk
+                    />
+                    <PasswordInput
+                        label={tns("confirm-password")}
+                        placeholder={tns("confirm-password-placeholder")}
+                        styles={{
+                            input: {
+                                fontWeight: "500",
+                                color: "var(--mantine-color-dimmed)",
+                                border: "none",
+                            },
+                            innerInput: {
+                                padding: "16px",
+                            },
+                        }}
+                        key={form.key("confirmPassword")}
+                        {...form.getInputProps("confirmPassword")}
+                        withAsterisk
+                    />
+                    <Group
+                        w="100%"
+                        justify="center"
+                        pt="md"
                     >
-                        {t("cancel")}
-                    </Button>
-                    <Button
-                        variant="white"
-                        c="black"
-                        onClick={() => onSubmit()}
-                    >
-                        {t("confirm")}
-                    </Button>
-                </Group>
-            </Stack>
+                        <Button
+                            variant="default"
+                            bd="none"
+                            onClick={closeModal}
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            variant="white"
+                            c="black"
+                            type="submit"
+                        >
+                            {t("confirm")}
+                        </Button>
+                    </Group>
+                </Stack>
+            </form>
         </Modal>
     );
 };

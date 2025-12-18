@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import useFetch from "../../../hooks/useFetch";
 import { Modal } from "@mantine/core";
 import AccountDisplay from "../../../components/organisms/display/AccountDisplay/AccountDisplay";
 import AccountEditForm from "../../../components/organisms/forms/AccountEditForm/AccountEditForm";
 import AccountModalPlaceholder from "../../../components/organisms/display/AccountDisplay/AccountDisplayPlaceholder";
+import { UserExtended } from "../../../types/api.types";
 
 const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
-    const { data, error, loading, refresh: refreshUser } = useFetch(`/user/${uuid}`, undefined, true);
+    const { data, error, loading, refresh: refreshUser } = useFetch<UserExtended>(`/user/${uuid}`, undefined, true);
 
     const toggle = () => setInEditMode((prev) => !prev);
     const refresh = () => {
