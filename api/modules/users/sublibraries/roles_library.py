@@ -103,8 +103,6 @@ class RoleTableManager(SimpleTableManager):
                     if not self.verify_role_integrity(cursor):
                         connection.rollback()
                         raise HTTPException(400, f"Cannot revoke role with UUID={role_uuid} from the user, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
-                    
-                    connection.commit()
 
     def update_administrator_roles(self, administrator_uuid: UUID, roles: list[UUID], logged_in_user: Administrator):
         from .administrator_library import AdministratorLibrary
@@ -150,8 +148,6 @@ class RoleTableManager(SimpleTableManager):
                     if not self.verify_role_integrity(cursor):
                         connection.rollback()
                         raise HTTPException(400, f"The user’s roles could not be updated, as this change would result in at least one permission being left unassigned. Please assign the affected permission to another user before continuing.")
-                    
-                    connection.commit()
  
             
 

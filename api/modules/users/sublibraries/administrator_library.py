@@ -117,7 +117,6 @@ class AdministratorTableManager(SimpleTableManager):
                     cursor.execute(assign_roles_query)
                     
                     create_entity(cursor, args.uuid)
-                    connection.commit()
         
         return args.uuid
     

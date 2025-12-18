@@ -98,7 +98,6 @@ class ClientTableManager(SimpleTableManager):
                     cursor.execute(assign_groups_query)
                     
                     create_entity(cursor, args.uuid)
-                    connection.commit()
         
         return args.uuid
     

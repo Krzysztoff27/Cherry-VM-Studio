@@ -72,8 +72,6 @@ class GroupTableManager(SimpleTableManager):
                 with connection.transaction():
                     cursor.execute("INSERT INTO groups (uuid, name) VALUES (%s, %s)", (args.uuid, args.name))
                     cursor.execute(assign_users_query)
-                    connection.commit()
-
 
         return args.uuid
 
@@ -144,7 +142,6 @@ class GroupTableManager(SimpleTableManager):
                 with connection.transaction():
                     cursor.execute("DELETE FROM clients_groups WHERE client_uuid = %s", (client_uuid, ))
                     cursor.execute(insert_query)
-                    connection.commit()
         
 
 GroupLibrary = GroupTableManager()
