@@ -66,9 +66,9 @@ class UsersSystemManager():
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
         
         if form.account_type == 'administrative':                       
-            return AdministratorLibrary.create_record(CreateAdministratorArgs.model_validate(form), logged_in_user)
+            return AdministratorLibrary.create_record(CreateAdministratorArgs.model_validate(form.model_dump()), logged_in_user)
         if form.account_type == 'client':
-            return ClientLibrary.create_record(CreateClientArgs.model_validate(form))
+            return ClientLibrary.create_record(CreateClientArgs.model_validate(form.model_dump()))
         
     def delete_user(self, uuid: UUID):
         user = self.get_user(uuid)
@@ -94,7 +94,7 @@ class UsersSystemManager():
         
         validate_user_modification(uuid, form)
         
-        args = ModifyUserArgs.model_validate(form)
+        args = ModifyUserArgs.model_validate(form.model_dump())
         
         if user.account_type == 'administrative':
             if form.roles: 
@@ -137,7 +137,7 @@ class UsersSystemManager():
     def create_group(self, form: CreateGroupForm) -> UUID:
         validate_group_creation(form)
         
-        return GroupLibrary.create_record(CreateGroupArgs.model_validate(form))
+        return GroupLibrary.create_record(CreateGroupArgs.model_validate(form.model_dump()))
 
     
 UsersManager = UsersSystemManager()
