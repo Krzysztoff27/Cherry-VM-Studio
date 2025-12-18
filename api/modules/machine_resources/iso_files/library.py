@@ -1,17 +1,18 @@
 import logging
 from uuid import UUID
 
+
 from .models import CreateIsoRecordArgs, IsoRecord, IsoRecordInDB
 from modules.postgresql import pool
 from modules.postgresql.simple_table_manager import SimpleTableManager
-from modules.users.users import get_administrator_by_field
+from modules.users.sublibraries.administrator_library import AdministratorLibrary
 
 logger = logging.getLogger(__name__)
 
 
 def prepare_from_database_record(record: IsoRecordInDB) -> IsoRecord:
-    imported_by = get_administrator_by_field("uuid", str(record.imported_by)) if record.imported_by is not None else None
-    last_modified_by = get_administrator_by_field("uuid", str(record.last_modified_by)) if record.last_modified_by is not None else None
+    imported_by = AdministratorLibrary.get_record_by_uuid(record.imported_by) if record.imported_by else None
+    last_modified_by = AdministratorLibrary.get_record_by_uuid(record.last_modified_by) if record.last_modified_by else None
     file_location = record.file_location if record.remote else None
     
     return IsoRecord(
