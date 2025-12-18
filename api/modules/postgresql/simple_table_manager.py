@@ -89,7 +89,7 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
             params = value
         else:
             base_query = "SELECT * FROM {table} WHERE {field} = {placeholders}"
-            placeholders=sql.Placeholder(value)
+            placeholders=sql.Placeholder()
             params = [value]
         
         query = sql.SQL(base_query).format(
