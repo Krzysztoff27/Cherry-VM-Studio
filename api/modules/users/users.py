@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from api.config.permissions_config import PERMISSIONS
+from config.permissions_config import PERMISSIONS
 from config.regex_config import REGEX_CONFIG
 from modules.authentication.passwords import hash_password
 from modules.users.permissions import verify_can_change_password, verify_permissions

@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import Depends, HTTPException
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 
-from api.modules.users.users import UsersManager
+from modules.users.users import UsersManager
 
 from .models import DecodedTokenPayload, Token, TokenTypes
 from .tokens import is_token_of_type

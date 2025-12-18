@@ -1,6 +1,6 @@
 from uuid import UUID
 from fastapi import HTTPException
-from api.modules.users.users import UsersManager
+from modules.users.users import UsersManager
 from application.app import app
 from modules.users.models import GroupExtended, CreateGroupForm
 from modules.users.sublibraries.group_library import GroupLibrary

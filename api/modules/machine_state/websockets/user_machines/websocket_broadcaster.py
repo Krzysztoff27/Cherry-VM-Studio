@@ -3,7 +3,7 @@ from fastapi import WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.websockets import WebSocketState
 from modules.machine_state.data_retrieval import get_machine_states_by_user
-from api.modules.users.users import get_user_by_uuid
+from modules.users.users import get_user_by_uuid
 from modules.websockets.models import DataResponse, SubscriptionsDict
 
 logger = logging.getLogger(__name__)

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from psycopg import sql
-from api.modules.users.permissions import has_permissions, verify_permissions
+from modules.users.permissions import has_permissions, verify_permissions
 from modules.postgresql import pool
 from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs, ModifyUserForm
 from modules.postgresql.simple_select import select_one, select_single_field

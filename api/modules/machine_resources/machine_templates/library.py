@@ -1,6 +1,6 @@
 import logging
 
-from api.modules.users.users import get_administrator_by_field
+from modules.users.users import get_administrator_by_field
 from modules.machine_resources.machine_templates.models import CreateMachineTemplateArgs, MachineTemplate, MachineTemplateInDB
 from modules.postgresql.simple_table_manager import SimpleTableManager
 
