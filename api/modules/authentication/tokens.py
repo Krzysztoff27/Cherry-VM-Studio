@@ -1,30 +1,33 @@
 import jwt
 from datetime import datetime, timedelta, timezone
-from modules.users.models import AnyUser
+from modules.users.models import AnyUser, AnyUserExtended
 from application.env import SECRET_KEY
 from config.authentication_config import AUTHENTICATION_CONFIG
 from .models import Token, TokenTypes, Tokens
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_token
-def create_token(type: TokenTypes, data: dict, expires_delta: timedelta) -> Token:
-    to_encode = data.copy()
-    to_encode.update({"token_type": type, "exp": datetime.now(timezone.utc) + expires_delta})
+def create_token(token_type: TokenTypes, user: AnyUser | AnyUserExtended, expires_delta: timedelta) -> Token:
+    to_encode = {
+        "token_type": token_type,
+        "sub": str(user.uuid),
+        "exp": datetime.now(timezone.utc) + expires_delta
+    }
     return jwt.encode(to_encode, SECRET_KEY, algorithm=AUTHENTICATION_CONFIG.algorithm)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_access_token
-def create_access_token(data: dict, expires_delta: timedelta) -> Token:
-    return create_token("access", data, expires_delta)
+def create_access_token(user: AnyUser | AnyUserExtended) -> Token:
+    return create_token("access", user, AUTHENTICATION_CONFIG.access_token_lifetime)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_refresh_token
-def create_refresh_token(data: dict, expires_delta: timedelta) -> Token:
-    return create_token("refresh", data, expires_delta)
+def create_refresh_token(user: AnyUser | AnyUserExtended) -> Token:
+    return create_token("refresh", user, AUTHENTICATION_CONFIG.refresh_token_lifetime)
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_tokens
-def get_user_tokens(user: AnyUser):
+def get_user_tokens(user: AnyUser | AnyUserExtended):
     return Tokens(
-        access_token = create_access_token({"sub": str(user.uuid)}, AUTHENTICATION_CONFIG.access_token_lifetime),
-        refresh_token = create_refresh_token({"sub": str(user.uuid)}, AUTHENTICATION_CONFIG.refresh_token_lifetime)
+        access_token = create_access_token(user),
+        refresh_token = create_refresh_token(user)
     )
     
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_token_of_type

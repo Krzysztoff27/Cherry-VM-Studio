@@ -3,7 +3,7 @@ import jwt
 import re
 import base64
 
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 from fastapi import Depends, HTTPException
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
@@ -55,7 +55,7 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUserExtended
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#authenticate_user
-def authenticate_user(username: str, password: str) -> AnyUserExtended | bool:
+def authenticate_user(username: str, password: str) -> AnyUserExtended | Literal[False]:
     user = UsersManager.get_user_by_username(username)
     
     if not user:
