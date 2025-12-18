@@ -24,6 +24,7 @@ XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"}
 
 logger = logging.getLogger(__name__)
 
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_owner
 def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
     owner_uuids =  select_single_field("uuid", """
@@ -37,8 +38,6 @@ def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
             logger.error(f"Machine with uuid={machine_uuid} has multiple owners. This may lead to unexpected behavior!")
             
         return AdministratorLibrary.get_record_by_uuid(owner_uuids[0])
-        
-        
 
 
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_clients_assigned_to_machine
@@ -86,11 +85,13 @@ def check_machine_access(machine_uuid: UUID, user: AnyUser) -> bool:
         return user.uuid in assigned_clients
     return False
 
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_existence
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         return libvirt_readonly_connection.lookupByUUID(uuid.bytes) is not None
     
+
 # https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_membership
 def check_machine_membership(machine_uuid: UUID) -> bool:
     query_uuid_in_db = select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE machine_uuid = %s", (machine_uuid, ))
@@ -294,6 +295,7 @@ def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[U
             machine_states[machine_uuid] = state    
             
     return machine_states
+    
     
 def get_machine_states_by_user(user: AnyUser) -> dict[UUID, MachineState]:
     machine_uuids = get_user_machine_uuids(user)
