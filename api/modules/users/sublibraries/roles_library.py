@@ -18,11 +18,12 @@ logger = logging.getLogger(__name__)
 def prepare_from_database_record(record: RoleInDB) -> Role:
     role = Role.model_validate(record.model_dump())
     
-    role.users = select_single_field("uuid",
-        f"SELECT administrators.uuid FROM administrators"
-        f"JOIN administrators_roles ON administrators.uuid = administrators_roles.administrator_uuid"
-        f"JOIN roles ON administrators_roles.role_uuid = roles.uuid"
-        f"WHERE roles.uuid = %s", (role.uuid, )   
+    role.users = select_single_field("uuid", """
+        SELECT administrators.uuid FROM administrators
+        JOIN administrators_roles ON administrators.uuid = administrators_roles.administrator_uuid
+        JOIN roles ON administrators_roles.role_uuid = roles.uuid                            
+        WHERE roles.uuid = %s
+        """, (role.uuid, )   
     )
     
     return role

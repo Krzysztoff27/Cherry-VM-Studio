@@ -19,11 +19,12 @@ logger = logging.getLogger(__name__)
 def prepare_from_database_record(record: ClientInDB) -> Client:
     client = Client.model_validate(record.model_dump())
     
-    client.groups = select_single_field("uuid",
-        f"SELECT groups.uuid FROM groups"
-        f"JOIN clients_groups ON groups.uuid = clients_groups.group_uuid"
-        f"JOIN clients ON clients_groups.client_uuid = clients.uuid"
-        f"WHERE clients.uuid = %s", (client.uuid,)
+    client.groups = select_single_field("uuid", """
+        SELECT groups.uuid FROM groups
+        JOIN clients_groups ON groups.uuid = clients_groups.group_uuid
+        JOIN clients ON clients_groups.client_uuid = clients.uuid
+        WHERE clients.uuid = %s
+        """, (client.uuid,)
     )
     
     return client
