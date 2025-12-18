@@ -47,7 +47,7 @@ def validate_user_modification(uuid: UUID, form: ModifyUserForm):
             # If another user already exists with the same username (excluding the modified user), reject the update
             raise HTTPException(status_code=409, detail="User with this username already exists.")
         
-        if not not re.match(REGEX_CONFIG.username, form.username):
+        if not re.match(REGEX_CONFIG.username, form.username):
             raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
     
     if form.email is not None:
