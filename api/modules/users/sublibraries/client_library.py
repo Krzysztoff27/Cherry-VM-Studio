@@ -90,14 +90,13 @@ class ClientTableManager(SimpleTableManager):
         
         with pool.connection() as connection:
             with connection.cursor() as cursor: 
-                with connection.transaction():
-                    cursor.execute("""
-                        INSERT INTO clients (uuid, username, password, email, name, surname, disabled)
-                        VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)
-                    """, args.model_dump())
-                    cursor.execute(assign_groups_query)
-                    
-                    create_entity(cursor, args.uuid)
+                cursor.execute("""
+                    INSERT INTO clients (uuid, username, password, email, name, surname, disabled)
+                    VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)
+                """, args.model_dump())
+                cursor.execute(assign_groups_query)
+                
+                create_entity(cursor, args.uuid)
         
         return args.uuid
     
