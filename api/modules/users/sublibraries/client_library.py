@@ -1,5 +1,5 @@
 import logging
-from typing import override
+from typing import Type, override
 from uuid import UUID
 from fastapi import HTTPException
 from psycopg import sql
@@ -30,7 +30,7 @@ def prepare_from_database_record(record: ClientInDB) -> Client:
 
 
 class ClientTableManager(SimpleTableManager):
-    model_extended = ClientExtended
+    model_extended: Type[ClientExtended] = ClientExtended
     
     def __init__(self):
         super().__init__(

@@ -1,10 +1,7 @@
-import json
 import logging
-from typing import override
-from uuid import UUID, uuid4
-
+from uuid import UUID
+from typing import Type, override
 from fastapi import HTTPException
-
 from psycopg import sql
 from modules.postgresql import pool
 from modules.postgresql.simple_table_manager import SimpleTableManager
@@ -28,7 +25,7 @@ def prepare_from_database_record(record: GroupInDB) -> Group:
 
 
 class GroupTableManager(SimpleTableManager):
-    model_extended = GroupExtended
+    model_extended: Type[GroupExtended] = GroupExtended
     
     def __init__(self):
         super().__init__(

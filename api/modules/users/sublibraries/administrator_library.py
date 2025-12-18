@@ -1,12 +1,12 @@
 import logging
-from typing import override
+from typing import Type, override
 from uuid import UUID
 
 from fastapi import HTTPException
 from psycopg import sql
-from modules.users.permissions import has_permissions, verify_permissions
+from modules.users.permissions import has_permissions
 from modules.postgresql import pool
-from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs, ModifyUserForm
+from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs
 from modules.postgresql.simple_select import select_one, select_single_field
 from modules.users.guacamole_synchronization import create_entity, delete_entity
 from modules.postgresql.simple_table_manager import SimpleTableManager
@@ -29,7 +29,7 @@ def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
     return administrator
     
 class AdministratorTableManager(SimpleTableManager):
-    model_extended = AdministratorExtended
+    model_extended: Type[AdministratorExtended] = AdministratorExtended
     
     def __init__(self):
         super().__init__(

@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Type
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -28,7 +28,7 @@ def prepare_from_database_record(record: RoleInDB) -> Role:
     return role
 
 class RoleTableManager(SimpleTableManager):
-    model_extended = RoleExtended
+    model_extended: Type[RoleExtended] = RoleExtended
     
     def __init__(self):
         super().__init__(
