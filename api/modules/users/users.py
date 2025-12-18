@@ -98,13 +98,13 @@ class UsersSystemManager():
         
         if user.account_type == 'administrative':
             if form.roles: 
-                RoleLibrary.update_administrator_roles(uuid, set(form.roles), logged_in_user)
+                RoleLibrary.update_administrator_roles(uuid, form.roles, logged_in_user)
                 
             AdministratorLibrary.modify_record(uuid, args)
         
         elif user.account_type == 'client':
             if form.groups: 
-                GroupLibrary.update_client_groups(uuid, set(form.groups))
+                GroupLibrary.update_client_groups(uuid, form.groups)
             
             ClientLibrary.modify_record(uuid, args)
         

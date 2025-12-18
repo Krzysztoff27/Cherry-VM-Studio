@@ -114,7 +114,7 @@ class GroupTableManager(SimpleTableManager):
                     WHERE client_uuid = %s AND group_uuid = %s
                 """, (client_uuid, group_uuid))
                 
-    def update_client_groups(self, client_uuid: UUID, groups: set[UUID]):
+    def update_client_groups(self, client_uuid: UUID, groups: list[UUID]):
         from .client_library import ClientLibrary
         
         client = ClientLibrary.get_record_by_uuid(client_uuid)
@@ -123,7 +123,7 @@ class GroupTableManager(SimpleTableManager):
             raise HTTPException(400, f"Client with uuid={client_uuid} does not exist.")
         
         all_groups = set(self.get_all_records().keys())
-        not_existing = groups - all_groups
+        not_existing = set(groups) - all_groups
         
         if not_existing:
             raise HTTPException(400, f"The following groups do not exist in the system: {', '.join(map(str, not_existing))}")

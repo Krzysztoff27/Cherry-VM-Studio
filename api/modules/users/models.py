@@ -141,7 +141,7 @@ class ModifyUserForm(BaseModel):
     email: str | None = None
     name: str | None = None
     surname: str | None = None
-    roles: set[UUID] | None = None
+    roles: list[UUID] | None = None
     groups: list[UUID] | None = None
     disabled: bool | None = None
     

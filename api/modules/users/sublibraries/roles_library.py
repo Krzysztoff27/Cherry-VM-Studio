@@ -106,7 +106,7 @@ class RoleTableManager(SimpleTableManager):
                     
                     connection.commit()
 
-    def update_administrator_roles(self, administrator_uuid: UUID, roles: set[UUID], logged_in_user: Administrator):
+    def update_administrator_roles(self, administrator_uuid: UUID, roles: list[UUID], logged_in_user: Administrator):
         from .administrator_library import AdministratorLibrary
         
         administrator = AdministratorLibrary.get_record_by_uuid(administrator_uuid)
@@ -115,7 +115,7 @@ class RoleTableManager(SimpleTableManager):
             raise HTTPException(400, f"Administrator with uuid={administrator_uuid} does not exist.")
         
         all_roles = set(self.get_all_records().keys())
-        not_existing = roles - all_roles
+        not_existing = set(roles) - all_roles
         
         if not_existing:
             raise HTTPException(400, f"The following roles do not exist in the system: {', '.join(map(str, not_existing))}")
