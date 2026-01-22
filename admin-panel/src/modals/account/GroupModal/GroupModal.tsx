@@ -12,7 +12,7 @@ import { values } from "lodash";
 import AddClientsSelect from "../../../components/molecules/interactive/AddClientsSelect/AddClientsSelect";
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
-    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/groups/${uuid}` : undefined);
+    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/groups/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { sendRequest } = useApi();
 

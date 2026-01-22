@@ -25,7 +25,7 @@ const MachinesPage = ({ global = false }: MachinesPageProps): React.JSX.Element 
 
 const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Element => {
     const { sendErrorNotification } = useMantineNotifications();
-    const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>(global ? "/machines/global" : "machines");
+    const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>(global ? "/machines/global" : "/machines/account");
     const { machinesState, setMachinesState } = useMachineState(global ? "global" : "account");
 
     useEffect(() => {

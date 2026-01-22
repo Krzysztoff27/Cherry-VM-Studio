@@ -13,7 +13,7 @@ import useFetch from "../../../../hooks/useFetch.ts";
 
 function MachinePage() {
     const { uuid } = useParams();
-    const { data: machineData, loading, error, refresh } = useFetch<MachineData>(`/machines/${uuid}`);
+    const { data: machineData, loading, error, refresh } = useFetch<MachineData>(`/machines/machine/${uuid}`);
     const { machinesState } = useMachineState("subscribed", [uuid]);
     const { handleAxiosError } = useErrorHandler();
     const machine: MachineState = { ...machineData, ...machinesState[uuid] };

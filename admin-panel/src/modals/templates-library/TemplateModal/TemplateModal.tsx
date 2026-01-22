@@ -6,7 +6,7 @@ import classes from "./TemplateModal.module.css";
 
 const TemplateModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "template");
-    const { data, error, loading } = useFetch(uuid ? `/machine-templates/${uuid}` : undefined);
+    const { data, error, loading } = useFetch(uuid ? `/machine-templates/machine-template/${uuid}` : undefined);
 
     if (loading || error) return;
 

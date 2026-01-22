@@ -13,7 +13,7 @@ import IconFileTypeIso from "../../../components/atoms/icons/IconFileTypeIso/Ico
 
 const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "iso");
-    const { data: file, error, loading } = useFetch<IsoFile>(uuid ? `/iso/${uuid}` : undefined);
+    const { data: file, error, loading } = useFetch<IsoFile>(uuid ? `/iso/iso/${uuid}` : undefined);
 
     if (loading || error) return;
 
