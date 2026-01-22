@@ -11,19 +11,19 @@ StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-file
 
 ConnectionPermissions = ["READ", "UPDATE", "DELETE", "ADMINISTER"]
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineMetadata
+
 class MachineMetadata(BaseModel):
     tag: str
     value: str
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#StoragePool
+
 class StoragePool(BaseModel):
     # For now the StoragePool selection is limited to predefined pools on local filesystem
     pool: StoragePools
     # Volume is basically disk name + disk type eg. "disk.qcow2"
     volume: str
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineDisk
+
 class MachineDisk(BaseModel):
     uuid: Optional[UUID] = None
     name: str
@@ -31,17 +31,17 @@ class MachineDisk(BaseModel):
     type: DiskType
     pool: StoragePools
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#NetworkInterfaceSource            
+
 class NetworkInterfaceSource(BaseModel):
     type: Literal["network", "bridge"]
     value: str
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineNetworkInterface
+
 class MachineNetworkInterface(BaseModel):
     name: str  
     source: NetworkInterfaceSource
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineGraphicalFramebuffer
+
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
     port: str | None = None
@@ -58,7 +58,7 @@ class MachineGraphicalFramebuffer(BaseModel):
             raise ValueError("listen_address is required when listen_type is 'address'")
         return self
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineParameters
+
 class MachineParameters(BaseModel):
     uuid: UUID | None = None                   
     title: str                                                                             

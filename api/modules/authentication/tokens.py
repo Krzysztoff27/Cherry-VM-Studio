@@ -6,7 +6,7 @@ from config.authentication_config import AUTHENTICATION_CONFIG
 from .models import Token, TokenTypes, Tokens
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_token
+
 def create_token(token_type: TokenTypes, user: AnyUser | AnyUserExtended, expires_delta: timedelta) -> Token:
     to_encode = {
         "token_type": token_type,
@@ -15,30 +15,30 @@ def create_token(token_type: TokenTypes, user: AnyUser | AnyUserExtended, expire
     }
     return jwt.encode(to_encode, SECRET_KEY, algorithm=AUTHENTICATION_CONFIG.algorithm)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_access_token
+
 def create_access_token(user: AnyUser | AnyUserExtended) -> Token:
     return create_token("access", user, AUTHENTICATION_CONFIG.access_token_lifetime)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#create_refresh_token
+
 def create_refresh_token(user: AnyUser | AnyUserExtended) -> Token:
     return create_token("refresh", user, AUTHENTICATION_CONFIG.refresh_token_lifetime)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_tokens
+
 def get_user_tokens(user: AnyUser | AnyUserExtended):
     return Tokens(
         access_token = create_access_token(user),
         refresh_token = create_refresh_token(user)
     )
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_token_of_type
+
 def is_token_of_type(payload, token_type: TokenTypes):
     return payload.get("token_type") == token_type
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_access_token
+
 def is_access_token(payload):
     return is_token_of_type(payload, 'access')
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#is_refresh_token
+
 def is_refresh_token(payload):
     return is_token_of_type(payload, 'refresh')
 

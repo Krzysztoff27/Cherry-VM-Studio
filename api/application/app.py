@@ -7,6 +7,12 @@ from pydantic import ValidationError
 from contextlib import asynccontextmanager
 from modules.postgresql.main import open_async_pool, close_async_pool
 
+from .endpoints.authentication import authentication
+from .endpoints.machine_resources.iso_files import main as iso_files
+from .endpoints.machine_resources.machine_templates import main as machine_templates
+from .endpoints.machines import machines, network, websockets
+from .endpoints.users import users, groups, roles
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await open_async_pool()
@@ -21,6 +27,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(authentication.router)
+app.include_router(iso_files.router)
+app.include_router(machine_templates.router)
+app.include_router(machines.router)
+app.include_router(machines.debug_router)
+app.include_router(websockets.router)
+app.include_router(network.router)
+app.include_router(users.router)
+app.include_router(groups.router)
+app.include_router(roles.router)
 
 @app.exception_handler(Exception)
 async def internal_exception_handler(request: Request, exc: Exception):
@@ -51,5 +67,3 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         content={"detail": "Invalid type or form of the passed content."},
         headers={"Access-Control-Allow-Origin": "*"},
     )
-
-from .endpoints import *

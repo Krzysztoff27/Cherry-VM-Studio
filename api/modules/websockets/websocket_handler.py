@@ -12,7 +12,7 @@ from .models import AcknowledgeResponse, RejectResponse, CommandData
 
 logger = logging.getLogger(__name__)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#WebSocketHandler
+
 class WebSocketHandler(BaseModel):
     websocket: WebSocket
     closer: asyncio.Task | None = None

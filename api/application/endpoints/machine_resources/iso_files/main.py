@@ -1,21 +1,26 @@
 import os
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from config.permissions_config import PERMISSIONS
 from config.files_config import FILES_CONFIG
 from modules.users.permissions import verify_permissions
 from modules.machine_resources.iso_files.library import IsoLibrary
-from modules.authentication.validation import DependsOnAdministrativeAuthentication
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, get_authenticated_administrator
 from modules.machine_resources.iso_files.models import IsoRecord
-from application.app import app
 
-@app.get("/iso", response_model=dict[UUID, IsoRecord], tags=['ISO Library'])
+router = APIRouter(
+    prefix='/iso',
+    tags=['ISO Library'],
+    dependencies=[Depends(get_authenticated_administrator)]
+)
+
+@router.get("/all", response_model=dict[UUID, IsoRecord])
 async def __read_all_iso_file_records__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, IsoRecord]:
     return IsoLibrary.get_all_records()
 
 
-@app.get("/iso/{uuid}", response_model=IsoRecord, tags=['ISO Library'])
+@router.get("/{uuid}", response_model=IsoRecord)
 async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> IsoRecord:
     record = IsoLibrary.get_record_by_uuid(uuid)
     if record is None: 
@@ -23,7 +28,7 @@ async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministra
     return record
 
 
-@app.delete("/iso/delete/{uuid}", response_model=None, tags=['ISO Library'])
+@router.delete("/delete/{uuid}", response_model=None)
 async def __delete_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication):
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
         

@@ -2,13 +2,12 @@ import datetime as dt
 import logging
 import os
 import re
+from .main import router
 from uuid import UUID, uuid4
 from fastapi import HTTPException, Request, status
 from starlette.requests import ClientDisconnect
 from streaming_form_data.validators import ValidationError as SFDValidationError
-
 from config.regex_config import REGEX_CONFIG
-from application.app import app
 from config.files_config import FILES_CONFIG
 from config.permissions_config import PERMISSIONS
 from modules.users.permissions import verify_permissions
@@ -28,7 +27,7 @@ upload_handler = UploadHandler(
     extension="iso"
 )
 
-@app.post("/iso/upload/start", response_model=UUID, tags=["ISO Library"])
+@router.post("/upload/start", response_model=UUID)
 async def __start_iso_file_upload__(current_user: DependsOnAdministrativeAuthentication):
     try: 
         uuid = uuid4()
@@ -40,7 +39,7 @@ async def __start_iso_file_upload__(current_user: DependsOnAdministrativeAuthent
             detail=f"Somehow you've hit the 1 : billion probability of a UUID collision. Please try again lul."
         )
 
-@app.post("/iso/upload/chunk", response_model=None, tags=["ISO Library"])
+@router.post("/upload/chunk", response_model=None)
 async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthentication, request: Request):
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     
@@ -97,7 +96,7 @@ async def __upload_iso_file_chunk__(current_user: DependsOnAdministrativeAuthent
         ) 
     
 
-@app.post("/iso/upload/complete", response_model=None, tags=["ISO Library"])
+@router.post("/upload/complete", response_model=None)
 async def __complete_iso_file_upload__(data: CreateIsoRecordForm, current_user: DependsOnAdministrativeAuthentication):
     verify_permissions(current_user, mask=PERMISSIONS.MANAGE_ISO_FILES)
     

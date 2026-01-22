@@ -16,7 +16,7 @@ DBModel = TypeVar("DBModel", bound=BaseModel)
 MainModel = TypeVar("MainModel", bound=BaseModel)
 CreationModel = TypeVar("CreationModel", bound=BaseModel)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#SimpleTableManager
+
 class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
     table_name: str
     allowed_fields_for_select: set[str]

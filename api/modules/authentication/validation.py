@@ -17,7 +17,7 @@ from application.env import SECRET_KEY
 from config.authentication_config import AUTHENTICATION_CONFIG
 from modules.exceptions import CredentialsException
 from modules.users.permissions import is_admin
-from modules.users.models import AdministratorExtended,  AnyUserExtended
+from modules.users.models import AdministratorExtended, AnyUser,  AnyUserExtended
 from modules.postgresql import select_one
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def decode_token(token: Token) -> DecodedTokenPayload:
     )
         
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#validate_user_token
+
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUserExtended:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTHENTICATION_CONFIG.algorithm])
@@ -54,7 +54,7 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUserExtended
         raise CredentialsException()
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#authenticate_user
+
 def authenticate_user(username: str, password: str) -> AnyUserExtended | Literal[False]:
     user = UsersManager.get_user_by_username(username)
     
@@ -69,12 +69,12 @@ def authenticate_user(username: str, password: str) -> AnyUserExtended | Literal
     return UsersManager.extend_user_model(user)
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_authenticated_user
+
 def get_authenticated_user(token: Token) -> AnyUserExtended: 
     return validate_user_token(token, 'access')
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_authenticated_administrator
+
 def get_authenticated_administrator(token: Token) -> AdministratorExtended:
     user = validate_user_token(token, 'access')
     if not is_admin(user):
@@ -82,17 +82,17 @@ def get_authenticated_administrator(token: Token) -> AdministratorExtended:
     return user
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_from_refresh_token
+
 def get_user_from_refresh_token(token: Token) -> AnyUserExtended:
     return validate_user_token(token, 'refresh')
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonadministrativeauthentication
+
 DependsOnAdministrativeAuthentication = Annotated[AdministratorExtended, Depends(get_authenticated_administrator)]
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonauthentication
+
 DependsOnAuthentication = Annotated[AnyUserExtended, Depends(get_authenticated_user)]
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#dependsonrefreshtoken
+
 DependsOnRefreshToken = Annotated[AnyUserExtended, Depends(get_user_from_refresh_token)]
 
 def encode_guacamole_connection_string(machine_uuid: UUID, connection_type: str):

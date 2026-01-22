@@ -25,7 +25,7 @@ XML_NAME_SCHEMA = {"vm": "http://example.com/virtualization"}
 logger = logging.getLogger(__name__)
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_owner
+
 def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
     owner_uuids =  select_single_field("uuid", """
         SELECT administrators.uuid FROM administrators
@@ -40,7 +40,7 @@ def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
         return AdministratorLibrary.get_record_by_uuid(owner_uuids[0])
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_clients_assigned_to_machine
+
 def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, Client]:
     assigned_client_uuids = select_single_field("uuid", """
         SELECT clients.uuid FROM clients
@@ -51,7 +51,7 @@ def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, Client]:
     return ClientLibrary.get_all_records_matching("uuid", assigned_client_uuids)
 
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_owner_machine_uuids
+
 def get_owner_machine_uuids(owner: Administrator) -> list[UUID]:
     return select_single_field("machine_uuid", "SELECT DISTINCT machine_uuid FROM deployed_machines_owners WHERE owner_uuid = %s", (owner.uuid,))
 
@@ -86,13 +86,13 @@ def check_machine_access(machine_uuid: UUID, user: AnyUser) -> bool:
     return False
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_existence
+
 def check_machine_existence(uuid: UUID) -> bool:  
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         return libvirt_readonly_connection.lookupByUUID(uuid.bytes) is not None
     
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#check_machine_membership
+
 def check_machine_membership(machine_uuid: UUID) -> bool:
     query_uuid_in_db = select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners WHERE machine_uuid = %s", (machine_uuid, ))
     
@@ -106,7 +106,7 @@ def check_machine_membership(machine_uuid: UUID) -> bool:
     return machine_uuid == machine_uuid_in_db
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_element_from_machine_xml
+
 def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> Optional[ElementTree.Element]:
     root = ElementTree.fromstring(machine.XMLDesc())
     element = root
@@ -119,13 +119,13 @@ def get_element_from_machine_xml(machine: libvirt.virDomain, *tags: str) -> Opti
     return element
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_element_from_machine_xml_as_text
+
 def get_element_from_machine_xml_as_text(machine: libvirt.virDomain, *tags: str) -> Optional[str]:
     element = get_element_from_machine_xml(machine, *tags)
     return element.text if element is not None else None
     
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_data
+
 def get_machine_data(machine_uuid: UUID) -> MachineData:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
@@ -148,7 +148,7 @@ def get_machine_data(machine_uuid: UUID) -> MachineData:
     )
     
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_data_by_uuid
+
 def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
     if not check_machine_membership(uuid):
         raise HTTPException(status_code=500, detail="Requested data of a machine that is not managed by Cherry VM Studio.")
@@ -156,7 +156,7 @@ def get_machine_data_by_uuid(uuid: UUID) -> MachineData | None:
     return get_machine_data(uuid)
 
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_all_machines
+
 def get_all_machines_data() -> dict[UUID, MachineData]:
     with LibvirtConnection("ro") as libvirt_readonly_connection:
         machines = libvirt_readonly_connection.listAllDomains(0)
@@ -171,7 +171,7 @@ def get_all_machines_data() -> dict[UUID, MachineData]:
     return managed_machines
 
             
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_user_machines
+
 def get_user_machines_data(user: AnyUser) -> dict[UUID, MachineData]:
     user_machines = {}
     
@@ -237,7 +237,7 @@ def get_machine_connections(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "v
     return connections
  
  
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_state
+
 def get_machine_state(machine_uuid: UUID) -> MachineState:
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
@@ -279,7 +279,7 @@ def get_machine_state(machine_uuid: UUID) -> MachineState:
     })
     
     
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#get_machine_states_by_uuids
+
 def get_machine_states_by_uuids(machine_uuids: set[UUID] | list[UUID]) -> dict[UUID, MachineState]:  
     machine_states = dict()
     

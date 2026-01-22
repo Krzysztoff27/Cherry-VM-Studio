@@ -18,7 +18,7 @@ class StaticDiskInfo(BaseModel):
 class DynamicDiskInfo(StaticDiskInfo):
     occupied_bytes: int
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineData
+
 class MachineData(BaseModel):                       
     uuid: UUID                                      
     title: str | None = None
@@ -31,7 +31,7 @@ class MachineData(BaseModel):
     connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None
     disks: list[StaticDiskInfo] | None = None                                          
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#MachineState
+
 class MachineState(MachineData):                    
     active: bool = False                            
     loading: bool = False                           

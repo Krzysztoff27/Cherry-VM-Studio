@@ -1,13 +1,18 @@
 from uuid import UUID
-from fastapi import HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from modules.users.users import UsersManager
-from application.app import app
 from modules.users.models import GroupExtended, CreateGroupForm
 from modules.users.sublibraries.group_library import GroupLibrary
-from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication, get_authenticated_user
 
-@app.get("/group/{uuid}", response_model=GroupExtended, tags=['Client Groups'])
-async def __read_group__(uuid: UUID, current_user: DependsOnAuthentication) -> GroupExtended:
+router = APIRouter(
+    prefix='/groups',
+    tags=['Client Groups'],
+    dependencies=[Depends(get_authenticated_user)]
+)
+
+@router.get("/{uuid}", response_model=GroupExtended, tags=['Client Groups'])
+async def __read_group__(uuid: UUID,) -> GroupExtended:
     group = GroupLibrary.get_record_by_uuid(uuid)
     
     if group is None:
@@ -16,8 +21,8 @@ async def __read_group__(uuid: UUID, current_user: DependsOnAuthentication) -> G
     return GroupLibrary.extend_model(group)    
 
 
-@app.get("/groups", response_model=dict[UUID, GroupExtended], tags=['Client Groups'])
-async def __read_groups__(current_user: DependsOnAuthentication) -> dict[UUID, GroupExtended]:
+@router.get("/all", response_model=dict[UUID, GroupExtended], tags=['Client Groups'])
+async def __read_groups__() -> dict[UUID, GroupExtended]:
     all_groups = GroupLibrary.get_all_records()
     
     for uuid, group in all_groups.items():
@@ -26,23 +31,23 @@ async def __read_groups__(current_user: DependsOnAuthentication) -> dict[UUID, G
     return all_groups
     
 
-@app.post("/group/create", response_model=GroupExtended, tags=['Client Groups'])
+@router.post("/create", response_model=GroupExtended, tags=['Client Groups'])
 async def __create_group__(form: CreateGroupForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     return UsersManager.create_group(form)
 
 
-@app.delete("/group/delete/{uuid}", response_model=None, tags=['Client Groups'])
+@router.delete("/delete/{uuid}", response_model=None, tags=['Client Groups'])
 async def __delete_group__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     return GroupLibrary.remove_record(uuid)
     
     
-@app.put("/group/join/{uuid}", response_model=None, tags=['Client Groups'])
+@router.put("/join/{uuid}", response_model=None, tags=['Client Groups'])
 async def __join_user_to_group__(uuid: UUID, clients: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
     for client in clients: 
         GroupLibrary.join_client_to_group(uuid, client)
         
     
-@app.put("/group/leave/{uuid}", response_model=None, tags=['Client Groups'])
+@router.put("/leave/{uuid}", response_model=None, tags=['Client Groups'])
 async def __remove_user_from_group__(uuid: UUID, clients: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
     for client in clients: 
         GroupLibrary.remove_client_from_group(uuid, client)

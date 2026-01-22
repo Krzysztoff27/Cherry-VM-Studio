@@ -1,11 +1,10 @@
 from uuid import UUID
 
-from fastapi import HTTPException
-from application.app import app
+from fastapi import APIRouter, Depends, HTTPException
 from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid, get_machine_connections
 from modules.machine_state.models import MachineData
 from modules.machine_state.state_management import start_machine, stop_machine
-from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication
+from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication, get_authenticated_administrator, get_authenticated_user
 from modules.users.permissions import verify_permissions, has_permissions
 from config.permissions_config import PERMISSIONS
 from modules.machine_resources.iso_files.library import update_iso_last_used
@@ -15,19 +14,32 @@ from modules.machine_lifecycle.models import MachineParameters, MachineDisk, Cre
 from modules.machine_lifecycle.disks import get_machine_disk_size
 from .websockets import subscribed_machines_broadcast_manager
 
+router = APIRouter(
+    prefix='/machines',
+    tags=['Virtual Machines'],
+    dependencies=[Depends(get_authenticated_user)]
+)
+
+debug_router = APIRouter(
+    prefix='/debug/machines',
+    tags=['Debug'],
+    dependencies=[Depends(get_authenticated_administrator)]
+)
+
+
 ################################
 #         Production
 ################################
-@app.get("/machines/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
+@router.get("/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     verify_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS)
     return get_all_machines_data()
 
-@app.get("/machines", response_model=dict[UUID, MachineData], tags=['Machine Data'])
+@router.get("/account", response_model=dict[UUID, MachineData], tags=['Machine Data'])
 async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     return get_user_machines_data(current_user)
 
-@app.get("/machine/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
+@router.get("/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
 async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -36,7 +48,7 @@ async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> 
         raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
     return machine
 
-@app.post("/machine/start/{uuid}", response_model=None, tags=['Machine State'])
+@router.post("/start/{uuid}", response_model=None, tags=['Machine State'])
 async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -46,7 +58,7 @@ async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -
     if not await start_machine(uuid):
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to start.")
 
-@app.post("/machine/stop/{uuid}", response_model=None, tags=['Machine State'])
+@router.post("/stop/{uuid}", response_model=None, tags=['Machine State'])
 async def __stop_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -56,7 +68,7 @@ async def __stop_machine__(uuid: UUID, current_user: DependsOnAuthentication) ->
     if not await stop_machine(uuid):
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to stop.")
 
-@app.post("/machine/create", response_model=UUID, tags=['Machine Management'])
+@router.post("/create", response_model=UUID, tags=['Machine Management'])
 async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
     if not machine_uuid:
@@ -65,7 +77,7 @@ async def __async_create_machine__(machine_parameters: CreateMachineForm, curren
         update_iso_last_used(machine_parameters.source_uuid)
     return machine_uuid
 
-@app.post("/machine/create/bulk", response_model=list[UUID], tags=['Machine Management'])
+@router.post("/create/bulk", response_model=list[UUID], tags=['Machine Management'])
 async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current_user: DependsOnAdministrativeAuthentication) -> list[UUID]:
     machines_uuid = await create_machine_async_bulk(machines, current_user.uuid)
     if not machines_uuid:
@@ -75,7 +87,7 @@ async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current
             update_iso_last_used(machine_spec.machine_config.source_uuid)
     return machines_uuid
 
-@app.post("/machine/create/for-group", response_model=list[UUID], tags=['Machine Management'])
+@router.post("/create/for-group", response_model=list[UUID], tags=['Machine Management'])
 async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
     machines_uuid = await create_machine_async_bulk(machines, current_user.uuid, group_uuid)
     if not machines_uuid:
@@ -85,7 +97,7 @@ async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], cu
             update_iso_last_used(machine_spec.machine_config.source_uuid)
     return machines_uuid
 
-@app.delete("/machine/delete/{uuid}", response_model=None, tags=['Machine Management'])
+@router.delete("/delete/{uuid}", response_model=None, tags=['Machine Management'])
 async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -96,7 +108,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
     subscribed_machines_broadcast_manager.remove_subscription_from_all(uuid)
     
-@app.patch("/machine/modify/{uuid}", response_model=None, tags=['Machine Management'])
+@router.patch("/modify/{uuid}", response_model=None, tags=['Machine Management'])
 async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: DependsOnAdministrativeAuthentication):
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
@@ -108,7 +120,7 @@ async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: 
 ################################
 #           Debug
 ################################
-@app.post("/debug/machine/xml/create", response_model=str, tags=['Debug'])
+@debug_router.post("/debug/machine/xml/create", response_model=str)
 async def __create_machine_xml__(machine_parameters: MachineParameters, machine_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> str:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
@@ -117,34 +129,34 @@ async def __create_machine_xml__(machine_parameters: MachineParameters, machine_
         raise HTTPException(500, "Machine XML creation failed.")
     return machine_xml
 
-@app.get("/debug/machine/xml/parse", response_model=MachineParameters, tags=['Debug'])
+@debug_router.get("/debug/machine/xml/parse", response_model=MachineParameters)
 async def __parse_machine_xml__(machine_xml: str, current_user: DependsOnAdministrativeAuthentication) -> MachineParameters:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     machine_parameters = parse_machine_xml(machine_xml)
     return machine_parameters
 
-@app.post("/debug/machine/disk/create", response_model=UUID, tags=['Debug'])
+@debug_router.post("/debug/machine/disk/create", response_model=UUID)
 async def __create_machine_disk__(machine_disk: MachineDisk, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     disk_uuid = create_machine_disk(machine_disk)
     return disk_uuid
 
-@app.delete("/debug/machine/disk/delete/{storage_pool}", response_model=None, tags=['Debug'])
+@debug_router.delete("/debug/machine/disk/delete/{storage_pool}", response_model=None)
 async def __delete_machine_disk__(disk_uuid: UUID, storage_pool: str, current_user: DependsOnAdministrativeAuthentication) -> None:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     if not delete_machine_disk(disk_uuid, storage_pool):
         raise HTTPException(500, f"Failed to remove disk of UUID={disk_uuid}.")
 
-@app.get("/debug/machine/disk/size/{storage_pool}", response_model=int, tags=['Debug'])
+@debug_router.get("/debug/machine/disk/size/{storage_pool}", response_model=int)
 async def __get_machine_disk_size___(disk_uuid: UUID, storage_pool: str, current_user: DependsOnAdministrativeAuthentication) -> int:
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     disk_size = get_machine_disk_size(disk_uuid, storage_pool)
     return disk_size
 
-@app.get("/debug/machine/connections/{machine_uuid}", response_model=None, tags=['Debug'])
+@debug_router.get("/debug/machine/connections/{machine_uuid}", response_model=None)
 async def __get_machine_connections__(machine_uuid: UUID) -> dict[Literal["ssh", "rdp", "vnc"], str]:
     return get_machine_connections(machine_uuid)

@@ -1,14 +1,18 @@
 from uuid import UUID
 
-from fastapi import HTTPException
-from modules.authentication.validation import DependsOnAdministrativeAuthentication
+from fastapi import APIRouter, Depends, HTTPException
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, get_authenticated_administrator
 from modules.users.models import RoleExtended
 from modules.users.sublibraries.roles_library import RoleLibrary
 
-from application.app import app
+router = APIRouter(
+    prefix='/roles',
+    tags=['Administrative Roles'],
+    dependencies=[Depends(get_authenticated_administrator)]
+)
 
-@app.get("/role/{uuid}", response_model=RoleExtended, tags=['Administrative Roles'])
-async def __read_role__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> RoleExtended:
+@router.get("/{uuid}", response_model=RoleExtended)
+async def __read_role__(uuid: UUID) -> RoleExtended:
     role = RoleLibrary.get_record_by_uuid(uuid)
     
     if role is None:
@@ -16,8 +20,8 @@ async def __read_role__(uuid: UUID, current_user: DependsOnAdministrativeAuthent
     
     return RoleLibrary.extend_model(role)
 
-@app.get("/roles", response_model=dict[UUID, RoleExtended], tags=['Administrative Roles'])
-async def __read_roles__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, RoleExtended]:
+@router.get("/all", response_model=dict[UUID, RoleExtended], tags=['Administrative Roles'])
+async def __read_roles__() -> dict[UUID, RoleExtended]:
     all_roles = RoleLibrary.get_all_records()
     
     for uuid, roles in all_roles.items():

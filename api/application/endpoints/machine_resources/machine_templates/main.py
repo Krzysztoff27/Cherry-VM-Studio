@@ -1,17 +1,22 @@
 from uuid import UUID
 
-from fastapi import HTTPException, status
-from modules.authentication.validation import DependsOnAdministrativeAuthentication
+from fastapi import APIRouter, Depends, HTTPException, status
+from modules.authentication.validation import DependsOnAdministrativeAuthentication, get_authenticated_administrator
 from modules.machine_resources.machine_templates.library import MachineTemplatesLibrary
 from modules.machine_resources.machine_templates.models import CreateMachineTemplateArgs, CreateMachineTemplateForm, MachineTemplate
-from application.app import app
 
-@app.get("/machine/templates", response_model=dict[UUID, MachineTemplate], tags=['Machine Templates'])
+router = APIRouter(
+    prefix='/machine-templates',
+    tags=['Machine Templates'],
+    dependencies=[Depends(get_authenticated_administrator)]
+)
+
+@router.get("/all", response_model=dict[UUID, MachineTemplate])
 async def __read_all_users_machine_templates__(current_user: DependsOnAdministrativeAuthentication) -> dict[UUID, MachineTemplate]:
     return MachineTemplatesLibrary.get_all_records_matching(field_name="owner_uuid", value=str(current_user.uuid))
 
 
-@app.get("/machine/template/{uuid}", response_model=MachineTemplate, tags=['Machine Templates'])
+@router.get("/{uuid}", response_model=MachineTemplate)
 async def __read_machine_template__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> MachineTemplate:
     template = MachineTemplatesLibrary.get_record_by_uuid(uuid)
     if template is None: 
@@ -21,7 +26,7 @@ async def __read_machine_template__(uuid: UUID, current_user: DependsOnAdministr
     return template
 
 
-@app.post("/machine/template/create", response_model=None, tags=['Machine Templates'])
+@router.post("/create", response_model=None)
 async def __create_machine_template__(data: CreateMachineTemplateForm, current_user: DependsOnAdministrativeAuthentication) -> None:
     name_duplicate = MachineTemplatesLibrary.get_record_by_fields(fields={"name": data.name, "owner_uuid": str(current_user.uuid)})
     
@@ -34,7 +39,7 @@ async def __create_machine_template__(data: CreateMachineTemplateForm, current_u
     MachineTemplatesLibrary.create_record(CreateMachineTemplateArgs(**data.model_dump(), owner_uuid=current_user.uuid))
     
 
-@app.delete("/machine/template/delete/{uuid}" , response_model=None, tags=['Machine Templates'])
+@router.delete("/delete/{uuid}" , response_model=None)
 async def __delete_machine_template__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     template = MachineTemplatesLibrary.get_record_by_uuid(uuid)
     if template is None: 

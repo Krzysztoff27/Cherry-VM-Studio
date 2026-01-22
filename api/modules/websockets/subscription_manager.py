@@ -9,7 +9,7 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
-# https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki/Cherry-API#SubscriptionManager
+
 class SubscriptionManager(BaseModel):
     subscriptions: SubscriptionsDict = {}
     broadcast_data: Callable[[SubscriptionsDict], Any] | None = None
