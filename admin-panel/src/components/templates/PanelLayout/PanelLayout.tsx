@@ -5,8 +5,6 @@ import Navbar from "../../molecules/layout/Navbar/Navbar";
 import DoubleNavbar from "../../molecules/layout/DoubleNavbar/DoubleNavbar";
 import { AccountType } from "../../../types/config.types";
 import { ADMIN_PANEL_BOTTOM_PAGES, ADMIN_PANEL_PAGES, CLIENT_PANEL_BOTTOM_PAGES, CLIENT_PANEL_PAGES } from "../../../config/pages.config";
-import useFetch from "../../../hooks/useFetch";
-import { User } from "../../../types/api.types";
 
 export interface NavbarLayoutProps {
     doubleNavbar?: boolean;

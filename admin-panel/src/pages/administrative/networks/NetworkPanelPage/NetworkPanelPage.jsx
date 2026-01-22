@@ -147,7 +147,7 @@ function Flow() {
      */
     const [isDirty, setIsDirty] = useState(null);
 
-    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch("/machines");
+    const { loading: machinesLoading, error: machinesError, data: machines, refresh: refreshMachines } = useFetch("/machines/account");
 
     /**
      * Adds new nodes to the flow.
@@ -213,7 +213,7 @@ function Flow() {
             addEdgeToFlow({ source: target, target: intnetNode.id });
             addEdgeToFlow({ source: source, target: intnetNode.id });
         },
-        [setEdges]
+        [setEdges],
     );
 
     // PRESETS
@@ -364,7 +364,7 @@ function Flow() {
                           target: getNodeId(NODE_TYPES.intnet, uuid),
                       });
                   })
-                : null
+                : null,
         );
     };
 

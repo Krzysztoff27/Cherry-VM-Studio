@@ -7,10 +7,11 @@ import { Paper, ScrollArea, Stack } from "@mantine/core";
 import classes from "./ClientMachinesPage.module.css";
 import MachinesGrid from "../../../../components/molecules/display/MachinesGrid/MachinesGrid";
 import { useEffect } from "react";
+import { MachineData } from "../../../../types/api.types";
 
 const ClientMachinesPage = (): React.JSX.Element => {
     const { sendErrorNotification } = useMantineNotifications();
-    const { loading, error, data: machinesData } = useFetch("machines");
+    const { loading, error, data: machinesData } = useFetch<Record<string, MachineData>>("/machines/account");
     const { machinesState } = useMachineState("account");
 
     useEffect(() => {

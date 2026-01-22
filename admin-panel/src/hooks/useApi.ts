@@ -31,7 +31,7 @@ export const useApi = (): useApiReturn => {
 
     const refreshTokens = async (): Promise<Tokens> => {
         return await axios
-            .get(getPath("refresh"), {
+            .get(getPath("/auth/refresh"), {
                 headers: refreshHeaders,
             })
             .then((response) => {
@@ -51,7 +51,7 @@ export const useApi = (): useApiReturn => {
         method: RequestMethods,
         path: string,
         config: AxiosRequestConfig = {},
-        errorCallback: ((error: AxiosError) => void) | null = handleAxiosError
+        errorCallback: ((error: AxiosError) => void) | null = handleAxiosError,
     ): Promise<T> => {
         const mergedConfig = merge(baseApiRequestConfig, config);
 

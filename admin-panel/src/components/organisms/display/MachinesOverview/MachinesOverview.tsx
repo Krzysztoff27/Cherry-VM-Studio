@@ -17,7 +17,7 @@ const MachinesOverview = (): React.JSX.Element => {
     const { sendErrorNotification } = useMantineNotifications();
     const navigate = useNavigate();
 
-    const { loading, error, data: machinesData, refresh } = useFetch<MachineData>("machines");
+    const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>("/machines/account");
     const { machinesState, setMachinesState } = useMachineState("account");
 
     if (error) {

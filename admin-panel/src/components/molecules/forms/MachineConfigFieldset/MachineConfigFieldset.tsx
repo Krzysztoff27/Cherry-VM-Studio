@@ -40,7 +40,7 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
     i18nextPrefix,
 }: MachineConfigFormProps<T>): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation(i18nextNamespace ?? "pages", i18nextPrefix ?? "machine");
-    const { data: templates, error, loading } = useFetch<Record<string, MachineTemplate>>("/machine/templates");
+    const { data: templates, error, loading } = useFetch<Record<string, MachineTemplate>>("/machine-templates/all");
 
     const onTemplateChange = (value: string | null) => {
         setConfigTemplate(value);

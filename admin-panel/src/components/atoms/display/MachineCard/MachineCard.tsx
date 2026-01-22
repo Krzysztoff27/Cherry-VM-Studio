@@ -5,7 +5,7 @@ import BadgeGroup from "../BadgeGroup/BadgeGroup";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import AccountAvatarGroup from "../AccountAvatarGroup/AccountAvatarGroup";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
-import { MachineState, User } from "../../../../types/api.types";
+import { MachineState, User, UserExtended } from "../../../../types/api.types";
 import { values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
 import BusinessCard from "../BusinessCard/BusinessCard";
@@ -22,7 +22,7 @@ interface MachineCardProps extends CardProps {
 
 const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machines");
-    const { data: user } = useFetch("user");
+    const { data: user } = useFetch<UserExtended>("/users/me");
     const { canManageMachine, canConnectToMachine } = usePermissions();
     const { sendRequest } = useApi();
 
@@ -32,8 +32,8 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
     const canConnect = canConnectToMachine(user, machine);
 
     const toggleState = useThrottledCallback(() => {
-        if (state.active) sendRequest("POST", `/machine/stop/${machine.uuid}`);
-        else sendRequest("POST", `/machine/start/${machine.uuid}`);
+        if (state.active) sendRequest("POST", `/machines/stop/${machine.uuid}`);
+        else sendRequest("POST", `/machines/start/${machine.uuid}`);
     }, 2000);
 
     return (

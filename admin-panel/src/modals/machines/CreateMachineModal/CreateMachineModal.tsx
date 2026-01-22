@@ -80,12 +80,12 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 !/^[\w\s.-]+$/.test(val)
                     ? tns("validation.name-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.name-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.name-too-short")
-                    : val.length > 24
-                    ? tns("validation.name-too-long")
-                    : null,
+                      ? tns("validation.name-invalid-first")
+                      : val.length < 3
+                        ? tns("validation.name-too-short")
+                        : val.length > 24
+                          ? tns("validation.name-too-long")
+                          : null,
             tags: (val) =>
                 val
                     .map((tag) => {
@@ -100,14 +100,14 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                     /\s/.test(val)
                         ? tns("validation.name-spaces")
                         : val.length < 3
-                        ? tns("validation.name-too-short")
-                        : val.length > 24
-                        ? tns("validation.name-too-long")
-                        : !/^[\w.-]+$/.test(val)
-                        ? tns("validation.name-invalid-characters")
-                        : !/[a-zA-Z]/.test(val[0])
-                        ? tns("validation.name-invalid-first")
-                        : null,
+                          ? tns("validation.name-too-short")
+                          : val.length > 24
+                            ? tns("validation.name-too-long")
+                            : !/^[\w.-]+$/.test(val)
+                              ? tns("validation.name-invalid-characters")
+                              : !/[a-zA-Z]/.test(val[0])
+                                ? tns("validation.name-invalid-first")
+                                : null,
             },
         },
         transformValues: (values) => ({
@@ -311,7 +311,7 @@ export const CreateMachineModal = ({ opened, onClose, onSubmit }: CreateMachineM
     const { sendRequest } = useApi();
 
     const submitMachine = async (values: CreateMachineFormSubmitValues) => {
-        await sendRequest("POST", "/machine/create", { data: values });
+        await sendRequest("POST", "/machines/create", { data: values });
 
         onClose();
         onSubmit?.();

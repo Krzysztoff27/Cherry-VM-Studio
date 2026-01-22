@@ -46,7 +46,7 @@ const GroupsTable = ({ groups, error, loading, refresh, openGroupModal }: Groups
                         component: DeleteModal,
                         props: {
                             i18nextPrefix: "confirm.group-removal",
-                            path: "group/delete",
+                            path: "groups/delete",
                         },
                     },
                 },

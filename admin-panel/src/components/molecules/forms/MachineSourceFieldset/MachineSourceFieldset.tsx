@@ -16,7 +16,7 @@ import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { UseFormReturnType } from "@mantine/form";
 import useFetch from "../../../../hooks/useFetch";
 import { entries, merge } from "lodash";
-import { IsoRecord } from "../../../../types/api.types";
+import { IsoFile, IsoRecord } from "../../../../types/api.types";
 
 export interface MachineSourceFormRequiredValues {
     source_uuid: string;
@@ -44,7 +44,7 @@ const MachineSourceFieldset = <T extends Record<string, any> = {}>({
     i18nextNamespace,
     i18nextPrefix,
 }: MachineSourceFormProps<T>): React.JSX.Element => {
-    const { data: isoFiles } = useFetch("/iso");
+    const { data: isoFiles } = useFetch<Record<string, IsoFile>>("/iso/all");
     const { t, tns } = useNamespaceTranslation(i18nextNamespace ?? "modals", i18nextPrefix ?? "create-machine");
 
     const isoSelectData = entries(isoFiles).map(([uuid, isoRecord]: [string, IsoRecord]) => ({

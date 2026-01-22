@@ -5,9 +5,10 @@ import RoleInfoCard from "../../display/RoleInfoCard/RoleInfoCard";
 import { MultiSelect, MultiSelectProps } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
+import { RoleExtended } from "../../../../types/api.types";
 
 const RoleMultiselect = (props: MultiSelectProps): React.JSX.Element => {
-    const { data: roles } = useFetch("roles");
+    const { data: roles } = useFetch<Record<string, RoleExtended>>("/roles/all");
     const { hasPermissions } = usePermissions();
     const { t } = useTranslation();
 

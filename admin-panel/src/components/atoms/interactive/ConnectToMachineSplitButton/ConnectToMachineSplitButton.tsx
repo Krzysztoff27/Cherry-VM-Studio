@@ -1,12 +1,11 @@
-import { IconDeviceDesktop, IconTerminal2 } from "@tabler/icons-react";
+import { IconDeviceDesktop } from "@tabler/icons-react";
 import SplitButton, { SplitButtonProps } from "../SplitButton/SplitButton";
 import classes from "./ConnectToMachineSplitButton.module.css";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { MachineConnectionProtocols, MachineData, SimpleState } from "../../../../types/api.types";
+import { MachineConnectionProtocols, MachineData, SimpleState, UserExtended } from "../../../../types/api.types";
 import useFetch from "../../../../hooks/useFetch";
-import { isNull, keys, merge } from "lodash";
-import { Link } from "react-router-dom";
+import { keys, merge } from "lodash";
 
 export interface ConnectToMachineSplitButtonProps extends SplitButtonProps {
     machine: MachineData;
@@ -15,7 +14,7 @@ export interface ConnectToMachineSplitButtonProps extends SplitButtonProps {
 
 const ConnectToMachineSplitButton = ({ machine, state, ...props }: ConnectToMachineSplitButtonProps): React.JSX.Element => {
     const { t } = useTranslation();
-    const { data: user } = useFetch("user");
+    const { data: user } = useFetch<UserExtended>("/users/me");
     const { canConnectToMachine } = usePermissions();
 
     const canConnect = canConnectToMachine(user, machine) && !state.fetching && !state.loading && state.active;
@@ -41,14 +40,14 @@ const ConnectToMachineSplitButton = ({ machine, state, ...props }: ConnectToMach
                     variant: "light",
                     color: "gray",
                 },
-                props?.sideButtonProps
+                props?.sideButtonProps,
             )}
             menuProps={merge(
                 {
                     classNames: { dropdown: classes.connectButtonMenu },
                     offset: 0,
                 },
-                props?.menuProps
+                props?.menuProps,
             )}
             menuButtonsProps={connectionKeys.map((key) => ({
                 children: t(`connect-via-${key}`),

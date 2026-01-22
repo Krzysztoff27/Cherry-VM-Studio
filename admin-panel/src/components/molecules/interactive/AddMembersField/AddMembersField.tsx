@@ -1,12 +1,12 @@
 import { Button, ButtonProps, Group } from "@mantine/core";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import UserMultiselect, { UserMultiselectProps } from "../UserMultiselect/UserMultiselect";
 import classes from "./AddMembersField.module.css";
 import useFetch from "../../../../hooks/useFetch";
 import { safeObjectValues } from "../../../../utils/misc";
 import { IconUserPlus } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
-import { User } from "../../../../types/api.types";
+import { ClientExtended } from "../../../../types/api.types";
 
 export interface AddMembersFieldProps {
     onSubmit: (uuids: string[]) => void;
@@ -16,7 +16,7 @@ export interface AddMembersFieldProps {
 }
 
 const AddMembersField = ({ onSubmit, alreadyAddedUuids, multiselectProps, buttonProps }: AddMembersFieldProps): React.JSX.Element => {
-    const { data } = useFetch("users?account_type=client");
+    const { data } = useFetch<Record<string, ClientExtended>>("/users/all?account_type=client");
     const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
 

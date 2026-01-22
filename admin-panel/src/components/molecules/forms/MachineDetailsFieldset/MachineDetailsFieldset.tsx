@@ -19,7 +19,7 @@ import UserMultiselect, { UserMultiselectProps } from "../../interactive/UserMul
 import { merge, values } from "lodash";
 import useFetch from "../../../../hooks/useFetch";
 import { UseFormReturnType } from "@mantine/form";
-import { Client } from "../../../../types/api.types";
+import { Client, ClientExtended } from "../../../../types/api.types";
 
 export type MachineConnectionProtocolsFormValues = "rdp" | "vnc" | "ssh" | "rdp+ssh" | "vnc+ssh";
 
@@ -57,7 +57,7 @@ const MachineDetailsFieldset = <T extends Record<string, any> = {}>({
     i18nextPrefix,
     props,
 }: MachineDetailsFormProps<T>): React.JSX.Element => {
-    const { data: users, error: usersError, loading: usersLoading } = useFetch("/users?account_type=client");
+    const { data: users, error: usersError, loading: usersLoading } = useFetch<Record<string, ClientExtended>>("/users/all?account_type=client");
     const { tns } = useNamespaceTranslation(i18nextNamespace ?? "pages", i18nextPrefix ?? "machine");
 
     return (

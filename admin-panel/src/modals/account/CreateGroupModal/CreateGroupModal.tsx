@@ -10,13 +10,14 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
 import { safeObjectValues } from "../../../utils/misc";
 import { AxiosError } from "axios";
+import { ClientExtended } from "../../../types/api.types";
 
 export default function CreateGroupModal({ opened, onClose, onSubmit }): React.JSX.Element {
     const { t, tns } = useNamespaceTranslation("modals", "create-group");
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();
     const { sendNotification } = useMantineNotifications();
-    const { data: users, error, loading } = useFetch("users?account_type=client");
+    const { data: users, error, loading } = useFetch<Record<string, ClientExtended>>("users/all?account_type=client");
 
     const form = useForm({
         initialValues: {
@@ -45,7 +46,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
     };
 
     const submitForm = form.onSubmit(async (values) => {
-        const res = await sendRequest("POST", "group/create", { data: values }, onPostError);
+        const res = await sendRequest("POST", "groups/create", { data: values }, onPostError);
         if (!res) return;
 
         sendNotification("group.created", undefined, { name: res.name });

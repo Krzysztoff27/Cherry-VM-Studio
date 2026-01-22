@@ -7,7 +7,7 @@ import { IconDisc, IconFile, IconUpload, IconX } from "@tabler/icons-react";
 import { isEmpty, isNull, values } from "lodash";
 import useContinousFileUpload from "../../../hooks/useContinousFileUpload";
 import useFetch from "../../../hooks/useFetch";
-import { IsoRecord } from "../../../types/api.types";
+import { IsoFile } from "../../../types/api.types";
 import classes from "./IsoFileImportModal.module.css";
 import cs from "classnames";
 
@@ -16,13 +16,13 @@ type ImportTypes = "file" | "url";
 const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-iso");
     const { uploadFile } = useContinousFileUpload("/iso/upload");
-    const { data: isoRecords } = useFetch("/iso");
+    const { data: isoRecords } = useFetch<Record<string, IsoFile>>("/iso/all");
 
     const [importType, setImportType] = useState<ImportTypes>("file");
 
     const resetRef = useRef<() => void>(null);
 
-    const takenNames = values(isoRecords).map((record: IsoRecord) => record.name);
+    const takenNames = values(isoRecords).map((record: IsoFile) => record.name);
 
     const form = useForm({
         mode: "uncontrolled",
@@ -36,20 +36,20 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                 !/^[\w\s.-]+$/.test(val)
                     ? tns("validation.name-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.name-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.name-too-short")
-                    : val.length > 24
-                    ? tns("validation.name-too-long")
-                    : takenNames.includes(val)
-                    ? tns("validation.name-duplicate")
-                    : null,
+                      ? tns("validation.name-invalid-first")
+                      : val.length < 3
+                        ? tns("validation.name-too-short")
+                        : val.length > 24
+                          ? tns("validation.name-too-long")
+                          : takenNames.includes(val)
+                            ? tns("validation.name-duplicate")
+                            : null,
             file: (val: File | null) =>
                 !val.name.endsWith(".iso")
                     ? tns("validation.file-invalid-extension")
                     : val.size > 10 * 1024 * 1024 * 1024
-                    ? tns("validation.file-too-large")
-                    : null,
+                      ? tns("validation.file-too-large")
+                      : null,
         },
     });
 

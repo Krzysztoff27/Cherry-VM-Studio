@@ -3,9 +3,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { safeObjectValues } from "../../../../utils/misc";
 import useFetch from "../../../../hooks/useFetch";
+import { GroupExtended } from "../../../../types/api.types";
 
 const GroupMultiselect = (props: MultiSelectProps): React.JSX.Element => {
-    const { data: groups } = useFetch("groups");
+    const { data: groups } = useFetch<Record<string, GroupExtended>>("/groups/all");
     const { t } = useTranslation();
 
     const sortOptions = (a, b) => a.label.localeCompare(b.label);

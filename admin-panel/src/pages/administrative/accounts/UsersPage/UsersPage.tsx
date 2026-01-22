@@ -9,7 +9,7 @@ import classes from "./UsersPage.module.css";
 import { UserExtended } from "../../../../types/api.types";
 
 const UsersPage = ({ accountType }: { accountType: AccountType }): React.JSX.Element => {
-    const { data, error, loading, refresh } = useFetch<Record<string, UserExtended>>(`/users?account_type=${accountType}`, undefined, true);
+    const { data, error, loading, refresh } = useFetch<Record<string, UserExtended>>(`/users/all?account_type=${accountType}`, undefined, true);
     const [currentUuid, setCurrentUuid] = useState<string>("");
     const [accountModalInEditMode, setAccountModalInEditMode] = useState<boolean>(false);
     const [modalsOpened, setModalsOpened] = useState({

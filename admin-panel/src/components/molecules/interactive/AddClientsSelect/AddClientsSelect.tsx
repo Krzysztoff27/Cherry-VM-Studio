@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import useFetch from "../../../../hooks/useFetch";
-import { User } from "../../../../types/api.types";
+import { ClientExtended, User } from "../../../../types/api.types";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
 import { omit, values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
@@ -10,7 +10,7 @@ import classes from "./AddClientsSelect.module.css";
 import { useMemo, useState } from "react";
 
 export interface AddClientsSelectProps extends Omit<SelectProps, "onSubmit"> {
-    onSubmit: (uuid: string) => {};
+    onSubmit: (uuid: string) => void;
     excludedClients: string[];
     classNames?: Partial<Record<SelectStylesNames, string>>;
 }
@@ -19,7 +19,7 @@ const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }: A
     const { t } = useTranslation();
     const [value, setValue] = useState(null);
 
-    const { data, loading, error } = useFetch<Record<string, User>>("users?account_type=client");
+    const { data, loading, error } = useFetch<Record<string, ClientExtended>>("/users/all?account_type=client");
 
     const clients: User[] = useMemo(() => values(omit(data, excludedClients)) ?? [], [data, excludedClients]);
 

@@ -8,7 +8,7 @@ const DeleteGroupsModal = ({ opened, onClose, onSubmit = () => undefined, uuids 
     const { tns } = useNamespaceTranslation("modals", "confirm.group-removal");
 
     const onConfirm = () => {
-        uuids.forEach((uuid: string) => sendRequest("DELETE", `group/delete/${uuid}`));
+        uuids.forEach((uuid: string) => sendRequest("DELETE", `groups/delete/${uuid}`));
         onClose();
         onSubmit();
     };

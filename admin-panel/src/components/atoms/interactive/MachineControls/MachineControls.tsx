@@ -1,7 +1,7 @@
 import { ActionIcon, Group, MantineSize } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import React from "react";
-import { MachineData, MachineState, SimpleState } from "../../../../types/api.types";
+import { MachineData, MachineState, SimpleState, UserExtended } from "../../../../types/api.types";
 import useApi from "../../../../hooks/useApi";
 import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
@@ -19,15 +19,15 @@ export interface MachineControlsProps {
 
 const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps }: MachineControlsProps): React.JSX.Element => {
     const { sendRequest } = useApi();
-    const { data: user, loading, error } = useFetch("user");
+    const { data: user, loading, error } = useFetch<UserExtended>("/user/me");
     const { canManageMachine } = usePermissions();
 
     const startMachine = useThrottledCallback(() => {
-        sendRequest("POST", `/machine/start/${machine.uuid}`);
+        sendRequest("POST", `/machines/start/${machine.uuid}`);
     }, 2000);
 
     const stopMachine = useThrottledCallback(() => {
-        sendRequest("POST", `/machine/stop/${machine.uuid}`);
+        sendRequest("POST", `/machines/stop/${machine.uuid}`);
     }, 2000);
 
     const disable = !machine || loading || !isNull(error) || !canManageMachine(user, machine) || state?.fetching || state?.loading;

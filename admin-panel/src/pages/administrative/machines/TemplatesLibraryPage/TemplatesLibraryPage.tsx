@@ -4,7 +4,8 @@ import TemplatesTable from "../../../../components/organisms/tables/TemplatesTab
 import useFetch from "../../../../hooks/useFetch";
 
 const TemplatesLibraryPage = (): React.JSX.Element => {
-    const { data, error, loading, refresh } = useFetch("machine/templates");
+    const { data, error, loading, refresh } = useFetch("/machine-templates/all");
+
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>

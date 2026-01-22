@@ -44,7 +44,7 @@ const TemplatesTable = ({ templates, loading, error, refresh }: TemplatesTablePr
                         component: DeleteModal,
                         props: {
                             i18nextPrefix: "confirm.template-removal",
-                            path: "machine/template/delete",
+                            path: "machine-templates/delete",
                         },
                     },
                 },

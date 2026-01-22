@@ -48,14 +48,14 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
                 /\s/.test(val)
                     ? tns("validation.username-spaces")
                     : !/^[\w.-]+$/.test(val)
-                    ? tns("validation.username-invalid-characters")
-                    : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.username-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.username-too-short")
-                    : val.length > 24
-                    ? tns("validation.username-too-long")
-                    : null,
+                      ? tns("validation.username-invalid-characters")
+                      : !/[a-zA-Z]/.test(val[0])
+                        ? tns("validation.username-invalid-first")
+                        : val.length < 3
+                          ? tns("validation.username-too-short")
+                          : val.length > 24
+                            ? tns("validation.username-too-long")
+                            : null,
             email: isEmail(tns("validation.email-invalid")),
         },
         onValuesChange: (values) => {
@@ -104,7 +104,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
 
     const onFormSubmit = form.onSubmit(async (values) => {
         console.log(values);
-        const res = await sendRequest("PUT", `user/modify/${user?.uuid}`, { data: values }, onPostError);
+        const res = await sendRequest("PUT", `users/modify/${user?.uuid}`, { data: values }, onPostError);
         if (!res) return;
 
         sendNotification("account.modified", undefined, { username: res.username });

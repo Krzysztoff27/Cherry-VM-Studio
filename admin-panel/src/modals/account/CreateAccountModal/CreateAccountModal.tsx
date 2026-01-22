@@ -39,27 +39,27 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                 /\s/.test(val)
                     ? tns("validation.username-spaces")
                     : !/^[\w.-]+$/.test(val)
-                    ? tns("validation.username-invalid-characters")
-                    : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.username-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.username-too-short")
-                    : val.length > 24
-                    ? tns("validation.username-too-long")
-                    : null,
+                      ? tns("validation.username-invalid-characters")
+                      : !/[a-zA-Z]/.test(val[0])
+                        ? tns("validation.username-invalid-first")
+                        : val.length < 3
+                          ? tns("validation.username-too-short")
+                          : val.length > 24
+                            ? tns("validation.username-too-long")
+                            : null,
             email: (val) => (val.length && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null),
             password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")
                     : !/[0-9]/.test(val)
-                    ? tns("validation.password-no-number")
-                    : !/[a-z]/.test(val)
-                    ? tns("validation.password-no-lowercase")
-                    : !/[A-Z]/.test(val)
-                    ? tns("validation.password-no-uppercase")
-                    : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
-                    ? tns("validation.password-no-special")
-                    : null,
+                      ? tns("validation.password-no-number")
+                      : !/[a-z]/.test(val)
+                        ? tns("validation.password-no-lowercase")
+                        : !/[A-Z]/.test(val)
+                          ? tns("validation.password-no-uppercase")
+                          : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
+                            ? tns("validation.password-no-special")
+                            : null,
             confirmPassword: matchesField("password", tns("validation.passwords-not-equal")),
         },
         onValuesChange: (values) => {
@@ -89,7 +89,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         if (accountType === "administrative") delete body.groups;
         else if (accountType === "client") delete body.roles;
 
-        const res = await sendRequest("POST", "user/create", { data: body }, onPostError);
+        const res = await sendRequest("POST", "users/create", { data: body }, onPostError);
         if (isAxiosError(res)) return;
 
         sendNotification("account.created", undefined, { username: res.username });

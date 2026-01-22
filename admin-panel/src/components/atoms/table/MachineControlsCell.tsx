@@ -22,8 +22,8 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onR
     const toggleState = useThrottledCallback((e) => {
         e.preventDefault();
 
-        if (state.active) sendRequest("POST", `/machine/stop/${uuid}`);
-        else sendRequest("POST", `/machine/start/${uuid}`);
+        if (state.active) sendRequest("POST", `/machines/stop/${uuid}`);
+        else sendRequest("POST", `/machines/start/${uuid}`);
 
         onStateToggle();
     }, 2000);
@@ -66,7 +66,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onR
                 }}
                 ModalComponent={DeleteModal}
                 modalProps={{
-                    path: "/machine/delete",
+                    path: "/machines/delete",
                     uuids: [uuid],
                     i18nextPrefix: "confirm.machine-removal",
                     onSubmit: () => onRemove(uuid),

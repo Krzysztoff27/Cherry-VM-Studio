@@ -1,11 +1,9 @@
-import { Button, Fieldset, Group, Loader, ScrollArea, Stack, Tabs, TagsInput, Text, Textarea, TextInput, Title } from "@mantine/core";
+import { Button, Fieldset, Stack, Tabs } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { IconCheck, IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
-import { MachineData, MachineDiskForm, MachineState, SimpleState, User } from "../../../../types/api.types";
-import EnhancedSlider from "../../../atoms/interactive/EnhancedSlider/EnhancedSlider";
+import { ClientExtended, MachineDiskForm, MachineState, SimpleState, UserExtended } from "../../../../types/api.types";
 import { useForm } from "@mantine/form";
 import MembersTable from "../../tables/MembersTable/MembersTable";
-import AddMembersField from "../../../molecules/interactive/AddMembersField/AddMembersField";
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachineEditForm.module.css";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
@@ -14,8 +12,6 @@ import MachineDetailsFieldset, { MachineConnectionProtocolsFormValues } from "..
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { useEffect, useMemo, useState } from "react";
-import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
-import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
 import AddClientsSelect from "../../../molecules/interactive/AddClientsSelect/AddClientsSelect";
 import useApi from "../../../../hooks/useApi";
 
@@ -41,8 +37,8 @@ export interface MachineEditFormProps {
 const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machine");
     const { sendRequest } = useApi();
-    const { data: loggedInUser, loading, error } = useFetch<User>("user");
-    const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, User>>("users?account_type=client");
+    const { data: loggedInUser, loading, error } = useFetch<UserExtended>("/user/me");
+    const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, ClientExtended>>("users/all/?account_type=client");
     const { canManageMachine } = usePermissions();
     const [configTemplate, setConfigTemplate] = useState("custom");
 
@@ -66,15 +62,15 @@ const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.
                                 type: disk.type,
                                 unit: "MiB",
                                 size: disk.size_bytes / (1024 * 1024),
-                            } as MachineDiskForm)
+                            }) as MachineDiskForm,
                     ) ?? [],
                 os_disk: 0,
                 assigned_clients: keys(machine.assigned_clients),
                 connection_protocols: keys(machine.connections)
                     .sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0))
                     .join("+"),
-            } as MachineEditFormValues),
-        [JSON.stringify(machine)]
+            }) as MachineEditFormValues,
+        [JSON.stringify(machine)],
     );
 
     const form = useForm<MachineEditFormValues>({
@@ -85,12 +81,12 @@ const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.
                 !/^[\w\s.-]+$/.test(val)
                     ? tns("validation.name-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.name-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.name-too-short")
-                    : val.length > 24
-                    ? tns("validation.name-too-long")
-                    : null,
+                      ? tns("validation.name-invalid-first")
+                      : val.length < 3
+                        ? tns("validation.name-too-short")
+                        : val.length > 24
+                          ? tns("validation.name-too-long")
+                          : null,
             tags: (val) =>
                 val
                     .map((tag) => {
@@ -104,14 +100,14 @@ const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.
                     /\s/.test(val)
                         ? tns("validation.name-spaces")
                         : !/^[\w.-]+$/.test(val)
-                        ? tns("validation.name-invalid-characters")
-                        : !/[a-zA-Z]/.test(val[0])
-                        ? tns("validation.name-invalid-first")
-                        : val.length < 3
-                        ? tns("validation.name-too-short")
-                        : val.length > 24
-                        ? tns("validation.name-too-long")
-                        : null,
+                          ? tns("validation.name-invalid-characters")
+                          : !/[a-zA-Z]/.test(val[0])
+                            ? tns("validation.name-invalid-first")
+                            : val.length < 3
+                              ? tns("validation.name-too-short")
+                              : val.length > 24
+                                ? tns("validation.name-too-long")
+                                : null,
             },
         },
     });
@@ -122,7 +118,7 @@ const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.
     };
 
     const submitChanges = async () => {
-        await sendRequest("PATCH", `machine/modify/${machine.uuid}`, { data: { assigned_clients: form.values.assigned_clients } });
+        await sendRequest("PATCH", `machines/modify/${machine.uuid}`, { data: { assigned_clients: form.values.assigned_clients } });
     };
 
     useEffect(() => {

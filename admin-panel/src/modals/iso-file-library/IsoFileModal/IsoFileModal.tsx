@@ -4,7 +4,7 @@ import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconDisc } from "@tabler/icons-react";
 import BusinessCard from "../../../components/atoms/display/BusinessCard/BusinessCard";
 import { getFullUserName } from "../../../utils/users";
-import { IsoRecord, User } from "../../../types/api.types";
+import { IsoFile, User } from "../../../types/api.types";
 import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 import { formatBytesToRelevantUnit } from "../../../utils/files";
 import useFetch from "../../../hooks/useFetch";
@@ -13,9 +13,7 @@ import IconFileTypeIso from "../../../components/atoms/icons/IconFileTypeIso/Ico
 
 const IsoFileModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "iso");
-    const { data, error, loading } = useFetch(uuid ? `/iso/${uuid}` : undefined);
-
-    const file = data as IsoRecord;
+    const { data: file, error, loading } = useFetch<IsoFile>(uuid ? `/iso/${uuid}` : undefined);
 
     if (loading || error) return;
 

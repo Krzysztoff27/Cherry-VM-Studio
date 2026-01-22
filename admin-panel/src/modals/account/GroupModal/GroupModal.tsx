@@ -3,7 +3,6 @@ import useFetch from "../../../hooks/useFetch";
 import { IconUsersGroup } from "@tabler/icons-react";
 import MembersTable from "../../../components/organisms/tables/MembersTable/MembersTable";
 import classes from "./GroupModal.module.css";
-import AddMembersField from "../../../components/molecules/interactive/AddMembersField/AddMembersField";
 import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { Client, Group as GroupType } from "../../../types/api.types";
@@ -13,7 +12,7 @@ import { values } from "lodash";
 import AddClientsSelect from "../../../components/molecules/interactive/AddClientsSelect/AddClientsSelect";
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
-    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/group/${uuid}` : undefined);
+    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/groups/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { sendRequest } = useApi();
 
@@ -23,17 +22,17 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
     };
 
     const removeMember = async (member: string) => {
-        await sendRequest("PUT", `group/leave/${uuid}`, { data: [member] });
+        await sendRequest("PUT", `groups/leave/${uuid}`, { data: [member] });
         refresh();
     };
 
     const addMember = async (member: string) => {
-        await sendRequest("PUT", `group/join/${uuid}`, { data: [member] });
+        await sendRequest("PUT", `groups/join/${uuid}`, { data: [member] });
         refresh();
     };
 
     const renameGroup = async (new_name: string) => {
-        await sendRequest("PATCH", `group/rename/${uuid}`, { data: { name: new_name } });
+        await sendRequest("PATCH", `groups/rename/${uuid}`, { data: { name: new_name } });
         refresh();
     };
 

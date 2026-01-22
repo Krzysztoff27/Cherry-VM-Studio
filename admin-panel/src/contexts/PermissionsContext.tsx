@@ -13,7 +13,7 @@ interface PermissionsContextValue {
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
 
 export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { data: permissions, refresh } = useFetch("user/permissions");
+    const { data: permissions, refresh } = useFetch<number>("/users/me/permissions");
     const { tokens } = useAuthentication();
     const previousToken = useRef<string | null>(null);
 
@@ -28,7 +28,7 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const hasPermissions = useCallback(
         (required: number) => permissions != null && !isClientAccount(permissions) && (permissions | required) === permissions,
-        [permissions]
+        [permissions],
     );
 
     const canManageMachine = (user: User, machine: Partial<MachineData>) =>

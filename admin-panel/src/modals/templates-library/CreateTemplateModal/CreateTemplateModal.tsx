@@ -1,11 +1,7 @@
-import { Avatar, Button, Fieldset, Group, Modal, NumberInput, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Group, Modal, NumberInput, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { IsoFileImportModalProps } from "../../../types/components.types";
 import { useForm } from "@mantine/form";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { IconDisc, IconTemplate } from "@tabler/icons-react";
-import { values } from "lodash";
-import useFetch from "../../../hooks/useFetch";
-import EnhancedSlider from "../../../components/atoms/interactive/EnhancedSlider/EnhancedSlider";
 import classes from "./CreateTemplateModal.module.css";
 import useApi from "../../../hooks/useApi";
 import { AxiosError, isAxiosError } from "axios";
@@ -37,12 +33,12 @@ const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImp
                 !/^[\w\s.-]+$/.test(val)
                     ? tns("validation.name-invalid-characters")
                     : !/[a-zA-Z]/.test(val[0])
-                    ? tns("validation.name-invalid-first")
-                    : val.length < 3
-                    ? tns("validation.name-too-short")
-                    : val.length > 24
-                    ? tns("validation.name-too-long")
-                    : null,
+                      ? tns("validation.name-invalid-first")
+                      : val.length < 3
+                        ? tns("validation.name-too-short")
+                        : val.length > 24
+                          ? tns("validation.name-too-long")
+                          : null,
         },
     });
 
@@ -62,7 +58,7 @@ const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImp
     };
 
     const submitForm = form.onSubmit(async (values) => {
-        const res = await sendRequest("POST", "machine/template/create", { data: values }, onError);
+        const res = await sendRequest("POST", "machines/template/create", { data: values }, onError);
         if (isAxiosError(res)) return;
         closeModal();
         onSubmit?.();

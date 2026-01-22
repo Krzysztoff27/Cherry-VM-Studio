@@ -8,12 +8,12 @@ import classes from "./GroupsPage.module.css";
 import { GroupExtended } from "../../../../types/api.types";
 
 const GroupsPage = (): React.JSX.Element => {
-    const { data: groupData, error, loading, refresh } = useFetch<Record<string, GroupExtended>>(`/groups`);
+    const { data: groupData, error, loading, refresh } = useFetch<Record<string, GroupExtended>>(`/groups/all`);
     const [currentUuid, setCurrentUuid] = useState<string>("");
     const [opened, { open, close }] = useDisclosure();
 
     const openGroupModal = (uuid: string) => {
-        setCurrentUuid(uuid), open();
+        (setCurrentUuid(uuid), open());
     };
 
     return (

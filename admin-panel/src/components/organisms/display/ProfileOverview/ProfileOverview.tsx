@@ -7,13 +7,11 @@ import { formatDate } from "../../../../utils/dates";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import classes from "./ProfileOverview.module.css";
 import useFetch from "../../../../hooks/useFetch";
-import { User } from "../../../../types/api.types";
-import AccountModal from "../../../../modals/account/AccountModal/AccountModal";
-import { useDisclosure } from "@mantine/hooks";
+import { UserExtended } from "../../../../types/api.types";
 
 const ProfileOverview = (): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "client-home");
-    const { data: user, loading, error } = useFetch<User>("user");
+    const { data: user, loading, error } = useFetch<UserExtended>("/users/me");
 
     return (
         <>

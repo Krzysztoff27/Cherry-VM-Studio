@@ -178,20 +178,6 @@ export interface CreateMachineBody {
     os_disk: number;
 }
 
-export interface IsoRecord {
-    uuid: string;
-    name: string;
-    remote: boolean;
-    file_name: string;
-    file_location?: string;
-    file_size_bytes: number;
-    last_used?: string;
-    imported_at?: string;
-    last_modified_at?: string;
-    imported_by?: User;
-    last_modified_by?: User;
-}
-
 // libraries
 
 export interface IsoFile {

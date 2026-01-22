@@ -11,7 +11,7 @@ export interface ProtectedProps {
 }
 
 export const Protected = ({ accountType }: ProtectedProps): React.JSX.Element => {
-    const { error, loading, data: user } = useFetch<User>("user");
+    const { error, loading, data: user } = useFetch<User>("/users/me");
 
     document.title = accountType === "administrative" ? "Cherry Admin Panel" : "Cherry Client Panel";
 

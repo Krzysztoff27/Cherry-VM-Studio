@@ -6,7 +6,7 @@ import AccountModalPlaceholder from "../../../components/organisms/display/Accou
 import { UserExtended } from "../../../types/api.types";
 
 const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
-    const { data, error, loading, refresh: refreshUser } = useFetch<UserExtended>(`/user/${uuid}`, undefined, true);
+    const { data, error, loading, refresh: refreshUser } = useFetch<UserExtended>(`/users/${uuid}`, undefined, true);
 
     const toggle = () => setInEditMode((prev) => !prev);
     const refresh = () => {

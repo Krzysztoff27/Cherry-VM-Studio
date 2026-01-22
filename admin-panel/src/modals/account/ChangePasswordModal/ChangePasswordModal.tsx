@@ -19,14 +19,14 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
                 val.length < 10
                     ? tns("validation.password-too-short")
                     : !/[0-9]/.test(val)
-                    ? tns("validation.password-no-number")
-                    : !/[a-z]/.test(val)
-                    ? tns("validation.password-no-lowercase")
-                    : !/[A-Z]/.test(val)
-                    ? tns("validation.password-no-uppercase")
-                    : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
-                    ? tns("validation.password-no-special")
-                    : null,
+                      ? tns("validation.password-no-number")
+                      : !/[a-z]/.test(val)
+                        ? tns("validation.password-no-lowercase")
+                        : !/[A-Z]/.test(val)
+                          ? tns("validation.password-no-uppercase")
+                          : !/[$&+,:;=?@#|'<>.^*()%!_-]/.test(val)
+                            ? tns("validation.password-no-special")
+                            : null,
             confirmPassword: matchesField("password", tns()),
         },
     });
@@ -37,7 +37,7 @@ const ChangePasswordModal = ({ uuid, opened, onClose }) => {
     };
 
     const onSubmit = form.onSubmit(async ({ password }) => {
-        await sendRequest("PUT", `/user/change-password/${uuid}`, { data: { password } });
+        await sendRequest("PUT", `/users/change-password/${uuid}`, { data: { password } });
         closeModal();
     });
 
