@@ -11,7 +11,7 @@ router = APIRouter(
     dependencies=[Depends(get_authenticated_user)]
 )
 
-@router.get("/{uuid}", response_model=GroupExtended, tags=['Client Groups'])
+@router.get("/group/{uuid}", response_model=GroupExtended, tags=['Client Groups'])
 async def __read_group__(uuid: UUID,) -> GroupExtended:
     group = GroupLibrary.get_record_by_uuid(uuid)
     

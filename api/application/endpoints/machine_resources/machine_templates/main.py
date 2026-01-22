@@ -16,7 +16,7 @@ async def __read_all_users_machine_templates__(current_user: DependsOnAdministra
     return MachineTemplatesLibrary.get_all_records_matching(field_name="owner_uuid", value=str(current_user.uuid))
 
 
-@router.get("/{uuid}", response_model=MachineTemplate)
+@router.get("/machine-template/{uuid}", response_model=MachineTemplate)
 async def __read_machine_template__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> MachineTemplate:
     template = MachineTemplatesLibrary.get_record_by_uuid(uuid)
     if template is None: 

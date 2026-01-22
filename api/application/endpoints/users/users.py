@@ -21,7 +21,7 @@ async def __read_logged_in_user__(current_user: DependsOnAuthentication) -> AnyU
 async def __read_logged_in_users_permissions__(current_user: DependsOnAuthentication) -> int:
     return current_user.permissions if is_admin(current_user) else -1
 
-@router.get("/{uuid}", response_model=AnyUserExtended)
+@router.get("/user/{uuid}", response_model=AnyUserExtended)
 async def __read_user__(uuid: UUID) -> AnyUserExtended:
     user = UsersManager.get_user(uuid)
     if user is None: 

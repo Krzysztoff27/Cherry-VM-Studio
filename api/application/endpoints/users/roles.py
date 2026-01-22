@@ -11,7 +11,7 @@ router = APIRouter(
     dependencies=[Depends(get_authenticated_administrator)]
 )
 
-@router.get("/{uuid}", response_model=RoleExtended)
+@router.get("/role/{uuid}", response_model=RoleExtended)
 async def __read_role__(uuid: UUID) -> RoleExtended:
     role = RoleLibrary.get_record_by_uuid(uuid)
     

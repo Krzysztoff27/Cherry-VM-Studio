@@ -20,7 +20,7 @@ async def __read_all_iso_file_records__(current_user: DependsOnAdministrativeAut
     return IsoLibrary.get_all_records()
 
 
-@router.get("/{uuid}", response_model=IsoRecord)
+@router.get("/iso/{uuid}", response_model=IsoRecord)
 async def __read_iso_file_record__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> IsoRecord:
     record = IsoLibrary.get_record_by_uuid(uuid)
     if record is None: 

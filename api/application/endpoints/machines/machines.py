@@ -39,7 +39,7 @@ async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UU
 async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
     return get_user_machines_data(current_user)
 
-@router.get("/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
+@router.get("/machine/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
 async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:
     machine = get_machine_data_by_uuid(uuid)
     if not machine:
