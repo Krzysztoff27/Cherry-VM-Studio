@@ -1,9 +1,9 @@
 import { ActionIcon } from "@mantine/core";
-import React from "react";
+import React, { ReactNode } from "react";
 import classes from "./NavButton.module.css";
 
 export interface NavButtonProps {
-    label: string;
+    label: ReactNode;
     active?: boolean;
     icon: React.ReactElement;
     [key: string]: any;
@@ -19,7 +19,6 @@ export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(({ 
                 className={classes.actionIcon}
                 disabled={active || disabled}
                 size="xl"
-                aria-label={label}
                 aria-selected={active}
             >
                 {icon}

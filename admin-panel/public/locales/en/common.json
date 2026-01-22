@@ -79,5 +79,7 @@
     "github-repository": "GitHub Repository",
     "documentation": "Documentation",
     "change-language": "Change language",
-    "save-changes": "Save changes"
+    "save-changes": "Save changes",
+    "show-more": "Show more",
+    "hide": "Hide"
 }

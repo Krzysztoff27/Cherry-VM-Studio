@@ -1,14 +1,8 @@
-import { Avatar, Button, Card, Group, Image, List, rem, ScrollArea, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { Avatar, Button, Card, Group, Image, List, rem, ScrollArea, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import urlConfig from "../../../../config/url.config";
 import classes from "./AdminHomePage.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import useFetch from "../../../../hooks/useFetch";
-import { User } from "../../../../types/api.types";
-import { getFullUserName } from "../../../../utils/users";
-import { isNull } from "lodash";
-import HomeHeader from "../../../../components/organisms/layout/HomeHeader/HomeHeader";
 import GreetingTitle from "../../../../components/atoms/display/GreetingTitle/GreetingTitle";
 
 const panels = [
@@ -16,13 +10,13 @@ const panels = [
         name: "guacamole",
         link: urlConfig.guacamole,
         color: "#578c34",
-        icon: "/icons/Apache Guacamole.webp",
+        icon: "/logos/external/Apache Guacamole.webp",
     },
     {
         name: "traefik",
         link: urlConfig.traefik,
         color: "#24A0C1",
-        icon: "/icons/Traefik Proxy.webp",
+        icon: "/logos/external/Traefik Proxy.webp",
     },
 ];
 
@@ -81,7 +75,7 @@ function AdminHomePage() {
                     >
                         <Group>
                             <Image
-                                src="/icons/Cherry VM Studio Logo Small.webp"
+                                src="/logos/CVMS/Cherry VM Studio Logo Small.webp"
                                 fit="contain"
                                 mah={200}
                                 flex={1}
@@ -102,7 +96,7 @@ function AdminHomePage() {
                                 </List>
                                 <Button
                                     component={Link}
-                                    to="/admin/machines"
+                                    to="/machines"
                                     color="cherry.11"
                                     radius="md"
                                     mt="md"

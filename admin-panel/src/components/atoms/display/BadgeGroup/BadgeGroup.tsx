@@ -12,57 +12,55 @@ export interface BadgeGroupProps extends StackProps {
     badgeGroupProps?: GroupProps;
 }
 
-const BadgeGroup = ({ items, label, emptyMessage = "", size, badgeProps, badgeGroupProps, ...props }: BadgeGroupProps) => {
-    return (
-        <Stack
-            {...props}
-            className={cs(props.className, classes.container)}
-        >
-            {label && (
-                <Title
-                    order={5}
-                    className={classes.label}
-                >
-                    {label}
-                </Title>
-            )}
-
-            <ScrollArea
-                type="always"
-                scrollbarSize="0.525rem"
-                className={classes.scrollArea}
-                scrollbars="y"
+const BadgeGroup = ({ items, label, emptyMessage = "", size, badgeProps, badgeGroupProps, ...props }: BadgeGroupProps) => (
+    <Stack
+        {...props}
+        className={cs(props.className, classes.container)}
+    >
+        {label && (
+            <Title
+                order={5}
+                className={classes.label}
             >
-                <Group
-                    {...badgeGroupProps}
-                    className={cs(classes.badgeGroup, badgeGroupProps?.className)}
-                >
-                    {items.length ? (
-                        items.map((item: string, index: number) => (
-                            <Badge
-                                key={index}
-                                variant="light"
-                                color="gray"
-                                size={size || "lg"}
-                                fw={500}
-                                {...badgeProps}
-                                className={cs(badgeProps?.className, classes.badge)}
-                            >
-                                {item}
-                            </Badge>
-                        ))
-                    ) : (
-                        <Text
-                            fz="sm"
-                            className={classes.emptyMessage}
+                {label}
+            </Title>
+        )}
+
+        <ScrollArea
+            type="always"
+            scrollbarSize="0.525rem"
+            className={classes.scrollArea}
+            scrollbars="y"
+        >
+            <Group
+                {...badgeGroupProps}
+                className={cs(classes.badgeGroup, badgeGroupProps?.className)}
+            >
+                {items.length ? (
+                    items.map((item: string, index: number) => (
+                        <Badge
+                            key={index}
+                            variant="light"
+                            color="gray"
+                            size={size || "lg"}
+                            fw={500}
+                            {...badgeProps}
+                            className={cs(badgeProps?.className, classes.badge)}
                         >
-                            {emptyMessage}
-                        </Text>
-                    )}
-                </Group>
-            </ScrollArea>
-        </Stack>
-    );
-};
+                            {item}
+                        </Badge>
+                    ))
+                ) : (
+                    <Text
+                        fz="sm"
+                        className={classes.emptyMessage}
+                    >
+                        {emptyMessage}
+                    </Text>
+                )}
+            </Group>
+        </ScrollArea>
+    </Stack>
+);
 
 export default BadgeGroup;

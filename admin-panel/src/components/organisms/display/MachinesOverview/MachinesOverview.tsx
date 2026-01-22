@@ -48,7 +48,7 @@ const MachinesOverview = (): React.JSX.Element => {
                     }
                     size="sm"
                     fw="600"
-                    onClick={() => navigate("/client/machines")}
+                    onClick={() => navigate("/admin/machines")}
                 >
                     {tns("view-all")}
                 </Button>

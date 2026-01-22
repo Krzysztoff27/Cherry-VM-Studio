@@ -8,10 +8,9 @@ import { User } from "../types/api.types.ts";
 
 export interface ProtectedProps {
     accountType: AccountType;
-    wrongAccountTypeFallback: string;
 }
 
-export const Protected = ({ accountType, wrongAccountTypeFallback }: ProtectedProps): React.JSX.Element => {
+export const Protected = ({ accountType }: ProtectedProps): React.JSX.Element => {
     const { error, loading, data: user } = useFetch<User>("user");
 
     document.title = accountType === "administrative" ? "Cherry Admin Panel" : "Cherry Client Panel";
@@ -19,11 +18,23 @@ export const Protected = ({ accountType, wrongAccountTypeFallback }: ProtectedPr
     if (loading) return <Loading />;
 
     if (error || isEmpty(user)) {
-        if (error.status === ERRORS.HTTP_401_UNAUTHORIZED) return <Navigate to="/login" />;
+        if (error.status === ERRORS.HTTP_401_UNAUTHORIZED)
+            return (
+                <Navigate
+                    to="/login"
+                    replace
+                />
+            );
         throw error;
     }
 
-    if (user.account_type !== accountType) return <Navigate to={wrongAccountTypeFallback} />;
+    if (user.account_type !== accountType)
+        return (
+            <Navigate
+                to={`/${accountType === "administrative" ? "client" : "admin"}/home`}
+                replace
+            />
+        );
 
     return <Outlet />;
 };

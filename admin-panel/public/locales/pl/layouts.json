@@ -19,6 +19,8 @@
         "all-machines": "Wszystkie maszyny",
         "snapshots": "Twoje migawki",
         "iso": "Globalne pliki ISO",
-        "templates": "Twoje szablony"
+        "templates": "Twoje szablony",
+        "credits": "Prawa autorskie",
+        "contributors": "Kontrybutorzy"
     }
 }

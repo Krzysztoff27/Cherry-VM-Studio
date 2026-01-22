@@ -17,7 +17,7 @@ const ClientHomePage = (): React.JSX.Element => {
                 // justify="space-between"
             >
                 <Image
-                    src="/icons/Cherry VM Studio Logo Small.webp"
+                    src="/logos/CVMS/Cherry VM Studio Logo Small.webp"
                     w="100px"
                 />
                 <Stack>

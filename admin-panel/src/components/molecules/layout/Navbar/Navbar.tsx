@@ -1,5 +1,5 @@
-import { Stack } from "@mantine/core";
-import { IconBook2, IconBrandGithub, IconLogout } from "@tabler/icons-react";
+import { Group, Indicator, Stack } from "@mantine/core";
+import { IconBook2, IconBrandGithub, IconBriefcase, IconCopyright, IconExternalLink, IconLogout } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation.ts";
@@ -13,16 +13,17 @@ import { projectLinks } from "../../../../config/project.config.ts";
 
 export interface NavbarProps {
     pages: Page[];
+    bottomPages?: Page[];
 }
 
-export default function Navbar({ pages }: NavbarProps): React.ReactElement {
+export default function Navbar({ pages, bottomPages = [] }: NavbarProps): React.ReactElement {
     const { t, tns } = useNamespaceTranslation("layouts");
     const { logout } = useAuthentication();
     const navigate = useNavigate();
     const location = useLocation();
-    const [active, setActive] = useState<number>();
+    const [active, setActive] = useState<string>();
 
-    useEffect(() => setActive(pages.findIndex((cat) => location.pathname.startsWith(cat.path))), [location.pathname]);
+    useEffect(() => setActive(location.pathname), [location.pathname]);
 
     const onClickLogout = () => {
         logout();
@@ -37,7 +38,7 @@ export default function Navbar({ pages }: NavbarProps): React.ReactElement {
                         key={i}
                         component={Link}
                         to={category.path}
-                        active={active === i}
+                        active={active?.startsWith(category.path)}
                         label={tns(`navbar.${category.key}`)}
                         icon={<category.icon stroke={1.5} />}
                         disabled={category.disabled}
@@ -45,15 +46,31 @@ export default function Navbar({ pages }: NavbarProps): React.ReactElement {
                 ))}
             </Stack>
             <Stack>
+                {bottomPages.map((category, i) => (
+                    <TooltipNavButton
+                        key={i}
+                        component={Link}
+                        to={category.path}
+                        active={active?.startsWith(category.path)}
+                        label={tns(`navbar.${category.key}`)}
+                        icon={<category.icon stroke={1.5} />}
+                        disabled={category.disabled}
+                    />
+                ))}
                 <TooltipNavButton
                     component="a"
-                    label={t("documentation")}
-                    href={projectLinks.documentation}
-                    icon={<IconBook2 />}
-                />
-                <TooltipNavButton
-                    component="a"
-                    label={t("github-repository")}
+                    label={
+                        <Group
+                            gap="4"
+                            align="center"
+                        >
+                            {t("github-repository")}
+                            <IconExternalLink
+                                size={18}
+                                stroke={2.2}
+                            />
+                        </Group>
+                    }
                     href={projectLinks.github}
                     icon={<IconBrandGithub />}
                 />

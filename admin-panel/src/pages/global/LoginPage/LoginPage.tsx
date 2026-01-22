@@ -73,7 +73,7 @@ export default function LoginPage() {
                 <Fieldset w="400">
                     <Group pt="xs">
                         <Avatar
-                            src="/icons/Cherry VM Studio Logo Small.webp"
+                            src="/logos/CVMS/Cherry VM Studio Logo Small.webp"
                             radius={0}
                         />
                         <Text

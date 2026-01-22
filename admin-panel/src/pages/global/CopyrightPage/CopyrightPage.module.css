@@ -1,16 +1,59 @@
-.ccLink {
-    display: inline-block;
-    text-decoration: underline;
-    color: var(--mantine-color-cherry-7);
+@media screen and (min-width: 1200px) {
+    .description {
+        max-width: 60%;
+    }
 }
 
-.ccLink *:first-child{
-    margin-left: 0.5rem;
+.container {
+    width: 100%;
+    padding: 4rem;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
 }
 
-.ccIcon {
-    height: 1.5rem;
-    margin-left: 0.25rem;
-    transform: translateY(0.3rem);
-    vertical-align: text-bottom;
+.container a {
+    color: var(--mantine-color-cherry-4);
+}
+
+.licenseIcon {
+    max-width: 1.25rem;
+    max-height: 1.25rem;
+    margin-left: 6px;
+    transform: translateY(20%);
+}
+
+.scrollArea,
+.project {
+    height: 100%;
+}
+
+.projectLogo {
+    max-height: 16rem;
+}
+
+.branding {
+    gap: var(--mantine-spacing-xl);
+}
+.brandingAsset {
+    height: 12rem;
+    object-fit: contain;
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-spacing-md);
+}
+
+.fakeAnchor {
+    cursor: pointer;
+    color: var(--mantine-color-cherry-4) !important;
+}
+
+.logosCard {
+    width: fit-content;
+    border: 2px solid var(--mantine-color-dark-5);
+}
+
+.caption {
+    font-size: var(--mantine-font-size-sm);
+    width: 100%;
+    text-align: center;
 }

@@ -19,6 +19,8 @@
         "all-machines": "All machines",
         "snapshots": "Your snapshots",
         "iso": "Global ISO Library",
-        "templates": "Your templates"
+        "templates": "Your templates",
+        "credits": "Credits",
+        "contributors": "Contributors"
     }
 }

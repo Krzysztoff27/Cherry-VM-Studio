@@ -132,16 +132,58 @@
             }
         }
     },
+    "contributors": {
+        "title-developers": "Developers",
+        "title-helpers": "Helpers",
+        "contributions": {
+            "virtualization": "Virtualization",
+            "networking": "Networking",
+            "cybersecurity": "Cybersecurity",
+            "api-layer": "API Layer",
+            "web-applications": "Web Applications",
+            "ui-ux": "UI/UX",
+            "ui-design": "UI Design",
+            "auth-system": "Auth System",
+            "branding": "Branding",
+            "graphics": "Graphics",
+            "pr": "Public Relations"
+        },
+        "descriptions": {
+            "kk": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec ante est. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin imperdiet eleifend diam nec rutrum. Sed elementum, velit sed consectetur tempus, metus turpis commodo tellus, vitae ullamcorper ipsum ligula eu sem. Morbi rhoncus eros nulla, ac auctor leo ultricies quis.",
+            "tk": "Main frontend developer responsible for creating the Cherry Web Panels, implementing responsive interfaces and interactive components, and building the Cherry API to translate backend sockets into accessible frontend endpoints. Additionally, overseeing project branding and graphic design."
+        }
+    },
     "credits": {
-        "site-description": "This website is developed using <1>React</1>, incorporating components from the <3>Mantine</3> library. The network panel is built on the <5>React Flow component</5>. Icons used are sourced from <7>Tabler Icons</7>.",
-        "instalation-scripts": "Instalation scripts",
-        "guacamole": "Apache Guacamole configuration",
-        "virtualization": "Machines virtualization",
-        "cherry-proxy": "❝ Cherry Proxy ❞",
-        "cherry-api": "❝ Cherry API ❞",
-        "cherry-admin-panel": "❝ Cherry Admin Panel ❞",
-        "project-logo": "Project logo",
-        "connectivity": "API & Panel connectivity"
+        "project": {
+            "title": "2026 Cherry VM Studio",
+            "description": {
+                "1": "This work is authored by Krzysztof Kolasiński and Tomasz Kośla and is licensed under ",
+                "2": "Certain assets included in this project are subject to different licenses. Please refer to the <branding>branding</branding> and <thirdParty>third party dependencies</thirdParty> sections for detailed information. All rights reserved for respective owners."
+            }
+        },
+        "branding": {
+            "title": "Brand Assets",
+            "description": {
+                "1": "The following brand assets are not covered by the Cherry VM Studio main license. They are licensed separately and authored by different contributors.",
+                "2": "Use of these assets is limited to representing the Cherry VM Studio project.",
+                "3": "Modification, redistribution, or use outside this context is not permitted unless explicitly authorized.",
+                "4": "Cherry VM Studio Logo, Cherry VM Studio Logo Small and Cherry VM Studio Icon by Maja Cegłowska and Tomasz Kośla are licensed under "
+            }
+        },
+        "third-party": {
+            "title": "Third Party Dependencies",
+            "description": {
+                "1": "This project makes use of third-party software components and assets. Each listed dependency is licensed under its own respective license."
+            },
+            "frontend": "Frontend",
+            "frontend-description": "The frontend dependencies are used to build the Cherry Web Panels, providing the user-facing interface of the project.",
+            "backend": "Backend",
+            "backend-description": "The backend dependencies consist of Python libraries used to run the Cherry API, as well as components building up the backend virtualization infrastructure.",
+            "dependency": "Dependency",
+            "license": "License",
+            "key-dependencies": "Key dependencies",
+            "additional-packages": "Additional packages"
+        }
     },
     "accounts": {
         "controls": {

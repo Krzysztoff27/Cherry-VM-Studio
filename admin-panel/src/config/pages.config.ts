@@ -1,4 +1,5 @@
 import {
+    IconBriefcase,
     IconCategory,
     IconDatabase,
     IconDeviceDesktop,
@@ -9,6 +10,7 @@ import {
     IconUserHexagon,
     IconUsers,
     IconUsersGroup,
+    IconCopyright,
 } from "@tabler/icons-react";
 import { Page } from "../types/config.types";
 import PERMISSIONS from "./permissions.config";
@@ -94,5 +96,31 @@ export const CLIENT_PANEL_PAGES: Page[] = [
         key: "machines",
         path: "/client/machines",
         icon: IconDeviceDesktop,
+    },
+];
+
+export const ADMIN_PANEL_BOTTOM_PAGES: Page[] = [
+    {
+        key: "credits",
+        path: "/admin/credits",
+        icon: IconCopyright,
+    },
+    {
+        key: "contributors",
+        path: "/admin/contributors",
+        icon: IconBriefcase,
+    },
+];
+
+export const CLIENT_PANEL_BOTTOM_PAGES: Page[] = [
+    {
+        key: "credits",
+        path: "/client/credits",
+        icon: IconCopyright,
+    },
+    {
+        key: "contributors",
+        path: "/client/contributors",
+        icon: IconBriefcase,
     },
 ];

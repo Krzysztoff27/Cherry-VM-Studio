@@ -1,226 +1,68 @@
-import { Container, Group, Image, rem, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Group, ScrollArea, Stack, StackProps, Text } from "@mantine/core";
 import classes from "./CopyrightPage.module.css";
+import { useTranslation } from "react-i18next";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { useState } from "react";
+import ProjectSlide from "./slides/ProjectSlide";
+import BrandingSlide from "./slides/BrandingSlide";
+import ThirdPartySlide from "./slides/ThirdPartySlide";
 
-function CopyrightPage() {
-    return (
-        <Container>
-            <Stack
-                ml="xl"
-                mr="xl"
-                pt="xl"
-                h="100vh"
-                bg={"dark.7"}
-                gap="xl"
-            >
-                <Title
-                    size={rem(48)}
-                    ta="center"
-                >
-                    {"< Copyright >"}
-                </Title>
-                <Text ta="center">
-                    Certain elements within this web application may be protected by copyright. This includes third-party logos, dependencies, and other assets.
-                    All rights reserved for respective owners.
-                </Text>
-                <Text
-                    xmlns:cc="http://creativecommons.org/ns#"
-                    xmlns:dct="http://purl.org/dc/terms/"
-                    ta="left"
-                >
-                    <a
-                        href="https://github.com/Krzysztoff27/Cherry-VM-Studio"
-                        property="dct:title"
-                        rel="cc:attributionURL"
-                    >
-                        <b>Cherry VM Studio</b>
-                    </a>
-                    <span> by </span>
-                    <span property="cc:attributionName">Tomasz Kośla and Krzysztof Kolasiński</span>
-                    <span> is licensed under </span>
-                    <a
-                        href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
-                        rel="license noopener noreferrer"
-                        className={classes.ccLink}
-                    >
-                        CC BY-NC-ND 4.0
-                        <img
-                            className={classes.ccIcon}
-                            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
-                            alt="Creative Commons icon"
-                        />
-                        <img
-                            className={classes.ccIcon}
-                            src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
-                            alt="By attribution Creative Commons icon"
-                        />
-                        <img
-                            className={classes.ccIcon}
-                            src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
-                            alt="Noncommercial Creative Commons icon"
-                        />
-                        <img
-                            className={classes.ccIcon}
-                            src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
-                            alt="Noderivatives Creative Commons icon"
-                        />
-                    </a>
-                </Text>
-                <Group gap="36">
-                    <Text
-                        xmlns:cc="http://creativecommons.org/ns#"
-                        xmlns:dct="http://purl.org/dc/terms/"
-                        ta="left"
-                        flex="1"
-                    >
-                        <a
-                            href="/icons/Cherry VM Studio Logo.webp"
-                            property="dct:title"
-                            rel="cc:attributionURL"
-                        >
-                            <b>Cherry VM Studio Logo</b>
-                        </a>
-                        <span> by </span>
-                        <span property="cc:attributionName">Maja Cegłowska and Tomasz Kośla</span>
-                        <span> is licensed under </span>
-                        <a
-                            href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
-                            rel="license noopener noreferrer"
-                            className={classes.ccLink}
-                        >
-                            CC BY-NC-ND 4.0
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
-                                alt="Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
-                                alt="By attribution Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
-                                alt="Noncommercial Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
-                                alt="Noderivatives Creative Commons icon"
-                            />
-                        </a>
-                    </Text>
-                    <Image
-                        src="/icons/Cherry VM Studio Logo.webp"
-                        h={96}
-                        flex="0"
-                    />
-                </Group>
-                <Group gap="36">
-                    <Text
-                        xmlns:cc="http://creativecommons.org/ns#"
-                        xmlns:dct="http://purl.org/dc/terms/"
-                        ta="left"
-                        flex="1"
-                    >
-                        <a
-                            href="/icons/Cherry VM Studio Logo Small.webp"
-                            property="dct:title"
-                            rel="cc:attributionURL"
-                        >
-                            <b>Cherry VM Studio Logo Small</b>
-                        </a>
-                        <span> by </span>
-                        <span property="cc:attributionName">Maja Cegłowska and Tomasz Kośla</span>
-                        <span> is licensed under </span>
-                        <a
-                            href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
-                            rel="license noopener noreferrer"
-                            className={classes.ccLink}
-                        >
-                            CC BY-NC-ND 4.0
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
-                                alt="Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
-                                alt="By attribution Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
-                                alt="Noncommercial Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
-                                alt="Noderivatives Creative Commons icon"
-                            />
-                        </a>
-                    </Text>
-                    <Image
-                        src="/icons/Cherry VM Studio Logo Small.webp"
-                        h={96}
-                        flex="0"
-                    />
-                </Group>
-                <Group gap="36">
-                    <Text
-                        xmlns:cc="http://creativecommons.org/ns#"
-                        xmlns:dct="http://purl.org/dc/terms/"
-                        ta="left"
-                        flex="1"
-                    >
-                        <a
-                            href="/icons/Cherry VM Studio Icon.webp"
-                            property="dct:title"
-                            rel="cc:attributionURL"
-                        >
-                            <b>Cherry VM Studio Icon</b>
-                        </a>
-                        <span> by </span>
-                        <span property="cc:attributionName">Maja Cegłowska and Tomasz Kośla</span>
-                        <span> is licensed under </span>
-                        <a
-                            href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1"
-                            rel="license noopener noreferrer"
-                            className={classes.ccLink}
-                        >
-                            CC BY-NC-ND 4.0
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
-                                alt="Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
-                                alt="By attribution Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
-                                alt="Noncommercial Creative Commons icon"
-                            />
-                            <img
-                                className={classes.ccIcon}
-                                src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"
-                                alt="Noderivatives Creative Commons icon"
-                            />
-                        </a>
-                    </Text>
-                    <Image
-                        src="/icons/Cherry VM Studio Icon.webp"
-                        h={96}
-                        flex="0"
-                    />
-                </Group>
-            </Stack>
-        </Container>
-    );
+export interface CopyrightPageSlideProps extends StackProps {
+    slide: number;
+    setSlide: React.Dispatch<React.SetStateAction<number>>;
 }
+
+const CopyrightPage = () => {
+    const [slide, setSlide] = useState(0);
+    const { t } = useTranslation();
+
+    const slides = [ProjectSlide, BrandingSlide, ThirdPartySlide];
+
+    return (
+        <Stack className={classes.container}>
+            <ScrollArea
+                className={classes.scrollArea}
+                classNames={{ content: "auto-width full-height" }}
+            >
+                {slides.map((Slide, i) => (
+                    <Slide
+                        key={i}
+                        display={slide !== i ? "none" : undefined}
+                        slide={slide}
+                        setSlide={setSlide}
+                    />
+                ))}
+            </ScrollArea>
+            <Group
+                mt="auto"
+                gap="xs"
+            >
+                <ActionIcon
+                    variant="default"
+                    size="lg"
+                    onClick={() => setSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+                >
+                    <IconChevronLeft
+                        size={18}
+                        stroke={3}
+                    />
+                </ActionIcon>
+                <ActionIcon
+                    variant="default"
+                    size="lg"
+                    onClick={() => setSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))}
+                >
+                    <IconChevronRight
+                        size={18}
+                        stroke={3}
+                    />
+                </ActionIcon>
+                <Text ml="sm">
+                    {slide + 1} / {slides.length}
+                </Text>
+            </Group>
+        </Stack>
+    );
+};
 
 export { CopyrightPage as default };
