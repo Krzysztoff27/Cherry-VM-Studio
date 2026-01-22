@@ -37,6 +37,7 @@ const DependencyCard = ({ dependency, className, ...props }: DependencyCardProps
                         <Flex
                             component="a"
                             href={url}
+                            key={i}
                         >
                             <Icon />
                         </Flex>

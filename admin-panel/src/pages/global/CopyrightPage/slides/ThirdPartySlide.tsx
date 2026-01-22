@@ -44,20 +44,18 @@ const ThirdPartySlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps)
                 <Title order={4}>{tns("third-party.additional-packages")}:</Title>
                 <Text>
                     {shuffle(BACKEND_DEPENDENCIES.minorPython).map((dependency, i) => (
-                        <Fragment key={dependency}>
+                        <Fragment key={i}>
                             <Anchor
                                 href={`https://pypi.org/project/${dependency}`}
                                 c="var(--mantine-color-text)"
                                 underline="never"
-                                style={{ display: "inline-flex" }}
+                                style={{ display: "inline-flex", gap: "4px", alignItems: "center" }}
                             >
-                                <Group gap={4}>
                                     <span>{dependency}</span>
                                     <IconExternalLink
                                         size={16}
                                         stroke={2.5}
                                     />
-                                </Group>
                             </Anchor>
 
                             {i < BACKEND_DEPENDENCIES.minorPython.length - 1 && <span>, </span>}
@@ -86,20 +84,20 @@ const ThirdPartySlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps)
                 <Title order={4}>{tns("third-party.additional-packages")}:</Title>
                 <Text>
                     {shuffle(FRONTEND_DEPENDENCIES.minor).map((dependency, i) => (
-                        <Fragment key={dependency}>
+                        <Fragment key={i}>
                             <Anchor
                                 href={`https://npmjs.com/package/${dependency}`}
                                 c="var(--mantine-color-text)"
                                 underline="never"
-                                style={{ display: "inline-flex" }}
+                                style={{ display: "inline-flex", gap: "4px", alignItems: "center" }}
                             >
-                                <Group gap={4}>
+                                
                                     <span>{dependency}</span>
                                     <IconExternalLink
                                         size={16}
                                         stroke={2.5}
                                     />
-                                </Group>
+                                
                             </Anchor>
 
                             {i < FRONTEND_DEPENDENCIES.minor.length - 1 && <span>, </span>}

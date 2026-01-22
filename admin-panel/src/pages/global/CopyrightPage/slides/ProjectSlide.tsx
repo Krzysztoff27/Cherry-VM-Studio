@@ -1,14 +1,21 @@
-import { Flex, Stack, StackProps, Text, Title } from "@mantine/core";
+import { Box, Flex, Stack, Text, Title, rem } from "@mantine/core";
 import classes from "../CopyrightPage.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { CopyrightPageSlideProps } from "../CopyrightPage";
 import { Trans } from "react-i18next";
-import cat from "../../../../assets/ascii/cat";
 import AsciiArt from "../../../../components/atoms/display/AsciiArt/AsciiArt";
 import { CC_BY_NC_ND_4_0 } from "../Licenses";
+import hey_cvms from "../../../../assets/images/hey cvms hows it going.png";
+import confused_cat from "../../../../assets/ascii/confused_cat";
+import pointing from "../../../../assets/ascii/pointing";
+import { random } from "lodash";
 
 const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("pages", "credits");
+
+    const imageNumber = random(0, 100);
+
+    console.log(imageNumber)
 
     return (
         <Stack
@@ -26,7 +33,7 @@ const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): R
                 {tns("project.description.1")}
                 {CC_BY_NC_ND_4_0}
             </Text>
-            <Text className={classes.description}>
+            <Box className={classes.description}>
                 <Trans
                     i18nKey="pages:credits.project.description.2"
                     components={{
@@ -44,16 +51,25 @@ const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): R
                         ),
                     }}
                 />
-            </Text>
+            </Box>
             <Flex
                 mt="auto"
                 justify="end"
-                style={{ transform: "scaleX(-1)" }}
             >
-                <AsciiArt
-                    text={cat}
-                    label="Image of a silly cat with an alien-like antenas over it's head"
-                />
+                {imageNumber === 0 ? 
+                    <img src={hey_cvms} height="480px"/> : 
+                    imageNumber > 90 ? 
+                    <AsciiArt
+                        text={pointing}
+                        label="Image of a shocked soyjak character pointing behind him."
+                        style={{lineHeight: 1.25, transform: "translateY(-20%) scale(0.9)"}}
+                    /> :
+                    <AsciiArt
+                        text={confused_cat}
+                        label="Image of a confused cat"
+                        style={{lineHeight: 1.25}}
+                    />
+                }
             </Flex>
         </Stack>
     );
