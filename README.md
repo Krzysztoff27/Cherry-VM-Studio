@@ -6,7 +6,7 @@ Cherry VM Studio is a freely available platform designed with an aim to facilita
 The platform's focus is to simplify the process of virtual machines management and remote access. Future development plans include an integrated system for creating exercises, assignments, and tests with automated assessment, making Cherry VM Studio particularly well-suited for academic and training environments.
 <br/>
 <br/>
-<img src='./.github/assets/presentation1.gif' style="max-width: 640px" alt="GIF showing the bulk creation of virtual machines in Cherry VM Studio"/>
+<img src='./.github/assets/presentation1.gif' style="max-width: 560px" alt="GIF showing the bulk creation of virtual machines in Cherry VM Studio"/>
 
 
 ## Why Cherry VM Studio ?
