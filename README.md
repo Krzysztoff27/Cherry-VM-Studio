@@ -1,9 +1,47 @@
-# Cherry VM Studio
-Cherry VM Studio is an open-source project designed with an aim to facilitate the process of creating and managing virtual machine learning environments.
+<img src='./.github/assets/Cherry VM Studio Logo Dark.webp' width="400" alt="Cherry VM Studio Logo">
+<br/>
+<br/>
 
-In recent years more and more educational tools and knowledge platforms, essential for computer engineering enthusiasts have been shifting towards paid, especially subscription based, usage plans which most commonly are unaffordable for students.
- 
-Our mission is to allow people to leverage the power of open-source and create their own, independent, virtual learning environments for studying subjects like cybersecurity, operating systems administration, networking or computer science in general. In this way we can contribute to education by making it more accessible.
+Cherry VM Studio is a freely available platform designed with an aim to facilitate the process of creating and managing virtual machine learning environments.
+<br/>
+<br/>
+The platform's focus is to simplify the process of virtual machines management and remote access. Future development plans include an integrated system for creating exercises, assignments, and tests with automated assessment, making Cherry VM Studio particularly well-suited for academic and training environments.
+<br/>
+<br/>
+<img src='./.github/assets/presentation1.gif' width="500" alt="GIF showing the bulk creation of virtual machines in Cherry VM Studio"/>
 
-To achieve that, we created a platform which role is to facilitate the process of virtual machines management and remote access. In addition, we designed a system that allows for creating exercises, tasks and tests with automated assessment which could be particularly useful in academic environments.
+
+## Why Cherry VM Studio ?
+
+- Free of charge and freely available
+- Integrated automation enabling scalable environments
+- Intuitive and easy-to-use interface
+- Browser-based remote access to virtual machines
+- Security-focused by design
+- Designed for on-premises deployment with full infrastructure control
+- Offline operation with no dependency on external cloud services
+
+## Features
+
+| Feature | Description | Status |
+| :------ | :---------- | :----- |
+| VM Management | Administrative panels providing advanced virtual machine creation and management through an easy-to-use web interface. | ✅ v1.0+ |
+| Remote Access | Browser-based remote access to virtual machines. | ✅ v1.0+ |
+| Account System | Integrated authentication and user management supporting any number of users, including user groups and permission controls. | ✅ v1.0+ |
+| Network Panel | Built-in graphical interface for managing virtual networks between virtual machines. | 🚧 WIP |
+| Resource Policies | Policy-based restrictions for controlling users’ access to server resources. | 🚧 WIP |
+| Logging | Centralized system and audit logs. | 🚧 WIP |
+| Task & Assessment Module | Integrated system for creating exercises, assignments, and tests with automated assessment, designed for academic environments. | 🚧 WIP |
+
+## Resources
+
+**Installation Guide:** [link](#instalation-guide) <br/>
+**Project Wiki:** 🚧 Coming soon! <br/>
+**Documentation:** 🚧 Coming soon! <br/>
+
+## Instalation Guide
+
+
+
+
 
