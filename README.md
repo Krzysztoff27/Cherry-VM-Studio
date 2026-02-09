@@ -23,13 +23,16 @@ The platform's focus is to simplify the process of virtual machines management a
 
 | Feature | Description | Status |
 | :------ | :---------- | :----- |
-| VM Management | Administrative panels providing advanced virtual machine creation and management through an easy-to-use web interface. | ✅ v1.0+ |
-| Remote Access | Browser-based remote access to virtual machines. | ✅ v1.0+ |
-| Account System | Integrated authentication and user management supporting any number of users, including user groups and permission controls. | ✅ v1.0+ |
-| Network Panel | Built-in graphical interface for managing virtual networks between virtual machines. | 🚧 WIP |
-| Resource Policies | Policy-based restrictions for controlling users’ access to server resources. | 🚧 WIP |
-| Logging | Centralized system and audit logs. | 🚧 WIP |
-| Task & Assessment Module | Integrated system for creating exercises, assignments, and tests with automated assessment, designed for academic environments. | 🚧 WIP |
+| VM Management | Administrative panels providing advanced virtual machine creation and management through an easy-to-use web interface. | ✅ |
+| Remote Access | Browser-based remote access to virtual machines. | ✅ |
+| Account System | Integrated authentication and user management supporting any number of users, including user groups and permission controls. | ✅ |
+| Network Panel | Built-in graphical interface for managing virtual networks between virtual machines. | 🚧 |
+| Resource Policies | Policy-based restrictions for controlling users’ access to server resources. | 🚧 |
+| Logging | Centralized system and audit logs. | 🚧 |
+| Task & Assessment Module | Integrated system for creating exercises, assignments, and tests with automated assessment, designed for academic environments. | 🚧 |
+
+✅ - implemented
+🚧 - work in progress
 
 ## Resources
 
