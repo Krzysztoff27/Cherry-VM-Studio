@@ -94,7 +94,8 @@ class ClientTableManager(SimpleTableManager):
                     INSERT INTO clients (uuid, username, password, email, name, surname, disabled)
                     VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)
                 """, args.model_dump())
-                cursor.execute(assign_groups_query)
+                if args.groups:
+                    cursor.execute(assign_groups_query)
                 
                 create_entity(cursor, args.uuid)
         
