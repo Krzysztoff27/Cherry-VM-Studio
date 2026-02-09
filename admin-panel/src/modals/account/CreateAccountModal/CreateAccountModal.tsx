@@ -47,7 +47,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                           : val.length > 24
                             ? tns("validation.username-too-long")
                             : null,
-            email: (val) => (val.length && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null),
+            email: (val) => (val.length && !(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val)) ? tns("validation.email-invalid") : null),
             password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")
