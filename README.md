@@ -1,4 +1,9 @@
-<img src='./.github/assets/Cherry VM Studio Logo Dark 480p.webp' width="460" alt="Cherry VM Studio Logo">
+<picture width="460">
+  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/Cherry VM Studio Logo Dark 480p.webp">
+  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/Cherry VM Studio Logo Light 480p.webp">
+  <img alt="Cherry VM Studio Logo">
+</picture>
+
 
 Cherry VM Studio is a freely available platform designed with an aim to facilitate the process of creating and managing virtual machine learning environments.
 <br/>
