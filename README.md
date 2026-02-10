@@ -1,7 +1,7 @@
 <picture width="460">
-  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/Cherry VM Studio Logo Dark 480p.webp">
-  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/Cherry VM Studio Logo Light 480p.webp">
-  <img alt="Cherry VM Studio Logo">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Cherry-VM-Studio/Cherry-VM-Studio/.github/assets/Cherry VM Studio Logo Dark 480p.webp">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Cherry-VM-Studio/Cherry-VM-Studio/.github/assets/Cherry VM Studio Light Dark 480p.webp">
+  <img alt="Cherry VM Studio Logo" src="./github/assets/Cherry VM Studio Logo Dark 480p.webp">
 </picture>
 
 
