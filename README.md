@@ -5,7 +5,7 @@
 </picture>
 
 
-Cherry VM Studio is a freely available platform designed with an aim to facilitate the process of creating and managing virtual machine learning environments.
+**Cherry VM Studio** is a freely available platform designed with an aim to facilitate the process of creating and managing virtual machine learning environments.
 <br/>
 <br/>
 The platform's focus is to simplify the process of virtual machines management and remote access. Future development plans include an integrated system for creating exercises, assignments, and tests with automated assessment, making Cherry VM Studio particularly well-suited for academic and training environments.
